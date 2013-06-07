@@ -1,5 +1,5 @@
-Repository of script to luanch Kill Bill in the cloud.
-=====================================================
+Scripts to launch Kill Bill in the cloud.
+========================================
 
 
 The initial revision focuses on AWS:
@@ -46,4 +46,23 @@ Format for AWS config file:
         :user_name: "the_db_user_name"
         :password: "the_db_pwd"
 
-</pre>        
+</pre>
+
+Format for the Kill Bill config
+
+<pre>
+:killbill:
+ :version: 0.1.80
+ :config: killbill.properties
+ :catalog: killbill_catalog.xml 
+ :overdue: overdue.xml
+ :invoice_template: blah.template
+
+:plugins: 
+ :paypal-express-plugin:
+   :config: paypal_express.yml
+
+ :logging-plugin:
+   :config: klogger.yml
+</pre>
+
