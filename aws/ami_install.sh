@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+###################################################################################
+#                                                                                 #
+#                   Copyright 2010-2013 Ning, Inc.                                #
+#                                                                                 #
+#      Ning licenses this file to you under the Apache License, version 2.0       #
+#      (the "License"); you may not use this file except in compliance with the   #
+#      License.  You may obtain a copy of the License at:                         #
+#                                                                                 #
+#          http://www.apache.org/licenses/LICENSE-2.0                             #
+#                                                                                 #
+#      Unless required by applicable law or agreed to in writing, software        #
+#      distributed under the License is distributed on an "AS IS" BASIS, WITHOUT  #
+#      WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  #
+#      License for the specific language governing permissions and limitations    #
+#      under the License.                                                         #
+#                                                                                 #
+###################################################################################
+
 OUTPUT="/tmp/install.out"
 
 KILLBILL_INSTALL="/home/ubuntu/killbill_install"
@@ -7,8 +25,6 @@ KILLBILL_CONFIG="$KILLBILL_INSTALL/config"
 KILLBILL_BINARIES="$KILLBILL_INSTALL/binaries"
 
 KILLBILL_INSTALL_SCRIPT="killbill_install.rb"
-
-CATALINA_HOME="/opt/apache-tomcat-7.0.40"
 
 function setup_install_directory_structure() {
     echo "Setup directory structure"
@@ -43,9 +59,9 @@ function install_package() {
 function install_tomcat_from_targz() {
     echo "Installing tomcat $1"    
     t0=`date +'%s'`
-    wget -O /tmp/apache-tomcat-7.0.40.tar.gz  http://mirrors.ibiblio.org/apache/tomcat/tomcat-7/v7.0.40/bin/apache-tomcat-7.0.40.tar.gz
+    wget --no-verbose -O /tmp/apache-tomcat-7.0.40.tar.gz  http://mirrors.ibiblio.org/apache/tomcat/tomcat-7/v7.0.40/bin/apache-tomcat-7.0.40.tar.gz
     sudo mv /tmp/apache-tomcat-7.0.40.tar.gz /opt
-    (cd /opt; sudo tar zxvf ./apache-tomcat-7.0.40.tar.gz)
+    (cd /opt; sudo tar zxf ./apache-tomcat-7.0.40.tar.gz)
     echo "Done installing tomcat: $((t1-t0)) secs"
     echo
 }
