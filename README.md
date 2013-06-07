@@ -26,6 +26,7 @@ launcher.rb takes the following arguments:
 * --input_config_dir : location directory from where ALL config files reside
 * --aws_config : AWS config file, that lives in input_config_dir
 * --killbill_config : Kill Bill master config file
+* --terminate : a valid path to a file that specifies instances to terminate; if that option is present this is all will happen
 
 Format for AWS config file:
 <pre>
