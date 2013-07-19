@@ -59,9 +59,10 @@ function install_package() {
 function install_tomcat_from_targz() {
     echo "Installing tomcat $1"    
     t0=`date +'%s'`
-    wget --no-verbose -O /tmp/apache-tomcat-7.0.40.tar.gz  http://mirrors.ibiblio.org/apache/tomcat/tomcat-7/v7.0.40/bin/apache-tomcat-7.0.40.tar.gz
-    sudo mv /tmp/apache-tomcat-7.0.40.tar.gz /opt
-    (cd /opt; sudo tar zxf ./apache-tomcat-7.0.40.tar.gz)
+    version=7.0.42
+    wget --no-verbose -O /tmp/apache-tomcat-$version.tar.gz  https://s3.amazonaws.com/kb-binaries/apache-tomcat-$version.tar.gz
+    sudo mv /tmp/apache-tomcat-$version.tar.gz /opt
+    (cd /opt; sudo tar zxf ./apache-tomcat-$version.tar.gz)
     echo "Done installing tomcat: $((t1-t0)) secs"
     echo
 }

@@ -30,7 +30,7 @@ BINARIES="binaries"
 
 OUTPUT="install.log"
 
-CATALINA_HOME="/opt/apache-tomcat-7.0.40"
+CATALINA_HOME="/opt/apache-tomcat-7.0.42"
 TOMCAT_GEN_SCRIPT="/tmp/tomcat.sh"
 
 class KillbillInstall
