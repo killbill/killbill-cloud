@@ -1,7 +1,7 @@
 Scripts to launch Kill Bill in the cloud.
 ========================================
 
-The initial revision focuses on AWS:
+The initial revision focuses on AWS.
 
 Quick start
 -----------
@@ -60,6 +60,14 @@ Format for AWS config file:
         :password: "the_db_pwd"
 
 </pre>
+
+Notes:
+* We recommend **ami-e4770b8d** for the AMI (Ubuntu LTS)
+* To create a security group, go to https://console.aws.amazon.com/ec2 then click Security Groups. You need to open ports 8080 and 22
+* We recommend **m1.small** for the instance type
+* Use **us-east-1b** for the availability zone if you're unsure
+* To generate a key pair, go to  https://console.aws.amazon.com/ec2 then click Key Pairs. You need to download the pem key locally and change its permission (```chmod og-rwx```). Specify this path as the value for ssh_private_key_path
+* To generate an access/secret key, go to https://console.aws.amazon.com/iam/home?#security_credential
 
 Format for the Kill Bill config:
 
