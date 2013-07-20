@@ -18,14 +18,18 @@
 #                                                                                 #
 ###################################################################################
 
+# Installation root
 KILLBILL_INSTALL="/home/ubuntu/killbill_install"
 
-# Log file
+# Log files
 LOGFILE="$KILLBILL_INSTALL/ami_install.log"
+ERRFILE="$KILLBILL_INSTALL/ami_install.err"
 
+# Kill Bill directories
 KILLBILL_CONFIG="$KILLBILL_INSTALL/config"
 KILLBILL_BINARIES="$KILLBILL_INSTALL/binaries"
 
+# Kill Bill installation script
 KILLBILL_INSTALL_SCRIPT="killbill_install.rb"
 
 function setup_install_directory_structure() {
@@ -77,13 +81,13 @@ function get_killbill_schema() {
 
 
 mkdir -p $KILLBILL_INSTALL
-rm -f $LOGFILE
-touch $LOGFILE
+rm -f $LOGFILE $ERRFILE
+touch $LOGFILE $ERRFILE
 
 # Link file descriptor #3 with stdout and #4 with stderr
 exec 3>&1 4>&2
-# Redirect stdout and stderr to $LOGFILE
-exec 1>$LOGFILE 2>$LOGFILE
+# Redirect stdout to $LOGFILE and stderr to $ERRFILE (use two files so they don't stomp on each other)
+exec 1>$LOGFILE 2>$ERRFILE
 
 echo -n "Logfile: "
 date
