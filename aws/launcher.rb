@@ -311,7 +311,8 @@ class Launcher
 
   def initialize_ami
     @instances.each do |cur_instance|
-      puts "Installing instance #{cur_instance.id} -> #{cur_instance.public_dns_name}"
+      puts "Installing instance #{cur_instance.id} -> #{cur_instance.public_dns_name}.
+Follow along: ssh -l ubuntu -i #{@ec2.ssh_private_key} #{cur_instance.public_dns_name} tail -f /home/ubuntu/killbill_install/ami_install.log"
       @ec2.execute_remote(cur_instance.public_dns_name, "chmod a+x /tmp/#{AMI_INSTALL_SCRIPT}")
       @ec2.execute_remote(cur_instance.public_dns_name, "/tmp/#{AMI_INSTALL_SCRIPT}")
     end

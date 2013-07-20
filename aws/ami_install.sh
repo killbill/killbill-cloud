@@ -18,9 +18,11 @@
 #                                                                                 #
 ###################################################################################
 
-OUTPUT="/tmp/install.out"
-
 KILLBILL_INSTALL="/home/ubuntu/killbill_install"
+
+# Log file
+LOGFILE="$KILLBILL_INSTALL/ami_install.log"
+
 KILLBILL_CONFIG="$KILLBILL_INSTALL/config"
 KILLBILL_BINARIES="$KILLBILL_INSTALL/binaries"
 
@@ -28,7 +30,6 @@ KILLBILL_INSTALL_SCRIPT="killbill_install.rb"
 
 function setup_install_directory_structure() {
     echo "Setup directory structure"
-    mkdir $KILLBILL_INSTALL
     mkdir $KILLBILL_CONFIG
     mkdir $KILLBILL_BINARIES
     cp "/tmp/$KILLBILL_INSTALL_SCRIPT" $KILLBILL_INSTALL    
@@ -50,7 +51,7 @@ function update_packages() {
 function install_package() {
     echo "Starting installing package $1"
     t0=`date +'%s'`
-    sudo aptitude -y install $1 >> $OUTPUT
+    sudo aptitude -y install $1
     t1=`date +'%s'`    
     echo "Done installing package $1: $((t1-t0)) secs"
     echo
@@ -75,8 +76,19 @@ function get_killbill_schema() {
 }
 
 
-rm -f $OUTPUT
-touch $OUTPUT
+mkdir -p $KILLBILL_INSTALL
+rm -f $LOGFILE
+touch $LOGFILE
+
+# Link file descriptor #3 with stdout and #4 with stderr
+exec 3>&1 4>&2
+# Redirect stdout and stderr to $LOGFILE
+exec 1>$LOGFILE 2>$LOGFILE
+
+echo -n "Logfile: "
+date
+echo "-------------------------------------"
+echo
 
 setup_install_directory_structure
 
@@ -88,3 +100,6 @@ install_package openjdk-7-jdk
 install_package mysql-client
 
 install_tomcat_from_targz
+
+# Restore original stdout/stderr and close the unused descriptors
+exec 1>&3 2>&4 3>&- 4>&-
