@@ -32,6 +32,9 @@ KILLBILL_BINARIES="$KILLBILL_INSTALL/binaries"
 # Kill Bill installation script
 KILLBILL_INSTALL_SCRIPT="killbill_install.rb"
 
+# Tell debconf/dpkg-preconfigure not to try to use a real terminal
+APTITUDE="sudo DEBIAN_FRONTEND=noninteractive aptitude -y"
+
 function setup_install_directory_structure() {
     echo "Setup directory structure"
     mkdir $KILLBILL_CONFIG
@@ -43,10 +46,14 @@ function setup_install_directory_structure() {
 function update_packages() {
     echo "Starting updating Ubuntu to latest packages"
     t0=`date +'%s'`
-    sudo aptitude -y update
+    $APTITUDE update
     echo "Done updating packages, performing safe-upgrade"
-    sudo aptitude -y safe-upgrade
-    t1=`date +'%s'`    
+    $APTITUDE safe-upgrade
+    # Make sure to update again. This is to fix errors like:
+    # The following packages have unmet dependencies:
+    #  ruby1.9.1-dev : Depends: libc6-dev which is a virtual package.
+    $APTITUDE update
+    t1=`date +'%s'`
     echo "Done updating Ubuntu to latest packages $((t1-t0)) secs"
     echo
 }
@@ -55,7 +62,7 @@ function update_packages() {
 function install_package() {
     echo "Starting installing package $1"
     t0=`date +'%s'`
-    sudo aptitude -y install $1
+    $APTITUDE install $1
     t1=`date +'%s'`    
     echo "Done installing package $1: $((t1-t0)) secs"
     echo
