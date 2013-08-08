@@ -182,9 +182,11 @@ class Launcher
     @killbill_config = "#{@input_config_dir}/#{@config.killbill_config}"
     @aws_config = "#{@input_config_dir}/#{@config.aws_config}"
 
-    @aws_config = YAML.load(ERB.new(File.read(@aws_config)))
+    @aws_config = YAML.load(ERB.new(File.read(@aws_config)).result)
     @ec2_config = @aws_config[:aws][:ec2]
     @rds_config = @aws_config[:aws][:rds]
+
+
     @ec2 = SimpleEC2.new(@ec2_config[:access_key],
                          @ec2_config[:secret_key],
                          @ec2_config[:ami],
@@ -192,7 +194,7 @@ class Launcher
                          @ec2_config[:availability_zone],
                          @ec2_config[:key_name],
                          @ec2_config[:security_group],
-                         @ec2_config[:ssh_private_key_path])
+                         "#{@input_config_dir}/#{@ec2_config[:ssh_private_key_file_name]}")
     @nb_instances = nb_instances
     @instances = []
   end
@@ -244,7 +246,7 @@ class Launcher
     jdbc_pwd = "#{@rds_config[:password]}"
 
     if File.extname(input_properties) == ".yml"
-      input = YAML.load(ERB.new(File.read(input_properties)))
+      input = YAML.load(ERB.new(File.read(input_properties)).result)
       if input[:database].nil?
         return input_properties
       end

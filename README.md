@@ -51,7 +51,7 @@ Format for AWS config file:
         :key_name: "the_amazon_ec2_key_pair"
         :access_key: "the_aws_access_key"
         :secret_key: "the_aws_secret_key"
-        :ssh_private_key_path: "the SSH private key used to connect to running instances"
+        :ssh_private_key_file_name: "the SSH private key file name used to connect to running instances"
 
     :rds:
         :endpoint: "the_rds_endpoint"
