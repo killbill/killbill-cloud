@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+$:.push File.expand_path("../../lib", __FILE__)
+require 'kpm'
+
+begin
+  KPM::Cli.start
+rescue => e
+  KPM.ui.say e.message, :red
+  exit 1
+end
