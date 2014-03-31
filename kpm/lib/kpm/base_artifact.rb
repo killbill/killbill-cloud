@@ -8,12 +8,7 @@ module KPM
       KILLBILL_RUBY_PLUGIN_GROUP_ID = 'org.kill-bill.billing.plugin.ruby'
 
       def nexus_remote(overrides={}, ssl_verify=true)
-        begin
-          nexus_remote ||= NexusCli::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
-        rescue NexusCli::NexusCliError => e
-          say e.message, :red
-          exit e.status_code
-        end
+        nexus_remote ||= NexusCli::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
       end
 
       def nexus_defaults

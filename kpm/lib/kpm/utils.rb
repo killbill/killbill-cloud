@@ -1,0 +1,42 @@
+require 'pathname'
+require 'rubygems/package'
+require 'zlib'
+
+module KPM
+  class Utils
+    class << self
+      TAR_LONGLINK = '././@LongLink'
+
+      def unpack_tgz(tar_gz_archive, destination)
+        Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
+          dest = nil
+          tar.each do |entry|
+            if entry.full_name == TAR_LONGLINK
+              dest = File.join destination, path_with_skipped_top_level_dir(entry.read.strip)
+              next
+            end
+            dest ||= File.join destination, path_with_skipped_top_level_dir(entry.full_name)
+
+            if entry.directory?
+              File.delete dest if File.file? dest
+              FileUtils.mkdir_p dest, :mode => entry.header.mode, :verbose => false
+            elsif entry.file?
+              FileUtils.rm_rf dest if File.directory? dest
+              File.open dest, "wb" do |f|
+                f.print entry.read
+              end
+              FileUtils.chmod entry.header.mode, dest, :verbose => false
+            elsif entry.header.typeflag == '2' # Symlink
+              File.symlink entry.header.linkname, dest
+            end
+            dest = nil
+          end
+        end
+      end
+
+      def path_with_skipped_top_level_dir(path)
+        Pathname(path).each_filename.to_a[1..-1].join(File::SEPARATOR)
+      end
+    end
+  end
+end

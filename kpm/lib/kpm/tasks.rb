@@ -17,6 +17,11 @@ module KPM
                      :default => true,
                      :desc => "Set to false to disable SSL Verification."
 
+        desc "install", "Install Kill Bill server and plugins according to the specified YAML configuration file."
+        def install(config_file)
+          Installer.from_file(config_file).install
+        end
+
         method_option :destination,
                       :type => :string,
                       :default => nil,
