@@ -24,6 +24,7 @@ module KPM
     def install
       install_killbill_server
       install_plugins
+      install_default_bundles
     end
 
     private
@@ -75,9 +76,30 @@ module KPM
         @logger.info "Installing Kill Bill Ruby plugin #{artifact_id} #{version} to #{destination}"
         archive = KillbillPluginArtifact.pull(artifact_id, version, :ruby, destination, @config['nexus'], @config['nexus']['ssl_verify'])
 
-        Utils.unpack_tgz(archive[:file_path], destination)
+        Utils.unpack_tgz(archive[:file_path], destination, true)
         FileUtils.rm archive[:file_path]
       end
+    end
+
+    def install_default_bundles
+      return if @config['default_bundles'] == false
+
+      group_id = 'org.kill-bill.billing'
+      artifact_id = 'killbill-osgi-bundles-defaultbundles'
+      packaging = 'tar.gz'
+      version = @config['version'] || LATEST_VERSION
+      destination = "#{@config['plugins_dir']}/platform"
+
+      FileUtils.mkdir_p(destination)
+
+      @logger.info "Installing Kill Bill #{artifact_id} #{version} to #{destination}"
+      archive = BaseArtifact.pull(group_id, artifact_id, packaging, version, destination, @config['nexus'], @config['nexus']['ssl_verify'])
+
+      Utils.unpack_tgz(archive[:file_path], destination)
+      FileUtils.rm archive[:file_path]
+
+      # The special JRuby bundle needs to be called jruby.jar
+      File.rename Dir.glob("#{destination}/killbill-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
     end
   end
 end

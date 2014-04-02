@@ -7,15 +7,15 @@ module KPM
     class << self
       TAR_LONGLINK = '././@LongLink'
 
-      def unpack_tgz(tar_gz_archive, destination)
+      def unpack_tgz(tar_gz_archive, destination, skip_top_dir=false)
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           dest = nil
           tar.each do |entry|
             if entry.full_name == TAR_LONGLINK
-              dest = File.join destination, path_with_skipped_top_level_dir(entry.read.strip)
+              dest = File.join destination, skip_top_dir ? path_with_skipped_top_level_dir(entry.read.strip) : entry.read.strip
               next
             end
-            dest ||= File.join destination, path_with_skipped_top_level_dir(entry.full_name)
+            dest ||= File.join destination, skip_top_dir ? path_with_skipped_top_level_dir(entry.full_name) : entry.full_name
 
             if entry.directory?
               File.delete dest if File.file? dest
