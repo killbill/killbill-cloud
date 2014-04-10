@@ -19,7 +19,7 @@ require 'kpm/version'
 
 Gem::Specification.new do |s|
   s.name        = 'kpm'
-  s.version     = KPM::Version.to_s
+  s.version     = KPM::VERSION
   s.summary     = 'Kill Bill package manager.'
   s.description = 'A package manager for Kill Bill.'
 
