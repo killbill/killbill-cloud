@@ -10,8 +10,9 @@ module KPM
     end
 
     def initialize(raw_config, logger=nil)
-      raise(ArgumentError, 'killbill section must be specified') if raw_config['killbill'].nil?
+      raise(ArgumentError, 'killbill or kaui section must be specified') if raw_config['killbill'].nil? and raw_config['kaui'].nil?
       @config = raw_config['killbill']
+      @kaui_config = raw_config['kaui']
 
       if logger.nil?
         @logger = Logger.new(STDOUT)
@@ -22,9 +23,14 @@ module KPM
     end
 
     def install
-      install_killbill_server
-      install_plugins
-      install_default_bundles
+      unless @config.nil?
+        install_killbill_server
+        install_plugins
+        install_default_bundles
+      end
+      unless @kaui_config.nil?
+        install_kaui
+      end
     end
 
     private
@@ -100,6 +106,18 @@ module KPM
 
       # The special JRuby bundle needs to be called jruby.jar
       File.rename Dir.glob("#{destination}/killbill-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+    end
+
+    def install_kaui
+      version = @kaui_config['version'] || LATEST_VERSION
+      webapp_path = @kaui_config['webapp_path'] || KPM::root
+
+      webapp_dir = File.dirname(webapp_path)
+      FileUtils.mkdir_p(webapp_dir)
+
+      @logger.info "Installing Kaui #{version} to #{webapp_path}"
+      file = KauiArtifact.pull(version, webapp_dir, @kaui_config['nexus'], @kaui_config['nexus']['ssl_verify'])
+      FileUtils.mv file[:file_path], webapp_path
     end
   end
 end

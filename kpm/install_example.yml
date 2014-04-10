@@ -19,3 +19,11 @@ killbill:
     # You can use https://github.com/reidmorrison/symmetric-encryption for encryption
     #username: bob
     #password: bob
+kaui:
+  # If no version is specified, LATEST is assumed
+  version: LATEST
+  webapp_path: /var/tmp/tomcat/webapps/kaui
+  nexus:
+    ssl_verify: false
+    url: https://repository.sonatype.org
+    repository: central-proxy

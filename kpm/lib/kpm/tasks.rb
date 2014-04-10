@@ -71,6 +71,21 @@ module KPM
 
           say result, :green
         end
+
+        method_option :destination,
+                      :type => :string,
+                      :default => nil,
+                      :desc => "A different folder other than the current working directory."
+        desc "pull_kaui_war version", "Pulls Kaui war from Sonatype and places it on your machine."
+        def pull_kaui_war(version='LATEST')
+          response = KauiArtifact.pull(version, options[:destination], options[:overrides], options[:ssl_verify])
+          say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
+        end
+
+        desc "search_for_kaui", "Searches for all versions of Kaui and prints them to the screen."
+        def search_for_kaui
+          say "Available versions: #{KauiArtifact.versions(options[:overrides], options[:ssl_verify]).to_a.join(', ')}", :green
+        end
       end
     end
   end
