@@ -17,7 +17,7 @@ module KPM
                      :default => true,
                      :desc => "Set to false to disable SSL Verification."
 
-        desc "install", "Install Kill Bill server and plugins according to the specified YAML configuration file."
+        desc "install config_file", "Install Kill Bill server and plugins according to the specified YAML configuration file."
         def install(config_file)
           Installer.from_file(config_file).install
         end
@@ -28,13 +28,28 @@ module KPM
                       :desc => "A different folder other than the current working directory."
         desc "pull_kb_server_war version", "Pulls Kill Bill server war from Sonatype and places it on your machine."
         def pull_kb_server_war(version='LATEST')
-          response = KillbillServerArtifact.pull(version, options[:destination], options[:overrides], options[:ssl_verify])
+          response = KillbillServerArtifact.pull(BaseArtifact::KILLBILL_GROUP_ID, KillbillServerArtifact::KILLBILL_ARTIFACT_ID, KillbillServerArtifact::KILLBILL_PACKAGING, KillbillServerArtifact::KILLBILL_CLASSIFIER, version, options[:destination], options[:overrides], options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
         desc "search_for_kb_server", "Searches for all versions of Kill Bill server and prints them to the screen."
         def search_for_kb_server
-          say "Available versions: #{KillbillServerArtifact.versions(options[:overrides], options[:ssl_verify]).to_a.join(', ')}", :green
+          say "Available versions: #{KillbillServerArtifact.versions(BaseArtifact::KILLBILL_GROUP_ID, KillbillServerArtifact::KILLBILL_ARTIFACT_ID, KillbillServerArtifact::KILLBILL_PACKAGING, KillbillServerArtifact::KILLBILL_CLASSIFIER, options[:overrides], options[:ssl_verify]).to_a.join(', ')}", :green
+        end
+
+        method_option :destination,
+                      :type => :string,
+                      :default => nil,
+                      :desc => "A different folder other than the current working directory."
+        desc "pull_kp_server_war version", "Pulls Kill Pay server war from Sonatype and places it on your machine."
+        def pull_kp_server_war(version='LATEST')
+          response = KillbillServerArtifact.pull(BaseArtifact::KILLBILL_GROUP_ID, KillbillServerArtifact::KILLPAY_ARTIFACT_ID, KillbillServerArtifact::KILLPAY_PACKAGING, KillbillServerArtifact::KILLPAY_CLASSIFIER, version, options[:destination], options[:overrides], options[:ssl_verify])
+          say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
+        end
+
+        desc "search_for_kp_server", "Searches for all versions of Kill Pay server and prints them to the screen."
+        def search_for_kp_server
+          say "Available versions: #{KillbillServerArtifact.versions(BaseArtifact::KILLBILL_GROUP_ID, KillbillServerArtifact::KILLPAY_ARTIFACT_ID, KillbillServerArtifact::KILLPAY_PACKAGING, KillbillServerArtifact::KILLPAY_CLASSIFIER, options[:overrides], options[:ssl_verify]).to_a.join(', ')}", :green
         end
 
         method_option :destination,

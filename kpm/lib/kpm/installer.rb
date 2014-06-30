@@ -36,14 +36,18 @@ module KPM
     private
 
     def install_killbill_server
+      group_id = @config['group_id'] || BaseArtifact::KILLBILL_GROUP_ID
+      artifact_id = @config['artifact_id'] || KillbillServerArtifact::KILLBILL_ARTIFACT_ID
+      packaging = @config['packaging'] || KillbillServerArtifact::KILLBILL_PACKAGING
+      classifier = @config['classifier'] || KillbillServerArtifact::KILLBILL_CLASSIFIER
       version = @config['version'] || LATEST_VERSION
       webapp_path = @config['webapp_path'] || KPM::root
 
       webapp_dir = File.dirname(webapp_path)
       FileUtils.mkdir_p(webapp_dir)
 
-      @logger.info "Installing Kill Bill server #{version} to #{webapp_path}"
-      file = KillbillServerArtifact.pull(version, webapp_dir, @config['nexus'], @config['nexus']['ssl_verify'])
+      @logger.info "Installing Kill Bill server (#{group_id}:#{artifact_id}:#{packaging}:#{classifier}:#{version}) to #{webapp_path}"
+      file = KillbillServerArtifact.pull(group_id, artifact_id, packaging, classifier, version, webapp_dir, @config['nexus'], @config['nexus']['ssl_verify'])
       FileUtils.mv file[:file_path], webapp_path
     end
 
