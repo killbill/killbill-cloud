@@ -95,7 +95,7 @@ module KPM
       return if @config['default_bundles'] == false
 
       group_id = 'org.kill-bill.billing'
-      artifact_id = 'killbill-osgi-bundles-defaultbundles'
+      artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
       packaging = 'tar.gz'
       version = @config['version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
@@ -109,7 +109,7 @@ module KPM
       FileUtils.rm archive[:file_path]
 
       # The special JRuby bundle needs to be called jruby.jar
-      File.rename Dir.glob("#{destination}/killbill-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+      File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
     end
 
     def install_kaui
