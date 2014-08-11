@@ -11,15 +11,18 @@ module KPM
 
     def initialize(raw_config, logger=nil)
       raise(ArgumentError, 'killbill or kaui section must be specified') if raw_config['killbill'].nil? and raw_config['kaui'].nil?
-      @config = raw_config['killbill']
+      @config      = raw_config['killbill']
       @kaui_config = raw_config['kaui']
 
       if logger.nil?
-        @logger = Logger.new(STDOUT)
+        @logger       = Logger.new(STDOUT)
         @logger.level = Logger::INFO
       else
         @logger = logger
       end
+
+      @nexus_config     = @config['nexus']
+      @nexus_ssl_verify = !@nexus_config.nil? ? @nexus_config['ssl_verify'] : true
     end
 
     def install
@@ -36,19 +39,14 @@ module KPM
     private
 
     def install_killbill_server
-      group_id = @config['group_id'] || BaseArtifact::KILLBILL_GROUP_ID
-      artifact_id = @config['artifact_id'] || KillbillServerArtifact::KILLBILL_ARTIFACT_ID
-      packaging = @config['packaging'] || KillbillServerArtifact::KILLBILL_PACKAGING
-      classifier = @config['classifier'] || KillbillServerArtifact::KILLBILL_CLASSIFIER
-      version = @config['version'] || LATEST_VERSION
+      group_id    = @config['group_id'] || KPM::BaseArtifact::KILLBILL_GROUP_ID
+      artifact_id = @config['artifact_id'] || KPM::BaseArtifact::KILLBILL_ARTIFACT_ID
+      packaging   = @config['packaging'] || KPM::BaseArtifact::KILLBILL_PACKAGING
+      classifier  = @config['classifier'] || KPM::BaseArtifact::KILLBILL_CLASSIFIER
+      version     = @config['version'] || LATEST_VERSION
       webapp_path = @config['webapp_path'] || KPM::root
 
-      webapp_dir = File.dirname(webapp_path)
-      FileUtils.mkdir_p(webapp_dir)
-
-      @logger.info "Installing Kill Bill server (#{group_id}:#{artifact_id}:#{packaging}:#{classifier}:#{version}) to #{webapp_path}"
-      file = KillbillServerArtifact.pull(group_id, artifact_id, packaging, classifier, version, webapp_dir, @config['nexus'], @config['nexus']['ssl_verify'])
-      FileUtils.mv file[:file_path], webapp_path
+      KPM::KillbillServerArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, @nexus_config, @nexus_ssl_verify)
     end
 
     def install_plugins
@@ -61,67 +59,67 @@ module KPM
     def install_java_plugins(bundles_dir)
       return if @config['plugins'].nil? or @config['plugins']['java'].nil?
 
+      infos = []
       @config['plugins']['java'].each do |plugin|
-        artifact_id = plugin['name']
-        version = plugin['version'] || LATEST_VERSION
+        group_id    = plugin['group_id'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
+        artifact_id = plugin['artifact_id'] || plugin['name']
+        packaging   = plugin['packaging'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
+        classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
+        version     = plugin['version'] || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/java/#{artifact_id}/#{version}"
 
-        FileUtils.mkdir_p(destination)
-
-        @logger.info "Installing Kill Bill Java plugin #{artifact_id} #{version} to #{destination}"
-        KillbillPluginArtifact.pull(artifact_id, version, :java, destination, @config['nexus'], @config['nexus']['ssl_verify'])
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @nexus_config, @nexus_ssl_verify)
       end
+
+      infos
     end
 
     def install_ruby_plugins(bundles_dir)
       return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
 
+      infos = []
       @config['plugins']['ruby'].each do |plugin|
-        artifact_id = plugin['name']
-        version = plugin['version'] || LATEST_VERSION
+        group_id    = plugin['group_id'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
+        artifact_id = plugin['artifact_id'] || plugin['name']
+        packaging   = plugin['packaging'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
+        classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
+        version     = plugin['version'] || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/ruby"
 
-        FileUtils.mkdir_p(destination)
-
-        @logger.info "Installing Kill Bill Ruby plugin #{artifact_id} #{version} to #{destination}"
-        archive = KillbillPluginArtifact.pull(artifact_id, version, :ruby, destination, @config['nexus'], @config['nexus']['ssl_verify'])
-
-        Utils.unpack_tgz(archive[:file_path], destination, true)
-        FileUtils.rm archive[:file_path]
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @nexus_config, @nexus_ssl_verify)
       end
+
+      infos
     end
 
     def install_default_bundles
       return if @config['default_bundles'] == false
 
-      group_id = 'org.kill-bill.billing'
+      group_id    = 'org.kill-bill.billing'
       artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
-      packaging = 'tar.gz'
-      version = @config['version'] || LATEST_VERSION
+      packaging   = 'tar.gz'
+      classifier  = nil
+      version     = @config['version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
 
-      FileUtils.mkdir_p(destination)
-
-      @logger.info "Installing Kill Bill #{artifact_id} #{version} to #{destination}"
-      archive = BaseArtifact.pull(group_id, artifact_id, packaging, version, destination, @config['nexus'], @config['nexus']['ssl_verify'])
-
-      Utils.unpack_tgz(archive[:file_path], destination)
-      FileUtils.rm archive[:file_path]
+      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @nexus_config, @nexus_ssl_verify)
 
       # The special JRuby bundle needs to be called jruby.jar
+      # TODO .first - code smell
       File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+
+      info
     end
 
     def install_kaui
-      version = @kaui_config['version'] || LATEST_VERSION
+      group_id    = @kaui_config['group_id'] || KPM::BaseArtifact::KAUI_GROUP_ID
+      artifact_id = @kaui_config['artifact_id'] || KPM::BaseArtifact::KAUI_ARTIFACT_ID
+      packaging   = @kaui_config['packaging'] || KPM::BaseArtifact::KAUI_PACKAGING
+      classifier  = @kaui_config['classifier'] || KPM::BaseArtifact::KAUI_CLASSIFIER
+      version     = @kaui_config['version'] || LATEST_VERSION
       webapp_path = @kaui_config['webapp_path'] || KPM::root
 
-      webapp_dir = File.dirname(webapp_path)
-      FileUtils.mkdir_p(webapp_dir)
-
-      @logger.info "Installing Kaui #{version} to #{webapp_path}"
-      file = KauiArtifact.pull(version, webapp_dir, @kaui_config['nexus'], @kaui_config['nexus']['ssl_verify'])
-      FileUtils.mv file[:file_path], webapp_path
+      KPM::KauiArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, @nexus_config, @nexus_ssl_verify)
     end
   end
 end

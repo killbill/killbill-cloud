@@ -4,16 +4,14 @@ require 'set'
 module KPM
   class KauiArtifact < BaseArtifact
     class << self
-      KAUI_WAR = "org.kill-bill.billing.kaui:kaui-standalone:war"
-
-      def pull(version='LATEST', destination=nil, overrides={}, ssl_verify=true)
-        nexus_remote(overrides, ssl_verify).pull_artifact("#{KAUI_WAR}:#{version}", destination)
-      end
-
       def versions(overrides={}, ssl_verify=true)
-        response = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(KAUI_WAR)
-        versions = SortedSet.new
-        response.elements.each("search-results/data/artifact/version") { |element| versions << element.text }
+        coordinates = build_coordinates(KPM::BaseArtifact::KAUI_GROUP_ID,
+                                        KPM::BaseArtifact::KAUI_ARTIFACT_ID,
+                                        KPM::BaseArtifact::KAUI_PACKAGING,
+                                        KPM::BaseArtifact::KAUI_CLASSIFIER)
+        response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
+        versions    = SortedSet.new
+        response.elements.each('search-results/data/artifact/version') { |element| versions << element.text }
         versions
       end
     end
