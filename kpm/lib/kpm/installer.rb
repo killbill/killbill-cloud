@@ -21,7 +21,7 @@ module KPM
         @logger = logger
       end
 
-      @nexus_config     = @config['nexus']
+      @nexus_config     = !@config.nil? ? @config['nexus'] : @kaui_config['nexus']
       @nexus_ssl_verify = !@nexus_config.nil? ? @nexus_config['ssl_verify'] : true
     end
 
