@@ -25,7 +25,7 @@ describe KPM::KillbillServerArtifact do
   it 'should be able to list versions' do
     versions = KPM::KillbillServerArtifact.versions(KPM::BaseArtifact::KILLBILL_ARTIFACT_ID).to_a
     versions.size.should >= 2
-    versions[0].should == '0.11.5'
-    versions[1].should == '0.11.6'
+    versions[0].should == '0.11.10'
+    versions[1].should == '0.11.11'
   end
 end
