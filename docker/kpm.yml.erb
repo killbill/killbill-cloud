@@ -1,0 +1,59 @@
+killbill:
+  group_id: <%= ENV['KILLBILL_GROUP_ID'] %>
+  artifact_id: <%= ENV['KILLBILL_ARTIFACT_ID'] %>
+  version: <%= ENV['KILLBILL_VERSION'] %>
+  default_bundles_version: <%= ENV['KILLBILL_DEFAULT_BUNDLES_VERSION'] %>
+  jvm: "-server -XX:PermSize=<%= ENV['KILLBILL_JVM_PERM_SIZE'] %> -XX:MaxPermSize=<%= ENV['KILLBILL_JVM_MAX_PERM_SIZE'] %> -Xms<%= ENV['KILLBILL_JVM_XMS'] %> -Xmx<%= ENV['KILLBILL_JVM_XMX'] %> -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=12345 -XX:+CMSClassUnloadingEnabled -XX:-OmitStackTraceInFastThrow -XX:+UseConcMarkSweepGC -Xloggc:/var/log/tomcat7/gc.log -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution"
+  nexus:
+    ssl_verify: false
+    url: https://oss.sonatype.org
+    repository: releases
+  plugins:
+  plugins_dir: "/var/lib/killbill/bundles"
+  properties:
+    com.sun.management.jmxremote: true
+    com.sun.management.jmxremote.authenticate: false
+    com.sun.management.jmxremote.port: 8000
+    com.sun.management.jmxremote.ssl: false
+    java.rmi.server.hostname: "$(hostname).$(hostname -d)"
+    java.security.egd: file:/dev/./urandom
+    jruby.compile.invokedynamic: false
+    logback.configurationFile: "/etc/killbill/logback.xml"
+    net.sf.ehcache.skipUpdateCheck: true
+    org.killbill.billing.osgi.bundles.jruby.conf.dir: "/etc/killbill"
+    org.killbill.billing.osgi.dao.url: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_URL'] %>
+    org.killbill.billing.osgi.dao.user: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_USER'] %>
+    org.killbill.billing.osgi.dao.password: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_PASSWORD'] %>
+    org.killbill.cache.config.location: file:///etc/killbill/ehcache.xml
+    org.killbill.dao.url: <%= ENV['KILLBILL_CONFIG_DAO_URL'] %>
+    org.killbill.dao.user: <%= ENV['KILLBILL_CONFIG_DAO_USER'] %>
+    org.killbill.dao.password: <%= ENV['KILLBILL_CONFIG_DAO_PASSWORD'] %>
+    org.killbill.dao.logLevel: INFO
+    org.killbill.jruby.context.scope: THREADSAFE
+    org.killbill.notificationq.analytics.historyTableName: analytics_notifications_history
+    org.killbill.notificationq.analytics.tableName: analytics_notifications
+    org.killbill.notificationq.main.claimed: 100
+    org.killbill.notificationq.main.sleep: 1000
+    org.killbill.osgi.bundle.install.dir: /var/lib/killbill/bundles
+    org.killbill.osgi.root.dir: /var/lib/killbill/felix-cache
+    org.killbill.payment.janitor.rate: 1m
+    org.killbill.payment.plugin.threads.nb: 250
+    org.killbill.payment.plugin.timeout: 30s
+    org.killbill.persistent.bus.external.claimed: 100
+    org.killbill.persistent.bus.external.inMemory: true
+    org.killbill.persistent.bus.external.inflight.claimed: 100
+    org.killbill.persistent.bus.external.nbThreads: 10
+    org.killbill.persistent.bus.external.queue.capacity: 30000
+    org.killbill.persistent.bus.external.sleep: 0
+    org.killbill.persistent.bus.external.sticky: true
+    org.killbill.persistent.bus.external.useInflightQ: true
+    org.killbill.persistent.bus.main.claimed: 100
+    org.killbill.persistent.bus.main.nbThreads: 10
+    org.killbill.persistent.bus.main.queue.capacity: 30000
+    org.killbill.persistent.bus.main.sleep: 0
+    org.killbill.persistent.bus.main.sticky: true
+    org.killbill.persistent.bus.main.useInflightQ: true
+    org.killbill.server.baseUrl: "http://localhost:8080"
+    org.killbill.server.properties: file:///etc/killbill/killbill.properties
+    org.killbill.server.test.mode: true
+  webapp_path: "/var/lib/tomcat7/webapps/ROOT.war"
