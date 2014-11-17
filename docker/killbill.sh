@@ -1,16 +1,16 @@
 set -a
 
-if ! [ -e /etc/killbill/killbill.properties ]; then
+if ! [ -e $KILLBILL_CONFIG/killbill.properties ]; then
   echo >&2 "Kill Bill properties file not found - creating now..."
-  /var/lib/jruby/bin/jruby <<-EORUBY
+  jruby <<-EORUBY
 require 'erb'
 require 'yaml'
 
-raw_kpm = File.new('/etc/killbill/kpm.yml.erb').read
+raw_kpm = File.new("#{ENV['KILLBILL_CONFIG']}/kpm.yml.erb").read
 parsed_kpm = ERB.new(raw_kpm).result
 properties = YAML.load(parsed_kpm)['killbill']['properties']
 
-File.open('/etc/killbill/killbill.properties', 'w') do |file|
+File.open("#{ENV['KILLBILL_CONFIG']}/killbill.properties", 'w') do |file|
   properties.each do |key, value|
     file.write("#{key}=#{value}\n")
   end
@@ -18,22 +18,22 @@ end
 EORUBY
 fi
 
-if ! [ -e /etc/killbill/kpm.yml ]; then
+if ! [ -e $KILLBILL_CONFIG/kpm.yml ]; then
   echo >&2 "Kill Bill kpm file not found - creating now..."
-  /var/lib/jruby/bin/jruby <<-EORUBY
+  jruby <<-EORUBY
 require 'erb'
 require 'yaml'
 
-raw_kpm = File.new('/etc/killbill/kpm.yml.erb').read
+raw_kpm = File.new("#{ENV['KILLBILL_CONFIG']}/kpm.yml.erb").read
 parsed_kpm = ERB.new(raw_kpm).result
 
-File.open('/etc/killbill/kpm.yml', 'w') do |file|
+File.open("#{ENV['KILLBILL_CONFIG']}/kpm.yml", 'w') do |file|
   file.write(parsed_kpm)
 end
 EORUBY
 
   echo >&2 "Starting Kill Bill installation..."
-  /var/lib/jruby/bin/jruby -S kpm install /etc/killbill/kpm.yml
+  jruby -S kpm install $KILLBILL_CONFIG/kpm.yml
 fi
 
 source "/etc/default/tomcat7"

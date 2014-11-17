@@ -9,7 +9,7 @@ killbill:
     url: https://oss.sonatype.org
     repository: releases
   plugins:
-  plugins_dir: "/var/lib/killbill/bundles"
+  plugins_dir: <%= ENV['KILLBILL_HOME'] %>/bundles
   properties:
     com.sun.management.jmxremote: true
     com.sun.management.jmxremote.authenticate: false
@@ -18,13 +18,13 @@ killbill:
     java.rmi.server.hostname: "$(hostname).$(hostname -d)"
     java.security.egd: file:/dev/./urandom
     jruby.compile.invokedynamic: false
-    logback.configurationFile: "/etc/killbill/logback.xml"
+    logback.configurationFile: <%= ENV['KILLBILL_CONFIG'] %>/logback.xml
     net.sf.ehcache.skipUpdateCheck: true
-    org.killbill.billing.osgi.bundles.jruby.conf.dir: "/etc/killbill"
+    org.killbill.billing.osgi.bundles.jruby.conf.dir: <%= ENV['KILLBILL_CONFIG'] %>
     org.killbill.billing.osgi.dao.url: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_URL'] %>
     org.killbill.billing.osgi.dao.user: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_USER'] %>
     org.killbill.billing.osgi.dao.password: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_PASSWORD'] %>
-    org.killbill.cache.config.location: file:///etc/killbill/ehcache.xml
+    org.killbill.cache.config.location: file://<%= ENV['KILLBILL_CONFIG'] %>/ehcache.xml
     org.killbill.dao.url: <%= ENV['KILLBILL_CONFIG_DAO_URL'] %>
     org.killbill.dao.user: <%= ENV['KILLBILL_CONFIG_DAO_USER'] %>
     org.killbill.dao.password: <%= ENV['KILLBILL_CONFIG_DAO_PASSWORD'] %>
@@ -34,8 +34,8 @@ killbill:
     org.killbill.notificationq.analytics.tableName: analytics_notifications
     org.killbill.notificationq.main.claimed: 100
     org.killbill.notificationq.main.sleep: 1000
-    org.killbill.osgi.bundle.install.dir: /var/lib/killbill/bundles
-    org.killbill.osgi.root.dir: /var/lib/killbill/felix-cache
+    org.killbill.osgi.bundle.install.dir: <%= ENV['KILLBILL_HOME'] %>/bundles
+    org.killbill.osgi.root.dir: <%= ENV['KILLBILL_HOME'] %>/felix-cache
     org.killbill.payment.janitor.rate: 1m
     org.killbill.payment.plugin.threads.nb: 250
     org.killbill.payment.plugin.timeout: 30s
@@ -53,7 +53,7 @@ killbill:
     org.killbill.persistent.bus.main.sleep: 0
     org.killbill.persistent.bus.main.sticky: true
     org.killbill.persistent.bus.main.useInflightQ: true
-    org.killbill.server.baseUrl: "http://localhost:8080"
-    org.killbill.server.properties: file:///etc/killbill/killbill.properties
+    org.killbill.server.baseUrl: http://localhost:8080
+    org.killbill.server.properties: file://<%= ENV['KILLBILL_CONFIG'] %>/killbill.properties
     org.killbill.server.test.mode: true
   webapp_path: "/var/lib/tomcat7/webapps/ROOT.war"
