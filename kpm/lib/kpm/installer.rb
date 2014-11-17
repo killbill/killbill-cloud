@@ -99,7 +99,7 @@ module KPM
       artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
       packaging   = 'tar.gz'
       classifier  = nil
-      version     = @config['version'] || LATEST_VERSION
+      version     = @config['default_bundles_version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
 
       info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @nexus_config, @nexus_ssl_verify)
