@@ -17,7 +17,7 @@ describe KPM::KillbillServerArtifact do
                                               KPM::BaseArtifact::KILLBILL_CLASSIFIER,
                                               'LATEST',
                                               dir)
-      info[:file_name].should == "killbill-profiles-killbill-#{info[:version]}-jar-with-dependencies.war"
+      info[:file_name].should == "killbill-profiles-killbill-#{info[:version]}.war"
       info[:size].should == File.size(info[:file_path])
     end
   end

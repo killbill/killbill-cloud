@@ -15,11 +15,11 @@ module KPM
 
     KILLBILL_ARTIFACT_ID = 'killbill-profiles-killbill'
     KILLBILL_PACKAGING   = 'war'
-    KILLBILL_CLASSIFIER  = 'jar-with-dependencies'
+    KILLBILL_CLASSIFIER  = nil
 
     KILLPAY_ARTIFACT_ID = 'killbill-profiles-killpay'
     KILLPAY_PACKAGING   = 'war'
-    KILLPAY_CLASSIFIER  = 'jar-with-dependencies'
+    KILLPAY_CLASSIFIER  = nil
 
     KILLBILL_JAVA_PLUGIN_GROUP_ID   = 'org.kill-bill.billing.plugin.java'
     KILLBILL_JAVA_PLUGIN_PACKAGING  = 'jar'
