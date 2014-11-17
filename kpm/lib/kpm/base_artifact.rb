@@ -46,8 +46,8 @@ module KPM
 
       def nexus_defaults
         {
-            url:        'https://repository.sonatype.org',
-            repository: 'central-proxy'
+            url:        'https://oss.sonatype.org',
+            repository: 'releases'
         }
       end
 

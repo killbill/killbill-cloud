@@ -14,8 +14,8 @@ killbill:
         version: 1.3.0
   nexus:
     ssl_verify: false
-    url: https://repository.sonatype.org
-    repository: central-proxy
+    url: https://oss.sonatype.org
+    repository: releases
     # You can use https://github.com/reidmorrison/symmetric-encryption for encryption
     #username: bob
     #password: bob
@@ -25,5 +25,5 @@ kaui:
   webapp_path: /var/tmp/tomcat/webapps/kaui
   nexus:
     ssl_verify: false
-    url: https://repository.sonatype.org
-    repository: central-proxy
+    url: https://oss.sonatype.org
+    repository: releases
