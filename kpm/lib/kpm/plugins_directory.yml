@@ -29,6 +29,6 @@
 :stripe:
   :type: :ruby
   :artifact_id: stripe-plugin
-  :stable_version: 0.2.0
+  :stable_version: 0.2.1
   :require:
   - :api_secret_key
