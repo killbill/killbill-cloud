@@ -1,4 +1,4 @@
-require 'net/http'
+require 'open-uri'
 require 'yaml'
 
 module KPM
@@ -6,8 +6,7 @@ module KPM
     def self.all(latest=false)
       if latest
         # Look at GitHub (source of truth)
-        uri = URI('https://raw.githubusercontent.com/killbill/killbill-cloud/master/kpm/lib/kpm/plugins_directory.yml')
-        source = Net::HTTP.get(uri)
+        source = URI.parse('https://raw.githubusercontent.com/killbill/killbill-cloud/master/kpm/lib/kpm/plugins_directory.yml').read
         YAML.load(source)
       else
         source = File.join(File.expand_path(File.dirname(__FILE__)), 'plugins_directory.yml')
