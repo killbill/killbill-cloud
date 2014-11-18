@@ -61,7 +61,7 @@ plugin_configurations.each do |key, value|
   matches = yml_kpm['killbill']['plugins'][type.to_s].select { |p| p['artifact_id'] == artifact_id || p['name'] == artifact_id }
   next unless matches.empty?
 
-  yml_kpm['killbill']['plugins'][type.to_s] << [{'group_id' => group_id, 'artifact_id' => artifact_id, 'packaging' => packaging, 'classifier' => classifier, 'version' => version}]
+  yml_kpm['killbill']['plugins'][type.to_s] << {'group_id' => group_id, 'artifact_id' => artifact_id, 'packaging' => packaging, 'classifier' => classifier, 'version' => version}
 end
 final_kpm = yml_kpm.to_yaml
 
