@@ -7,6 +7,7 @@ module KPM
   autoload :Installer, 'kpm/installer'
   autoload :Tasks, 'kpm/tasks'
   autoload :Cli, 'kpm/cli'
+  autoload :PluginsDirectory, 'kpm/plugins_directory'
 
   class << self
     def root

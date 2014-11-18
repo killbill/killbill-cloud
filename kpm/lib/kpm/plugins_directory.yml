@@ -1,0 +1,34 @@
+---
+:bitpay:
+  :type: :ruby
+  :artifact_id: bitpay-plugin
+  :stable_version: 0.0.1
+:coinbase:
+  :type: :ruby
+  :artifact_id: coinbase-plugin
+  :stable_version: 0.0.1
+:cybersource:
+  :type: :ruby
+  :artifact_id: cybersource-plugin
+  :stable_version: 0.0.4
+  :require:
+  - :login
+  - :password
+:litle:
+  :type: :ruby
+  :artifact_id: litle-plugin
+  :stable_version: 1.10.0
+:paypal:
+  :type: :ruby
+  :artifact_id: paypal-express-plugin
+  :stable_version: 1.7.1
+  :require:
+  - :signature
+  - :login
+  - :password
+:stripe:
+  :type: :ruby
+  :artifact_id: stripe-plugin
+  :stable_version: 0.2.0
+  :require:
+  - :api_secret_key
