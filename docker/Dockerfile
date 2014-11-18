@@ -43,6 +43,14 @@ ENV PATH /var/lib/jruby/bin:$PATH
 RUN gem install kpm
 
 # Configure Tomcat
+RUN mkdir -p /usr/share/tomcat7/common/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/common/classes
+RUN mkdir -p /usr/share/tomcat7/common && chown -R tomcat7:tomcat7 /usr/share/tomcat7/common
+RUN mkdir -p /usr/share/tomcat7/server/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/server/classes
+RUN mkdir -p /usr/share/tomcat7/server && chown -R tomcat7:tomcat7 /usr/share/tomcat7/server
+RUN mkdir -p /usr/share/tomcat7/shared/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/shared/classes
+RUN mkdir -p /usr/share/tomcat7/shared && chown -R tomcat7:tomcat7 /usr/share/tomcat7/shared
+RUN mkdir -p /tmp/tomcat7-tomcat7-tmp && chown -R tomcat7:tomcat7 /tmp/tomcat7-tomcat7-tmp
+RUN chmod g+w /etc/tomcat7/catalina.properties
 RUN rm -rf $TOMCAT_HOME/webapps/*
 COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
 
@@ -54,6 +62,7 @@ COPY ./kpm.yml.erb $KILLBILL_CONFIG/kpm.yml.erb
 COPY ./logback.xml $KILLBILL_CONFIG/logback.xml
 COPY ./killbill.sh /etc/init.d/killbill.sh
 RUN chmod +x /etc/init.d/killbill.sh
+ADD http://killbill.io/wp-content/uploads/2014/11/killbill-$KILLBILL_VERSION.ddl $KILLBILL_CONFIG/ddl.sql
 
 # Export config and plugins directory
 VOLUME $KILLBILL_CONFIG $KILLBILL_HOME
@@ -63,4 +72,4 @@ WORKDIR $TOMCAT_HOME
 
 EXPOSE 8080
 
-CMD ["/etc/init.d/killbill.sh"]
+CMD ["/etc/init.d/killbill.sh", "run"]
