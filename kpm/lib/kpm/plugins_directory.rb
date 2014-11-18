@@ -8,10 +8,11 @@ module KPM
         # Look at GitHub (source of truth)
         uri = URI('https://raw.githubusercontent.com/killbill/killbill-cloud/master/kpm/lib/kpm/plugins_directory.yml')
         source = Net::HTTP.get(uri)
+        YAML.load(source)
       else
         source = File.join(File.expand_path(File.dirname(__FILE__)), 'plugins_directory.yml')
+        YAML.load_file(source)
       end
-      YAML.load_file(source)
     end
 
     def self.lookup(plugin_name, latest=false)
