@@ -8,7 +8,7 @@ kpm can be used interactively to search and download individual artifacts (Kill 
 Installation
 ------------
 
-   gem install kpm
+    gem install kpm
 
 Ruby 2.1+ or JRuby 1.7.11+ is recommended.
 
@@ -39,10 +39,12 @@ This instructs kpm to:
 
 To start the installation:
 
-   kpm install kpm.yml
+    kpm install kpm.yml
 
 To help you with discovery of plugins, you can run
 
-   kpm search_for_plugins
+    kpm search_for_plugins
 
 This will list available (official) plugins. We maintain a list of recommended versions to use at https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml.
+
+There are more advanced commands and options available, just run `kpm --help` for details.
