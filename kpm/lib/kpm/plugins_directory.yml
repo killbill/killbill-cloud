@@ -21,7 +21,7 @@
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
-  :stable_version: 1.8.0
+  :stable_version: 1.8.1
   :require:
   - :signature
   - :login
