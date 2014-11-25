@@ -46,7 +46,11 @@ module KPM
       version     = @config['version'] || LATEST_VERSION
       webapp_path = @config['webapp_path'] || KPM::root
 
-      KPM::KillbillServerArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, @nexus_config, @nexus_ssl_verify)
+      begin
+        KPM::KillbillServerArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, @nexus_config, @nexus_ssl_verify)
+      rescue KPM::ArtifactAlreadyExistsException
+        @logger.info "Skip install for killbill server, already exists under #{webapp_path}"
+      end
     end
 
     def install_plugins

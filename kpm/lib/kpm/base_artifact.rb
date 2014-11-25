@@ -10,6 +10,12 @@ module KPM
     end
   end
 
+  class ArtifactAlreadyExistsException < IOError
+    def message
+      'Artifact already exists locally'
+    end
+  end
+
   class BaseArtifact
     KILLBILL_GROUP_ID = 'org.kill-bill.billing'
 
@@ -64,12 +70,18 @@ module KPM
         end
         FileUtils.mkdir_p(destination_dir)
 
+        # Retrieve sha1 first
+        artifact_info = artifact_info(logger, coordinates, overrides, ssl_verify)
+
+        # Check if already exists
+        raise ArtifactAlreadyExistsException.new if skip_if_exists(artifact_info[:sha1], artifact_info[:repository_path], destination_path)
+
         # Download the artifact in a temporary directory in case of failures
         info = {}
         Dir.mktmpdir do |tmp_destination_dir|
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
-          info   = pull_and_verify(logger, coordinates, tmp_destination_dir, overrides, ssl_verify)
+          info   = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, overrides, ssl_verify)
 
           # Move the file to the final destination, unpacking if necessary
           is_tgz = info[:file_path].end_with?('.tar.gz') || info[:file_path].end_with?('.tgz')
@@ -100,24 +112,55 @@ module KPM
         info
       end
 
-      def pull_and_verify(logger, coordinates, destination_dir, overrides={}, ssl_verify=true)
+      def skip_if_exists(remote_sha1, remote_path, destination_path)
+        # If we could not get sha1, we assume we don't skip and download again
+        return false if remote_sha1.nil?
+
+        if File.directory?(destination_path) && remote_path
+          destination = File.join(File.expand_path(destination_path), File.basename(remote_path))
+        else
+          destination = destination_path
+        end
+
+        return false if ! File.exists?(destination)
+
+        local_sha1 = Digest::SHA1.file(destination).hexdigest
+        local_sha1 == remote_sha1
+      end
+
+
+      def artifact_info(logger, coordinates, overrides={}, ssl_verify=true)
+        artifact_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
+        if artifact_info.nil?
+          logger.warn("Unable to retrieve artifact info for #{coordinates}")
+          nil
+        else
+          xml = REXML::Document.new(artifact_info)
+          repository_path =  xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
+          sha1 =  xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
+          {
+            :sha1 => sha1,
+            :repository_path => repository_path
+          }
+        end
+      end
+
+
+      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, overrides={}, ssl_verify=true)
         info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)
-        raise ArtifactCorruptedException unless verify(logger, coordinates, info[:file_path], overrides, ssl_verify)
+        raise ArtifactCorruptedException unless verify(logger, info[:file_path], remote_sha1)
         info
       end
 
-      def verify(logger, coordinates, file_path, overrides={}, ssl_verify=true)
-        artifact_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
-        sha1_element  = REXML::Document.new(artifact_info).elements['//sha1']
+      def verify(logger, file_path, remote_sha1)
         # Can't check :(
-        if sha1_element.nil?
-          logger.warn("Unable to find sha1 in Nexus repo for #{coordinates}. Artifact info: #{artifact_info.inspect}")
+        if remote_sha1.nil?
+          logger.warn("Unable to verify sha1 for #{coordinates}. Artifact info: #{artifact_info.inspect}")
           return true
         end
 
         local_sha1 = Digest::SHA1.file(file_path).hexdigest
-        sha1       = sha1_element.text
-        local_sha1 == sha1
+        local_sha1 == remote_sha1
       end
 
       def build_coordinates(group_id, artifact_id, packaging, classifier, version=nil)
