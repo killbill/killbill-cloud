@@ -35,9 +35,9 @@ module KPM
     KAUI_CLASSIFIER  = nil
 
     class << self
-      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, overrides={}, ssl_verify=true)
+      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, overrides={}, ssl_verify=true)
         coordinates = build_coordinates(group_id, artifact_id, packaging, classifier, version)
-        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), overrides, ssl_verify)
+        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, overrides, ssl_verify)
       end
 
       def nexus_remote(overrides={}, ssl_verify=true)
@@ -53,7 +53,7 @@ module KPM
 
       protected
 
-      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, overrides={}, ssl_verify=true)
         destination_path = KPM::root if destination_path.nil?
 
         # Create the destination directory
@@ -66,7 +66,7 @@ module KPM
 
         # Build artifact info
         artifact_info = artifact_info(coordinates, destination_path, overrides, ssl_verify)
-        if skip_if_exists(artifact_info)
+        if skip_if_exists(artifact_info, coordinates, sha1_file)
           logger.info "Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
           artifact_info[:skipped] = true
           return artifact_info
@@ -76,7 +76,7 @@ module KPM
         Dir.mktmpdir do |tmp_destination_dir|
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
-          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, overrides, ssl_verify)
+          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, overrides, ssl_verify)
           if artifact_info[:is_tgz]
             Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
@@ -89,14 +89,25 @@ module KPM
         artifact_info
       end
 
-      def skip_if_exists(artifact_info)
+      def skip_if_exists(artifact_info, coordinates, sha1_file)
 
-        if artifact_info[:sha1].nil? ||
-            ! File.exists?(artifact_info[:file_path]) ||
+        # Unclear if this is even possible
+        return false if artifact_info[:sha1].nil?
+
+        # Check entry in sha1_file if exists
+        if sha1_file && File.exists?(sha1_file)
+          sha1_checker = Sha1Checker.from_file(sha1_file)
+          local_sha1 = sha1_checker.sha1(coordinates)
+          return true if local_sha1 == artifact_info[:sha1]
+        end
+
+        # If not using sha1_file mechanism, exit early if file_path odes not exist or is a directory
+        if !File.exists?(artifact_info[:file_path]) ||
             File.directory?(artifact_info[:file_path])
           return false
         end
 
+        # Finally check if remote_sha1 matches what we have locally
         local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
         local_sha1 == artifact_info[:sha1]
       end
@@ -129,9 +140,15 @@ module KPM
       end
 
 
-      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, overrides={}, ssl_verify=true)
+      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, overrides={}, ssl_verify=true)
         info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)
         raise ArtifactCorruptedException unless verify(logger, info[:file_path], remote_sha1)
+
+        if sha1_file
+          sha1_checker = Sha1Checker.from_file(sha1_file)
+          sha1_checker.add_entry(coordinates, remote_sha1)
+        end
+
         info
       end
 

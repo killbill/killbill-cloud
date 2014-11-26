@@ -36,6 +36,7 @@ module KPM
                                                  KillbillServerArtifact::KILLBILL_CLASSIFIER,
                                                  version,
                                                  options[:destination],
+                                                 nil,
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -63,6 +64,7 @@ module KPM
                                                  KillbillServerArtifact::KILLPAY_CLASSIFIER,
                                                  version,
                                                  options[:destination],
+                                                 nil,
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -90,6 +92,7 @@ module KPM
                                                  KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
                                                  version,
                                                  options[:destination],
+                                                 nil,
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -108,6 +111,7 @@ module KPM
                                                  KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
                                                  version,
                                                  options[:destination],
+                                                 nil,
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -141,6 +145,7 @@ module KPM
                                        KauiArtifact::KAUI_CLASSIFIER,
                                        version,
                                        options[:destination],
+                                       nil,
                                        options[:overrides],
                                        options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
