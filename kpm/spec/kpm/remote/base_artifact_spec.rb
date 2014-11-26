@@ -10,10 +10,14 @@ describe KPM::BaseArtifact do
   it 'should be able to download and verify regular artifacts' do
     Dir.mktmpdir do |dir|
       test_download dir, 'foo-oss.pom.xml'
+      # Verify we skip the second time
+      test_download dir, 'foo-oss.pom.xml', true
     end
 
     Dir.mktmpdir do |dir|
-      test_download dir
+      test_download dir, nil
+      # Verify we skip the second time
+      test_download dir, nil, true
     end
   end
 
@@ -57,10 +61,14 @@ describe KPM::BaseArtifact do
     end
   end
 
-  def test_download(dir, filename=nil)
+
+  def test_download(dir, filename=nil, skipped=false)
     path = filename.nil? ? dir : dir + '/' + filename
     info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path)
     info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
-    info[:size].should == File.size(info[:file_path])
+    info[:skipped].should == skipped
+    if !info[:skipped]
+      info[:size].should == File.size(info[:file_path])
+    end
   end
 end

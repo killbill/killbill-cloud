@@ -10,12 +10,6 @@ module KPM
     end
   end
 
-  class ArtifactAlreadyExistsException < IOError
-    def message
-      'Artifact already exists locally'
-    end
-  end
-
   class BaseArtifact
     KILLBILL_GROUP_ID = 'org.kill-bill.billing'
 
@@ -70,79 +64,68 @@ module KPM
         end
         FileUtils.mkdir_p(destination_dir)
 
-        # Retrieve sha1 first
-        artifact_info = artifact_info(logger, coordinates, overrides, ssl_verify)
-
-        # Check if already exists
-        raise ArtifactAlreadyExistsException.new if skip_if_exists(artifact_info[:sha1], artifact_info[:repository_path], destination_path)
+        # Build artifact info
+        artifact_info = artifact_info(coordinates, destination_path, overrides, ssl_verify)
+        if skip_if_exists(artifact_info)
+          logger.info "Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
+          artifact_info[:skipped] = true
+          return artifact_info
+        end
 
         # Download the artifact in a temporary directory in case of failures
-        info = {}
         Dir.mktmpdir do |tmp_destination_dir|
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
-          info   = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, overrides, ssl_verify)
-
-          # Move the file to the final destination, unpacking if necessary
-          is_tgz = info[:file_path].end_with?('.tar.gz') || info[:file_path].end_with?('.tgz')
-          if is_tgz
-            Utils.unpack_tgz(info[:file_path], destination_path, skip_top_dir)
-            FileUtils.rm info[:file_path]
+          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, overrides, ssl_verify)
+          if artifact_info[:is_tgz]
+            Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
+            FileUtils.rm downloaded_artifact_info[:file_path]
           else
-            FileUtils.mv info[:file_path], destination_path
+            FileUtils.mv downloaded_artifact_info[:file_path], destination_path
+            artifact_info[:size] = downloaded_artifact_info[:size]
           end
-
-          # Update the info hash with the real destination
-          if File.directory?(destination_path) && !is_tgz
-            destination = File.join(File.expand_path(destination_path), info[:file_name])
-          else
-            destination = destination_path
-          end
-          info[:file_path] = File.expand_path(destination)
-
-          if is_tgz
-            info[:file_name] = nil
-            info[:size]      = nil
-          else
-            info[:file_name] = File.basename(destination)
-          end
-
-          logger.info "Successful installation of #{coordinates} to #{info[:file_path]}"
+          logger.info "Successful installation of #{coordinates} to #{artifact_info[:file_path]}"
         end
-        info
+        artifact_info
       end
 
-      def skip_if_exists(remote_sha1, remote_path, destination_path)
-        # If we could not get sha1, we assume we don't skip and download again
-        return false if remote_sha1.nil?
+      def skip_if_exists(artifact_info)
 
-        if File.directory?(destination_path) && remote_path
-          destination = File.join(File.expand_path(destination_path), File.basename(remote_path))
+        if artifact_info[:sha1].nil? ||
+            ! File.exists?(artifact_info[:file_path]) ||
+            File.directory?(artifact_info[:file_path])
+          return false
+        end
+
+        local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
+        local_sha1 == artifact_info[:sha1]
+      end
+
+
+      def artifact_info(coordinates, destination_path, overrides={}, ssl_verify=true)
+
+        info = {}
+        nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
+
+        xml = REXML::Document.new(nexus_info)
+        repository_path = xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
+        sha1 = xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
+        version = xml.elements['//version'].text unless xml.elements['//version'].nil?
+
+        info[:sha1] = sha1
+        info[:version] = version
+        info[:is_tgz] = repository_path.end_with?('.tar.gz') || repository_path.end_with?('.tgz')
+        if File.directory?(destination_path) && !info[:is_tgz]
+          destination = File.join(File.expand_path(destination_path), File.basename(repository_path))
+          info[:file_name] = File.basename(repository_path)
         else
+          # The destination was a fully specified path or this is an archive and we keep the directory
           destination = destination_path
+          info[:file_name] = File.basename(destination_path) if !info[:is_tgz]
         end
-
-        return false if ! File.exists?(destination)
-
-        local_sha1 = Digest::SHA1.file(destination).hexdigest
-        local_sha1 == remote_sha1
-      end
-
-
-      def artifact_info(logger, coordinates, overrides={}, ssl_verify=true)
-        artifact_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
-        if artifact_info.nil?
-          logger.warn("Unable to retrieve artifact info for #{coordinates}")
-          nil
-        else
-          xml = REXML::Document.new(artifact_info)
-          repository_path =  xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
-          sha1 =  xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
-          {
-            :sha1 => sha1,
-            :repository_path => repository_path
-          }
-        end
+        info[:file_path] = File.expand_path(destination)
+        info[:skipped] = false
+        info
       end
 
 
