@@ -18,15 +18,24 @@ module KPM
                      :default => true,
                      :desc    => 'Set to false to disable SSL Verification.'
 
+
         desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
         def install(config_file)
-          Installer.from_file(config_file).install
+          Installer.from_file(config_file).install(options[:force_download])
         end
 
         method_option :destination,
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
         desc 'pull_kb_server_war version', 'Pulls Kill Bill server war from Sonatype and places it on your machine.'
         def pull_kb_server_war(version='LATEST')
           response = KillbillServerArtifact.pull(logger,
@@ -37,6 +46,7 @@ module KPM
                                                  version,
                                                  options[:destination],
                                                  nil,
+                                                 options[:force_download],
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -55,6 +65,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
         desc 'pull_kp_server_war version', 'Pulls Kill Pay server war from Sonatype and places it on your machine.'
         def pull_kp_server_war(version='LATEST')
           response = KillbillServerArtifact.pull(logger,
@@ -65,6 +79,7 @@ module KPM
                                                  version,
                                                  options[:destination],
                                                  nil,
+                                                 options[:force_download],
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -83,6 +98,14 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
+        method_option :sha1_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Location of the sha1 file'
         desc 'pull_java_plugin artifact_id', 'Pulls a java plugin from Sonatype and places it on your machine.'
         def pull_java_plugin(artifact_id, version='LATEST')
           response = KillbillPluginArtifact.pull(logger,
@@ -92,7 +115,8 @@ module KPM
                                                  KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
                                                  version,
                                                  options[:destination],
-                                                 nil,
+                                                 options[:sha1_file],
+                                                 options[:force_download],
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -102,6 +126,14 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
+        method_option :sha1_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Location of the sha1 file'
         desc 'pull_ruby_plugin artifact_id', 'Pulls a ruby plugin from Sonatype and places it on your machine.'
         def pull_ruby_plugin(artifact_id, version='LATEST')
           response = KillbillPluginArtifact.pull(logger,
@@ -111,7 +143,8 @@ module KPM
                                                  KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
                                                  version,
                                                  options[:destination],
-                                                 nil,
+                                                 options[:sha1_file],
+                                                 options[:force_download],
                                                  options[:overrides],
                                                  options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -136,6 +169,14 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
+        method_option :sha1_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Location of the sha1 file'
         desc 'pull_kaui_war version', 'Pulls Kaui war from Sonatype and places it on your machine.'
         def pull_kaui_war(version='LATEST')
           response = KauiArtifact.pull(logger,
@@ -145,7 +186,8 @@ module KPM
                                        KauiArtifact::KAUI_CLASSIFIER,
                                        version,
                                        options[:destination],
-                                       nil,
+                                       options[:sha1_file],
+                                       options[:force_download],
                                        options[:overrides],
                                        options[:ssl_verify])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green

@@ -12,16 +12,22 @@ describe KPM::BaseArtifact do
       test_download dir, 'foo-oss.pom.xml'
       # Verify we skip the second time
       test_download dir, 'foo-oss.pom.xml', true
+      # Verify the download happens when we set force_download
+      test_download dir, 'foo-oss.pom.xml', false, true
     end
 
     Dir.mktmpdir do |dir|
       test_download dir, nil
       # Verify we skip the second time
       test_download dir, nil, true
+      # Verify the download happens when we set force_download
+      test_download dir, nil, false, true
     end
+
+
   end
 
-  # This test makes sure the top level directory is correctly skipped
+  # This test makes sure the top level directory is correctly verify_is_skipped
   it 'should be able to download and verify .tar.gz ruby artifacts' do
     # Use the payment-test-plugin as a test, as it is fairly small (2.5M)
     group_id    = 'org.kill-bill.billing.plugin.ruby'
@@ -62,11 +68,11 @@ describe KPM::BaseArtifact do
   end
 
 
-  def test_download(dir, filename=nil, skipped=false)
+  def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false)
     path = filename.nil? ? dir : dir + '/' + filename
-    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path)
+    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, nil, force_download, {}, true)
     info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
-    info[:skipped].should == skipped
+    info[:skipped].should == verify_is_skipped
     if !info[:skipped]
       info[:size].should == File.size(info[:file_path])
     end

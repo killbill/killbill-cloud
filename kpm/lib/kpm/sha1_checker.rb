@@ -24,7 +24,7 @@ module KPM
       @sha1_config['sha1'][coordinates]
     end
 
-    def add_entry(coordinates, sha1)
+    def add_or_modify_entry!(coordinates, sha1)
       @sha1_config['sha1'][coordinates] = sha1
       save!
     end

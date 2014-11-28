@@ -35,9 +35,9 @@ module KPM
     KAUI_CLASSIFIER  = nil
 
     class << self
-      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, overrides={}, ssl_verify=true)
+      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false,  overrides={}, ssl_verify=true)
         coordinates = build_coordinates(group_id, artifact_id, packaging, classifier, version)
-        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, overrides, ssl_verify)
+        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, overrides, ssl_verify)
       end
 
       def nexus_remote(overrides={}, ssl_verify=true)
@@ -53,7 +53,7 @@ module KPM
 
       protected
 
-      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, overrides={}, ssl_verify=true)
         destination_path = KPM::root if destination_path.nil?
 
         # Create the destination directory
@@ -66,7 +66,7 @@ module KPM
 
         # Build artifact info
         artifact_info = artifact_info(coordinates, destination_path, overrides, ssl_verify)
-        if skip_if_exists(artifact_info, coordinates, sha1_file)
+        if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
           logger.info "Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
           artifact_info[:skipped] = true
           return artifact_info
@@ -146,7 +146,7 @@ module KPM
 
         if sha1_file
           sha1_checker = Sha1Checker.from_file(sha1_file)
-          sha1_checker.add_entry(coordinates, remote_sha1)
+          sha1_checker.add_or_modify_entry!(coordinates, remote_sha1)
         end
 
         info

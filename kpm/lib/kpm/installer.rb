@@ -4,6 +4,7 @@ require 'yaml'
 module KPM
   class Installer
     LATEST_VERSION = 'LATEST'
+    SHA1_FILENAME = 'sha1.yml'
 
     def self.from_file(config_path, logger=nil)
       Installer.new(YAML::load_file(config_path), logger)
@@ -25,7 +26,7 @@ module KPM
       @nexus_ssl_verify = !@nexus_config.nil? ? @nexus_config['ssl_verify'] : true
     end
 
-    def install
+    def install(force_download=false)
       unless @config.nil?
         install_killbill_server
         install_plugins
@@ -34,6 +35,7 @@ module KPM
       unless @kaui_config.nil?
         install_kaui
       end
+      @force_download = force_download
     end
 
     private
@@ -46,7 +48,7 @@ module KPM
       version     = @config['version'] || LATEST_VERSION
       webapp_path = @config['webapp_path'] || KPM::root
 
-      KPM::KillbillServerArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, nil, @nexus_config, @nexus_ssl_verify)
+      KPM::KillbillServerArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, nil, @force_download, @nexus_config, @nexus_ssl_verify)
     end
 
     def install_plugins
@@ -66,8 +68,9 @@ module KPM
         classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
         version     = plugin['version'] || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/java/#{artifact_id}/#{version}"
+        sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
-        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, "#{bundles_dir}/sha.yml", @nexus_config, @nexus_ssl_verify)
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
       end
 
       infos
@@ -84,8 +87,9 @@ module KPM
         classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
         version     = plugin['version'] || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/ruby"
+        sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
-        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, "#{bundles_dir}/sha.yml", @nexus_config, @nexus_ssl_verify)
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
       end
 
       infos
@@ -101,7 +105,7 @@ module KPM
       version     = @config['default_bundles_version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
 
-      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, nil, @nexus_config, @nexus_ssl_verify)
+      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, nil, @force_download, @nexus_config, @nexus_ssl_verify)
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
@@ -118,7 +122,7 @@ module KPM
       version     = @kaui_config['version'] || LATEST_VERSION
       webapp_path = @kaui_config['webapp_path'] || KPM::root
 
-      KPM::KauiArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, nil, @nexus_config, @nexus_ssl_verify)
+      KPM::KauiArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, webapp_path, nil, @force_download, @nexus_config, @nexus_ssl_verify)
     end
   end
 end
