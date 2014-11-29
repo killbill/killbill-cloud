@@ -104,12 +104,16 @@ module KPM
       classifier  = nil
       version     = @config['default_bundles_version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
+      bundles_dir = @config['plugins_dir']
+      sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
-      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, nil, @force_download, @nexus_config, @nexus_ssl_verify)
+      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
-      File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+      if  !info[:skipped]
+        File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+      end
 
       info
     end
