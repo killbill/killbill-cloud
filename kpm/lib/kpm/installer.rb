@@ -27,6 +27,7 @@ module KPM
     end
 
     def install(force_download=false)
+      @force_download = force_download
       unless @config.nil?
         install_killbill_server
         install_plugins
@@ -35,7 +36,6 @@ module KPM
       unless @kaui_config.nil?
         install_kaui
       end
-      @force_download = force_download
     end
 
     private
