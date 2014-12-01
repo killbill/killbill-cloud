@@ -18,13 +18,15 @@ all: build
 
 build:
 	@echo "Building image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) $(VERSION)
+	$(DOCKER_TEMPLATE) -v $(VERSION) -i
 	$(DOCKER) build -t $(IMAGE) $(TEMPLATE)
+	$(DOCKER_TEMPLATE) -c
 
 rebuild:
 	@echo "Rebuilding image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) $(VERSION)
+	$(DOCKER_TEMPLATE) -v $(VERSION) -i
 	$(DOCKER) build --no-cache -t $(IMAGE) $(TEMPLATE)
+	$(DOCKER_TEMPLATE) -c
 
 run:
 	@echo "Running image $(IMAGE)"
