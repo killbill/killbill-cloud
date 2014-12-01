@@ -28,6 +28,9 @@ module KPM
 
     def install(force_download=false)
       @force_download = force_download
+      @bundles_dir = @config['plugins_dir']
+      @sha1_file = "#{@bundles_dir}/#{SHA1_FILENAME}"
+
       unless @config.nil?
         install_killbill_server
         install_plugins
@@ -52,12 +55,11 @@ module KPM
     end
 
     def install_plugins
-      bundles_dir = @config['plugins_dir']
-      install_java_plugins(bundles_dir)
-      install_ruby_plugins(bundles_dir)
+      install_java_plugins
+      install_ruby_plugins
     end
 
-    def install_java_plugins(bundles_dir)
+    def install_java_plugins
       return if @config['plugins'].nil? or @config['plugins']['java'].nil?
 
       infos = []
@@ -67,16 +69,15 @@ module KPM
         packaging   = plugin['packaging'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
         classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
         version     = plugin['version'] || LATEST_VERSION
-        destination = "#{bundles_dir}/plugins/java/#{artifact_id}/#{version}"
-        sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+        destination = "#{@bundles_dir}/plugins/java/#{artifact_id}/#{version}"
 
-        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
       end
 
       infos
     end
 
-    def install_ruby_plugins(bundles_dir)
+    def install_ruby_plugins
       return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
 
       infos = []
@@ -86,10 +87,9 @@ module KPM
         packaging   = plugin['packaging'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
         classifier  = plugin['classifier'] || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
         version     = plugin['version'] || LATEST_VERSION
-        destination = "#{bundles_dir}/plugins/ruby"
-        sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+        destination = "#{@bundles_dir}/plugins/ruby"
 
-        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
+        infos << KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
       end
 
       infos
@@ -104,10 +104,8 @@ module KPM
       classifier  = nil
       version     = @config['default_bundles_version'] || LATEST_VERSION
       destination = "#{@config['plugins_dir']}/platform"
-      bundles_dir = @config['plugins_dir']
-      sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
-      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
+      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, destination, @sha1_file, @force_download, @nexus_config, @nexus_ssl_verify)
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
