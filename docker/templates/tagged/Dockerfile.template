@@ -1,0 +1,9 @@
+FROM killbill/killbill
+MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+
+# VERSION will be expanded in Makefile
+ENV KILLBILL_VERSION __VERSION__
+
+# Install Kill Bill
+RUN kpm pull_kb_server_war --destination=/var/lib/tomcat7/webapps/ROOT.war  $KILLBILL_VERSION
+

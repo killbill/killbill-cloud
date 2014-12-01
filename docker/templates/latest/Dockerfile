@@ -9,7 +9,6 @@ ENV KILLBILL_CONFIG /etc/killbill
 
 ENV KILLBILL_GROUP_ID org.kill-bill.billing
 ENV KILLBILL_ARTIFACT_ID killbill-profiles-killbill
-ENV KILLBILL_VERSION 0.12.1
 ENV KILLBILL_DEFAULT_BUNDLES_VERSION 0.1.1
 
 ENV KILLBILL_JVM_PERM_SIZE 512m
@@ -63,7 +62,13 @@ COPY ./kpm.yml.erb $KILLBILL_CONFIG/kpm.yml.erb
 COPY ./logback.xml $KILLBILL_CONFIG/logback.xml
 COPY ./killbill.sh /etc/init.d/killbill.sh
 RUN chmod +x /etc/init.d/killbill.sh
-ADD http://killbill.io/wp-content/uploads/2014/11/killbill-$KILLBILL_VERSION.ddl $KILLBILL_CONFIG/ddl.sql
+# Note we assume schema is stable for 0.12.0 release
+ADD http://killbill.io/wp-content/uploads/2014/11/killbill-0.12.0.ddl $KILLBILL_CONFIG/ddl.sql
+
+# Add admin user with sudo access
+RUN useradd admin && echo "admin:admin" | chpasswd && adduser admin sudo
+RUN mkdir -p /home/admin && chown -R admin:admin /home/admin
+
 
 # Export config and plugins directory
 VOLUME $KILLBILL_CONFIG $KILLBILL_HOME
