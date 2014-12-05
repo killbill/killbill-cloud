@@ -64,7 +64,7 @@ COPY ./killbill.sh /etc/init.d/killbill.sh
 RUN chmod +x /etc/init.d/killbill.sh
 
 # Add admin user with sudo access
-RUN useradd -d /home/admin -G sudo && echo "admin:admin" | chpasswd
+RUN useradd -d /home/admin -G sudo admin && echo "admin:admin" | chpasswd
 
 # Export config and plugins directory
 VOLUME $KILLBILL_CONFIG $KILLBILL_HOME
