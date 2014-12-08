@@ -55,7 +55,7 @@ KPM relies on the kpm.yml file to know what to install, and as it installs the p
 
 Note that you can override that behavior with the `--force-download` switch.
 
-### Specify Downloads
+### Custom Downloads
 
 Note that you can also download specific versions/artifacts directly with the followinhg commands -- bypassing the kpm.yml file:
 * `kpm pull_kaui_war <version>`
