@@ -1,19 +1,16 @@
-KPM: the Kill Bill Package Manager
-==================================
+# KPM: the Kill Bill Package Manager
 
 The goal of KPM is to facilitate the installation of Kill Bill and its plugins.
 
 kpm can be used interactively to search and download individual artifacts (Kill Bill war, plugins, etc.) or to perform an automatic Kill Bill installation using a configuration file.
 
-Installation
-------------
+## Installation
 
     gem install kpm
 
 Ruby 2.1+ or JRuby 1.7.11+ is recommended.
 
-Quick start
------------
+## Quick start
 
 Create a kpm.yml file as follows:
 
@@ -47,4 +44,23 @@ To help you with discovery of plugins, you can run
 
 This will list available (official) plugins. We maintain a list of recommended versions to use at https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml.
 
-There are more advanced commands and options available, just run `kpm --help` for details.
+## Internals and Advanced Commands
+
+
+### Caching
+
+KPM relies on the kpm.yml file to know what to install, and as it installs the pieces it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries:
+* For the kilbill artifact itself, kpm will first extract the sha1 from the remote repository and compare with the cuurent sha1 installed under the default `webapp_path`; if those are the same, the file is not downloaded again.
+* For the plugins, since those are downloaded as an archive (*tgz) and then decompressed/expanded, kpm will use an internal file, `<plugins_dir>/sha1.yml` to keep track of the sha1 archive. If there an entry and the sha1 matches, thenagain file is not downloaded again.
+
+Note that you can override that behavior with the `--force-download`.
+
+### Specify Downloads
+
+Note that you can also download specific versions/artifacts directly with the followinhg commands -- bypassing the kpm.yml file:
+* `kpm pull_kaui_war <version>`
+* `kpm pull_kb_server_war <version>`
+* `kpm pull_ruby_plugin <artifact_id>`
+
+For more details see `kpm --help`.
+
