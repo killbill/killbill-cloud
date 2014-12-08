@@ -51,9 +51,9 @@ This will list available (official) plugins. We maintain a list of recommended v
 
 KPM relies on the kpm.yml file to know what to install, and as it installs the pieces it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries:
 * For the kilbill artifact itself, kpm will first extract the sha1 from the remote repository and compare with the cuurent sha1 installed under the default `webapp_path`; if those are the same, the file is not downloaded again.
-* For the plugins, since those are downloaded as an archive (*tgz) and then decompressed/expanded, kpm will use an internal file, `<plugins_dir>/sha1.yml` to keep track of the sha1 archive. If there an entry and the sha1 matches, thenagain file is not downloaded again.
+* For the plugins, since those are downloaded as an archive (*.tgz) and then decompressed/expanded, kpm will use an internal file, `<plugins_dir>/sha1.yml` to keep track of the sha1 archive. If there is an entry and the sha1 matches, then the file is not downloaded again.
 
-Note that you can override that behavior with the `--force-download`.
+Note that you can override that behavior with the `--force-download` switch.
 
 ### Specify Downloads
 
