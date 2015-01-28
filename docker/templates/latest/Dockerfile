@@ -57,7 +57,6 @@ COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
 # Configure Kill Bill
 RUN mkdir -p $KILLBILL_HOME/bundles $KILLBILL_CONFIG
 RUN chown -R tomcat7:tomcat7 $KILLBILL_CONFIG $KILLBILL_HOME
-COPY ./ehcache.xml $KILLBILL_CONFIG/ehcache.xml
 COPY ./kpm.yml.erb $KILLBILL_CONFIG/kpm.yml.erb
 COPY ./logback.xml $KILLBILL_CONFIG/logback.xml
 COPY ./killbill.sh /etc/init.d/killbill.sh
