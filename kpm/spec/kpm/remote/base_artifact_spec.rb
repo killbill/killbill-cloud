@@ -70,7 +70,8 @@ describe KPM::BaseArtifact do
 
   def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false)
     path = filename.nil? ? dir : dir + '/' + filename
-    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, nil, force_download, {}, true)
+
+    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, nil, force_download, true, {}, true)
     info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
     info[:skipped].should == verify_is_skipped
     if !info[:skipped]

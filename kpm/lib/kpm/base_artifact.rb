@@ -35,9 +35,9 @@ module KPM
     KAUI_CLASSIFIER  = nil
 
     class << self
-      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false,  overrides={}, ssl_verify=true)
+      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         coordinates = build_coordinates(group_id, artifact_id, packaging, classifier, version)
-        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, overrides, ssl_verify)
+        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, verify_sha1, overrides, ssl_verify)
       end
 
       def nexus_remote(overrides={}, ssl_verify=true)
@@ -53,7 +53,7 @@ module KPM
 
       protected
 
-      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         destination_path = KPM::root if destination_path.nil?
 
         # Create the destination directory
@@ -76,7 +76,7 @@ module KPM
         Dir.mktmpdir do |tmp_destination_dir|
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
-          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, overrides, ssl_verify)
+          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
           if artifact_info[:is_tgz]
             Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
@@ -140,9 +140,13 @@ module KPM
       end
 
 
-      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, overrides={}, ssl_verify=true)
+      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides={}, ssl_verify=true)
         info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)
-        raise ArtifactCorruptedException unless verify(logger, info[:file_path], remote_sha1)
+        if verify_sha1
+          raise ArtifactCorruptedException unless verify(logger, coordinates, info[:file_path], remote_sha1)
+        else
+          logger.warn("Skip sha1 verification for  #{coordinates}")
+        end
 
         if sha1_file
           sha1_checker = Sha1Checker.from_file(sha1_file)
@@ -152,15 +156,19 @@ module KPM
         info
       end
 
-      def verify(logger, file_path, remote_sha1)
+      def verify(logger, coordinates, file_path, remote_sha1)
         # Can't check :(
         if remote_sha1.nil?
-          logger.warn("Unable to verify sha1 for #{coordinates}. Artifact info: #{artifact_info.inspect}")
+          logger.warn("Unable to verify sha1 for #{coordinates}")
           return true
         end
 
         local_sha1 = Digest::SHA1.file(file_path).hexdigest
-        local_sha1 == remote_sha1
+        res = local_sha1 == remote_sha1
+        if !res
+          logger.warn("Sha1 verification failed for #{coordinates} : local_sha1 = #{local_sha1}, remote_sha1 = #{remote_sha1}")
+        end
+        res
       end
 
       def build_coordinates(group_id, artifact_id, packaging, classifier, version=nil)
