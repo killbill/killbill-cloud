@@ -71,7 +71,7 @@ end
 EORUBY
 
     echo >&2 "Starting Kill Bill installation..."
-    jruby -S kpm install $KILLBILL_CONFIG/kpm.yml
+    jruby -S kpm install $KPM_PROPS $KILLBILL_CONFIG/kpm.yml
   fi
 }
 

@@ -38,3 +38,7 @@ The following environment variables are honored:
   - `KILLBILL_CONFIG_OSGI_DAO_URL` (default `jdbc:h2:file:/var/lib/killbill/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE`)
   - `KILLBILL_CONFIG_OSGI_DAO_USER` (default `killbill`)
   - `KILLBILL_CONFIG_OSGI_DAO_PASSWORD` (default `killbill`)
+  - `KPM_PROPS` (default `--verify-sha1=true`)
+
+
+There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936) so in order to disable sha1 verification you can start your container using: KPM_PROPS="--verify-sha1=false"
