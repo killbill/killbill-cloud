@@ -18,8 +18,6 @@ module KPM
                      :default => true,
                      :desc    => 'Set to false to disable SSL Verification.'
 
-
-        desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
         method_option :force_download,
                       :type    => :boolean,
                       :default => false,
@@ -27,7 +25,8 @@ module KPM
         method_option :verify_sha1,
                       :type    => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc    => 'Validate sha1 sum'
+        desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
         def install(config_file)
           Installer.from_file(config_file).install(options[:force_download], options[:verify_sha1])
         end
@@ -43,7 +42,7 @@ module KPM
         method_option :verify_sha1,
                       :type    => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc    => 'Validate sha1 sum'
         desc 'pull_kb_server_war version', 'Pulls Kill Bill server war from Sonatype and places it on your machine.'
         def pull_kb_server_war(version='LATEST')
           response = KillbillServerArtifact.pull(logger,

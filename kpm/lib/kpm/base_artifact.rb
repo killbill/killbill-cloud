@@ -142,9 +142,11 @@ module KPM
 
       def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides={}, ssl_verify=true)
         info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)
-        if verify_sha1
-          raise ArtifactCorruptedException unless verify(logger, coordinates, info[:file_path], remote_sha1)
-        else
+
+        # Always verify sha1 and if incorrect either throw or log when we are asked to bypass sha1 verification
+        verified = verify(logger, coordinates, info[:file_path], remote_sha1)
+        if !verified
+          raise ArtifactCorruptedException if verify_sha1
           logger.warn("Skip sha1 verification for  #{coordinates}")
         end
 
