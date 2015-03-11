@@ -1,32 +1,35 @@
 #
 # Build Kill Bill image:
-# > make # Build raw image and will download latest KB image at installation time
-# > make -e VERSION=<version> # Build specific tagged KB image (e.g make -e VERSION=0.12.1)
+# > make -e TARGET=<killbill|kaui> # Build raw image and will download latest KB image at installation time
+# > make -e VERSION=<version> -e TARGET=<killbill|kaui> # Build specific tagged KB image (e.g make -e VERSION=0.12.1)
 #
 DOCKER=docker
 DOCKER_TEMPLATE="./dockerTemplate.sh"
+
+TARGET?=killbill
+
 VERSION?=LATEST
 ifeq ($(VERSION),LATEST)
-IMAGE=killbill/killbill
-TEMPLATE=templates/latest
+IMAGE=killbill/$(TARGET)
+TEMPLATE=templates/$(TARGET)/latest
 else
-IMAGE=killbill/killbill:$(VERSION)
-TEMPLATE=templates/tagged
+IMAGE=killbill/$(TARGET):$(VERSION)
+TEMPLATE=templates/$(TARGET)/tagged
 endif
 
 all: build
 
 build:
 	@echo "Building image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) -v $(VERSION) -i
+	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -i
 	$(DOCKER) build -t $(IMAGE) $(TEMPLATE)
-	$(DOCKER_TEMPLATE) -c
+	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -c
 
 rebuild:
 	@echo "Rebuilding image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) -v $(VERSION) -i
+	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -i
 	$(DOCKER) build --no-cache -t $(IMAGE) $(TEMPLATE)
-	$(DOCKER_TEMPLATE) -c
+	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -c
 
 run:
 	@echo "Running image $(IMAGE)"

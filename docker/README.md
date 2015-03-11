@@ -6,6 +6,9 @@ To build it:
 
     make
 
+In order to build a specific version use `make -e VERSION=0.x.y`
+In order to build the kaui image `make -e TARGET=kaui` or  `make -e TARGET=kaui -e VERSION=0.x.y`
+
 
 To debug it:
 

@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 
-TAGGED_PATH="templates/tagged"
+
+# Default target
+TARGET="killbill"
 
 ACTION=
+TAGGED_PATH=
 
 help() {
-    echo "dockerTemplate.sh -i (init) -c (clean) -v THE_VERSION"
+    echo "dockerTemplate.sh -i -c  -v THE_VERSION -t TARGET"
+    echo "-i : init (create the template file)"
+    echo "-c : clean (create the tagged template file). To be executed after init"
+    echo "-v : the version to build"
+    echo "-t : the target to build; either killbill or kaui"
     exit 1
 }
 
@@ -20,14 +27,17 @@ clean() {
     rm -f "$TAGGED_PATH/Dockerfile"
 }
 
-while getopts "hicv:" OPTION; do
+while getopts "hict:v:" OPTION; do
   case $OPTION in
     h) help;;
     i) ACTION="INIT";;
     c) ACTION="CLEAN";;
     v) VERSION="$OPTARG";;
+    t) TARGET="$OPTARG";;
   esac
 done
+
+TAGGED_PATH="templates/$TARGET/tagged"
 
 if [[ $ACTION == "INIT" ]]; then
   init

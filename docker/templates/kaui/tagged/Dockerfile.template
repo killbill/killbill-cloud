@@ -1,0 +1,9 @@
+FROM killbill/kaui
+MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+
+# VERSION will be expanded in Makefile
+ENV KAUI_VERSION __VERSION__
+
+# Install Kill Bill
+RUN kpm pull_kaui_war --verify-sha1=false --destination=/var/lib/tomcat7/webapps/ROOT.war  $KAUI_VERSION
+

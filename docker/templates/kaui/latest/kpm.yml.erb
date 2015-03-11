@@ -1,0 +1,17 @@
+kaui:
+  group_id: <%= ENV['KAUI_GROUP_ID'] %>
+  artifact_id: <%= ENV['KAUI_ARTIFACT_ID'] %>
+  version: <%= ENV['KAUI_VERSION'] %>
+  jvm: "-server -XX:PermSize=<%= ENV['KAUI_JVM_PERM_SIZE'] %> -XX:MaxPermSize=<%= ENV['KAUI_JVM_MAX_PERM_SIZE'] %> -Xms<%= ENV['KAUI_JVM_XMS'] %> -Xmx<%= ENV['KAUI_JVM_XMX'] %> -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=12345 -XX:+CMSClassUnloadingEnabled -XX:-OmitStackTraceInFastThrow -XX:+UseConcMarkSweepGC -Xloggc:/var/log/tomcat7/gc.log -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution"
+  nexus:
+    ssl_verify: false
+    url: https://oss.sonatype.org
+    repository: releases
+  properties:
+    java.security.egd: file:/dev/./urandom
+    logback.configurationFile: <%= ENV['KAUI_CONFIG'] %>/logback.xml
+    kaui.db.url: <%= ENV['KAUI_CONFIG_DAO_URL'] %>
+    kaui.db.username: <%= ENV['KAUI_CONFIG_DAO_USER'] %>
+    kaui.db.password: <%= ENV['KAUI_CONFIG_DAO_PASSWORD'] %>
+    kaui.url: <%= ENV['KAUI_URL'] %>
+  webapp_path: "/var/lib/tomcat7/webapps/ROOT.war"
