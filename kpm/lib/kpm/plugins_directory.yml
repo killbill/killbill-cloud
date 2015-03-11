@@ -29,7 +29,7 @@
 :stripe:
   :type: :ruby
   :artifact_id: stripe-plugin
-  :stable_version: 0.2.1
+  :stable_version: 0.2.2
   :require:
   - :api_secret_key
 :braintree_blue:
