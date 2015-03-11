@@ -11,6 +11,7 @@ module KPM
     end
 
     def initialize(raw_config, logger=nil)
+
       raise(ArgumentError, 'killbill or kaui section must be specified') if raw_config['killbill'].nil? and raw_config['kaui'].nil?
       @config      = raw_config['killbill']
       @kaui_config = raw_config['kaui']
@@ -29,10 +30,11 @@ module KPM
     def install(force_download=false, verify_sha1=true)
       @force_download = force_download
       @verify_sha1 = verify_sha1
-      @bundles_dir = @config['plugins_dir']
-      @sha1_file = "#{@bundles_dir}/#{SHA1_FILENAME}"
 
       unless @config.nil?
+        @bundles_dir = @config['plugins_dir']
+        @sha1_file = "#{@bundles_dir}/#{SHA1_FILENAME}"
+
         install_killbill_server
         install_plugins
         install_default_bundles
