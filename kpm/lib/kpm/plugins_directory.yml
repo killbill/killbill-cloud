@@ -1,4 +1,8 @@
 ---
+:analytics:
+  :type: :java
+  :artifact_id: analytics-plugin
+  :stable_version: 0.8.0
 :bitpay:
   :type: :ruby
   :artifact_id: bitpay-plugin
