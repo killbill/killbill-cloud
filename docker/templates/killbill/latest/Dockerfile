@@ -32,6 +32,7 @@ RUN apt-get update && \
       mysql-client \
       tomcat7 \
       unzip \
+      telnet \
       sudo && \
     rm -rf /var/lib/apt/lists/*
 
@@ -56,6 +57,10 @@ RUN chmod g+w /etc/tomcat7/catalina.properties
 RUN rm -rf $TOMCAT_HOME/webapps/*
 COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
 
+# Add tomcat into sudo group and reinitialize the password
+RUN usermod -aG sudo tomcat7
+RUN echo "tomcat7:tomcat7" | chpasswd
+
 # Configure Kill Bill
 RUN mkdir -p $KILLBILL_HOME/bundles $KILLBILL_CONFIG
 RUN chown -R tomcat7:tomcat7 $KILLBILL_CONFIG $KILLBILL_HOME
@@ -64,8 +69,6 @@ COPY ./logback.xml $KILLBILL_CONFIG/logback.xml
 COPY ./killbill.sh /etc/init.d/killbill.sh
 RUN chmod +x /etc/init.d/killbill.sh
 
-# Add admin user with sudo access
-RUN useradd -d /home/admin -G sudo admin && echo "admin:admin" | chpasswd
 
 # Export config and plugins directory
 VOLUME $KILLBILL_CONFIG $KILLBILL_HOME

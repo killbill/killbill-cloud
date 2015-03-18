@@ -33,6 +33,7 @@ RUN apt-get update && \
       mysql-client \
       tomcat7 \
       unzip \
+      telnet \
       sudo && \
     rm -rf /var/lib/apt/lists/*
 
@@ -57,6 +58,10 @@ RUN chmod g+w /etc/tomcat7/catalina.properties
 RUN rm -rf $TOMCAT_HOME/webapps/*
 COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
 
+# Add tomcat into sudo group and reinitialize the password
+RUN usermod -aG sudo tomcat7
+RUN echo "tomcat7:tomcat7" | chpasswd
+
 # Configure Kill Bill
 RUN mkdir -p $KAUI_HOME/bundles $KAUI_CONFIG
 RUN chown -R tomcat7:tomcat7 $KAUI_CONFIG $KAUI_HOME
@@ -64,9 +69,6 @@ COPY ./kpm.yml.erb $KAUI_CONFIG/kpm.yml.erb
 COPY ./logback.xml $KAUI_CONFIG/logback.xml
 COPY ./kaui.sh /etc/init.d/kaui.sh
 RUN chmod +x /etc/init.d/kaui.sh
-
-# Add admin user with sudo access
-RUN useradd -d /home/admin -G sudo admin && echo "admin:admin" | chpasswd
 
 # Export config and plugins directory
 VOLUME $KAUI_CONFIG $KAUI_HOME
