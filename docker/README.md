@@ -42,6 +42,7 @@ The following environment variables are honored:
   - `KILLBILL_CONFIG_OSGI_DAO_USER` (default `killbill`)
   - `KILLBILL_CONFIG_OSGI_DAO_PASSWORD` (default `killbill`)
   - `KPM_PROPS` (default `--verify-sha1=true`)
-
+  - `NEXUS_URL` (default `https://oss.sonatype.org`)
+  - `NEXUS_REPOSITORY` (default `releases`)
 
 There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936) so in order to disable sha1 verification you can start your container using: KPM_PROPS="--verify-sha1=false"

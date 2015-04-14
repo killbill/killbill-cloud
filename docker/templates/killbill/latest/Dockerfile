@@ -4,6 +4,9 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 ENV TOMCAT_HOME /var/lib/tomcat7
 ENV TOMCAT_CONFIG /etc/tomcat7
 
+ENV NEXUS_URL https://oss.sonatype.org
+ENV NEXUS_REPOSITORY releases
+
 ENV KILLBILL_HOME /var/lib/killbill
 ENV KILLBILL_CONFIG /etc/killbill
 
