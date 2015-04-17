@@ -38,12 +38,22 @@ EORUBY
     jruby <<-EORUBY
 require 'erb'
 require 'kpm'
+require 'pathname'
 require 'yaml'
 
-raw_kpm = File.new("#{ENV['KILLBILL_CONFIG']}/kpm.yml.erb").read
-parsed_kpm = ERB.new(raw_kpm).result
+def load_yaml(file)
+  return {} unless Pathname.new(file).file?
+  raw_kpm = File.new(file).read
+  parsed_kpm = ERB.new(raw_kpm).result
+  YAML.load(parsed_kpm)
+end
 
-yml_kpm = YAML.load(parsed_kpm)
+base = load_yaml("#{ENV['KILLBILL_CONFIG']}/kpm.yml.erb")
+overlay = load_yaml("#{ENV['KILLBILL_CONFIG']}/kpm.yml.erb.overlay")
+
+merger = proc { |key,v1,v2| Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : v2 }
+yml_kpm = base.merge(overlay, &merger)
+
 yml_kpm['killbill']['plugins'] ||= {}
 yml_kpm['killbill']['plugins']['java'] ||= []
 yml_kpm['killbill']['plugins']['ruby'] ||= []
