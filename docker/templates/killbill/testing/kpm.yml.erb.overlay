@@ -1,4 +1,8 @@
 killbill:
+  version: LATEST
+  default_bundles_version: LATEST
+  nexus:
+    repository: public
   plugins:
     java:
       - name: adyen-plugin
