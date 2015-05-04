@@ -55,6 +55,10 @@ WORKDIR $KILLBILL_HOME
 RUN mkdir -p /home/killbill/.m2
 COPY ./settings.xml /home/killbill/.m2/settings.xml
 
+# Setup git
+git config --global user.name "Kill Bill core team"
+git config --global user.email "contact@killbill.io"
+
 # Setup our repositories
 RUN /etc/init.d/setup.sh
 
