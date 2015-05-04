@@ -35,7 +35,7 @@ RUN jruby -S gem install therubyrhino
 RUN mkdir -p /var/lib/maven \
     && curl -SL http://mirror.metrocast.net/apache/maven/maven-3/3.3.1/binaries/apache-maven-3.3.1-bin.tar.gz \
     | tar -z -x --strip-components=1 -C /var/lib/maven
-ENV PATH /var/lib/maven:$PATH
+ENV PATH /var/lib/maven/bin:$PATH
 
 # Add killbill user into sudo group
 RUN adduser --disabled-password --gecos '' killbill
