@@ -58,6 +58,7 @@ COPY ./settings.xml /home/killbill/.m2/settings.xml
 # Setup git
 RUN git config --global user.name "Kill Bill core team"
 RUN git config --global user.email "contact@killbill.io"
+RUN git config --global push.default simple
 
 # Setup our repositories
 RUN /etc/init.d/setup.sh
