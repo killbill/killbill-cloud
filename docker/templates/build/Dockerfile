@@ -15,7 +15,8 @@ RUN apt-get update && \
       sudo \
       telnet \
       tomcat7 \
-      unzip && \
+      unzip \
+      zip && \
     rm -rf /var/lib/apt/lists/*
 
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
