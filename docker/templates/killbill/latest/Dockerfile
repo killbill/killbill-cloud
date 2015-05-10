@@ -12,7 +12,7 @@ ENV KILLBILL_CONFIG /etc/killbill
 
 ENV KILLBILL_GROUP_ID org.kill-bill.billing
 ENV KILLBILL_ARTIFACT_ID killbill-profiles-killbill
-ENV KILLBILL_DEFAULT_BUNDLES_VERSION 0.1.4
+ENV KILLBILL_DEFAULT_BUNDLES_VERSION 0.2
 
 ENV KILLBILL_JVM_PERM_SIZE 512m
 ENV KILLBILL_JVM_MAX_PERM_SIZE 1G
@@ -41,7 +41,7 @@ RUN apt-get update && \
 
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
 RUN mkdir -p /var/lib/jruby \
-    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.16/jruby-bin-1.7.16.tar.gz \
+    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.20/jruby-bin-1.7.20.tar.gz \
     | tar -z -x --strip-components=1 -C /var/lib/jruby
 ENV PATH /var/lib/jruby/bin:$PATH
 
