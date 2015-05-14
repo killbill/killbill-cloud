@@ -39,7 +39,7 @@ RUN apt-get update && \
 
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
 RUN mkdir -p /var/lib/jruby \
-    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.16/jruby-bin-1.7.16.tar.gz \
+    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.20/jruby-bin-1.7.20.tar.gz \
     | tar -z -x --strip-components=1 -C /var/lib/jruby
 ENV PATH /var/lib/jruby/bin:$PATH
 

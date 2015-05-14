@@ -1,0 +1,38 @@
+killbill:
+  version: LATEST
+  default_bundles_version: LATEST
+  nexus:
+    repository: public
+  plugins:
+    java:
+      - name: adyen-plugin
+        version: LATEST
+      - name: analytics-plugin
+        version: LATEST
+      - name: avatax-plugin
+        version: LATEST
+      - name: forte-plugin
+        version: LATEST
+      - name: hello-world-plugin
+        version: LATEST
+      - name: killbill-email-notifications-plugin
+        version: LATEST
+    ruby:
+      - name: cybersource-plugin
+        version: LATEST
+      - name: firstdata-e4-plugin
+        version: LATEST
+      - name: helloworld-plugin
+        version: LATEST
+      - name: litle-plugin
+        version: LATEST
+      - name: logging-plugin
+        version: LATEST
+      - name: paypal-express-plugin
+        version: LATEST
+      - name: payu-latam-plugin
+        version: LATEST
+      - name: securenet-plugin
+        version: LATEST
+      - name: stripe-plugin
+        version: LATEST
