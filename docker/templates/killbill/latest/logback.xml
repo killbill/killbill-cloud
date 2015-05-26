@@ -8,6 +8,23 @@
         </encoder>
     </appender>
 
+    <appender name="MAIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_DIR:-./logs}/killbill.out</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOGS_DIR:-./logs}/killbill-%d{yyyy-MM-dd}.%i.out.gz</fileNamePattern>
+            <maxHistory>3</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+          <pattern>%date [%thread] %-5level %logger{36} - %maskedMsg%n%ex</pattern>
+        </encoder>
+    </appender>
+
     <!-- JDBC appenders -->
     <appender name="SIFT-jdbc-sqlonly" class="ch.qos.logback.classic.sift.SiftingAppender">
         <discriminator class="org.killbill.billing.server.log.ThreadNameBasedDiscriminator"/>
@@ -169,6 +186,7 @@
     <logger name="org.eclipse" level="INFO"/>
 
     <root level="INFO">
+        <appender-ref ref="MAIN"/>
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
