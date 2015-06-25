@@ -44,3 +44,7 @@
   - :merchant_id
   - :public_key
   - :private_key
+:email-notifications:
+  :type: :java
+  :artifact_id: killbill-email-notifications-plugin
+  :stable_version: 0.1.0
