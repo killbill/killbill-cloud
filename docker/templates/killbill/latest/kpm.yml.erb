@@ -38,17 +38,21 @@ killbill:
     org.killbill.payment.janitor.rate: 1m
     org.killbill.payment.plugin.threads.nb: 250
     org.killbill.payment.plugin.timeout: 30s
-    org.killbill.persistent.bus.external.claimed: 100
-    org.killbill.persistent.bus.external.inMemory: true
-    org.killbill.persistent.bus.external.inflight.claimed: 100
-    org.killbill.persistent.bus.external.nbThreads: 10
-    org.killbill.persistent.bus.external.queue.capacity: 30000
+    org.killbill.persistent.bus.external.claim.time: 5m
+    org.killbill.persistent.bus.external.inflight.claimed: 500
+    org.killbill.persistent.bus.external.inMemory: false
+    org.killbill.persistent.bus.external.max.failure.retry: 3
+    org.killbill.persistent.bus.external.nbThreads: 50
+    org.killbill.persistent.bus.external.queue.capacity: 1000000
     org.killbill.persistent.bus.external.sleep: 0
     org.killbill.persistent.bus.external.sticky: true
     org.killbill.persistent.bus.external.useInflightQ: true
-    org.killbill.persistent.bus.main.claimed: 100
-    org.killbill.persistent.bus.main.nbThreads: 10
-    org.killbill.persistent.bus.main.queue.capacity: 30000
+    org.killbill.persistent.bus.main.claim.time: 5m
+    org.killbill.persistent.bus.main.inflight.claimed: 500
+    org.killbill.persistent.bus.main.inMemory: false
+    org.killbill.persistent.bus.main.max.failure.retry: 3
+    org.killbill.persistent.bus.main.nbThreads: 50
+    org.killbill.persistent.bus.main.queue.capacity: 1000000
     org.killbill.persistent.bus.main.sleep: 0
     org.killbill.persistent.bus.main.sticky: true
     org.killbill.persistent.bus.main.useInflightQ: true
