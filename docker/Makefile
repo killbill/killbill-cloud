@@ -1,7 +1,7 @@
 #
 # Build Kill Bill image:
 # > make -e TARGET=<killbill|kaui> # Build raw image and will download latest KB image at installation time
-# > make -e VERSION=<version> -e TARGET=<killbill|kaui> # Build specific tagged KB image (e.g make -e VERSION=0.12.1)
+# > make -e VERSION=<version> -e TARGET=<killbill|kaui|data> # Build specific tagged KB image (e.g make -e VERSION=0.12.1)
 #
 DOCKER=docker
 DOCKER_TEMPLATE="./dockerTemplate.sh"
