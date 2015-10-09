@@ -31,13 +31,16 @@ killbill:
     org.killbill.jruby.context.scope: THREADSAFE
     org.killbill.notificationq.analytics.historyTableName: analytics_notifications_history
     org.killbill.notificationq.analytics.tableName: analytics_notifications
+    org.killbill.notificationq.analytics.queue.mode: STICKY_POLLING
+    org.killbill.notificationq.main.queue.mode: STICKY_POLLING
     org.killbill.notificationq.main.claimed: 100
     org.killbill.notificationq.main.sleep: 1000
     org.killbill.osgi.bundle.install.dir: <%= ENV['KILLBILL_HOME'] %>/bundles
     org.killbill.osgi.root.dir: <%= ENV['KILLBILL_HOME'] %>/felix-cache
     org.killbill.payment.janitor.rate: 1m
-    org.killbill.payment.plugin.threads.nb: 250
+    org.killbill.payment.plugin.threads.nb: 100
     org.killbill.payment.plugin.timeout: 30s
+    org.killbill.persistent.bus.external.queue.mode: SITCKY_EVENTS
     org.killbill.persistent.bus.external.claim.time: 5m
     org.killbill.persistent.bus.external.inflight.claimed: 500
     org.killbill.persistent.bus.external.inMemory: false
@@ -45,8 +48,8 @@ killbill:
     org.killbill.persistent.bus.external.nbThreads: 50
     org.killbill.persistent.bus.external.queue.capacity: 1000000
     org.killbill.persistent.bus.external.sleep: 0
-    org.killbill.persistent.bus.external.sticky: true
     org.killbill.persistent.bus.external.useInflightQ: true
+    org.killbill.persistent.bus.main.queue.mode: SITCKY_EVENTS
     org.killbill.persistent.bus.main.claim.time: 5m
     org.killbill.persistent.bus.main.inflight.claimed: 500
     org.killbill.persistent.bus.main.inMemory: false
@@ -54,7 +57,6 @@ killbill:
     org.killbill.persistent.bus.main.nbThreads: 50
     org.killbill.persistent.bus.main.queue.capacity: 1000000
     org.killbill.persistent.bus.main.sleep: 0
-    org.killbill.persistent.bus.main.sticky: true
     org.killbill.persistent.bus.main.useInflightQ: true
     org.killbill.server.baseUrl: http://localhost:8080
     org.killbill.server.properties: file://<%= ENV['KILLBILL_CONFIG'] %>/killbill.properties
