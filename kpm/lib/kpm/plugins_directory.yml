@@ -48,3 +48,7 @@
   :type: :java
   :artifact_id: killbill-email-notifications-plugin
   :stable_version: 0.1.0
+:avatax:
+  :type: :java
+  :artifact_id: avatax-plugin
+  :stable_version: 0.1.0
