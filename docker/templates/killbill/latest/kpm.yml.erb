@@ -60,5 +60,7 @@ killbill:
     org.killbill.persistent.bus.main.useInflightQ: true
     org.killbill.server.baseUrl: http://localhost:8080
     org.killbill.server.properties: file://<%= ENV['KILLBILL_CONFIG'] %>/killbill.properties
+    org.killbill.server.http.gzip:true
+    org.killbill.security.shiroNbHashIterations:200000
     org.killbill.server.test.mode: true
   webapp_path: "/var/lib/tomcat7/webapps/ROOT.war"
