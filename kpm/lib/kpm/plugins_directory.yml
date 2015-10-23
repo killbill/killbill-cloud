@@ -2,7 +2,7 @@
 :analytics:
   :type: :java
   :artifact_id: analytics-plugin
-  :stable_version: 2.0.0
+  :stable_version: 2.0.1
 :bitpay:
   :type: :ruby
   :artifact_id: bitpay-plugin
@@ -33,7 +33,7 @@
 :stripe:
   :type: :ruby
   :artifact_id: stripe-plugin
-  :stable_version: 1.0.0
+  :stable_version: 2.0.0
   :require:
   - :api_secret_key
 :braintree_blue:
