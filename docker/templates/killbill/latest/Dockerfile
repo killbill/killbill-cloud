@@ -31,6 +31,7 @@ ENV KPM_PROPS --verify-sha1
 # Install Kill Bill dependencies and useful tools
 RUN apt-get update && \
     apt-get install -y \
+      openjdk-7-jdk \
       curl \
       mysql-client \
       tomcat7 \
