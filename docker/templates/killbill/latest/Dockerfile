@@ -35,6 +35,7 @@ RUN apt-get update && \
       curl \
       mysql-client \
       tomcat7 \
+      libtcnative-1 \
       unzip \
       telnet \
       sudo && \
