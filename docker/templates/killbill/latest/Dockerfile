@@ -26,6 +26,8 @@ ENV KILLBILL_CONFIG_OSGI_DAO_URL jdbc:h2:file:$KILLBILL_HOME/killbill;MODE=MYSQL
 ENV KILLBILL_CONFIG_OSGI_DAO_USER killbill
 ENV KILLBILL_CONFIG_OSGI_DAO_PASSWORD killbill
 
+ENV KILLBILL_SHIRO_RESOURCE_PATH classpath:shiro.ini
+
 ENV KPM_PROPS --verify-sha1
 
 # Install Kill Bill dependencies and useful tools
