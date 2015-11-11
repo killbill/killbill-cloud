@@ -20,7 +20,9 @@
      Documentation at /docs/config/server.html
  -->
 <Server port="8005" shutdown="SHUTDOWN">
+  <!-- Available post 7.0.57 (14.04 is still on 7.0.52)
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  -->
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
