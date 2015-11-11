@@ -60,6 +60,7 @@ RUN mkdir -p /tmp/tomcat7-tomcat7-tmp && chown -R tomcat7:tomcat7 /tmp/tomcat7-t
 RUN chmod g+w /etc/tomcat7/catalina.properties
 RUN rm -rf $TOMCAT_HOME/webapps/*
 COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
+COPY ./server.xml $TOMCAT_CONFIG/server.xml
 
 # Add tomcat into sudo group and reinitialize the password
 RUN usermod -aG sudo tomcat7
