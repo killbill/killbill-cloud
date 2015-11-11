@@ -41,6 +41,9 @@ RUN apt-get update && \
       sudo && \
     rm -rf /var/lib/apt/lists/*
 
+# Configure default JAVA_HOME path
+RUN ln -s java-7-openjdk-amd64 /usr/lib/jvm/default-java
+
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
 RUN mkdir -p /var/lib/jruby \
     && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.20/jruby-bin-1.7.20.tar.gz \
