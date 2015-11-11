@@ -57,11 +57,11 @@
   <Service name="Catalina">
 
     <!--The connectors can use a shared executor, you can define one or more named thread pools-->
-    <!--
-    <Executor name="tomcatThreadPool" namePrefix="catalina-exec-"
-        maxThreads="150" minSpareThreads="4"/>
-    -->
-
+    <Executor name="tomcatThreadPool"
+              namePrefix="catalina-exec-"
+              maxThreads="600"
+              minSpareThreads="10"
+              prestartminSpareThreads="true" />
 
     <!-- A "Connector" represents an endpoint by which requests are received
          and responses are returned. Documentation at :
@@ -70,16 +70,16 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL HTTP/1.1 Connector on port 8080
     -->
+    <!--
     <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
+    -->
     <!-- A "Connector" using the shared thread pool-->
-    <!--
     <Connector executor="tomcatThreadPool"
                port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
-    -->
     <!-- Define a SSL HTTP/1.1 Connector on port 8443
          This connector uses the BIO implementation that requires the JSSE
          style configuration. When using the APR/native implementation, the
