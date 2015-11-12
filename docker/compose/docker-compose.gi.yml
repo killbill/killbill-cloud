@@ -9,12 +9,25 @@ influxdb:
   environment:
     - ADMIN_USER=killbill
     - INFLUXDB_INIT_PWD=killbill
-    - PRE_CREATE_DB=killbill
+    - PRE_CREATE_DB="killbill;cadvisor"
   restart: always
 grafana:
   image: grafana/grafana:latest
   ports:
     - "3000:3000"
+  links:
+    - influxdb
+  restart: always
+cadvisor:
+  image: google/cadvisor:latest
+  command: -storage_driver=influxdb -storage_driver_host=influxdb:8086 -storage_driver_db=cadvisor -storage_driver_user=killbill -storage_driver_password=killbill
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  ports:
+    - "4000:8080"
   links:
     - influxdb
   restart: always
