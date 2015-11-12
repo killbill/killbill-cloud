@@ -9,28 +9,30 @@ BUILD_FILE=$(ROOT_DIR)/docker-compose.yml
 COMPOSE=docker-compose
 
 DOCKER_MACHINE=dev
+HOST_IP=$(shell docker-machine ip $(DOCKER_MACHINE))
+export HOST_IP
 
 default: all
 
 elk:
-	$(COMPOSE) -p elk -f $(ELK_FILE) up -d
+	@$(COMPOSE) -p elk -f $(ELK_FILE) up -d
 
 run-elk:
-	$(COMPOSE) -p elk -f $(ELK_FILE) up
+	@$(COMPOSE) -p elk -f $(ELK_FILE) up
 
 run-gi:
-	$(COMPOSE) -p gi -f $(GI_FILE) up
+	@$(COMPOSE) -p gi -f $(GI_FILE) up
 
 run-kb:
-	$(COMPOSE) -p kb -f $(KB_FILE) up
+	@$(COMPOSE) -p kb -f $(KB_FILE) up
 
 build-docker-compose:
-	ruby build_docker-compose.rb > $(BUILD_FILE)
+	@ruby build_docker-compose.rb > $(BUILD_FILE)
 
 # Logstash needs to be up first (TODO block until started)
 run-all: elk build-docker-compose
-	HOST_IP=$(docker-machine ip $(DOCKER_MACHINE)) $(COMPOSE) -p kb -f $(BUILD_FILE) up
+	@$(COMPOSE) -p kb -f $(BUILD_FILE) up
 
 # Logstash needs to be up first (TODO block until started)
 all: elk build-docker-compose
-	HOST_IP=$(docker-machine ip $(DOCKER_MACHINE)) $(COMPOSE) -p kb -f $(BUILD_FILE) up -d
+	@$(COMPOSE) -p kb -f $(BUILD_FILE) up -d
