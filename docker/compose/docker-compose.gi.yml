@@ -1,0 +1,20 @@
+influxdb:
+  image: tutum/influxdb:latest
+  volumes:
+    - ./influxdb/config/config.toml:/config/config.toml
+  expose:
+    - "2003:2003"
+    - "8083:8083"
+    - "8086:8086"
+  environment:
+    - ADMIN_USER=killbill
+    - INFLUXDB_INIT_PWD=killbill
+    - PRE_CREATE_DB=killbill
+  restart: always
+grafana:
+  image: grafana/grafana:latest
+  ports:
+    - "3000:3000"
+  links:
+    - influxdb
+  restart: always

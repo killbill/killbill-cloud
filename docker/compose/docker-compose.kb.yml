@@ -1,0 +1,35 @@
+killbill:
+  image: killbill/killbill:latest
+  ports:
+    - "8080:8080"
+    - "12345:12345"
+  links:
+    - db
+  environment:
+    - KILLBILL_CONFIG_DAO_URL=jdbc:mysql://db:3306/killbill
+    - KILLBILL_CONFIG_DAO_USER=root
+    - KILLBILL_CONFIG_DAO_PASSWORD=killbill
+    - KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://db:3306/killbill
+    - KILLBILL_CONFIG_OSGI_DAO_USER=root
+    - KILLBILL_CONFIG_OSGI_DAO_PASSWORD=killbill
+  mem_limit: 2048m
+kaui:
+  image: killbill/kaui:0.3.0
+  ports:
+    - "9090:8080"
+  links:
+    - db
+    - killbill
+  environment:
+    - KAUI_CONFIG_DAO_URL=jdbc:mysql://db:3306/kaui
+    - KAUI_CONFIG_DAO_USER=root
+    - KAUI_CONFIG_DAO_PASSWORD=killbill
+    - KAUI_URL=http://killbill:8080
+    - KAUI_API_KEY=bob
+    - KAUI_API_SECRET=lazar
+db:
+  image: mariadb
+  expose:
+    - "3306:3306"
+  environment:
+    - MYSQL_ROOT_PASSWORD=killbill
