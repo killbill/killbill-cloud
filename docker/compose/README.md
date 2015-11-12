@@ -14,6 +14,8 @@ You can then use `docker-compose`to manage all or individual services (project n
 
 Note that `docker-compose logs` won't work, because all logs are forwarded to [Elasticsearch](http://localhost:5601). The easiest way to find logs for a specific container is to search for the container ID in Kibana.
 
+You need several GB of RAM to run the entire stack in the host: on Mac-OS, open Virtual Box and check the VM has 2GB or more of RAM (you need to poweroff the VM first).
+
 Individual components can also be run independently (e.g. for debugging). See below.
 
 ## Kill Bill
