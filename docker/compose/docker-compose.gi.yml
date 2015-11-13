@@ -13,10 +13,16 @@ influxdb:
   restart: always
 grafana:
   image: grafana/grafana:latest
+  volumes:
+    - ./grafana/dashboards:/var/lib/grafana/dashboards
   ports:
     - "3000:3000"
   links:
     - influxdb
+  environment:
+    - GF_DASHBOARDS_JSON_ENABLED=true
+    - GF_DASHBOARDS_JSON_PATH=/var/lib/grafana/dashboards
+    - GF_ANALYTICS_ENABLED=false
   restart: always
 cadvisor:
   image: google/cadvisor:latest

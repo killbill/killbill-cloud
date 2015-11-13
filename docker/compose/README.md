@@ -52,3 +52,16 @@ The Kibana UI is available at [http://localhost:5601](http://localhost:5601). Po
 Run the latest version of InfluxDB and Grafana.
 
 The Grafana UI is available at [http://localhost:3000](http://localhost:3000).
+
+When running the full stack, Grafana uses the MariaDB container as the storage backend. To configure it:
+
+```
+CREATE DATABASE grafana;
+USE grafana;
+CREATE TABLE `session` (
+    `key`       CHAR(16) NOT NULL,
+    `data`      BLOB,
+    `expiry`    INT(11) UNSIGNED NOT NULL,
+    PRIMARY KEY (`key`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+```

@@ -13,6 +13,19 @@ FILES.each do |filename|
       v['links'].uniq!
     end
 
+    if k == 'grafana'
+      v['environment'] ||= []
+      v['environment'] << 'GF_SESSION_PROVIDER=mysql'
+      v['environment'] << 'GF_SESSION_PROVIDER_CONFIG=root:killbill@tcp(db:3306)/grafana'
+      v['environment'] << 'GF_DATABASE_TYPE=mysql'
+      v['environment'] << 'GF_DATABASE_HOST=db:3306'
+      v['environment'] << 'GF_DATABASE_USER=root'
+      v['environment'] << 'GF_DATABASE_PASSWORD=killbill'
+
+      v['links'] ||= []
+      v['links'] << 'db'
+    end
+
     v['log_driver'] ||= 'syslog'
     v['log_opt'] ||= {}
     v['log_opt']['syslog-address'] ||= 'tcp://${HOST_IP}:1514'
