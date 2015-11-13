@@ -12,7 +12,6 @@ killbill:
     - KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://db:3306/killbill
     - KILLBILL_CONFIG_OSGI_DAO_USER=root
     - KILLBILL_CONFIG_OSGI_DAO_PASSWORD=killbill
-  mem_limit: 2048m
 kaui:
   image: killbill/kaui:0.3.0
   ports:
