@@ -156,18 +156,35 @@ reporting-disabled = true
      # Memory metrics
      "*.memory.*.* host.measurement.type.metric",
      "*.memory.pools.*.* host.measurement.type.space.metric",
+     "*.buffers.*.* host.measurement.type.metric",
      # Threads metrics
      "*.threads.count host.measurement.",
      "*.threads.daemon.count host.measurement.type.",
      "*.threads.*.count host.measurement.state.",
+     # Classloading metrics
+     "*.classloading.* host.measurement.type",
+
+     # Caches
+     "*.net.sf.ehcache.Cache.* host....measurement.cache_name.metric",
+     "*.net.sf.ehcache.Cache.*.* host....measurement.cache_name.metric.component",
+
+     # DAO
+     "*.org.killbill.*.dao.*.* host...system.measurement.class.method.component",
+     "*.org.killbill.*.*.dao.*.* host....system.measurement.class.method.component",
+     "*.org.killbill.*.*.*.dao.*.* host.....system.measurement.class.method.component",
+     "*.org.killbill.*.*.*.*.dao.*.* host......system.measurement.class.method.component",
+
+     # Queues
+     "*.org.killbill.bus.*.*.* host...measurement..metric.component",
+     "*.org.killbill.queue.*.*.*.* host...measurement..type.metric.component",
+     "*.org.killbill.notificationq.*.*.* host...measurement..metrics.component",
 
      # DB Connection Pools
      "*.*.pool.* host.pool_name.measurement.metric",
      "*.*.pool.*.* host.pool_name.measurement.metric.component",
 
      # Log Appenders - errors and warnings
-     "*.ch.qos.logback.core.Appender.error.* host...measurement...level.component",
-     "*.ch.qos.logback.core.Appender.warn.*  host...measurement...level.component",
+     "*.ch.qos.logback.core.Appender.*.* host...measurement...level.component",
 
      # JAX-RS Resource metrics
      "*.kb_resource.*.*.*.*.*.* host.measurement.resource_path.name.method.response_group.response.component",
