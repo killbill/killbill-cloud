@@ -1,0 +1,3662 @@
+{
+  "id": 6,
+  "title": "Kill Bill - Payment Request Details",
+  "originalTitle": "Kill Bill - Payment Request Details",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 1,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "captureAuthorization",
+              "value": "captureAuthorization",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [],
+          "span": 7,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Latency",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 4,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/sec",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "captureAuthorization",
+              "value": "captureAuthorization",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "request p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 5,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" =~ /m\\d\\d?/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?/"
+                }
+              ]
+            },
+            {
+              "alias": "request p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Requests Rate",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 2,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "response_status",
+          "scopedVars": {
+            "endpoint": {
+              "text": "captureAuthorization",
+              "value": "captureAuthorization",
+              "selected": false
+            },
+            "response_status": {
+              "text": "2xx",
+              "value": "2xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 5,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "endpoint": {
+              "text": "captureAuthorization",
+              "value": "captureAuthorization",
+              "selected": false
+            },
+            "response_status": {
+              "text": "5xx",
+              "value": "5xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447441533026,
+          "repeatPanelId": 2
+        }
+      ],
+      "repeat": "endpoint",
+      "scopedVars": {
+        "endpoint": {
+          "text": "captureAuthorization",
+          "value": "captureAuthorization",
+          "selected": false
+        }
+      },
+      "showTitle": true,
+      "title": "Requests Details - $endpoint"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 6,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "createComboPayment",
+              "value": "createComboPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [],
+          "span": 7,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Latency",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 7,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/sec",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "createComboPayment",
+              "value": "createComboPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "request p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 5,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" =~ /m\\d\\d?/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?/"
+                }
+              ]
+            },
+            {
+              "alias": "request p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Requests Rate",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 8,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "response_status",
+          "scopedVars": {
+            "endpoint": {
+              "text": "createComboPayment",
+              "value": "createComboPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "2xx",
+              "value": "2xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 10,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "endpoint": {
+              "text": "createComboPayment",
+              "value": "createComboPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "5xx",
+              "value": "5xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447441533026,
+          "repeatPanelId": 8
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": 1447441533026,
+      "repeatRowId": 1,
+      "scopedVars": {
+        "endpoint": {
+          "text": "createComboPayment",
+          "value": "createComboPayment",
+          "selected": false
+        }
+      },
+      "showTitle": true,
+      "title": "Requests Details - $endpoint"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 11,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "getPayment",
+              "value": "getPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [],
+          "span": 7,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Latency",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 12,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/sec",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "getPayment",
+              "value": "getPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "request p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 5,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" =~ /m\\d\\d?/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?/"
+                }
+              ]
+            },
+            {
+              "alias": "request p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Requests Rate",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 13,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "response_status",
+          "scopedVars": {
+            "endpoint": {
+              "text": "getPayment",
+              "value": "getPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "2xx",
+              "value": "2xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 19,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "endpoint": {
+              "text": "getPayment",
+              "value": "getPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "5xx",
+              "value": "5xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447441533026,
+          "repeatPanelId": 13
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": 1447441533026,
+      "repeatRowId": 1,
+      "scopedVars": {
+        "endpoint": {
+          "text": "getPayment",
+          "value": "getPayment",
+          "selected": false
+        }
+      },
+      "showTitle": true,
+      "title": "Requests Details - $endpoint"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 15,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "refundPayment",
+              "value": "refundPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [],
+          "span": 7,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Latency",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 16,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/sec",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "refundPayment",
+              "value": "refundPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "request p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 5,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" =~ /m\\d\\d?/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?/"
+                }
+              ]
+            },
+            {
+              "alias": "request p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Requests Rate",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 17,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "response_status",
+          "scopedVars": {
+            "endpoint": {
+              "text": "refundPayment",
+              "value": "refundPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "2xx",
+              "value": "2xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 20,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "endpoint": {
+              "text": "refundPayment",
+              "value": "refundPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "5xx",
+              "value": "5xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447441533026,
+          "repeatPanelId": 17
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": 1447441533026,
+      "repeatRowId": 1,
+      "scopedVars": {
+        "endpoint": {
+          "text": "refundPayment",
+          "value": "refundPayment",
+          "selected": false
+        }
+      },
+      "showTitle": true,
+      "title": "Requests Details - $endpoint"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 21,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "voidPayment",
+              "value": "voidPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [],
+          "span": 7,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Latency",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 22,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/sec",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "scopedVars": {
+            "endpoint": {
+              "text": "voidPayment",
+              "value": "voidPayment",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "request p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 5,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" =~ /m\\d\\d?/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?/"
+                }
+              ]
+            },
+            {
+              "alias": "request p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Requests Rate",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 23,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "response_status",
+          "scopedVars": {
+            "endpoint": {
+              "text": "voidPayment",
+              "value": "voidPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "2xx",
+              "value": "2xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 25,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 3,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "endpoint": {
+              "text": "voidPayment",
+              "value": "voidPayment",
+              "selected": false
+            },
+            "response_status": {
+              "text": "5xx",
+              "value": "5xx",
+              "selected": false
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "responses p/min",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" =~ /m\\d\\d?_/ AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/m\\d\\d?_/"
+                }
+              ]
+            },
+            {
+              "alias": "responses p/min",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "fill": "0",
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "kb_resource",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"kb_resource\" WHERE \"host\" =~ /$host$/ AND \"resource_path\" =~ /$resource$/ AND \"name\" =~ /$endpoint$/ AND \"response_group\" =~ /$response_status$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"component\" fill(0)",
+              "refId": "B",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$host$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "resource_path",
+                  "operator": "=~",
+                  "value": "/$resource$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "name",
+                  "operator": "=~",
+                  "value": "/$endpoint$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "response_group",
+                  "operator": "=~",
+                  "value": "/$response_status$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rates - $response_status",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447441533026,
+          "repeatPanelId": 23
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": 1447441533026,
+      "repeatRowId": 1,
+      "scopedVars": {
+        "endpoint": {
+          "text": "voidPayment",
+          "value": "voidPayment",
+          "selected": false
+        }
+      },
+      "showTitle": true,
+      "title": "Requests Details - $endpoint"
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "allFormat": "regex wildcard",
+        "current": {
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": "influxdb",
+        "includeAll": true,
+        "label": "Host",
+        "multi": false,
+        "multiFormat": "glob",
+        "name": "host",
+        "options": [
+          {
+            "text": "All",
+            "value": ".*",
+            "selected": true
+          },
+          {
+            "text": "killbill-us-1",
+            "value": "killbill\\-us\\-1",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-2",
+            "value": "killbill\\-us\\-2",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-3",
+            "value": "killbill\\-us\\-3",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-4",
+            "value": "killbill\\-us\\-4",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-5",
+            "value": "killbill\\-us\\-5",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-6",
+            "value": "killbill\\-us\\-6",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-7",
+            "value": "killbill\\-us\\-7",
+            "selected": false
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM kb_resource WITH KEY = host",
+        "refresh": true,
+        "refresh_on_load": false,
+        "type": "query"
+      },
+      {
+        "allFormat": "regex wildcard",
+        "current": {
+          "text": "/1_0/kb/payments",
+          "value": "\\/1_0\\/kb\\/payments"
+        },
+        "datasource": "influxdb",
+        "includeAll": false,
+        "label": "Resource",
+        "multi": true,
+        "multiFormat": "regex values",
+        "name": "resource",
+        "options": [
+          {
+            "text": "/1_0/kb/payments",
+            "value": "\\/1_0\\/kb\\/payments",
+            "selected": true
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM kb_resource WITH KEY = resource_path",
+        "refresh": true,
+        "refresh_on_load": false,
+        "type": "query"
+      },
+      {
+        "allFormat": "regex values",
+        "current": {
+          "text": "All",
+          "value": "(captureAuthorization|createComboPayment|getPayment|refundPayment|voidPayment)"
+        },
+        "datasource": "influxdb",
+        "includeAll": true,
+        "label": "Endpoint",
+        "multi": true,
+        "multiFormat": "regex values",
+        "name": "endpoint",
+        "options": [
+          {
+            "text": "All",
+            "value": "(captureAuthorization|createComboPayment|getPayment|refundPayment|voidPayment)",
+            "selected": true
+          },
+          {
+            "text": "captureAuthorization",
+            "value": "captureAuthorization",
+            "selected": false
+          },
+          {
+            "text": "createComboPayment",
+            "value": "createComboPayment",
+            "selected": false
+          },
+          {
+            "text": "getPayment",
+            "value": "getPayment",
+            "selected": false
+          },
+          {
+            "text": "refundPayment",
+            "value": "refundPayment",
+            "selected": false
+          },
+          {
+            "text": "voidPayment",
+            "value": "voidPayment",
+            "selected": false
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM kb_resource WITH KEY = \"name\" WHERE \"resource_path\" =~ /$resource/",
+        "refresh": true,
+        "refresh_on_load": false,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allFormat": "regex wildcard",
+        "current": {
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": "influxdb",
+        "includeAll": true,
+        "label": "Response Status",
+        "multi": true,
+        "multiFormat": "glob",
+        "name": "response_status",
+        "options": [
+          {
+            "text": "All",
+            "value": ".*",
+            "selected": true
+          },
+          {
+            "text": "2xx",
+            "value": "2xx",
+            "selected": false
+          },
+          {
+            "text": "5xx",
+            "value": "5xx",
+            "selected": false
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM kb_resource WITH KEY = response_group WHERE resource_path =~ /$resource/ AND name =~  /$endpoint/",
+        "refresh": true,
+        "refresh_on_load": false,
+        "type": "query"
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "influxdb",
+        "enable": true,
+        "iconColor": "#C0C6BE",
+        "iconSize": 13,
+        "lineColor": "rgba(255, 96, 96, 0.592157)",
+        "name": "restarts",
+        "query": "select * from restarts where $timeFilter",
+        "showLine": true,
+        "tagsColumn": "host",
+        "textColumn": "",
+        "titleColumn": "version"
+      }
+    ]
+  },
+  "refresh": "30s",
+  "schemaVersion": 7,
+  "version": 24,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [],
+      "type": "dashboards"
+    }
+  ]
+}

@@ -1,0 +1,1668 @@
+{
+  "id": 8,
+  "title": "Kill Bill System Health",
+  "originalTitle": "Kill Bill System Health",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 2,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 4,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": true,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "rightYAxisLabel": "",
+          "seriesOverrides": [
+            {
+              "alias": "usage",
+              "yaxis": 2
+            }
+          ],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_metric",
+              "fields": [
+                {
+                  "func": "max",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "memory",
+              "query": "SELECT max(\"value\") AS \"value\" FROM \"memory\" WHERE \"host\" =~ /$hosts$/ AND \"type\" = 'heap' AND \"metric\" <> 'init' AND $timeFilter GROUP BY time($interval), \"metric\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "type",
+                  "operator": "=",
+                  "value": "heap"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "<>",
+                  "value": "init"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Heap Usage",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "bytes",
+            "percentunit"
+          ]
+        }
+      ],
+      "showTitle": true,
+      "title": "Memory"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 1,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "time",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_metric",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "gc",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"gc\" WHERE \"host\" =~ /$hosts$/ AND \"collector\" = 'ConcurrentMarkSweep' AND $timeFilter GROUP BY time($interval), \"metric\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "collector",
+                  "operator": "=",
+                  "value": "ConcurrentMarkSweep"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "ConcurrentMarkSweep Runs",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "ms"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 2,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "time",
+              "yaxis": 2
+            }
+          ],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_metric",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "gc",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"gc\" WHERE \"host\" =~ /$hosts$/ AND \"collector\" = 'ParNew' AND $timeFilter GROUP BY time($interval), \"metric\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "collector",
+                  "operator": "=",
+                  "value": "ParNew"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "ParNew Runs",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "ms"
+          ]
+        }
+      ],
+      "showTitle": true,
+      "title": "Garbage Collection"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 3,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "total",
+              "stack": false,
+              "yaxis": 2
+            }
+          ],
+          "span": 12,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_state",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "state",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "threads",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"threads\" WHERE \"host\" =~ /$hosts$/ AND \"type\" <> 'daemon' AND \"state\" =~ /new|runnable|blocked|waiting/ AND $timeFilter GROUP BY time($interval), \"state\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "type",
+                  "operator": "<>",
+                  "value": "daemon"
+                },
+                {
+                  "condition": "AND",
+                  "key": "state",
+                  "operator": "=~",
+                  "value": "/new|runnable|blocked|waiting/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Threads by State",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "showTitle": true,
+      "title": "Threads"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 5,
+          "interval": "> 30s",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "pool_name",
+          "scopedVars": {
+            "pool_name": {
+              "selected": true,
+              "text": "main",
+              "value": "main"
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "TotalConnections",
+              "bars": false,
+              "lines": true,
+              "stack": false
+            }
+          ],
+          "span": 6,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_metric",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" !~ /Usage|Wait/ AND $timeFilter GROUP BY time($interval), \"metric\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "!~",
+                  "value": "/Usage|Wait/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "DB Pool - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 13,
+          "interval": "> 30s",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "pool_name": {
+              "selected": true,
+              "text": "osgi",
+              "value": "osgi"
+            }
+          },
+          "seriesOverrides": [
+            {
+              "alias": "TotalConnections",
+              "bars": false,
+              "lines": true,
+              "stack": false
+            }
+          ],
+          "span": 6,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_metric",
+              "fields": [
+                {
+                  "func": "sum",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT sum(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" !~ /Usage|Wait/ AND $timeFilter GROUP BY time($interval), \"metric\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "!~",
+                  "value": "/Usage|Wait/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "DB Pool - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ],
+          "repeatIteration": 1447353123014,
+          "repeatPanelId": 5
+        }
+      ],
+      "showTitle": true,
+      "title": "Database Pools"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 7,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "pool_name",
+          "scopedVars": {
+            "hosts": {
+              "selected": false,
+              "text": "killbill-us-1",
+              "value": "killbill\\-us\\-1"
+            },
+            "pool_name": {
+              "selected": true,
+              "text": "main",
+              "value": "main"
+            }
+          },
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" = 'Usage' AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"metric\", \"component\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "=",
+                  "value": "Usage"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Connection Usage - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 14,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "hosts": {
+              "selected": false,
+              "text": "killbill-us-1",
+              "value": "killbill\\-us\\-1"
+            },
+            "pool_name": {
+              "selected": true,
+              "text": "osgi",
+              "value": "osgi"
+            }
+          },
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" = 'Usage' AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"metric\", \"component\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "=",
+                  "value": "Usage"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Connection Usage - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ],
+          "repeatIteration": 1447353123014,
+          "repeatPanelId": 7
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 8,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "pool_name",
+          "scopedVars": {
+            "pool_name": {
+              "selected": true,
+              "text": "main",
+              "value": "main"
+            }
+          },
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" = 'Wait' AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"metric\", \"component\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "=",
+                  "value": "Wait"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Connection Wait Time - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 15,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "minSpan": 4,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "scopedVars": {
+            "pool_name": {
+              "selected": true,
+              "text": "osgi",
+              "value": "osgi"
+            }
+          },
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_component",
+              "fields": [
+                {
+                  "func": "mean",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "metric",
+                  "type": "tag"
+                },
+                {
+                  "key": "component",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "pool",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"pool\" WHERE \"host\" =~ /$hosts$/ AND \"pool_name\" =~ /$pool_name$/ AND \"metric\" = 'Wait' AND \"component\" =~ /mean$|p50|p75|p95|p99$/ AND $timeFilter GROUP BY time($interval), \"metric\", \"component\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "pool_name",
+                  "operator": "=~",
+                  "value": "/$pool_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "metric",
+                  "operator": "=",
+                  "value": "Wait"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=~",
+                  "value": "/mean$|p50|p75|p95|p99$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Connection Wait Time - $pool_name",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "ns",
+            "short"
+          ],
+          "repeatIteration": 1447353123014,
+          "repeatPanelId": 8
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 12,
+          "interval": "> 30s",
+          "leftYAxisLabel": "events p/min",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "error",
+              "color": "#BF1B00"
+            }
+          ],
+          "span": 12,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "$tag_level",
+              "fields": [
+                {
+                  "func": "sum",
+                  "mathExpr": "* 60",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                },
+                {
+                  "key": "level",
+                  "type": "tag"
+                }
+              ],
+              "measurement": "logback",
+              "query": "SELECT sum(\"value\")* 60 AS \"value\" FROM \"logback\" WHERE \"host\" =~ /$hosts$/ AND \"component\" = 'm1_rate' AND $timeFilter GROUP BY time($interval), \"level\"",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "component",
+                  "operator": "=",
+                  "value": "m1_rate"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Logback Entries per Level",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "showTitle": true,
+      "title": "Logs"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 16,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "Size",
+              "fields": [
+                {
+                  "func": "first",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                }
+              ],
+              "measurement": "DBBackedQueue",
+              "query": "SELECT first(\"value\") AS \"value\" FROM \"DBBackedQueue\" WHERE \"type\" = 'bus-bus_events' AND \"attribute\" = 'size' AND $timeFilter GROUP BY time($interval)",
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "type",
+                  "operator": "=",
+                  "value": "bus-bus_events"
+                },
+                {
+                  "condition": "AND",
+                  "key": "attribute",
+                  "operator": "=",
+                  "value": "size"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Event Bus",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "influxdb",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 17,
+          "interval": "> 30s",
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "Size",
+              "fields": [
+                {
+                  "func": "first",
+                  "name": "value"
+                }
+              ],
+              "groupBy": [
+                {
+                  "interval": "auto",
+                  "type": "time"
+                }
+              ],
+              "measurement": "DBBackedQueue",
+              "query": "SELECT first(\"value\") AS \"value\" FROM \"DBBackedQueue\" WHERE \"host\" =~ /$hosts$/ AND \"type\" = 'notif-notifications' AND \"attribute\" = 'size' AND $timeFilter GROUP BY time($interval)",
+              "rawQuery": false,
+              "refId": "A",
+              "tags": [
+                {
+                  "key": "host",
+                  "operator": "=~",
+                  "value": "/$hosts$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "type",
+                  "operator": "=",
+                  "value": "notif-notifications"
+                },
+                {
+                  "condition": "AND",
+                  "key": "attribute",
+                  "operator": "=",
+                  "value": "size"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Notifications",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "showTitle": true,
+      "title": "Kill Bill Queues"
+    }
+  ],
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "allFormat": "regex wildcard",
+        "current": {
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": "influxdb",
+        "includeAll": true,
+        "label": "Host",
+        "multi": true,
+        "multiFormat": "regex values",
+        "name": "hosts",
+        "options": [
+          {
+            "text": "All",
+            "value": ".*",
+            "selected": true
+          },
+          {
+            "text": "killbill-us-1",
+            "value": "killbill\\-us\\-1",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-2",
+            "value": "killbill\\-us\\-2",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-3",
+            "value": "killbill\\-us\\-3",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-4",
+            "value": "killbill\\-us\\-4",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-5",
+            "value": "killbill\\-us\\-5",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-6",
+            "value": "killbill\\-us\\-6",
+            "selected": false
+          },
+          {
+            "text": "killbill-us-7",
+            "value": "killbill\\-us\\-7",
+            "selected": false
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM gc WITH key = host",
+        "refresh": true,
+        "refresh_on_load": false,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allFormat": "glob",
+        "current": {
+          "tags": [],
+          "text": "main + osgi",
+          "value": [
+            "main",
+            "osgi"
+          ]
+        },
+        "datasource": "influxdb",
+        "includeAll": false,
+        "label": "DB Pools",
+        "multi": true,
+        "multiFormat": "regex values",
+        "name": "pool_name",
+        "options": [
+          {
+            "selected": true,
+            "text": "main",
+            "value": "main"
+          },
+          {
+            "selected": true,
+            "text": "osgi",
+            "value": "osgi"
+          },
+          {
+            "selected": false,
+            "text": "shiro",
+            "value": "shiro"
+          }
+        ],
+        "query": "SHOW TAG VALUES FROM pool WITH KEY = pool_name",
+        "refresh_on_load": false,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "influxdb",
+        "enable": true,
+        "iconColor": "#C0C6BE",
+        "iconSize": 13,
+        "lineColor": "rgba(255, 96, 96, 0.592157)",
+        "name": "restarts",
+        "query": "select * from restarts where $timeFilter",
+        "showLine": true,
+        "tagsColumn": "host"
+      }
+    ]
+  },
+  "refresh": "30s",
+  "schemaVersion": 7,
+  "version": 12,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "type": "dashboards"
+    }
+  ]
+}
