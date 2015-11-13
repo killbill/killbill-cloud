@@ -85,11 +85,20 @@ EORUBY
   fi
 }
 
+function create_annotation {
+  METRICS_HOST=$(/usr/bin/perl -ne 'print $1 if m/org.killbill.metrics.graphite.host=(.+)/' $KILLBILL_CONFIG/killbill.properties)
+  if [ -n "$METRICS_HOST" ]; then
+    /usr/bin/curl -m 5 -s -XPOST "http://${METRICS_HOST}:8086/write?db=killbill" --data-binary "restarts,host=$(hostname) version=0.15" || true
+  fi
+}
+
 function run {
   install
 
   # Load JVM properties
   export CATALINA_OPTS=$(jruby -rerb -ryaml -e 'puts YAML.load(ERB.new(File.new("#{ENV['"'KILLBILL_CONFIG'"']}/kpm.yml.erb").read).result)["killbill"]["jvm"]')
+
+  create_annotation
 
   cd /var/lib/tomcat7 && /usr/share/tomcat7/bin/catalina.sh run
 }
