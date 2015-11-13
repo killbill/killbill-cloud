@@ -45,7 +45,7 @@ reporting-disabled = true
 
   # These are the WAL settings for the storage engine >= 0.9.3
   wal-dir = "/data/wal"
-  wal-enable-logging = true
+  wal-enable-logging = false
 
   # When a series in the WAL in-memory cache reaches this size in bytes it is marked as ready to
   # flush to the index
