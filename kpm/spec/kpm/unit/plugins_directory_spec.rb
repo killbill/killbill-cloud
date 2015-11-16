@@ -13,7 +13,7 @@ describe KPM::PluginsDirectory do
     artifact_id.should == 'analytics-plugin'
     packaging.should == 'jar'
     classifier.should be_nil
-    version.should == '2.0.1'
+    version.should == '2.0.2'
     type.should == :java
   end
 
