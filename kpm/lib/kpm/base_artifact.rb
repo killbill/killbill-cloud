@@ -67,7 +67,7 @@ module KPM
         # Build artifact info
         artifact_info = artifact_info(coordinates, destination_path, overrides, ssl_verify)
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
-          logger.info "Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
+          logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
           artifact_info[:skipped] = true
           return artifact_info
         end
