@@ -1,3 +1,5 @@
+require 'pathname'
+
 module KPM
   class BaseInstaller
 
@@ -64,19 +66,21 @@ module KPM
         return nil
       end
 
+      bundles_dir = Pathname.new(bundles_dir).expand_path
+
       type = specified_type || looked_up_type
       if type == 'java'
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
         version = specified_version || looked_up_version || LATEST_VERSION
-        destination = "#{bundles_dir}/plugins/java/#{artifact_id}/#{version}"
+        destination = bundles_dir.join('plugins').join('java').join(artifact_id).join(version)
       else
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
         version = specified_version || looked_up_version || LATEST_VERSION
-        destination = "#{bundles_dir}/plugins/ruby"
+        destination = bundles_dir.join('plugins').join('ruby')
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
@@ -100,8 +104,9 @@ module KPM
       packaging = 'tar.gz'
       classifier = nil
       version = specified_version || LATEST_VERSION
-      destination = "#{bundles_dir}/platform"
-      sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+      bundles_dir = Pathname.new(bundles_dir).expand_path
+      destination = bundles_dir.join('platform')
+      sha1_file = bundles_dir.join(SHA1_FILENAME)
 
       info = KPM::BaseArtifact.pull(@logger,
                                     group_id,
@@ -119,7 +124,7 @@ module KPM
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
       unless info[:skipped]
-        File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, "#{destination}/jruby.jar"
+        File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, destination.join('jruby.jar')
       end
 
       info
