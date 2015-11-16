@@ -23,8 +23,6 @@ describe KPM::BaseArtifact do
       # Verify the download happens when we set force_download
       test_download dir, nil, false, true
     end
-
-
   end
 
   # This test makes sure the top level directory is correctly verify_is_skipped
