@@ -24,6 +24,9 @@ describe KPM::Installer do
                                                         'ruby' => [{
                                                                        'name'    => 'payment-test-plugin',
                                                                        'version' => '1.8.7'
+                                                                   },
+                                                                   {
+                                                                       'name'    => 'stripe'
                                                                    }]
                                                     },
                                                 },
@@ -45,7 +48,8 @@ describe KPM::Installer do
           plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
           plugins_dir + '/plugins/ruby',
           plugins_dir + '/plugins/ruby/killbill-payment-test',
-          plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
+          plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7',
+          plugins_dir + '/plugins/ruby/killbill-stripe'
       ].each do |dir|
         File.directory?(dir).should be_true
       end

@@ -54,18 +54,28 @@ module KPM
                              @nexus_ssl_verify)
     end
 
-    def install_plugin(specified_group_id, artifact_id, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, type='java', force_download=false, verify_sha1=true)
+    def install_plugin(specified_group_id, specified_artifact_id, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type='java', force_download=false, verify_sha1=true)
+      looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(specified_artifact_id, true)
+
+      # Specified parameters have always precedence except for the artifact_id (to map stripe to killbill-stripe)
+      artifact_id = looked_up_artifact_id || specified_artifact_id
+      if artifact_id.nil?
+        @logger.warn("Aborting installation: unable to lookup plugin #{specified_artifact_id}")
+        return nil
+      end
+
+      type = specified_type || looked_up_type
       if type == 'java'
-        group_id = specified_group_id || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
-        packaging = specified_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
-        classifier = specified_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
-        version = specified_version || LATEST_VERSION
+        group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
+        packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
+        classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
+        version = specified_version || looked_up_version || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/java/#{artifact_id}/#{version}"
       else
-        group_id = specified_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
-        packaging = specified_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
-        classifier = specified_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
-        version = specified_version || LATEST_VERSION
+        group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
+        packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
+        classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
+        version = specified_version || looked_up_version || LATEST_VERSION
         destination = "#{bundles_dir}/plugins/ruby"
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
