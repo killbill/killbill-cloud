@@ -1,0 +1,28 @@
+logstash:
+  image: logstash:latest
+  command: logstash -w 1 -f /etc/logstash/conf.d/logstash.conf
+  volumes:
+    - ./logstash/config:/etc/logstash/conf.d
+  ports:
+    - "1514:1514"
+  links:
+    - elasticsearch
+  environment:
+    - LS_HEAP_SIZE=2048m
+  restart: always
+elasticsearch:
+  image: elasticsearch:latest
+  volumes:
+    - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  ports:
+    - "9200:9200"
+  restart: always
+kibana:
+  build: kibana/
+  volumes:
+    - ./kibana/config/kibana.yml:/opt/kibana/config/kibana.yml
+  ports:
+    - "5601:5601"
+  links:
+    - elasticsearch
+  restart: always

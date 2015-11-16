@@ -1,0 +1,25 @@
+[
+  {
+    "_id": "Kill-Bill-logs",
+    "_type": "search",
+    "_source": {
+      "title": "Kill Bill logs",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "@timestamp",
+        "thread",
+        "level",
+        "message"
+      ],
+      "sort": [
+        "@timestamp",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"[logstash-]YYYY.MM.DD\",\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"filter\":[],\"query\":{\"query_string\":{\"query\":\"NOT tags:multiline NOT class:c.s.j.a.c.filter.LoggingFilter subType:java\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  }
+]

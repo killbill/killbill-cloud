@@ -12,7 +12,7 @@ ENV KILLBILL_CONFIG /etc/killbill
 
 ENV KILLBILL_GROUP_ID org.kill-bill.billing
 ENV KILLBILL_ARTIFACT_ID killbill-profiles-killbill
-ENV KILLBILL_DEFAULT_BUNDLES_VERSION 0.11
+ENV KILLBILL_DEFAULT_BUNDLES_VERSION 0.14
 
 ENV KILLBILL_JVM_PERM_SIZE 512m
 ENV KILLBILL_JVM_MAX_PERM_SIZE 1G
@@ -26,18 +26,25 @@ ENV KILLBILL_CONFIG_OSGI_DAO_URL jdbc:h2:file:$KILLBILL_HOME/killbill;MODE=MYSQL
 ENV KILLBILL_CONFIG_OSGI_DAO_USER killbill
 ENV KILLBILL_CONFIG_OSGI_DAO_PASSWORD killbill
 
+ENV KILLBILL_SHIRO_RESOURCE_PATH classpath:shiro.ini
+
 ENV KPM_PROPS --verify-sha1
 
 # Install Kill Bill dependencies and useful tools
 RUN apt-get update && \
     apt-get install -y \
+      openjdk-7-jdk \
       curl \
       mysql-client \
       tomcat7 \
+      libtcnative-1 \
       unzip \
       telnet \
       sudo && \
     rm -rf /var/lib/apt/lists/*
+
+# Configure default JAVA_HOME path
+RUN ln -s java-7-openjdk-amd64 /usr/lib/jvm/default-java
 
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
 RUN mkdir -p /var/lib/jruby \
@@ -59,6 +66,7 @@ RUN mkdir -p /tmp/tomcat7-tomcat7-tmp && chown -R tomcat7:tomcat7 /tmp/tomcat7-t
 RUN chmod g+w /etc/tomcat7/catalina.properties
 RUN rm -rf $TOMCAT_HOME/webapps/*
 COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
+COPY ./server.xml $TOMCAT_CONFIG/server.xml
 
 # Add tomcat into sudo group and reinitialize the password
 RUN usermod -aG sudo tomcat7
