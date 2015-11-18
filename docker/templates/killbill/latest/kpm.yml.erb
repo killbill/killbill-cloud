@@ -27,40 +27,17 @@ killbill:
     org.killbill.dao.url: <%= ENV['KILLBILL_CONFIG_DAO_URL'] %>
     org.killbill.dao.user: <%= ENV['KILLBILL_CONFIG_DAO_USER'] %>
     org.killbill.dao.password: <%= ENV['KILLBILL_CONFIG_DAO_PASSWORD'] %>
-    org.killbill.dao.logLevel: DEBUG
     org.killbill.jruby.context.scope: THREADSAFE
+    org.killbill.metrics.graphite: <%= ENV['KILLBILL_METRICS_GRAPHITE'] %>
+    org.killbill.metrics.graphite.host: <%= ENV['KILLBILL_METRICS_GRAPHITE_HOST'] %>
+    org.killbill.metrics.graphite.port: <%= ENV['KILLBILL_METRICS_GRAPHITE_PORT'] %>
     org.killbill.notificationq.analytics.historyTableName: analytics_notifications_history
     org.killbill.notificationq.analytics.tableName: analytics_notifications
-    org.killbill.notificationq.analytics.queue.mode: STICKY_POLLING
-    org.killbill.notificationq.main.queue.mode: STICKY_POLLING
-    org.killbill.notificationq.main.claimed: 100
-    org.killbill.notificationq.main.sleep: 1000
     org.killbill.osgi.bundle.install.dir: <%= ENV['KILLBILL_HOME'] %>/bundles
     org.killbill.osgi.root.dir: <%= ENV['KILLBILL_HOME'] %>/felix-cache
-    org.killbill.payment.janitor.rate: 1m
-    org.killbill.payment.plugin.threads.nb: 100
-    org.killbill.payment.plugin.timeout: 30s
-    org.killbill.persistent.bus.external.queue.mode: STICKY_EVENTS
-    org.killbill.persistent.bus.external.claim.time: 5m
-    org.killbill.persistent.bus.external.inflight.claimed: 500
-    org.killbill.persistent.bus.external.inMemory: false
-    org.killbill.persistent.bus.external.max.failure.retry: 3
-    org.killbill.persistent.bus.external.nbThreads: 50
-    org.killbill.persistent.bus.external.queue.capacity: 1000000
-    org.killbill.persistent.bus.external.sleep: 0
-    org.killbill.persistent.bus.external.useInflightQ: true
-    org.killbill.persistent.bus.main.queue.mode: STICKY_EVENTS
-    org.killbill.persistent.bus.main.claim.time: 5m
-    org.killbill.persistent.bus.main.inflight.claimed: 500
-    org.killbill.persistent.bus.main.inMemory: false
-    org.killbill.persistent.bus.main.max.failure.retry: 3
-    org.killbill.persistent.bus.main.nbThreads: 50
-    org.killbill.persistent.bus.main.queue.capacity: 1000000
-    org.killbill.persistent.bus.main.sleep: 0
-    org.killbill.persistent.bus.main.useInflightQ: true
     org.killbill.server.baseUrl: http://localhost:8080
     org.killbill.server.properties: file://<%= ENV['KILLBILL_CONFIG'] %>/killbill.properties
     org.killbill.server.http.gzip: true
     org.killbill.security.shiroResourcePath: <%= ENV['KILLBILL_SHIRO_RESOURCE_PATH'] %>
-    org.killbill.server.test.mode: true
+    org.killbill.server.test.mode: <%= ENV['KILLBILL_SERVER_TEST_MODE'] %>
   webapp_path: "/var/lib/tomcat7/webapps/ROOT.war"
