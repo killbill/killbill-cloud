@@ -78,13 +78,14 @@ module KPM
 
           downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
           if artifact_info[:is_tgz]
-            Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
+            artifact_info[:bundle_dir] = Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
           else
             FileUtils.mv downloaded_artifact_info[:file_path], destination_path
+            artifact_info[:bundle_dir] = destination_path
             artifact_info[:size] = downloaded_artifact_info[:size]
           end
-          logger.info "Successful installation of #{coordinates} to #{artifact_info[:file_path]}"
+          logger.info "Successful installation of #{coordinates} to #{artifact_info[:bundle_dir]}"
         end
         artifact_info
       end
@@ -114,7 +115,6 @@ module KPM
 
 
       def artifact_info(coordinates, destination_path, overrides={}, ssl_verify=true)
-
         info = {}
         nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
 

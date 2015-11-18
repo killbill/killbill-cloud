@@ -8,6 +8,7 @@ module KPM
       TAR_LONGLINK = '././@LongLink'
 
       def unpack_tgz(tar_gz_archive, destination, skip_top_dir=false)
+        top_dir = nil
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           dest = nil
           tar.each do |entry|
@@ -26,12 +27,16 @@ module KPM
                 f.print entry.read
               end
               FileUtils.chmod entry.header.mode, dest, :verbose => false
+              current_dir = File.dirname(dest)
+              # In case there are two top dirs, keep the last one by convention
+              top_dir = current_dir if (top_dir.nil? || top_dir.size >= current_dir.size)
             elsif entry.header.typeflag == '2' # Symlink
               File.symlink entry.header.linkname, dest
             end
             dest = nil
           end
         end
+        top_dir
       end
 
       def path_with_skipped_top_level_dir(path)

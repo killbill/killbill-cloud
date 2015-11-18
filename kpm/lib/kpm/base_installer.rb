@@ -67,6 +67,7 @@ module KPM
       end
 
       bundles_dir = Pathname.new(bundles_dir).expand_path
+      plugins_dir = bundles_dir.join('plugins')
 
       type = specified_type || looked_up_type
       if type == 'java'
@@ -74,28 +75,34 @@ module KPM
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
         version = specified_version || looked_up_version || LATEST_VERSION
-        destination = bundles_dir.join('plugins').join('java').join(artifact_id).join(version)
+        destination = plugins_dir.join('java').join(artifact_id).join(version)
       else
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
         version = specified_version || looked_up_version || LATEST_VERSION
-        destination = bundles_dir.join('plugins').join('ruby')
+        destination = plugins_dir.join('ruby')
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
-      KPM::KillbillPluginArtifact.pull(@logger,
-                                       group_id,
-                                       artifact_id,
-                                       packaging,
-                                       classifier,
-                                       version,
-                                       destination,
-                                       sha1_file,
-                                       force_download,
-                                       verify_sha1,
-                                       @nexus_config,
-                                       @nexus_ssl_verify)
+      artifact_info = KPM::KillbillPluginArtifact.pull(@logger,
+                                                       group_id,
+                                                       artifact_id,
+                                                       packaging,
+                                                       classifier,
+                                                       version,
+                                                       destination,
+                                                       sha1_file,
+                                                       force_download,
+                                                       verify_sha1,
+                                                       @nexus_config,
+                                                       @nexus_ssl_verify)
+
+      # Mark this bundle as active
+      plugins_manager = PluginsManager.new(plugins_dir, @logger)
+      plugins_manager.set_active(artifact_info[:bundle_dir])
+
+      artifact_info
     end
 
     def install_default_bundles(bundles_dir, specified_version=nil, force_download=false, verify_sha1=true)

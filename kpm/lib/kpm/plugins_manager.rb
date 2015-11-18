@@ -24,6 +24,11 @@ module KPM
           FileUtils.ln_s(plugin_dir.join(plugin_version), link, :force => true)
         end
       end
+
+      update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
+        FileUtils.rm_f(tmp_dir.join('stop.txt'))
+        FileUtils.rm_f(tmp_dir.join('restart.txt'))
+      end
     end
 
     def uninstall(plugin_name_or_path, plugin_version=nil)

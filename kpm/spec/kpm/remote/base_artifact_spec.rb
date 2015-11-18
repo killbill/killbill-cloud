@@ -43,6 +43,8 @@ describe KPM::BaseArtifact do
       files_in_dir[0].should == info[:file_path] + '/killbill-payment-test'
 
       File.read(info[:file_path] + '/killbill-payment-test/1.8.7/killbill.properties').should == "mainClass=PaymentTest::PaymentPlugin\nrequire=payment_test\npluginType=PAYMENT\n"
+
+      info[:bundle_dir].should == info[:file_path] + '/killbill-payment-test/1.8.7'
     end
   end
 
@@ -62,6 +64,8 @@ describe KPM::BaseArtifact do
       files_in_dir.size.should == 20
 
       File.file?(info[:file_path] + '/killbill-osgi-bundles-jruby-0.11.3.jar').should be_true
+
+      info[:bundle_dir].should == info[:file_path]
     end
   end
 
