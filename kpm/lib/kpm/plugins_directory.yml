@@ -39,7 +39,7 @@
 :braintree_blue:
   :type: :ruby
   :artifact_id: braintree_blue-plugin
-  :stable_version: 0.0.1
+  :stable_version: 0.1.0
   :require:
   - :merchant_id
   - :public_key
