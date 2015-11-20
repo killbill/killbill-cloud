@@ -28,4 +28,14 @@ describe KPM::KillbillServerArtifact do
     versions[0].should == '0.11.10'
     versions[1].should == '0.11.11'
   end
+
+  it 'should get dependencies information' do
+    info = KPM::KillbillServerArtifact.info('0.15.9')
+    info['killbill'].should == '0.15.9'
+    info['killbill-oss-parent'].should == '0.62'
+    info['killbill-api'].should == '0.27'
+    info['killbill-plugin-api'].should == '0.16'
+    info['killbill-commons'].should == '0.10'
+    info['killbill-platform'].should == '0.13'
+  end
 end

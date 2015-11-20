@@ -226,6 +226,19 @@ module KPM
           say "Available versions: #{KauiArtifact.versions(options[:overrides], options[:ssl_verify]).to_a.join(', ')}", :green
         end
 
+        method_option :version,
+                      :type => :string,
+                      :default => 'LATEST',
+                      :desc => 'Kill Bill version'
+        desc 'info', 'Describe information about a Kill Bill version'
+        def info
+          info = KillbillServerArtifact.info(options[:version],
+                                             options[:overrides],
+                                             options[:ssl_verify])
+
+          say "Dependencies for version #{options[:version]}\n  " + (info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
+        end
+
         private
 
         def logger
