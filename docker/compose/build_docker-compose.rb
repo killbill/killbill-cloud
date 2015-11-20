@@ -13,7 +13,11 @@ FILES.each do |filename|
       v['links'].uniq!
     end
 
-    if k == 'grafana'
+    if k == 'killbill'
+      v['environment'] ||= []
+      v['environment'] << 'KILLBILL_METRICS_GRAPHITE=true'
+      v['environment'] << 'KILLBILL_METRICS_GRAPHITE_HOST=influxdb'
+    elsif k == 'grafana'
       v['environment'] ||= []
       v['environment'] << 'GF_SESSION_PROVIDER=mysql'
       v['environment'] << 'GF_SESSION_PROVIDER_CONFIG=root:killbill@tcp(db:3306)/grafana'
