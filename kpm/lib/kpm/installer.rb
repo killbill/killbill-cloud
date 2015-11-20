@@ -4,12 +4,17 @@ require 'yaml'
 module KPM
   class Installer < BaseInstaller
 
-    def self.from_file(config_path, logger=nil)
-      Installer.new(YAML::load_file(config_path), logger)
+    def self.from_file(config_path=nil, logger=nil)
+      if config_path.nil?
+        # Install Kill Bill by default
+        config = { 'killbill' => { 'version' => 'LATEST' }}
+      else
+        config = YAML::load_file(config_path)
+      end
+      Installer.new(config, logger)
     end
 
     def initialize(raw_config, logger=nil)
-      raise(ArgumentError, 'killbill or kaui section must be specified') if raw_config['killbill'].nil? and raw_config['kaui'].nil?
       @config = raw_config['killbill']
       @kaui_config = raw_config['kaui']
 
@@ -18,7 +23,7 @@ module KPM
         logger.level = Logger::INFO
       end
 
-      nexus_config = !@config.nil? ? @config['nexus'] : @kaui_config['nexus']
+      nexus_config = !@config.nil? ? @config['nexus'] : (!@kaui_config.nil? ? @kaui_config['nexus'] : nil)
       nexus_ssl_verify = !nexus_config.nil? ? nexus_config['ssl_verify'] : true
 
       super(logger, nexus_config, nexus_ssl_verify)
@@ -29,7 +34,7 @@ module KPM
         install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], force_download, verify_sha1)
         install_plugins(force_download, verify_sha1)
         unless @config['default_bundles'] == false
-          install_default_bundles(@config['plugins_dir'], @config['default_bundles_version'], force_download, verify_sha1)
+          install_default_bundles(@config['plugins_dir'], @config['default_bundles_version'], @config['version'], force_download, verify_sha1)
         end
       end
 

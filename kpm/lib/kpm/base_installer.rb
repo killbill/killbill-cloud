@@ -5,6 +5,7 @@ module KPM
 
     LATEST_VERSION = 'LATEST'
     SHA1_FILENAME = 'sha1.yml'
+    DEFAULT_BUNDLES_DIR = Pathname.new('/var').join('tmp').join('bundles').to_s
 
     def initialize(logger, nexus_config, nexus_ssl_verify)
       @logger = logger
@@ -20,6 +21,7 @@ module KPM
       version = specified_version || LATEST_VERSION
       webapp_path = specified_webapp_path || KPM::root
 
+      @logger.debug("Installing Kill Bill server: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       KPM::KillbillServerArtifact.pull(@logger,
                                        group_id,
                                        artifact_id,
@@ -42,6 +44,7 @@ module KPM
       version = specified_version || LATEST_VERSION
       webapp_path = specified_webapp_path || KPM::root
 
+      @logger.debug("Installing Kaui: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       KPM::KauiArtifact.pull(@logger,
                              group_id,
                              artifact_id,
@@ -66,7 +69,7 @@ module KPM
         return nil
       end
 
-      bundles_dir = Pathname.new(bundles_dir).expand_path
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
       type = specified_type || looked_up_type
@@ -85,6 +88,7 @@ module KPM
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
+      @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
       artifact_info = KPM::KillbillPluginArtifact.pull(@logger,
                                                        group_id,
                                                        artifact_id,
@@ -105,16 +109,24 @@ module KPM
       artifact_info
     end
 
-    def install_default_bundles(bundles_dir, specified_version=nil, force_download=false, verify_sha1=true)
+    def install_default_bundles(bundles_dir, specified_version=nil, kb_version=nil, force_download=false, verify_sha1=true)
       group_id = 'org.kill-bill.billing'
       artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
       packaging = 'tar.gz'
       classifier = nil
-      version = specified_version || LATEST_VERSION
-      bundles_dir = Pathname.new(bundles_dir).expand_path
+
+      version = specified_version
+      if version.nil?
+        info = KPM::KillbillServerArtifact.info(kb_version, @nexus_config, @nexus_ssl_verify)
+        version = info['killbill-platform']
+      end
+      version ||= LATEST_VERSION
+
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       destination = bundles_dir.join('platform')
       sha1_file = bundles_dir.join(SHA1_FILENAME)
 
+      @logger.debug("Installing default bundles: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
       info = KPM::BaseArtifact.pull(@logger,
                                     group_id,
                                     artifact_id,
