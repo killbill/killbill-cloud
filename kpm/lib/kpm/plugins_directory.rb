@@ -28,13 +28,17 @@ module KPM
       packaging   = plugin[:packaging] || (is_ruby ? KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING : KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING)
       classifier  = plugin[:classifier] || (is_ruby ? KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER : KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER)
 
-      # Keep supporting the deprecated key :stable_version for now
-      captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d)?/)
-      if captures.empty? || captures.first.nil? || captures.first.first.nil?
-        version = plugin[:stable_version] || 'LATEST'
+      if raw_kb_version == 'LATEST'
+        version = 'LATEST'
       else
-        kb_version = captures.first.first
-        version = (plugin[:versions] || {})[kb_version.to_sym] || 'LATEST'
+        # Keep supporting the deprecated key :stable_version for now
+        captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d)?/)
+        if captures.empty? || captures.first.nil? || captures.first.first.nil?
+          version = plugin[:stable_version] || 'LATEST'
+        else
+          kb_version = captures.first.first
+          version = (plugin[:versions] || {})[kb_version.to_sym] || 'LATEST'
+        end
       end
 
       [group_id, artifact_id, packaging, classifier, version, type]
