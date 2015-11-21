@@ -10,7 +10,6 @@ describe KPM::Sha1Checker do
     init_config = File.join(File.dirname(__FILE__), 'sha1_test.yml')
     FileUtils.copy(init_config, tmp_destination_dir)
     @tmp_config = File.join(tmp_destination_dir, 'sha1_test.yml')
-    puts "tmp config = #{@tmp_config}"
     @sha1_checker = KPM::Sha1Checker.from_file(@tmp_config)
   end
 
@@ -81,6 +80,4 @@ describe KPM::Sha1Checker do
     existing.should_not be_nil
     existing.should == 'abc068c3fd5f95646ce0d09852f43ff67f06f111'
   end
-
-
 end
