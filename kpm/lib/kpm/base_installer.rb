@@ -124,7 +124,7 @@ module KPM
 
       version = specified_version
       if version.nil?
-        info = KPM::KillbillServerArtifact.info(kb_version, @nexus_config, @nexus_ssl_verify)
+        info = KPM::KillbillServerArtifact.info(kb_version || LATEST_VERSION, @nexus_config, @nexus_ssl_verify)
         version = info['killbill-platform']
       end
       version ||= LATEST_VERSION
