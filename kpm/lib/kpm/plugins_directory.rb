@@ -14,7 +14,7 @@ module KPM
       end
     end
 
-    # Note: this API is used in Docker images (see killbill.sh, careful when changing it!)
+    # Note: this API is used in Docker images (see kpm_generator.rb, careful when changing it!)
     def self.lookup(raw_plugin_name, latest=false, raw_kb_version=nil)
       plugin_name = raw_plugin_name.to_s.downcase
       plugin = all(latest)[plugin_name.to_sym]
