@@ -62,7 +62,7 @@ module KPM
     def install_plugin(specified_group_id, specified_artifact_id, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type='java', force_download=false, verify_sha1=true)
       looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(specified_artifact_id, true)
 
-      # Specified parameters have always precedence except for the artifact_id (to map stripe to killbill-stripe)
+      # Specified parameters have always precedence except for the artifact_id (to map stripe to stripe-plugin)
       artifact_id = looked_up_artifact_id || specified_artifact_id
       if artifact_id.nil?
         @logger.warn("Aborting installation: unable to lookup plugin #{specified_artifact_id}")
@@ -104,7 +104,14 @@ module KPM
 
       # Mark this bundle as active
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      plugins_manager.set_active(artifact_info[:bundle_dir])
+      if artifact_info[:bundle_dir].nil?
+        # In case the artifact on disk already existed and the installation is skipped,
+        # we don't know the plugin name on disk (arbitrary if it's a .tar.gz). That being said,
+        # we can guess it for Kill Bill plugins (using our naming conventions)
+        plugins_manager.set_active(plugins_manager.guess_plugin_name(artifact_id), version)
+      else
+        plugins_manager.set_active(artifact_info[:bundle_dir])
+      end
 
       artifact_info
     end

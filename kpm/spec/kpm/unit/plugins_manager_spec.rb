@@ -81,6 +81,16 @@ describe KPM::PluginsManager do
     check_state('2.0.0', true, false)
   end
 
+  it 'guesses the plugin name' do
+    @manager.guess_plugin_name('tripe').should be_nil
+    # Short name
+    @manager.guess_plugin_name('stripe').should == 'killbill-stripe'
+    # Artifact id
+    @manager.guess_plugin_name('stripe-plugin').should == 'killbill-stripe'
+    # Plugin name (top directory in the .tar.gz)
+    @manager.guess_plugin_name('killbill-stripe').should == 'killbill-stripe'
+  end
+
   private
 
   def check_state(version, has_restart, has_stop)

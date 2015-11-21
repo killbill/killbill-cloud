@@ -9,12 +9,18 @@ module KPM
     end
 
     def set_active(plugin_name_or_path, plugin_version=nil)
+      if plugin_name_or_path.nil?
+        @logger.warn('Unable to mark a plugin as active: no name or path specified')
+        return
+      end
+
       if plugin_version.nil?
         # Full path specified, with version
         link = Pathname.new(plugin_name_or_path).join('../ACTIVE')
         FileUtils.rm_f(link)
         FileUtils.ln_s(plugin_name_or_path, link, :force => true)
       else
+        # Plugin name (fs directory) specified
         plugin_dir_glob = @plugins_dir.join('*').join(plugin_name_or_path)
         # Only one should match (java or ruby plugin)
         Dir.glob(plugin_dir_glob).each do |plugin_dir_path|
@@ -47,10 +53,35 @@ module KPM
       end
     end
 
+    def guess_plugin_name(artifact_id)
+      captures = artifact_id.scan(/(.*)-plugin/)
+      if captures.empty? || captures.first.nil? || captures.first.first.nil?
+        short_name = artifact_id
+      else
+        # 'analytics-plugin' or 'stripe-plugin' passed
+        short_name = captures.first.first
+      end
+      Dir.glob(@plugins_dir.join('*').join('*')).each do |plugin_path|
+        plugin_name = File.basename(plugin_path)
+        if plugin_name == short_name ||
+            plugin_name == artifact_id ||
+            !plugin_name.scan(/-#{short_name}/).empty? ||
+            !plugin_name.scan(/#{short_name}-/).empty?
+          return plugin_name
+        end
+      end
+      nil
+    end
+
     private
 
     # Note: the plugin name here is the directory name on the filesystem
     def update_fs(plugin_name_or_path, plugin_version=nil, &block)
+      if plugin_name_or_path.nil?
+        @logger.warn('Unable to update the filesystem: no name or path specified')
+        return
+      end
+
       p = plugin_version.nil? ? plugin_name_or_path : @plugins_dir.join('*').join(plugin_name_or_path).join(plugin_version == :all ? '*' : plugin_version)
 
       modified = []
