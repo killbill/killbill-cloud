@@ -23,6 +23,7 @@ module KPM
               FileUtils.mkdir_p dest, :mode => entry.header.mode, :verbose => false
             elsif entry.file?
               FileUtils.rm_rf dest if File.directory? dest
+              FileUtils.mkdir_p File.dirname(dest), :verbose => false
               File.open dest, "wb" do |f|
                 f.print entry.read
               end

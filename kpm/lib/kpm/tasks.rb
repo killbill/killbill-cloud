@@ -28,7 +28,8 @@ module KPM
                       :desc    => 'Validate sha1 sum'
         desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
         def install(config_file=nil)
-          Installer.from_file(config_file).install(options[:force_download], options[:verify_sha1])
+          help = Installer.from_file(config_file).install(options[:force_download], options[:verify_sha1])
+          say help, :green unless help.nil?
         end
 
         method_option :destination,

@@ -30,7 +30,9 @@ module KPM
     end
 
     def install(force_download=false, verify_sha1=true)
+      help = nil
       unless @config.nil?
+        help = install_tomcat if @config['webapp_path'].nil?
         install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], force_download, verify_sha1)
         install_plugins(force_download, verify_sha1)
         unless @config['default_bundles'] == false
@@ -39,11 +41,31 @@ module KPM
       end
 
       unless @kaui_config.nil?
+        if @kaui_config['webapp_path'].nil?
+          @logger.warn('No webapp_path specified for Kaui, aborting installation')
+          return
+        end
+
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], force_download, verify_sha1)
       end
+
+      help
     end
 
     private
+
+    def install_tomcat(dir=Dir.pwd)
+      # Download and unpack Tomcat
+      manager = KPM::TomcatManager.new(dir, @logger)
+      manager.download
+
+      # Update main config
+      root_war_path = manager.setup
+      @config['webapp_path'] = root_war_path
+
+      # Help message
+      manager.help
+    end
 
     def install_plugins(force_download, verify_sha1)
       install_java_plugins(force_download, verify_sha1)
