@@ -1,4 +1,5 @@
 require 'logger'
+require 'pathname'
 require 'yaml'
 
 module KPM
@@ -6,8 +7,8 @@ module KPM
 
     def self.from_file(config_path=nil, logger=nil)
       if config_path.nil?
-        # Install Kill Bill and the KPM plugin by default
-        config = {'killbill' => {'version' => 'LATEST', 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}}
+        # Install Kill Bill, Kaui and the KPM plugin by default
+        config = {'killbill' => {'version' => 'LATEST', 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
       else
         config = YAML::load_file(config_path)
       end
@@ -62,6 +63,7 @@ module KPM
       # Update main config
       root_war_path = manager.setup
       @config['webapp_path'] = root_war_path
+      @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s
 
       # Help message
       manager.help

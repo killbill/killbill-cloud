@@ -18,10 +18,11 @@ The following commands
     cd killbill
     kpm install
 
-will setup Kill Bill, i.e.:
+will setup Kill Bill and Kaui, i.e.:
 
 * Tomcat (open-source Java web server) is setup in the `killbill` directory
 * The Kill Bill application (war) is installed in the `killbill/webapps` directory
+* The Kill Bill UI (Kaui war) is installed in the `killbill/webapps` directory
 * Default plugins are installed in the `/var/tmp/bundles` directory, among them:
  * `jruby.jar`, required to run Ruby plugins
  * the [KPM plugin](https://github.com/killbill/killbill-kpm-plugin), required to (un-)install plugins at runtime
@@ -30,7 +31,7 @@ To start Kill Bill, simply run
 
     ./bin/catalina.sh run
 
-You can then verify Kill Bill is running by going to http://127.0.0.1:8080/index.html.
+You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 
 ## Configuration
 
