@@ -21,9 +21,9 @@ killbill:
     logback.configurationFile: <%= ENV['KILLBILL_CONFIG'] %>/logback.xml
     net.sf.ehcache.skipUpdateCheck: true
     org.killbill.billing.osgi.bundles.jruby.conf.dir: <%= ENV['KILLBILL_CONFIG'] %>
-    org.killbill.billing.osgi.dao.url: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_URL'] %>
-    org.killbill.billing.osgi.dao.user: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_USER'] %>
-    org.killbill.billing.osgi.dao.password: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_PASSWORD'] %>
+    org.killbill.billing.osgi.dao.url: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_URL'].to_s.empty? ? ENV['KILLBILL_CONFIG_DAO_URL'] : ENV['KILLBILL_CONFIG_OSGI_DAO_URL'] %>
+    org.killbill.billing.osgi.dao.user: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_USER'].to_s.empty? ? ENV['KILLBILL_CONFIG_DAO_USER'] : ENV['KILLBILL_CONFIG_OSGI_DAO_USER'] %>
+    org.killbill.billing.osgi.dao.password: <%= ENV['KILLBILL_CONFIG_OSGI_DAO_PASSWORD'].to_s.empty? ? ENV['KILLBILL_CONFIG_DAO_PASSWORD'] : ENV['KILLBILL_CONFIG_OSGI_DAO_PASSWORD'] %>
     org.killbill.dao.url: <%= ENV['KILLBILL_CONFIG_DAO_URL'] %>
     org.killbill.dao.user: <%= ENV['KILLBILL_CONFIG_DAO_USER'] %>
     org.killbill.dao.password: <%= ENV['KILLBILL_CONFIG_DAO_PASSWORD'] %>
