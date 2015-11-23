@@ -6,8 +6,8 @@ module KPM
 
     def self.from_file(config_path=nil, logger=nil)
       if config_path.nil?
-        # Install Kill Bill by default
-        config = { 'killbill' => { 'version' => 'LATEST' }}
+        # Install Kill Bill and the KPM plugin by default
+        config = {'killbill' => {'version' => 'LATEST', 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}}
       else
         config = YAML::load_file(config_path)
       end

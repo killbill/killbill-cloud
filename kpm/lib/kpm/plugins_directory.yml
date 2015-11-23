@@ -86,6 +86,10 @@
     - :org.killbill.billing.plugin.forte.port
     - :org.killbill.billing.plugin.forte.apiLoginId
     - :org.killbill.billing.plugin.forte.secureTransactionKey
+:kpm:
+  :type: :ruby
+  :versions:
+    :0.15: 0.0.1
 :litle:
   :type: :ruby
   :versions:

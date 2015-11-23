@@ -22,7 +22,9 @@ will setup Kill Bill, i.e.:
 
 * Tomcat (open-source Java web server) is setup in the `killbill` directory
 * The Kill Bill application (war) is installed in the `killbill/webapps` directory
-* Default plugins are installed in the `/var/tmp/bundles` directory
+* Default plugins are installed in the `/var/tmp/bundles` directory, among them:
+ * `jruby.jar`, required to run Ruby plugins
+ * the [KPM plugin](https://github.com/killbill/killbill-kpm-plugin), required to (un-)install plugins at runtime
 
 To start Kill Bill, simply run
 
