@@ -73,7 +73,7 @@ module KPM
       plugins_dir = bundles_dir.join('plugins')
 
       type = specified_type || looked_up_type
-      if type == 'java'
+      if type.to_s == 'java'
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
