@@ -54,35 +54,32 @@ module KPM
       protected
 
       def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
-        destination_path = KPM::root if destination_path.nil?
-
-        # Create the destination directory
-        if path_looks_like_a_directory(destination_path)
-          destination_dir = destination_path
-        else
-          destination_dir = File.dirname(destination_path)
-        end
-        FileUtils.mkdir_p(destination_dir)
-
         # Build artifact info
-        artifact_info = artifact_info(coordinates, destination_path, overrides, ssl_verify)
+        artifact_info = artifact_info(coordinates, overrides, ssl_verify)
+
+        populate_fs_info(artifact_info, destination_path)
+
+        # Return early if there's nothing to do
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
           logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
           artifact_info[:skipped] = true
           return artifact_info
         end
 
+        # Create the destination directory
+        FileUtils.mkdir_p(artifact_info[:dir_name])
+
         # Download the artifact in a temporary directory in case of failures
         Dir.mktmpdir do |tmp_destination_dir|
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
-          downloaded_artifact_info  = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
+          downloaded_artifact_info = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
           if artifact_info[:is_tgz]
-            artifact_info[:bundle_dir] = Utils.unpack_tgz(downloaded_artifact_info[:file_path], destination_path, skip_top_dir)
+            artifact_info[:bundle_dir] = Utils.unpack_tgz(downloaded_artifact_info[:file_path], artifact_info[:dir_name], skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
           else
-            FileUtils.mv downloaded_artifact_info[:file_path], destination_path
-            artifact_info[:bundle_dir] = destination_path
+            FileUtils.mv downloaded_artifact_info[:file_path], artifact_info[:file_path]
+            artifact_info[:bundle_dir] = artifact_info[:dir_name]
             artifact_info[:size] = downloaded_artifact_info[:size]
           end
           logger.info "Successful installation of #{coordinates} to #{artifact_info[:bundle_dir]}"
@@ -113,32 +110,50 @@ module KPM
         local_sha1 == artifact_info[:sha1]
       end
 
+      def artifact_info(coordinates, overrides={}, ssl_verify=true)
+        info = {
+            :skipped => false
+        }
 
-      def artifact_info(coordinates, destination_path, overrides={}, ssl_verify=true)
-        info = {}
         nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
 
         xml = REXML::Document.new(nexus_info)
-        repository_path = xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
-        sha1 = xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
-        version = xml.elements['//version'].text unless xml.elements['//version'].nil?
+        info[:sha1] = xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
+        info[:version] = xml.elements['//version'].text unless xml.elements['//version'].nil?
+        info[:repository_path] = xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
+        info[:is_tgz] = info[:repository_path].end_with?('.tar.gz') || info[:repository_path].end_with?('.tgz')
 
-        info[:sha1] = sha1
-        info[:version] = version
-        info[:is_tgz] = repository_path.end_with?('.tar.gz') || repository_path.end_with?('.tgz')
-        if File.directory?(destination_path) && !info[:is_tgz]
-          destination = File.join(File.expand_path(destination_path), File.basename(repository_path))
-          info[:file_name] = File.basename(repository_path)
-        else
-          # The destination was a fully specified path or this is an archive and we keep the directory
-          destination = destination_path
-          info[:file_name] = File.basename(destination_path) if !info[:is_tgz]
-        end
-        info[:file_path] = File.expand_path(destination)
-        info[:skipped] = false
         info
       end
 
+      def update_destination_path(info, destination_path)
+        # In case LATEST was specified, use the actual version as the directory name
+        destination_path = KPM::root if destination_path.nil?
+        plugin_dir, version_dir = File.split(destination_path)
+        destination_path = Pathname.new(plugin_dir).join(info[:version]).to_s if version_dir == 'LATEST'
+        destination_path
+      end
+
+      def populate_fs_info(info, destination_path)
+        destination_path = update_destination_path(info, destination_path)
+
+        if path_looks_like_a_directory(destination_path) && !info[:is_tgz]
+          info[:dir_name] = File.expand_path(destination_path)
+          info[:file_name] = File.basename(info[:repository_path])
+          info[:file_path] = File.expand_path(File.join(info[:dir_name], File.basename(info[:repository_path])))
+        else
+          # The destination was a fully specified path or this is an archive and we keep the directory
+          if info[:is_tgz]
+            info[:dir_name] = File.expand_path(destination_path)
+          else
+            info[:dir_name] = File.dirname(destination_path)
+            info[:file_name] = File.basename(destination_path)
+          end
+          info[:file_path] = File.expand_path(destination_path)
+        end
+
+        destination_path
+      end
 
       def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides={}, ssl_verify=true)
         info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)

@@ -54,6 +54,7 @@ module KPM
     end
 
     def guess_plugin_name(artifact_id)
+      return nil if artifact_id.nil?
       captures = artifact_id.scan(/(.*)-plugin/)
       if captures.empty? || captures.first.nil? || captures.first.first.nil?
         short_name = artifact_id
