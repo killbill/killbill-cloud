@@ -40,6 +40,10 @@ module KPM
         pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, verify_sha1, overrides, ssl_verify)
       end
 
+      def pull_from_fs(logger, file_path, destination_path=nil)
+        pull_from_fs_and_put_in_place(logger, file_path, destination_path)
+      end
+
       def nexus_remote(overrides={}, ssl_verify=true)
         nexus_remote ||= NexusCli::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
       end
@@ -87,6 +91,30 @@ module KPM
         artifact_info
       end
 
+      # Logic similar than pull_and_put_in_place above
+      def pull_from_fs_and_put_in_place(logger, file_path, destination_path=nil)
+        artifact_info = {
+            :skipped => false,
+            :repository_path => file_path,
+            :is_tgz => file_path.end_with?('.tar.gz') || file_path.end_with?('.tgz')
+        }
+
+        populate_fs_info(artifact_info, destination_path)
+
+        # Create the destination directory
+        FileUtils.mkdir_p(artifact_info[:dir_name])
+
+        if artifact_info[:is_tgz]
+          artifact_info[:bundle_dir] = Utils.unpack_tgz(file_path, artifact_info[:dir_name], true)
+        else
+          FileUtils.cp file_path, artifact_info[:dir_name]
+          artifact_info[:bundle_dir] = artifact_info[:dir_name]
+        end
+        logger.info "Successful installation of #{file_path} to #{artifact_info[:bundle_dir]}"
+
+        artifact_info
+      end
+
       def skip_if_exists(artifact_info, coordinates, sha1_file)
 
         # Unclear if this is even possible
@@ -130,7 +158,7 @@ module KPM
         # In case LATEST was specified, use the actual version as the directory name
         destination_path = KPM::root if destination_path.nil?
         plugin_dir, version_dir = File.split(destination_path)
-        destination_path = Pathname.new(plugin_dir).join(info[:version]).to_s if version_dir == 'LATEST'
+        destination_path = Pathname.new(plugin_dir).join(info[:version]).to_s if version_dir == 'LATEST' && !info[:version].nil?
         destination_path
       end
 

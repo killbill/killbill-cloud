@@ -102,16 +102,25 @@ module KPM
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
 
-      # Mark this bundle as active
-      plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      if artifact_info[:bundle_dir].nil?
-        # In case the artifact on disk already existed and the installation is skipped,
-        # we don't know the plugin name on disk (arbitrary if it's a .tar.gz). That being said,
-        # we can guess it for Kill Bill plugins (using our naming conventions)
-        plugins_manager.set_active(plugins_manager.guess_plugin_name(artifact_id), version)
+      mark_as_active(plugins_dir, artifact_info, artifact_id)
+
+      artifact_info
+    end
+
+    def install_plugin_from_fs(file_path, name, version, bundles_dir=nil, type='java')
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
+      plugins_dir = bundles_dir.join('plugins')
+
+      if type.to_s == 'java'
+        destination = plugins_dir.join('java').join(name).join(version)
       else
-        plugins_manager.set_active(artifact_info[:bundle_dir])
+        destination = plugins_dir.join('ruby')
       end
+
+      artifact_info = KPM::KillbillPluginArtifact.pull_from_fs(@logger, file_path, destination)
+      artifact_info[:version] ||= version
+
+      mark_as_active(plugins_dir, artifact_info)
 
       artifact_info
     end
@@ -154,6 +163,21 @@ module KPM
       end
 
       info
+    end
+
+    private
+
+    def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)
+      # Mark this bundle as active
+      plugins_manager = PluginsManager.new(plugins_dir, @logger)
+      if artifact_info[:bundle_dir].nil?
+        # In case the artifact on disk already existed and the installation is skipped,
+        # we don't know the plugin name on disk (arbitrary if it's a .tar.gz). That being said,
+        # we can guess it for Kill Bill plugins (using our naming conventions)
+        plugins_manager.set_active(plugins_manager.guess_plugin_name(artifact_id), artifact_info[:version])
+      else
+        plugins_manager.set_active(artifact_info[:bundle_dir])
+      end
     end
   end
 end

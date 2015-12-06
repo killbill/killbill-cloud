@@ -2,6 +2,30 @@ require 'spec_helper'
 
 describe KPM::BaseArtifact do
 
+  before(:all) do
+    @logger = Logger.new(STDOUT)
+    @logger.level = Logger::INFO
+  end
+
+  it 'should install from the filesystem' do
+    file_path = File.join(File.dirname(__FILE__), 'sha1_test.yml')
+
+    Dir.mktmpdir do |dir|
+      info = KPM::BaseArtifact.pull_from_fs(@logger, file_path, dir)
+
+      info[:skipped].should be_false
+      info[:is_tgz].should be_false
+      info[:repository_path].should == file_path
+      info[:dir_name].should == dir
+      info[:bundle_dir].should == dir
+      info[:file_name].should == 'sha1_test.yml'
+
+      files_in_dir = Dir[dir + '/*']
+      files_in_dir.size.should == 1
+      files_in_dir[0].should == info[:file_path]
+    end
+  end
+
   it 'should build the fs info' do
     # Kill Bill
     check_fs_info('/opt/tomcat/webapps/ROOT.war',
