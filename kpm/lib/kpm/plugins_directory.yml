@@ -89,7 +89,7 @@
 :kpm:
   :type: :ruby
   :versions:
-    :0.15: 0.0.1
+    :0.15: 0.0.2
 :litle:
   :type: :ruby
   :versions:
