@@ -19,6 +19,6 @@ Docker
 [Docker](https://www.docker.com/) is the recommended way to run Kill Bill, both for developers and in production.
 
 * For each Kill Bill and Kaui version, Docker images are available on [Docker Hub](https://hub.docker.com/r/killbill/)
-* We also provider [Docker Compose recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose)
+* We also provide [Docker Compose recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose)
 
 If you are not familiar with Docker, take a look at the [Get Started with Docker](http://docs.docker.com/mac/started/) guide.
