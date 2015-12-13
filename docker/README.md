@@ -1,29 +1,21 @@
-This Docker image for Kill Bill will install Tomcat7 inside Ubuntu 14.04. The first time the image is run, the actual Kill Bill installation is bootstrapped (the process is deferred to let you customize installation configuration parameters and system properties).
+Docker images for Kill Bill
+---------------------------
 
-# How to use this image
+See also our [Docker Compose recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose).
 
-To build it:
+Images
+======
 
-    make
-
-In order to build a specific version use `make -e VERSION=0.x.y`
-In order to build the kaui image `make -e TARGET=kaui` or  `make -e TARGET=kaui -e VERSION=0.x.y`
-
-
-To debug it:
-
-    make run
-
-
-To cleanup containers and images:
-
-    make clean
+* killbill/base: shared base image with Tomcat 7 and KPM inside Ubuntu 14.04
+* killbill/latest: empty base Kill Bill image. The first time it is started, the latest version of Kill Bill is downloaded
+* killbill/tagged: image with Kill Bill installed (published on [Docker Hub](https://hub.docker.com/r/killbill/killbill/))
+* kaui/latest: empty base Kaui image .The first time it is started, the latest version of Kaui is downloaded
+* kaui/tagged: image with Kaui installed (published on [Docker Hub](https://hub.docker.com/r/killbill/kaui/))
+* killbill/build: official build environment for all published Kill Bill artifacts (useful for developers)
 
 
-To run it:
-
-    make run-container
-
+Environment variables
+=====================
 
 Shared environment variables:
 
@@ -59,3 +51,28 @@ Kaui specific environment variables:
   - `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
 
 There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936) so in order to disable sha1 verification you can start your container using: KPM_PROPS="--verify-sha1=false"
+
+
+Build
+=====
+
+To build an image:
+
+    make
+
+In order to build a specific version use `make -e VERSION=0.x.y`.
+In order to build the kaui image `make -e TARGET=kaui` or  `make -e TARGET=kaui -e VERSION=0.x.y`.
+
+To debug it:
+
+    make run
+
+
+To cleanup containers and images:
+
+    make clean
+
+
+To run it:
+
+    make run-container
