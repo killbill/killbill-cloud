@@ -9,7 +9,7 @@ Images
 * killbill/base: shared base image with Tomcat 7 and KPM inside Ubuntu 14.04
 * killbill/latest: empty base Kill Bill image. The first time it is started, the latest version of Kill Bill is downloaded
 * killbill/tagged: image with Kill Bill installed (published on [Docker Hub](https://hub.docker.com/r/killbill/killbill/))
-* kaui/latest: empty base Kaui image .The first time it is started, the latest version of Kaui is downloaded
+* kaui/latest: empty base Kaui image. The first time it is started, the latest version of Kaui is downloaded
 * kaui/tagged: image with Kaui installed (published on [Docker Hub](https://hub.docker.com/r/killbill/kaui/))
 * killbill/build: official build environment for all published Kill Bill artifacts (useful for developers)
 
@@ -50,7 +50,7 @@ Kaui specific environment variables:
   - `KAUI_CONFIG_DAO_USER` (default `kaui`)
   - `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
 
-There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936) so in order to disable sha1 verification you can start your container using: KPM_PROPS="--verify-sha1=false"
+There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936). In order to disable sha1 verification, you can start your container using: `KPM_PROPS="--verify-sha1=false"`.
 
 
 Build
