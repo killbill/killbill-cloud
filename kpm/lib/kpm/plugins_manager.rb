@@ -1,4 +1,5 @@
 require 'pathname'
+require 'json'
 
 module KPM
   class PluginsManager
@@ -52,6 +53,32 @@ module KPM
         FileUtils.touch(tmp_dir.join('restart.txt'))
       end
     end
+
+    def update_plugin_identifier(plugin_key, plugin_name)
+      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
+      backup_path = Pathname.new(path.to_s + ".back")
+
+      identifiers = {}
+      begin
+        identifiers = File.open(path, 'r') do |f|
+          JSON.parse(f.read)
+        end
+        # Move file in case something happens until we complete the operation
+        FileUtils.mv(path, backup_path)
+      rescue Errno::ENOENT
+      end
+
+      identifiers[plugin_key] = plugin_name
+      File.open(path, 'w') do |f|
+        f.write(identifiers.to_json)
+      end
+
+      # Cleanup backup entry
+      FileUtils.rm(backup_path, :force => true)
+
+      identifiers
+    end
+
 
     def guess_plugin_name(artifact_id)
       return nil if artifact_id.nil?

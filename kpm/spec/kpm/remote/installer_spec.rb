@@ -18,11 +18,12 @@ describe KPM::Installer do
                                                     'plugins_dir' => plugins_dir,
                                                     'plugins'     => {
                                                         'java' => [{
-                                                                       'name'    => 'analytics-plugin',
+                                                                       'name'    => 'analytics',
                                                                        'version' => '0.7.1'
                                                                    }],
                                                         'ruby' => [{
                                                                        'name'    => 'payment-test-plugin',
+                                                                       'artifact_id'    => 'payment-test-plugin',
                                                                        'version' => '1.8.7'
                                                                    },
                                                                    {
@@ -68,6 +69,7 @@ describe KPM::Installer do
         kb_webapp_path,
         kaui_webapp_path,
         plugins_dir + '/platform/jruby.jar',
+        plugins_dir + '/plugins/plugin_identifiers.json',
         plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar',
         plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7/killbill.properties'
     ].each do |file|

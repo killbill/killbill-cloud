@@ -21,6 +21,29 @@ describe KPM::PluginsManager do
     FileUtils.remove_entry_secure @plugins_dir
   end
 
+
+  it 'it creates a plugin identifiers file and add entries' do
+    # Verifies file gets created if does not exist
+    identifiers = @manager.update_plugin_identifier('foo', 'foo_name')
+    identifiers.size.should == 1
+    identifiers['foo'].should == 'foo_name'
+
+    # Verify file was created from previous entry (prev value was read)
+    identifiers = @manager.update_plugin_identifier('bar', 'bar_name')
+    identifiers.size.should == 2
+    identifiers['foo'].should == 'foo_name'
+    identifiers['bar'].should == 'bar_name'
+
+
+    # Verify file was created from previous entry (prev value was read)
+    identifiers = @manager.update_plugin_identifier('zoe', 'zoe_name')
+    identifiers.size.should == 3
+    identifiers['bar'].should == 'bar_name'
+    identifiers['foo'].should == 'foo_name'
+    identifiers['zoe'].should == 'zoe_name'
+  end
+
+
   it 'sets a path as active' do
     @manager.set_active(@plugin_dir.join('1.0.0'))
     File.exists?(@plugin_dir.join('ACTIVE')).should be_true

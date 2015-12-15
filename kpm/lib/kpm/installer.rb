@@ -79,7 +79,7 @@ module KPM
 
       infos = []
       @config['plugins']['java'].each do |plugin|
-        infos << install_plugin(plugin['group_id'], plugin['artifact_id'] || plugin['name'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'java', force_download, verify_sha1)
+        infos << install_plugin(plugin['name'], plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'java', force_download, verify_sha1)
       end
 
       infos
@@ -90,7 +90,7 @@ module KPM
 
       infos = []
       @config['plugins']['ruby'].each do |plugin|
-        infos << install_plugin(plugin['group_id'], plugin['artifact_id'] || plugin['name'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'ruby', force_download, verify_sha1)
+        infos << install_plugin(plugin['name'], plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'ruby', force_download, verify_sha1)
       end
 
       infos
