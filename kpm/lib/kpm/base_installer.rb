@@ -157,6 +157,22 @@ module KPM
       artifact_info
     end
 
+    def uninstall_plugin(plugin_key, plugin_version=nil, bundles_dir=nil)
+
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
+      plugins_dir = bundles_dir.join('plugins')
+
+      plugins_manager = PluginsManager.new(plugins_dir, @logger)
+
+      plugin_name = plugins_manager.get_plugin_name_from_key(plugin_key)
+      if plugin_name.nil?
+        logger.warn("Cannot uninstall plugin: Unknown plugin_key = #{plugin_key}");
+        return
+      end
+
+      plugins_manager.uninstall(plugin_name, plugin_version)
+    end
+
     def install_default_bundles(bundles_dir, specified_version=nil, kb_version=nil, force_download=false, verify_sha1=true)
       group_id = 'org.kill-bill.billing'
       artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'

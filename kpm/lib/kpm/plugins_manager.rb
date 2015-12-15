@@ -79,6 +79,17 @@ module KPM
       identifiers
     end
 
+    def get_plugin_name_from_key(plugin_key)
+      begin
+        identifiers = File.open(path, 'r') do |f|
+          JSON.parse(f.read)
+        end
+        identifiers[plugin_key]
+      rescue Errno::ENOENT
+        nil
+      end
+    end
+
 
     def guess_plugin_name(artifact_id)
       return nil if artifact_id.nil?
