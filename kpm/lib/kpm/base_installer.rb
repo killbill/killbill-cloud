@@ -131,7 +131,7 @@ module KPM
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
       mark_as_active(plugins_dir, artifact_info, artifact_id)
-      update_plugin_identifier(plugins_dir, plugin_key, plugin_key)
+      update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
 
       artifact_info
     end
@@ -152,7 +152,7 @@ module KPM
       artifact_info[:version] ||= version
 
       mark_as_active(plugins_dir, artifact_info)
-      update_plugin_identifier(plugins_dir, plugin_key, name)
+      update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
 
       artifact_info
     end
@@ -199,7 +199,16 @@ module KPM
 
     private
 
-    def update_plugin_identifier(plugins_dir, plugin_key, plugin_name)
+    def update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
+      # In case the artifact on disk already existed and the installation is skipped, we don't try to update the pluginKey mapping
+      # (of course if the install is retried with a different pluginKey that may be confusing for the user)
+      if artifact_info[:bundle_dir].nil?
+        @logger.info("Skipping updating plugin identifier for already installed plugin")
+        return
+      end
+
+      # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
+      plugin_name = Pathname.new(artifact_info[:bundle_dir]).parent.split[1].to_s
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       plugins_manager.update_plugin_identifier(plugin_key, plugin_name)
     end

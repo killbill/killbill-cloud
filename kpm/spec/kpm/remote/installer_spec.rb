@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 describe KPM::Installer do
 
@@ -16,22 +17,34 @@ describe KPM::Installer do
                                                 'killbill' => {
                                                     'webapp_path' => kb_webapp_path,
                                                     'plugins_dir' => plugins_dir,
-                                                    'plugins'     => {
+                                                    'plugins' => {
                                                         'java' => [{
-                                                                       'name'    => 'analytics',
+                                                                       'name' => 'analytics',
+                                                                       'version' => '0.7.1'
+                                                                   },
+                                                                   # Re-add a second time the same plugin to validate the idempotency of installation
+                                                                   {
+                                                                       'name' => 'analytics',
                                                                        'version' => '0.7.1'
                                                                    }],
                                                         'ruby' => [{
-                                                                       'name'    => 'payment-test-plugin',
-                                                                       'artifact_id'    => 'payment-test-plugin',
+                                                                       'name' => 'killbill:payment-test-plugin',
+                                                                       'artifact_id' => 'payment-test-plugin',
                                                                        'version' => '1.8.7'
                                                                    },
                                                                    {
-                                                                       'name'    => 'stripe'
-                                                                   }]
+                                                                       'name' => 'stripe'
+                                                                   },
+                                                                   # Re-add a second time the same plugin to validate the idempotency of installation
+                                                                   {
+                                                                       'name' => 'killbill:payment-test-plugin',
+                                                                       'artifact_id' => 'payment-test-plugin',
+                                                                       'version' => '1.8.7'
+                                                                   }
+                                                        ]
                                                     },
                                                 },
-                                                'kaui'     => {
+                                                'kaui' => {
                                                     'webapp_path' => kaui_webapp_path
                                                 }
 
@@ -50,6 +63,7 @@ describe KPM::Installer do
   private
 
   def check_installation(plugins_dir, kb_webapp_path, kaui_webapp_path)
+
     [
         plugins_dir,
         plugins_dir + '/platform',
@@ -75,5 +89,15 @@ describe KPM::Installer do
     ].each do |file|
       File.file?(file).should be_true
     end
+
+    plugin_identifiers = File.open(plugins_dir + '/plugins/plugin_identifiers.json', 'r') do |f|
+      JSON.parse(f.read)
+    end
+
+    plugin_identifiers.size.should == 3
+    plugin_identifiers['killbill:payment-test-plugin'].should == 'killbill-payment-test'
+    plugin_identifiers['stripe'].should == 'killbill-stripe'
+    plugin_identifiers['analytics'].should == 'analytics-plugin'
+
   end
 end
