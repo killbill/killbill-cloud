@@ -90,18 +90,21 @@ describe KPM::Installer do
     plugin_identifiers['analytics']['artifact_id'].should == 'analytics-plugin'
     plugin_identifiers['analytics']['packaging'].should == 'jar'
     plugin_identifiers['analytics']['version'].should == '0.7.1'
+    plugin_identifiers['analytics']['language'].should == 'java'
 
     plugin_identifiers['payment-test-plugin']['plugin_name'].should == 'killbill-payment-test'
     plugin_identifiers['payment-test-plugin']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
     plugin_identifiers['payment-test-plugin']['artifact_id'].should == 'payment-test-plugin'
     plugin_identifiers['payment-test-plugin']['packaging'].should == 'tar.gz'
     plugin_identifiers['payment-test-plugin']['version'].should == '1.8.7'
+    plugin_identifiers['payment-test-plugin']['language'].should == 'ruby'
 
     plugin_identifiers['stripe']['plugin_name'].should == 'killbill-stripe'
     plugin_identifiers['stripe']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
     plugin_identifiers['stripe']['artifact_id'].should == 'stripe-plugin'
     plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
     plugin_identifiers['stripe']['version'].should == '2.0.0'
+    plugin_identifiers['stripe']['language'].should == 'ruby'
 
   end
 end

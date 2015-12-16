@@ -23,14 +23,14 @@ describe KPM::PluginsManager do
 
   it 'creates a plugin identifier entry with no coordinate' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('foo', 'foo_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('foo', 'foo_name', 'type', nil)
     identifiers.size.should == 1
     identifiers['foo']['plugin_name'].should == 'foo_name'
   end
 
   it 'creates a plugin identifier entry with coordinates' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', ['group', 'artifact', 'packaging', nil, 'version'])
+    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', ['group', 'artifact', 'packaging', nil, 'version'])
     identifiers.size.should == 1
     identifiers['bar']['plugin_name'].should == 'bar_name'
     identifiers['bar']['group_id'].should == 'group'
@@ -43,19 +43,19 @@ describe KPM::PluginsManager do
 
   it 'creates plugin identifier with multiple entries' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('foo', 'foo_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('foo', 'foo_name', 'type', nil)
     identifiers.size.should == 1
     identifiers['foo']['plugin_name'].should == 'foo_name'
 
     # Verify file was created from previous entry (prev value was read)
-    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', nil)
     identifiers.size.should == 2
     identifiers['foo']['plugin_name'].should == 'foo_name'
     identifiers['bar']['plugin_name'].should == 'bar_name'
 
 
     # Verify file was created from previous entry (prev value was read)
-    identifiers = @manager.add_plugin_identifier_key('zoe', 'zoe_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('zoe', 'zoe_name', 'type', nil)
     identifiers.size.should == 3
     identifiers['bar']['plugin_name'].should == 'bar_name'
     identifiers['foo']['plugin_name'].should == 'foo_name'
@@ -64,12 +64,12 @@ describe KPM::PluginsManager do
 
   it 'creates plugin identifiers with duplicate entries' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('kewl', 'kewl_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('kewl', 'kewl_name', 'type', nil)
     identifiers.size.should == 1
     identifiers['kewl']['plugin_name'].should == 'kewl_name'
 
     # Add with a different plugin_name
-    identifiers = @manager.add_plugin_identifier_key('kewl', 'kewl_name2', nil)
+    identifiers = @manager.add_plugin_identifier_key('kewl', 'kewl_name2', 'type', nil)
     identifiers.size.should == 1
     identifiers['kewl']['plugin_name'].should == 'kewl_name'
   end
@@ -77,7 +77,7 @@ describe KPM::PluginsManager do
 
   it 'creates plugin identifiers and remove entry' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('lol', 'lol_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('lol', 'lol_name', 'type', nil)
     identifiers.size.should == 1
     identifiers['lol']['plugin_name'].should == 'lol_name'
 
@@ -91,14 +91,14 @@ describe KPM::PluginsManager do
     identifiers.size.should == 0
 
     # Add same entry again
-    identifiers = @manager.add_plugin_identifier_key('lol', 'lol_name', nil)
+    identifiers = @manager.add_plugin_identifier_key('lol', 'lol_name', 'type', nil)
     identifiers.size.should == 1
     identifiers['lol']['plugin_name'].should == 'lol_name'
   end
 
   it 'creates plugin identifiers and validate entry' do
     # Verifies file gets created if does not exist
-    identifiers = @manager.add_plugin_identifier_key('yoyo', 'yoyo_name', ['group', 'artifact', 'packaging', nil, 'version'])
+    identifiers = @manager.add_plugin_identifier_key('yoyo', 'yoyo_name', 'type',  ['group', 'artifact', 'packaging', nil, 'version'])
     identifiers.size.should == 1
     identifiers['yoyo']['plugin_name'].should == 'yoyo_name'
 

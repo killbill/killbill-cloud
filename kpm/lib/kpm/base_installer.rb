@@ -139,7 +139,7 @@ module KPM
 
       mark_as_active(plugins_dir, artifact_info, artifact_id)
 
-      update_plugin_identifier(plugins_dir, plugin_key, coordinates, artifact_info)
+      update_plugin_identifier(plugins_dir, plugin_key, type.to_s, coordinates, artifact_info)
 
       artifact_info
     end
@@ -160,7 +160,7 @@ module KPM
 
       mark_as_active(plugins_dir, artifact_info)
 
-      update_plugin_identifier(plugins_dir, plugin_key, nil, artifact_info)
+      update_plugin_identifier(plugins_dir, plugin_key, type.to_s, nil, artifact_info)
 
       artifact_info
     end
@@ -244,14 +244,14 @@ module KPM
       return plugins_manager.validate_plugin_identifier_key(plugin_key, coordinates)
     end
 
-    def update_plugin_identifier(plugins_dir, plugin_key, coordinates, artifact_info)
+    def update_plugin_identifier(plugins_dir, plugin_key, type, coordinates, artifact_info)
       # In case the artifact on disk already existed and the installation is skipped, info[:bundle_dir] is null but the path exists in info[:dir_name]
       path = artifact_info[:bundle_dir] || artifact_info[:dir_name]
 
       # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
       plugin_name = Pathname.new(path).parent.split[1].to_s
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, coordinates)
+      plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, type, coordinates)
     end
 
     def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)

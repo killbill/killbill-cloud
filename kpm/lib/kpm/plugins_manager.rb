@@ -66,13 +66,14 @@ module KPM
       true
     end
 
-    def add_plugin_identifier_key(plugin_key, plugin_name, coordinates)
+    def add_plugin_identifier_key(plugin_key, plugin_name, language, coordinates)
 
       identifiers = read_plugin_identifiers
       # If key does not already exists we update it, if not nothing to do
       if !identifiers.has_key?(plugin_key)
 
         entry = {'plugin_name' => plugin_name}
+        entry['language'] = language
         if coordinates
           entry['group_id'] = coordinates[0]
           entry['artifact_id'] = coordinates[1]
