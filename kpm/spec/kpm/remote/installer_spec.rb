@@ -21,28 +21,17 @@ describe KPM::Installer do
                                                         'java' => [{
                                                                        'name' => 'analytics',
                                                                        'version' => '0.7.1'
-                                                                   },
-                                                                   # Re-add a second time the same plugin to validate the idempotency of installation
-                                                                   {
-                                                                       'name' => 'analytics',
-                                                                       'version' => '0.7.1'
                                                                    }],
                                                         'ruby' => [{
-                                                                       'name' => 'killbill:payment-test-plugin',
+                                                                       'name' => 'payment-test-plugin',
                                                                        'artifact_id' => 'payment-test-plugin',
+                                                                       'group_id' => 'org.kill-bill.billing.plugin.ruby',
                                                                        'version' => '1.8.7'
                                                                    },
                                                                    {
                                                                        'name' => 'stripe'
-                                                                   },
-                                                                   # Re-add a second time the same plugin to validate the idempotency of installation
-                                                                   {
-                                                                       'name' => 'killbill:payment-test-plugin',
-                                                                       'artifact_id' => 'payment-test-plugin',
-                                                                       'version' => '1.8.7'
-                                                                   }
-                                                        ]
-                                                    },
+                                                                   }]
+                                                    }
                                                 },
                                                 'kaui' => {
                                                     'webapp_path' => kaui_webapp_path
@@ -95,9 +84,24 @@ describe KPM::Installer do
     end
 
     plugin_identifiers.size.should == 3
-    plugin_identifiers['killbill:payment-test-plugin'].should == 'killbill-payment-test'
-    plugin_identifiers['stripe'].should == 'killbill-stripe'
-    plugin_identifiers['analytics'].should == 'analytics-plugin'
+
+    plugin_identifiers['analytics']['plugin_name'].should == 'analytics-plugin'
+    plugin_identifiers['analytics']['group_id'].should == 'org.kill-bill.billing.plugin.java'
+    plugin_identifiers['analytics']['artifact_id'].should == 'analytics-plugin'
+    plugin_identifiers['analytics']['packaging'].should == 'jar'
+    plugin_identifiers['analytics']['version'].should == '0.7.1'
+
+    plugin_identifiers['payment-test-plugin']['plugin_name'].should == 'killbill-payment-test'
+    plugin_identifiers['payment-test-plugin']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
+    plugin_identifiers['payment-test-plugin']['artifact_id'].should == 'payment-test-plugin'
+    plugin_identifiers['payment-test-plugin']['packaging'].should == 'tar.gz'
+    plugin_identifiers['payment-test-plugin']['version'].should == '1.8.7'
+
+    plugin_identifiers['stripe']['plugin_name'].should == 'killbill-stripe'
+    plugin_identifiers['stripe']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
+    plugin_identifiers['stripe']['artifact_id'].should == 'stripe-plugin'
+    plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
+    plugin_identifiers['stripe']['version'].should == '2.0.0'
 
   end
 end

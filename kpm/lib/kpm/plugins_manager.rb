@@ -54,30 +54,51 @@ module KPM
       end
     end
 
-    def update_plugin_identifier(plugin_key, plugin_name)
-      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
-      backup_path = Pathname.new(path.to_s + ".back")
+    def validate_plugin_identifier_key(plugin_key, coordinates)
 
-      identifiers = {}
-      begin
-        identifiers = File.open(path, 'r') do |f|
-          JSON.parse(f.read)
+      identifiers = read_plugin_identifiers
+      entry = identifiers[plugin_key]
+      if entry
+        [:group_id, :artifact_id, :packaging, :classifier, :version].each_with_index do |value_type, idx|
+          return false if !validate_plugin_identifier_key_value(plugin_key, value_type, entry[value_type.to_s], coordinates[idx])
         end
-        # Move file in case something happens until we complete the operation
-        FileUtils.mv(path, backup_path)
-      rescue Errno::ENOENT
       end
+      true
+    end
 
-      identifiers[plugin_key] = plugin_name
-      File.open(path, 'w') do |f|
-        f.write(identifiers.to_json)
+    def add_plugin_identifier_key(plugin_key, plugin_name, coordinates)
+
+      identifiers = read_plugin_identifiers
+      # If key does not already exists we update it, if not nothing to do
+      if !identifiers.has_key?(plugin_key)
+
+        entry = {'plugin_name' => plugin_name}
+        if coordinates
+          entry['group_id'] = coordinates[0]
+          entry['artifact_id'] = coordinates[1]
+          entry['packaging'] = coordinates[2]
+          entry['classifier'] = coordinates[3]
+          entry['version'] = coordinates[4]
+        end
+        identifiers[plugin_key] = entry
+        write_plugin_identifiers(identifiers)
       end
-
-      # Cleanup backup entry
-      FileUtils.rm(backup_path, :force => true)
 
       identifiers
     end
+
+    def remove_plugin_identifier_key(plugin_key)
+
+      identifiers = read_plugin_identifiers
+      # If key does not already exists we update it, if not nothing to do.
+      if identifiers.has_key?(plugin_key)
+        identifiers.delete(plugin_key)
+        write_plugin_identifiers(identifiers)
+      end
+
+      identifiers
+    end
+
 
     def get_plugin_name_from_key(plugin_key)
       begin
@@ -113,6 +134,42 @@ module KPM
     end
 
     private
+
+    def validate_plugin_identifier_key_value(plugin_key, value_type, entry_value, coordinate_value)
+      # The json does not contain the coordinates (case when installed from install_plugin_from_fs)
+      return true if entry_value.nil?
+
+      if entry_value != coordinate_value
+        @logger.warn("Entry in plugin_identifiers.json for key #{plugin_key} does not match for coordinate #{value_type}: got #{coordinate_value} instead of #{entry_value}")
+        return false
+      end
+      true
+    end
+
+    def read_plugin_identifiers
+      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
+      identifiers = {}
+      begin
+        identifiers = File.open(path, 'r') do |f|
+          JSON.parse(f.read)
+        end
+      rescue Errno::ENOENT
+      end
+      identifiers
+    end
+
+    def write_plugin_identifiers(identifiers)
+
+      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
+      Dir.mktmpdir do |tmp_dir|
+        tmp_path = Pathname.new(tmp_dir).join('plugin_identifiers.json')
+        File.open(tmp_path, 'w') do |f|
+          f.write(identifiers.to_json)
+        end
+
+        FileUtils.mv(tmp_path, path)
+      end
+    end
 
     # Note: the plugin name here is the directory name on the filesystem
     def update_fs(plugin_name_or_path, plugin_version=nil, &block)

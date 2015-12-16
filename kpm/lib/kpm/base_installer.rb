@@ -62,60 +62,66 @@ module KPM
     end
 
 
-    def install_plugin(plugin_key, specified_group_id, specified_artifact_id, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type='java', force_download=false, verify_sha1=true)
 
+    def install_plugin(plugin_key, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true)
+
+      # plugin_key needs to exist
       if plugin_key.nil?
         @logger.warn("Aborting installation: User needs to specify a pluginKey")
         return nil
       end
 
-      # Since we allow to only specify a the artifact_id to identify a given plugin we set the default on the other fields
-      specified_group_id = specified_group_id || (specified_type.to_s == 'java' ? KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID : KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID)
-      specified_packaging = specified_packaging || (specified_type.to_s == 'java' ? KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING : KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING)
-      specified_classifier = specified_classifier || (specified_type.to_s == 'java' ? KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER : KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER)
 
-      # Create a Proc to validate and resolve arguments
-      resolve_and_validate_args_proc = Proc.new { |plugin_key, arg_type, specified_arg, lookup_arg|
-
-        # There is an entry in plugin_directory.yml but does not match with input
-        if lookup_arg && specified_arg && lookup_arg.to_s != specified_arg.to_s
-          @logger.warn("Aborting installation: User specified #{arg_type}=#{specified_arg} for pluginKey = #{plugin_key}, but plugin_directory.yml resolves with #{lookup_arg}")
-          return nil
-        end
-
-        # There is no entry and user did not specify anything (or we did not have any default)
-        if lookup_arg.nil? && specified_arg.nil?
-          @logger.warn("Aborting installation: need to specify an #{arg_type} for pluginKey = #{plugin_key}")
-          return nil
-        end
-        # If validation is successful we return resolved value
-        specified_arg || lookup_arg
-      }
-
-
-      # Lookup entry (will come with null everywhere if entry does not exist in plugin_directory.yml)
+      # Lookup artifact and perform validation against input
       looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true)
+      return if !validate_installation_arg(plugin_key, 'group_id', specified_group_id, looked_up_group_id)
+      return if !validate_installation_arg(plugin_key, 'artifact_id', specified_artifact_id, looked_up_artifact_id)
+      return if !validate_installation_arg(plugin_key, 'packaging', specified_packaging, looked_up_packaging)
+      return if !validate_installation_arg(plugin_key, 'type', specified_type, looked_up_type)
+      return if !validate_installation_arg(plugin_key, 'classifier', specified_classifier, looked_up_classifier)
 
-      # If there is no entry in plugins_directory.yml, the key provided must be a user key and must have a namespace
-      if looked_up_artifact_id.nil? && plugin_key.split(':').size == 1
+
+      # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
+      if looked_up_artifact_id.nil? &&
+          specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
+          specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
+          plugin_key.split(':').size == 1
         @logger.warn("Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)")
         return nil
       end
 
-      # Validate and resolve the value to use (user input has precedence)
-      group_id = resolve_and_validate_args_proc.call(plugin_key, 'group_id', specified_group_id, looked_up_group_id)
-      artifact_id = resolve_and_validate_args_proc.call(plugin_key, 'artifact_id', specified_artifact_id, looked_up_artifact_id)
-      packaging = resolve_and_validate_args_proc.call(plugin_key, 'packaging', specified_packaging, looked_up_packaging)
-      classifier = specified_classifier || looked_up_classifier
-      type = resolve_and_validate_args_proc.call(plugin_key, 'type', specified_type, looked_up_type).to_s
-      version = specified_version || looked_up_version || LATEST_VERSION
+
+      # Specified parameters have always precedence except for the artifact_id (to map stripe to stripe-plugin)
+      artifact_id = looked_up_artifact_id || specified_artifact_id
+      if artifact_id.nil?
+        @logger.warn("Aborting installation: unable to lookup plugin #{specified_artifact_id}")
+        return nil
+      end
 
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
-      destination = type == 'java' ? plugins_dir.join('java').join(artifact_id).join(version) : plugins_dir.join('ruby')
-
+      type = specified_type || looked_up_type
+      if type.to_s == 'java'
+        group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
+        packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
+        classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
+        version = specified_version || looked_up_version || LATEST_VERSION
+        destination = plugins_dir.join('java').join(artifact_id).join(version)
+      else
+        group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
+        packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
+        classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
+        version = specified_version || looked_up_version || LATEST_VERSION
+        destination = plugins_dir.join('ruby')
+      end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+
+
+      # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
+      coordinates = [group_id, artifact_id, packaging, classifier, version]
+      return if !validate_plugin_key(plugins_dir, plugin_key, coordinates)
+
 
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
       artifact_info = KPM::KillbillPluginArtifact.pull(@logger,
@@ -130,12 +136,13 @@ module KPM
                                                        verify_sha1,
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
+
       mark_as_active(plugins_dir, artifact_info, artifact_id)
-      update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
+
+      update_plugin_identifier(plugins_dir, plugin_key, coordinates, artifact_info)
 
       artifact_info
     end
-
 
 
     def install_plugin_from_fs(plugin_key, file_path, name, version, bundles_dir=nil, type='java')
@@ -152,7 +159,8 @@ module KPM
       artifact_info[:version] ||= version
 
       mark_as_active(plugins_dir, artifact_info)
-      update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
+
+      update_plugin_identifier(plugins_dir, plugin_key, nil, artifact_info)
 
       artifact_info
     end
@@ -171,6 +179,7 @@ module KPM
       end
 
       plugins_manager.uninstall(plugin_name, plugin_version)
+      plugins_manager.remove_plugin_identifier_key(plugin_key)
     end
 
     def install_default_bundles(bundles_dir, specified_version=nil, kb_version=nil, force_download=false, verify_sha1=true)
@@ -215,18 +224,34 @@ module KPM
 
     private
 
-    def update_plugin_identifier(plugins_dir, plugin_key, artifact_info)
-      # In case the artifact on disk already existed and the installation is skipped, we don't try to update the pluginKey mapping
-      # (of course if the install is retried with a different pluginKey that may be confusing for the user)
-      if artifact_info[:bundle_dir].nil?
-        @logger.info("Skipping updating plugin identifier for already installed plugin")
-        return
+    def validate_installation_arg(plugin_key, arg_type, specified_arg, looked_up_arg)
+
+      # If nothing was specified, or if we don't find anything from the lookup, nothing to validate against
+      if specified_arg.nil? || looked_up_arg.nil?
+        return true
       end
 
-      # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
-      plugin_name = Pathname.new(artifact_info[:bundle_dir]).parent.split[1].to_s
+      if specified_arg.to_s != looked_up_arg.to_s
+        @logger.warn("Aborting installation for plugin_key #{plugin_key}: specified value #{specified_arg} for #{arg_type} does not match looked_up value #{looked_up_arg}")
+        return false
+      end
+
+      true
+    end
+
+    def validate_plugin_key(plugins_dir, plugin_key, coordinates)
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      plugins_manager.update_plugin_identifier(plugin_key, plugin_name)
+      return plugins_manager.validate_plugin_identifier_key(plugin_key, coordinates)
+    end
+
+    def update_plugin_identifier(plugins_dir, plugin_key, coordinates, artifact_info)
+      # In case the artifact on disk already existed and the installation is skipped, info[:bundle_dir] is null but the path exists in info[:dir_name]
+      path = artifact_info[:bundle_dir] || artifact_info[:dir_name]
+
+      # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
+      plugin_name = Pathname.new(path).parent.split[1].to_s
+      plugins_manager = PluginsManager.new(plugins_dir, @logger)
+      plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, coordinates)
     end
 
     def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)
