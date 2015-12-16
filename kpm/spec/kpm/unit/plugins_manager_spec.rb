@@ -14,7 +14,7 @@ describe KPM::PluginsManager do
     FileUtils.mkdir_p(@plugin_dir.join('1.0.0'))
     FileUtils.mkdir_p(@plugin_dir.join('2.0.0'))
 
-    File.exists?(@plugin_dir.join('ACTIVE')).should be_false
+    File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_false
   end
 
   after(:each) do
@@ -111,22 +111,22 @@ describe KPM::PluginsManager do
 
   it 'sets a path as active' do
     @manager.set_active(@plugin_dir.join('1.0.0'))
-    File.exists?(@plugin_dir.join('ACTIVE')).should be_true
-    File.readlink(@plugin_dir.join('ACTIVE')).should == @plugin_dir.join('1.0.0').to_s
+    File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_true
+    File.readlink(@plugin_dir.join('SET_DEFAULT')).should == @plugin_dir.join('1.0.0').to_s
 
     @manager.set_active(@plugin_dir.join('2.0.0'))
-    File.exists?(@plugin_dir.join('ACTIVE')).should be_true
-    File.readlink(@plugin_dir.join('ACTIVE')).should == @plugin_dir.join('2.0.0').to_s
+    File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_true
+    File.readlink(@plugin_dir.join('SET_DEFAULT')).should == @plugin_dir.join('2.0.0').to_s
   end
 
   it 'sets a plugin version as active' do
     @manager.set_active('killbill-stripe', '2.0.0')
-    File.exists?(@plugin_dir.join('ACTIVE')).should be_true
-    File.readlink(@plugin_dir.join('ACTIVE')).should == @plugin_dir.join('2.0.0').to_s
+    File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_true
+    File.readlink(@plugin_dir.join('SET_DEFAULT')).should == @plugin_dir.join('2.0.0').to_s
 
     @manager.set_active('killbill-stripe', '1.0.0')
-    File.exists?(@plugin_dir.join('ACTIVE')).should be_true
-    File.readlink(@plugin_dir.join('ACTIVE')).should == @plugin_dir.join('1.0.0').to_s
+    File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_true
+    File.readlink(@plugin_dir.join('SET_DEFAULT')).should == @plugin_dir.join('1.0.0').to_s
   end
 
   it 'uninstalls a plugin via a path' do
@@ -181,8 +181,8 @@ describe KPM::PluginsManager do
 
   private
 
-  def check_state(version, has_restart, has_stop)
+  def check_state(version, has_restart, has_disabled)
     File.exists?(@plugin_dir.join(version).join('tmp').join('restart.txt')).should == has_restart
-    File.exists?(@plugin_dir.join(version).join('tmp').join('stop.txt')).should == has_stop
+    File.exists?(@plugin_dir.join(version).join('tmp').join('disabled.txt')).should == has_disabled
   end
 end

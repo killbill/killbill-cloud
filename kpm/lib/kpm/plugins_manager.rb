@@ -17,7 +17,7 @@ module KPM
 
       if plugin_version.nil?
         # Full path specified, with version
-        link = Pathname.new(plugin_name_or_path).join('../ACTIVE')
+        link = Pathname.new(plugin_name_or_path).join('../SET_DEFAULT')
         FileUtils.rm_f(link)
         FileUtils.ln_s(plugin_name_or_path, link, :force => true)
       else
@@ -26,14 +26,14 @@ module KPM
         # Only one should match (java or ruby plugin)
         Dir.glob(plugin_dir_glob).each do |plugin_dir_path|
           plugin_dir = Pathname.new(plugin_dir_path)
-          link = plugin_dir.join('ACTIVE')
+          link = plugin_dir.join('SET_DEFAULT')
           FileUtils.rm_f(link)
           FileUtils.ln_s(plugin_dir.join(plugin_version), link, :force => true)
         end
       end
 
       update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
-        FileUtils.rm_f(tmp_dir.join('stop.txt'))
+        FileUtils.rm_f(tmp_dir.join('disabled.txt'))
         FileUtils.rm_f(tmp_dir.join('restart.txt'))
       end
     end
@@ -42,14 +42,14 @@ module KPM
       update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
         FileUtils.rm_f(tmp_dir.join('restart.txt'))
         # Be safe, keep the code, just never start it
-        FileUtils.touch(tmp_dir.join('stop.txt'))
+        FileUtils.touch(tmp_dir.join('disabled.txt'))
       end
     end
 
     def restart(plugin_name_or_path, plugin_version=nil)
       update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
-        # Remove stop.txt so that the plugin is started if it was stopped
-        FileUtils.rm_f(tmp_dir.join('stop.txt'))
+        # Remove disabled.txt so that the plugin is started if it was stopped
+        FileUtils.rm_f(tmp_dir.join('disabled.txt'))
         FileUtils.touch(tmp_dir.join('restart.txt'))
       end
     end
