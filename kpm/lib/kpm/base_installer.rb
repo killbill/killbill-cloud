@@ -174,12 +174,13 @@ module KPM
 
       plugin_name = plugins_manager.get_plugin_name_from_key(plugin_key)
       if plugin_name.nil?
-        logger.warn("Cannot uninstall plugin: Unknown plugin_key = #{plugin_key}");
+        @logger.warn("Cannot uninstall plugin: Unknown plugin_key = #{plugin_key}");
         return
       end
 
-      plugins_manager.uninstall(plugin_name, plugin_version)
+      modified = plugins_manager.uninstall(plugin_name, plugin_version)
       plugins_manager.remove_plugin_identifier_key(plugin_key)
+      modified
     end
 
     def install_default_bundles(bundles_dir, specified_version=nil, kb_version=nil, force_download=false, verify_sha1=true)

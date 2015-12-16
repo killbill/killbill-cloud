@@ -102,14 +102,9 @@ module KPM
 
 
     def get_plugin_name_from_key(plugin_key)
-      begin
-        identifiers = File.open(path, 'r') do |f|
-          JSON.parse(f.read)
-        end
-        identifiers[plugin_key]
-      rescue Errno::ENOENT
-        nil
-      end
+      identifiers = read_plugin_identifiers
+      return nil if identifiers.nil? || !identifiers.has_key?(plugin_key)
+      identifiers[plugin_key]['plugin_name']
     end
 
 
