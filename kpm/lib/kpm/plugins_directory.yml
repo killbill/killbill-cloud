@@ -64,7 +64,7 @@
   :type: :ruby
   :versions:
     :0.14: 1.0.0
-    :0.15: 3.0.0
+    :0.15: 3.3.0
   :stable_version: 0.0.4
   :require:
     - :login
