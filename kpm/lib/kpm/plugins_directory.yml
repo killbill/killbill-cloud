@@ -69,6 +69,14 @@
     :0.14: 0.1.0
     :0.16: 0.2.0
   :stable_version: 0.1.0
+:firstdata_e4:
+  :type: :ruby
+  :artifact_id: firstdata-e4-plugin
+  :versions:
+    :0.16: 0.1.0
+  :require:
+  - :login
+  - :password
 :forte:
   :type: :java
   :versions:
@@ -126,6 +134,13 @@
   - :api_key
   - :country_account_id
   - :merchant_id
+:securenet:
+  :type: :ruby
+  :versions:
+    :0.16: 0.1.0
+  :require:
+  - :login
+  - :password
 :stripe:
   :type: :ruby
   :versions:
