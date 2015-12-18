@@ -37,13 +37,6 @@
     - :org.killbill.billing.plugin.avatax.url
     - :org.killbill.billing.plugin.avatax.accountNumber
     - :org.killbill.billing.plugin.avatax.licenseKey
-:bitpay:
-  :type: :ruby
-  :versions:
-    :0.14: 0.0.1
-  :stable_version: 0.0.1
-  :require:
-    - :api_key
 :braintree_blue:
   :type: :ruby
   :versions:
@@ -54,13 +47,6 @@
     - :merchant_id
     - :public_key
     - :private_key
-:coinbase:
-  :type: :ruby
-  :versions:
-  :stable_version: 0.0.1
-  :require:
-    - :btc_address
-    - :api_key
 :currency:
   :type: :ruby
   :artifact_id: killbill-currency-plugin
