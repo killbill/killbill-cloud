@@ -44,6 +44,7 @@
   :type: :ruby
   :versions:
     :0.14: 0.0.1
+    :0.16: 0.2.0
   :stable_version: 0.1.0
   :require:
     - :merchant_id
@@ -60,11 +61,13 @@
   :type: :ruby
   :artifact_id: killbill-currency-plugin
   :versions:
+    :0.16: 2.0.0
 :cybersource:
   :type: :ruby
   :versions:
     :0.14: 1.0.0
     :0.15: 3.3.0
+    :0.16: 4.0.0
   :stable_version: 0.0.4
   :require:
     - :login
@@ -94,6 +97,7 @@
   :type: :ruby
   :versions:
     :0.14: 2.0.0
+    :0.16: 3.0.0
   :stable_version: 1.10.0
   :require:
     - :account_id
@@ -107,12 +111,14 @@
   :versions:
     :0.14: 1.7.0
     :0.15: 2.0.0
+    :0.16: 3.0.0
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
   :versions:
     :0.14: 2.0.0
     :0.15: 3.0.0
+    :0.16: 4.0.0
   :stable_version: 2.0.0
   :require:
   - :signature
@@ -133,6 +139,7 @@
   :versions:
     :0.14: 1.0.0
     :0.15: 2.0.0
+    :0.16: 3.0.0
   :stable_version: 2.0.0
   :require:
   - :api_secret_key
@@ -140,6 +147,7 @@
   :type: :ruby
   :versions:
     :0.14: 1.3.0
+    :0.16: 2.0.0
   :require:
   - :subdomain
   - :username
