@@ -3,6 +3,7 @@
   :type: :java
   :versions:
     :0.14: 0.1.0
+    :0.16: 0.2.0
   :require:
     - :org.killbill.billing.plugin.accertify.url
     - :org.killbill.billing.plugin.accertify.username
@@ -12,6 +13,7 @@
   :versions:
     :0.14: 0.1.0
     :0.15: 0.2.1
+    :0.16: 0.3.0
   :require:
     - :org.killbill.billing.plugin.adyen.merchantAccount
     - :org.killbill.billing.plugin.adyen.username
@@ -22,12 +24,14 @@
   :versions:
     :0.14: 1.0.3
     :0.15: 2.0.1
+    :0.16: 3.0.0
   :stable_version: 2.0.2
 :avatax:
   :type: :java
   :versions:
     :0.14: 0.1.0
     :0.15: 0.2.0
+    :0.16: 0.3.0
   :stable_version: 0.2.0
   :require:
     - :org.killbill.billing.plugin.avatax.url
@@ -77,11 +81,13 @@
   :artifact_id: killbill-email-notifications-plugin
   :versions:
     :0.14: 0.1.0
+    :0.16: 0.2.0
   :stable_version: 0.1.0
 :forte:
   :type: :java
   :versions:
     :0.14: 0.1.0
+    :0.16: 0.2.0
   :require:
     - :org.killbill.billing.plugin.forte.merchantId
     - :org.killbill.billing.plugin.forte.password
