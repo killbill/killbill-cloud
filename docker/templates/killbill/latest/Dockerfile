@@ -25,9 +25,9 @@ RUN chmod +x /etc/init.d/killbill.sh
 
 USER tomcat7
 
-COPY ./properties_generator.rb $KILLBILL_CONFIG
+COPY ./properties_generator.rb $KILLBILL_CONFIG/
 
-COPY ./logback.xml $KILLBILL_CONFIG
-COPY ./kpm.yml.erb $KILLBILL_CONFIG
+COPY ./logback.xml $KILLBILL_CONFIG/
+COPY ./kpm.yml.erb $KILLBILL_CONFIG/
 
 CMD ["/etc/init.d/killbill.sh", "run"]

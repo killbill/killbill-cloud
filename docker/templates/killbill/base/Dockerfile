@@ -68,7 +68,8 @@ COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
 COPY ./server.xml $TOMCAT_CONFIG/server.xml
 COPY ./tomcat.sh /etc/init.d/tomcat.sh
 RUN chmod +x /etc/init.d/tomcat.sh
-COPY ./kpm_generator.rb $KILLBILL_CONFIG
+
+COPY ./kpm_generator.rb $KILLBILL_CONFIG/
 
 USER tomcat7
 WORKDIR $TOMCAT_HOME
