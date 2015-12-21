@@ -96,14 +96,14 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
 
 1. Start the mysql container (you need to pull the image `dockerfile/mariadb` first):
 ```
-> docker run -tid --name db -p 3306:3306  dockerfile/mariadb
+docker run -tid --name db -p 3306:3306  dockerfile/mariadb
 ```
 
 2. Configure database:
 
 First, modify the database to make sure it is using the row `binlog_format`:
 ```
-> echo "set global binlog_format = 'ROW'" | mysql -h $(docker-machine ip default) -uroot -p
+echo "set global binlog_format = 'ROW'" | mysql -h $(docker-machine ip default) -uroot -p
 ```
 And then create the database `killbill_0_16_0` and add the DDLs:
 
@@ -114,7 +114,7 @@ And then create the database `killbill_0_16_0` and add the DDLs:
 3. Start the killbill container with the two plugins `analytics` and `stripe`:
 
 ```
-> docker run -tid \
+docker run -tid \
 --name killbill_0_16_0 \
 -p 8080:8080 \
 -p 12345:12345 \
@@ -132,7 +132,7 @@ killbill/killbill:0.16.0
 4. Play time...
 
 ```
-> curl -v \
+curl -v \
 -X POST \
 -u admin:password \
 -H 'Content-Type: application/json' \
