@@ -174,6 +174,27 @@ module KPM
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
+        method_option :force_download,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Force download of the artifact even if it exists'
+        method_option :verify_sha1,
+                      :type    => :boolean,
+                      :default => true,
+                      :desc    => 'Validates sha1 sum'
+        desc 'pull_defaultbundles', 'Pulls the default OSGI bundles from Sonatype and places it on your machine.'
+        def pull_defaultbundles(kb_version='LATEST')
+          response = BaseInstaller.new(logger,
+                                       options[:overrides],
+                                       options[:ssl_verify])
+                                  .install_default_bundles(nil,
+                                                           nil,
+                                                           kb_version,
+                                                           options[:force_download],
+                                                           options[:verify_sha1])
+          say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
+        end
+
         desc 'search_for_plugins', 'Searches for all available plugins and prints them to the screen.'
         def search_for_plugins
           all_plugins = KillbillPluginArtifact.versions(options[:overrides], options[:ssl_verify])
