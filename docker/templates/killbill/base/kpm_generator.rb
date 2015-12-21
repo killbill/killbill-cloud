@@ -31,7 +31,7 @@ def expand_env_variables(yml_kpm)
     plugin = key.match(/^KILLBILL_PLUGIN_(.*)/).captures.first
 
     # Do we know about it?
-    group_id, artifact_id, packaging, classifier, version, type = ::KPM::PluginsDirectory.lookup(plugins, true, ENV['KILLBILL_VERSION'] || 'LATEST')
+    group_id, artifact_id, packaging, classifier, version, type = ::KPM::PluginsDirectory.lookup(plugin, true, ENV['KILLBILL_VERSION'] || 'LATEST')
     next if group_id.nil?
 
     # Plugin already present?
