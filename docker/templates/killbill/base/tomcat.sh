@@ -32,7 +32,13 @@ function create_annotation {
 function run_tomcat {
   create_annotation
 
-  cd /var/lib/tomcat7 && /usr/share/tomcat7/bin/catalina.sh run
+  trap 'kill -TERM $PID' SIGTERM SIGINT
+  cd /var/lib/tomcat7
+  /usr/share/tomcat7/bin/catalina.sh run &
+  PID=$!
+  wait $PID
+  trap - SIGTERM SIGINT
+  wait $PID
 }
 
 function cleanup {
