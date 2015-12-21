@@ -87,3 +87,57 @@ To cleanup containers and images:
 To run it:
 
     make run-container
+    
+    
+Local Development
+==================
+
+It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a mysql database and another one with a killbill server version `0.16.0` (adjust that with the version of your choice).
+
+1. Start the mysql container (you need to pull the image `dockerfile/mariadb` first):
+```
+> docker run -tid --name db -p 3306:3306  dockerfile/mariadb
+```
+
+2. Configure database:
+
+First, modify the database to make sure it is using the row `binlog_format`:
+```
+> echo "set global binlog_format = 'ROW'" | mysql -h $(docker-machine ip default) -uroot -p
+```
+And then create the database `killbill_0_16_0` and add the DDLs:
+
+* Kill Bill DDL: `http://docs.killbill.io/0.16/ddl.sql` 
+* Analytics DDL: `https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql`
+* Stripe DDL: `https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql`
+
+3. Start the killbill container with the two plugins `analytics` and `stripe`:
+
+```
+> docker run -tid \
+--name killbill_0_16_0 \
+-p 8080:8080 \
+-p 12345:12345 \
+--link db:dbserver \
+-e KILLBILL_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
+-e KILLBILL_CONFIG_DAO_USER=root \
+-e KILLBILL_CONFIG_DAO_PASSWORD= \
+-e KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
+-e KILLBILL_CONFIG_OSGI_DAO_USER=root \
+-e KILLBILL_CONFIG_OSGI_DAO_PASSWORD= \
+-e KILLBILL_PLUGIN_ANALYTICS=1 \
+-e KILLBILL_PLUGIN_STRIPE=1 \
+killbill/killbill:0.16.0
+```
+4. Play time...
+
+```
+> curl -v \
+-X POST \
+-u admin:password \
+-H 'Content-Type: application/json' \
+-H 'X-Killbill-CreatedBy: admin' \
+-d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+"http://$(docker-machine ip default):8080/1.0/kb/tenants"
+```
+
