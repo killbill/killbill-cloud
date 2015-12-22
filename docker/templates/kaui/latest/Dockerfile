@@ -11,6 +11,7 @@ ENV KAUI_API_SECRET lazar
 ENV KAUI_CONFIG_DAO_URL jdbc:mysql://localhost:3306/kaui
 ENV KAUI_CONFIG_DAO_USER kaui
 ENV KAUI_CONFIG_DAO_PASSWORD kaui
+ENV KAUI_CONFIG_DAO_ADAPTER jdbcmysql
 
 COPY ./kaui.sh /etc/init.d/kaui.sh
 RUN chmod +x /etc/init.d/kaui.sh

@@ -9,6 +9,7 @@ kaui:
     repository: releases
   properties:
     java.security.egd: file:/dev/./urandom
+    kaui.db.adapter: <%= ENV['KAUI_CONFIG_DAO_ADAPTER'] %>
     kaui.db.url: <%= ENV['KAUI_CONFIG_DAO_URL'] %>
     kaui.db.username: <%= ENV['KAUI_CONFIG_DAO_USER'] %>
     kaui.db.password: <%= ENV['KAUI_CONFIG_DAO_PASSWORD'] %>
