@@ -141,3 +141,32 @@ curl -v \
 "http://$(docker-machine ip default):8080/1.0/kb/tenants"
   ```
 
+5. Using KAUI image as well
+
+  * Create a new database for KAUI
+  ```
+  create database kaui;
+  ```
+  
+  * Add the DDL for KAUI: `https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql`
+  
+  * Add the initial `admin` user in the `KAUI` database: `insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());` 
+  
+  * Start the KAUI container:
+  
+  ```
+  docker run -tid \
+--name kaui_0_7_0 \
+-p 8989:8080 \
+--link db:dbserver \
+--link killbill_0_16_0:killbill \
+-e KAUI_URL=http://killbill:8080 \
+-e KAUI_API_KEY= \
+-e KAUI_API_SECRET= \
+-e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
+-e KAUI_CONFIG_DAO_USER=root \
+-e KAUI_CONFIG_DAO_PASSWORD= \
+killbill/kaui:0.7.0
+  ```
+
+6. More Play time... with KAUI
