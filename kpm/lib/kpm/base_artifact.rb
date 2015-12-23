@@ -66,9 +66,28 @@ module KPM
         # Return early if there's nothing to do
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
           logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
+
+          # We need to do a bit of magic to make sure that artifact_info[:bundle_dir] is correctly populated when we bail early
+          if artifact_info[:is_tgz]
+            plugin_dir = File.split(artifact_info[:dir_name])[0]
+            plugins_manager = PluginsManager.new(plugin_dir, logger)
+            artifact_id = coordinates.split(':')[1]
+            plugin_name = plugins_manager.guess_plugin_name(artifact_id)
+            if plugin_name.nil?
+              logger.warn("Failed to guess plugin_name for #{coordinates}: artifact_info[:bundle_dir] will not be populated correctly")
+            else
+              version = artifact_info[:version]
+              artifact_info[:bundle_dir] = Pathname.new(artifact_info[:dir_name]).join(plugin_name).join(version).to_s
+            end
+          else
+            artifact_info[:bundle_dir] = artifact_info[:dir_name]
+          end
+
           artifact_info[:skipped] = true
           return artifact_info
         end
+
+
 
         # Create the destination directory
         FileUtils.mkdir_p(artifact_info[:dir_name])
