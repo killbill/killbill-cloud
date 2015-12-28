@@ -63,7 +63,7 @@ module KPM
 
 
 
-    def install_plugin(plugin_key, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true)
+    def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true)
 
       # plugin_key needs to exist
       if plugin_key.nil?
@@ -73,7 +73,7 @@ module KPM
 
 
       # Lookup artifact and perform validation against input
-      looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true)
+      looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true, raw_kb_version)
       return if !validate_installation_arg(plugin_key, 'group_id', specified_group_id, looked_up_group_id)
       return if !validate_installation_arg(plugin_key, 'artifact_id', specified_artifact_id, looked_up_artifact_id)
       return if !validate_installation_arg(plugin_key, 'packaging', specified_packaging, looked_up_packaging)
