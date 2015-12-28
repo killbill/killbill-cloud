@@ -46,6 +46,15 @@ describe KPM::Installer do
       # Verify idempotency
       installer.install
       check_installation(plugins_dir, kb_webapp_path, kaui_webapp_path)
+
+      # Finally verify that for both (well behaved) ruby and java plugin, skipping the install will still correctly return the `:bundle_dir`
+      info = installer.install_plugin('payment-test-plugin', 'org.kill-bill.billing.plugin.ruby', 'payment-test-plugin', nil, nil, '1.8.7', plugins_dir)
+      info[:bundle_dir].should == plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
+
+
+      info = installer.install_plugin('analytics', nil, nil,  nil, nil, '0.7.1', plugins_dir)
+      info[:bundle_dir].should == plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
+
     end
   end
 
