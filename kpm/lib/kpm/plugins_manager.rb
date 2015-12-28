@@ -59,7 +59,7 @@ module KPM
       identifiers = read_plugin_identifiers
       entry = identifiers[plugin_key]
       if entry
-        [:group_id, :artifact_id, :packaging, :classifier, :version].each_with_index do |value_type, idx|
+        [:group_id, :artifact_id, :packaging, :classifier].each_with_index do |value_type, idx|
           return false if !validate_plugin_identifier_key_value(plugin_key, value_type, entry[value_type.to_s], coordinates[idx])
         end
       end
@@ -69,8 +69,9 @@ module KPM
     def add_plugin_identifier_key(plugin_key, plugin_name, language, coordinates)
 
       identifiers = read_plugin_identifiers
-      # If key does not already exists we update it, if not nothing to do
-      if !identifiers.has_key?(plugin_key)
+      # If key does not already exists or if the version in the json is not the one we are currently installing we update the entry, if not nothing to do
+      if !identifiers.has_key?(plugin_key) ||
+         (coordinates && identifiers[plugin_key]['version'] != coordinates[4])
 
         entry = {'plugin_name' => plugin_name}
         entry['language'] = language

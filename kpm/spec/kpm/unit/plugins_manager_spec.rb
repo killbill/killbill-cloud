@@ -109,6 +109,20 @@ describe KPM::PluginsManager do
   end
 
 
+  it 'creates a plugin identifier entry with a new version' do
+    # Verifies file gets created if does not exist
+    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', ['group', 'artifact', 'packaging', nil, 'version1'])
+    identifiers.size.should == 1
+    identifiers['bar']['plugin_name'].should == 'bar_name'
+    identifiers['bar']['version'].should == 'version1'
+
+    identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', ['group', 'artifact', 'packaging', nil, 'version2'])
+    identifiers.size.should == 1
+    identifiers['bar']['plugin_name'].should == 'bar_name'
+    identifiers['bar']['version'].should == 'version2'
+
+  end
+
   it 'sets a path as active' do
     @manager.set_active(@plugin_dir.join('1.0.0'))
     File.exists?(@plugin_dir.join('SET_DEFAULT')).should be_true
