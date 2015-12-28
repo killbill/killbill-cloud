@@ -246,8 +246,7 @@ module KPM
     end
 
     def update_plugin_identifier(plugins_dir, plugin_key, type, coordinates, artifact_info)
-      # In case the artifact on disk already existed and the installation is skipped, info[:bundle_dir] is null but the path exists in info[:dir_name]
-      path = artifact_info[:bundle_dir] || artifact_info[:dir_name]
+      path = artifact_info[:bundle_dir]
 
       # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
       plugin_name = Pathname.new(path).parent.split[1].to_s
@@ -258,14 +257,7 @@ module KPM
     def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)
       # Mark this bundle as active
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      if artifact_info[:bundle_dir].nil?
-        # In case the artifact on disk already existed and the installation is skipped,
-        # we don't know the plugin name on disk (arbitrary if it's a .tar.gz). That being said,
-        # we can guess it for Kill Bill plugins (using our naming conventions)
-        plugins_manager.set_active(plugins_manager.guess_plugin_name(artifact_id), artifact_info[:version])
-      else
-        plugins_manager.set_active(artifact_info[:bundle_dir])
-      end
+      plugins_manager.set_active(artifact_info[:bundle_dir])
     end
   end
 end
