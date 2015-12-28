@@ -119,8 +119,8 @@ module KPM
 
 
       # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
-      coordinates = [group_id, artifact_id, packaging, classifier, version]
-      return if !validate_plugin_key(plugins_dir, plugin_key, coordinates)
+      coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
+      return if !validate_plugin_key(plugins_dir, plugin_key, coordinate_map)
 
 
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
@@ -137,9 +137,12 @@ module KPM
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
 
+      # Update with resolved version
+      coordinate_map[:version] = artifact_info[:version]
+
       mark_as_active(plugins_dir, artifact_info, artifact_id)
 
-      update_plugin_identifier(plugins_dir, plugin_key, type.to_s, coordinates, artifact_info)
+      update_plugin_identifier(plugins_dir, plugin_key, type.to_s, coordinate_map, artifact_info)
 
       artifact_info
     end
@@ -240,18 +243,18 @@ module KPM
       true
     end
 
-    def validate_plugin_key(plugins_dir, plugin_key, coordinates)
+    def validate_plugin_key(plugins_dir, plugin_key, coordinate_map)
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      return plugins_manager.validate_plugin_identifier_key(plugin_key, coordinates)
+      return plugins_manager.validate_plugin_identifier_key(plugin_key, coordinate_map)
     end
 
-    def update_plugin_identifier(plugins_dir, plugin_key, type, coordinates, artifact_info)
+    def update_plugin_identifier(plugins_dir, plugin_key, type, coordinate_map, artifact_info)
       path = artifact_info[:bundle_dir]
 
       # The plugin_name needs to be computed after the fact (after the installation) because some plugin archive embed their directory structure
       plugin_name = Pathname.new(path).parent.split[1].to_s
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, type, coordinates)
+      plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, type, coordinate_map)
     end
 
     def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)

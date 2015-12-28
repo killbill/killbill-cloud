@@ -54,33 +54,32 @@ module KPM
       end
     end
 
-    def validate_plugin_identifier_key(plugin_key, coordinates)
-
+    def validate_plugin_identifier_key(plugin_key, coordinate_map)
       identifiers = read_plugin_identifiers
       entry = identifiers[plugin_key]
       if entry
-        [:group_id, :artifact_id, :packaging, :classifier].each_with_index do |value_type, idx|
-          return false if !validate_plugin_identifier_key_value(plugin_key, value_type, entry[value_type.to_s], coordinates[idx])
+        coordinate_map.each_pair do |key, value|
+          return false if !validate_plugin_identifier_key_value(plugin_key, key, entry[key.to_s], value)
         end
       end
       true
     end
 
-    def add_plugin_identifier_key(plugin_key, plugin_name, language, coordinates)
+    def add_plugin_identifier_key(plugin_key, plugin_name, language, coordinate_map)
 
       identifiers = read_plugin_identifiers
       # If key does not already exists or if the version in the json is not the one we are currently installing we update the entry, if not nothing to do
       if !identifiers.has_key?(plugin_key) ||
-         (coordinates && identifiers[plugin_key]['version'] != coordinates[4])
+         (coordinate_map && identifiers[plugin_key]['version'] != coordinate_map[:version])
 
         entry = {'plugin_name' => plugin_name}
         entry['language'] = language
-        if coordinates
-          entry['group_id'] = coordinates[0]
-          entry['artifact_id'] = coordinates[1]
-          entry['packaging'] = coordinates[2]
-          entry['classifier'] = coordinates[3]
-          entry['version'] = coordinates[4]
+        if coordinate_map
+          entry['group_id'] = coordinate_map[:group_id]
+          entry['artifact_id'] = coordinate_map[:artifact_id]
+          entry['packaging'] = coordinate_map[:packaging]
+          entry['classifier'] = coordinate_map[:classifier]
+          entry['version'] = coordinate_map[:version]
         end
         identifiers[plugin_key] = entry
         write_plugin_identifiers(identifiers)

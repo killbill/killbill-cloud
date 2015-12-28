@@ -36,8 +36,8 @@ module KPM
 
     class << self
       def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
-        coordinates = build_coordinates(group_id, artifact_id, packaging, classifier, version)
-        pull_and_put_in_place(logger, coordinates, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+        coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier, :version => version}
+        pull_and_put_in_place(logger, coordinate_map, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, verify_sha1, overrides, ssl_verify)
       end
 
       def pull_from_fs(logger, file_path, destination_path=nil)
@@ -57,11 +57,14 @@ module KPM
 
       protected
 
-      def pull_and_put_in_place(logger, coordinates, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinate_map, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         # Build artifact info
-        artifact_info = artifact_info(coordinates, overrides, ssl_verify)
-
+        artifact_info = artifact_info(coordinate_map, overrides, ssl_verify)
         populate_fs_info(artifact_info, destination_path)
+
+        # Update with resolved version in case 'LATEST' was passed
+        coordinate_map[:version] = artifact_info[:version]
+        coordinates = build_coordinates(coordinate_map)
 
         # Return early if there's nothing to do
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
@@ -157,11 +160,12 @@ module KPM
         local_sha1 == artifact_info[:sha1]
       end
 
-      def artifact_info(coordinates, overrides={}, ssl_verify=true)
+      def artifact_info(coordinate_map, overrides={}, ssl_verify=true)
         info = {
             :skipped => false
         }
 
+        coordinates = build_coordinates(coordinate_map)
         nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
 
         xml = REXML::Document.new(nexus_info)
@@ -235,7 +239,14 @@ module KPM
         res
       end
 
-      def build_coordinates(group_id, artifact_id, packaging, classifier, version=nil)
+      def build_coordinates(coordinate_map)
+
+        group_id = coordinate_map[:group_id]
+        artifact_id = coordinate_map[:artifact_id]
+        packaging = coordinate_map[:packaging]
+        classifier = coordinate_map[:classifier]
+        version = coordinate_map[:version]
+
         if classifier.nil?
           if version.nil?
             "#{group_id}:#{artifact_id}:#{packaging}"
