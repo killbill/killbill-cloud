@@ -93,6 +93,7 @@
   :type: :ruby
   :versions:
     :0.15: 0.0.2
+    :0.16: 0.0.5
 :litle:
   :type: :ruby
   :versions:
