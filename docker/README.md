@@ -92,7 +92,7 @@ To run it:
 Local Development
 ==================
 
-It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a mysql database and another one with a killbill server version `0.16.0` (adjust that with the version of your choice).
+It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.16.0` (adjust it with the version of your choice).
 
 1. Start the mysql container (you need to pull the image `dockerfile/mariadb` first):
 
@@ -100,55 +100,55 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
   docker run -tid --name db -p 3306:3306  dockerfile/mariadb
   ```
 
-2. Configure database:
-  First, modify the database to make sure it is using the row `binlog_format`:
+2. Configure the database:
+  First, modify the database to make sure it is using the `ROW` `binlog_format`:
   ```
   echo "set global binlog_format = 'ROW'" | mysql -h $(docker-machine ip default) -uroot -p
   ```
   And then create the database `killbill_0_16_0` and add the DDLs:
 
-  * Kill Bill DDL: `http://docs.killbill.io/0.16/ddl.sql` 
-  * Analytics DDL: `https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql`
-  * Stripe DDL: `https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql`
+  * Kill Bill [DDL](http://docs.killbill.io/0.16/ddl.sql)
+  * Analytics [DDL](https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql)
+  * Stripe [DDL](https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql)
 
 3. Start the killbill container with the two plugins `analytics` and `stripe`:
 
   ```
 docker run -tid \
---name killbill_0_16_0 \
--p 8080:8080 \
--p 12345:12345 \
---link db:dbserver \
--e KILLBILL_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
--e KILLBILL_CONFIG_DAO_USER=root \
--e KILLBILL_CONFIG_DAO_PASSWORD= \
--e KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
--e KILLBILL_CONFIG_OSGI_DAO_USER=root \
--e KILLBILL_CONFIG_OSGI_DAO_PASSWORD= \
--e KILLBILL_PLUGIN_ANALYTICS=1 \
--e KILLBILL_PLUGIN_STRIPE=1 \
-killbill/killbill:0.16.0
+           --name killbill_0_16_0 \
+           -p 8080:8080 \
+           -p 12345:12345 \
+           --link db:dbserver \
+           -e KILLBILL_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
+           -e KILLBILL_CONFIG_DAO_USER=root \
+           -e KILLBILL_CONFIG_DAO_PASSWORD= \
+           -e KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
+           -e KILLBILL_CONFIG_OSGI_DAO_USER=root \
+           -e KILLBILL_CONFIG_OSGI_DAO_PASSWORD= \
+           -e KILLBILL_PLUGIN_ANALYTICS=1 \
+           -e KILLBILL_PLUGIN_STRIPE=1 \
+           killbill/killbill:0.16.0
   ```
 4. Play time...
 
   ```
 curl -v \
--X POST \
--u admin:password \
--H 'Content-Type: application/json' \
--H 'X-Killbill-CreatedBy: admin' \
--d '{"apiKey": "bob", "apiSecret": "lazar"}' \
-"http://$(docker-machine ip default):8080/1.0/kb/tenants"
+     -X POST \
+     -u admin:password \
+     -H 'Content-Type: application/json' \
+     -H 'X-Killbill-CreatedBy: admin' \
+     -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+     "http://$(docker-machine ip default):8080/1.0/kb/tenants"
   ```
 
-5. Using KAUI image as well
+5. Install the KAUI image
 
   * Create a new database for KAUI
   ```
   create database kaui;
   ```
   
-  * Add the DDL for KAUI: `https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql`
+  * Add the [DDL](https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql) for KAUI
   
   * Add the initial `admin` user in the `KAUI` database: `insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());` 
   
@@ -156,19 +156,19 @@ curl -v \
   
   ```
   docker run -tid \
---name kaui_0_7_0 \
--p 8989:8080 \
---link db:dbserver \
---link killbill_0_16_0:killbill \
--e KAUI_URL=http://killbill:8080 \
--e KAUI_API_KEY= \
--e KAUI_API_SECRET= \
--e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
--e KAUI_CONFIG_DAO_USER=root \
--e KAUI_CONFIG_DAO_PASSWORD= \
-killbill/kaui:0.7.0
+             --name kaui_0_7_0 \
+             -p 8989:8080 \
+             --link db:dbserver \
+             --link killbill_0_16_0:killbill \
+             -e KAUI_URL=http://killbill:8080 \
+             -e KAUI_API_KEY= \
+             -e KAUI_API_SECRET= \
+             -e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
+             -e KAUI_CONFIG_DAO_USER=root \
+             -e KAUI_CONFIG_DAO_PASSWORD= \
+             killbill/kaui:0.7.0
   ```
 
 6. More Play time... with KAUI
 
-  You can conmnect to KAUI using the url : `http://IP:8989/` where `IP=$(docker-machine ip default)`. You will be able to login as a superadmin using account `admin/password`. From there you can follow our turorials and documentation...
+  You can conmnect to KAUI using the url : `http://IP:8989/` where `IP=$(docker-machine ip default)`. You will be able to login as a superadmin using account `admin/password`. From there you can follow our tutorials and documentation.
