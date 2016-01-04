@@ -141,7 +141,9 @@ curl -v \
      "http://$(docker-machine ip default):8080/1.0/kb/tenants"
   ```
 
-5. Install the KAUI image
+You can also install Kaui in a similar fashion:
+
+1. Configure the database:
 
   * Create a new database for KAUI
   ```
