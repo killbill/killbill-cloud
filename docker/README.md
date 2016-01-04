@@ -94,10 +94,10 @@ Local Development
 
 It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.16.0` (adjust it with the version of your choice).
 
-1. Start the mysql container (you need to pull the image `dockerfile/mariadb` first):
+1. Start the mysql container:
 
   ```
-  docker run -tid --name db -p 3306:3306  dockerfile/mariadb
+  docker run -tid --name db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mariadb
   ```
 
 2. Configure the database:
@@ -121,10 +121,10 @@ docker run -tid \
            --link db:dbserver \
            -e KILLBILL_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
            -e KILLBILL_CONFIG_DAO_USER=root \
-           -e KILLBILL_CONFIG_DAO_PASSWORD= \
+           -e KILLBILL_CONFIG_DAO_PASSWORD=root \
            -e KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://dbserver:3306/killbill_0_16_0 \
            -e KILLBILL_CONFIG_OSGI_DAO_USER=root \
-           -e KILLBILL_CONFIG_OSGI_DAO_PASSWORD= \
+           -e KILLBILL_CONFIG_OSGI_DAO_PASSWORD=root \
            -e KILLBILL_PLUGIN_ANALYTICS=1 \
            -e KILLBILL_PLUGIN_STRIPE=1 \
            killbill/killbill:0.16.0
