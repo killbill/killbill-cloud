@@ -60,6 +60,7 @@ Kaui specific environment variables:
   - `KAUI_CONFIG_DAO_URL` (default `jdbc:mysql://localhost:3306/kaui`)
   - `KAUI_CONFIG_DAO_USER` (default `kaui`)
   - `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
+  - `KAUI_CONFIG_DEMO` (default `false`)
 
 There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936). In order to disable sha1 verification, you can start your container using: `KPM_PROPS="--verify-sha1=false"`.
 
@@ -88,7 +89,17 @@ To run it:
 
     make run-container
     
-    
+To publish an image:
+
+```
+# Build the image locally
+export TARGET=killbill # or kaui
+make -e TARGET=$TARGET
+docker login
+docker push killbill/$TARGET:latest
+docker logout
+```
+
 Local Development
 ==================
 
