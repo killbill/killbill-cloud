@@ -17,7 +17,7 @@ Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to ge
 Images
 ======
 
-* killbill/base: shared base image with Tomcat 7 and KPM inside Ubuntu 14.04
+* base/latest: shared base image with Tomcat 7 and KPM inside Ubuntu 14.04
 * killbill/latest: empty base Kill Bill image. The first time it is started, the latest version of Kill Bill is downloaded
 * killbill/tagged: image with Kill Bill installed (published on [Docker Hub](https://hub.docker.com/r/killbill/killbill/))
 * kaui/latest: empty base Kaui image. The first time it is started, the latest version of Kaui is downloaded
@@ -93,10 +93,11 @@ To publish an image:
 
 ```
 # Build the image locally
-export TARGET=killbill # or kaui
-make -e TARGET=$TARGET
+export TARGET=killbill # or base, kaui
+export VERSION=latest # or 0.16.0
+make -e TARGET=$TARGET -e VERSION=$VERSION
 docker login
-docker push killbill/$TARGET:latest
+docker push killbill/$TARGET:$VERSION
 docker logout
 ```
 
