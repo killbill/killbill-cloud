@@ -35,6 +35,7 @@ killbill:
     org.killbill.notificationq.analytics.tableName: analytics_notifications
     org.killbill.osgi.bundle.install.dir: <%= ENV['KILLBILL_HOME'] %>/bundles
     org.killbill.osgi.root.dir: <%= ENV['KILLBILL_HOME'] %>/felix-cache
+    org.killbill.queue.creator.name: <%= ENV['KILLBILL_QUEUE_CREATOR_NAME'] %>
     org.killbill.server.baseUrl: http://localhost:8080
     org.killbill.server.properties: file://<%= ENV['KILLBILL_CONFIG'] %>/killbill.properties
     org.killbill.server.http.gzip: true

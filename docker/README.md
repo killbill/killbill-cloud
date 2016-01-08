@@ -51,6 +51,7 @@ Kill Bill specific environment variables:
   - `KILLBILL_METRICS_GRAPHITE` (default `false`)
   - `KILLBILL_METRICS_GRAPHITE_HOST` (default `localhost`)
   - `KILLBILL_METRICS_GRAPHITE_PORT` (default `2003`)
+  - `KILLBILL_QUEUE_CREATOR_NAME` (no default is specified, Kill Bill will use the hostname)
 
 Kaui specific environment variables:
 
@@ -88,7 +89,7 @@ To cleanup containers and images:
 To run it:
 
     make run-container
-    
+
 To publish an image:
 
 ```
@@ -161,13 +162,13 @@ You can also install Kaui in a similar fashion:
   ```
   create database kaui;
   ```
-  
+
   * Add the [DDL](https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql) for KAUI
-  
-  * Add the initial `admin` user in the `KAUI` database: `insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());` 
-  
+
+  * Add the initial `admin` user in the `KAUI` database: `insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());`
+
   * Start the KAUI container:
-  
+
   ```
   docker run -tid \
              --name kaui_0_7_0 \
