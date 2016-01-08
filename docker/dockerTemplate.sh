@@ -17,7 +17,7 @@ help() {
 }
 
 init() {
-  if [[ $VERSION != 'LATEST' ]]; then
+  if [[ $VERSION != 'latest' ]]; then
     clean
     cat "$TAGGED_PATH/Dockerfile.template"  | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/Dockerfile"
   fi

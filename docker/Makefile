@@ -8,8 +8,8 @@ DOCKER_TEMPLATE="./dockerTemplate.sh"
 
 TARGET?=killbill
 
-VERSION?=LATEST
-ifeq ($(VERSION),LATEST)
+VERSION?=latest
+ifeq ($(VERSION),latest)
 IMAGE=killbill/$(TARGET)
 TEMPLATE=templates/$(TARGET)/latest
 else
