@@ -16,8 +16,8 @@ module KPM
     end
 
     def initialize(raw_config, logger=nil)
-      @config = raw_config['killbill']
-      @kaui_config = raw_config['kaui']
+      @config = raw_config['killbill'] || {}
+      @kaui_config = raw_config['kaui'] || {}
 
       if logger.nil?
         logger = Logger.new(STDOUT)
