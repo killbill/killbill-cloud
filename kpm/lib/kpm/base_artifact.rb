@@ -71,7 +71,7 @@ module KPM
           logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
 
           # We need to do a bit of magic to make sure that artifact_info[:bundle_dir] is correctly populated when we bail early
-          if artifact_info[:is_tgz]
+          if artifact_info[:is_tgz] && coordinate_map[:artifact_id] != 'killbill-platform-osgi-bundles-defaultbundles'
             plugin_dir = File.split(artifact_info[:dir_name])[0]
             plugins_manager = PluginsManager.new(plugin_dir, logger)
             artifact_id = coordinates.split(':')[1]
