@@ -90,8 +90,6 @@ module KPM
           return artifact_info
         end
 
-
-
         # Create the destination directory
         FileUtils.mkdir_p(artifact_info[:dir_name])
 
@@ -138,7 +136,6 @@ module KPM
       end
 
       def skip_if_exists(artifact_info, coordinates, sha1_file)
-
         # Unclear if this is even possible
         return false if artifact_info[:sha1].nil?
 
@@ -149,7 +146,7 @@ module KPM
           return true if local_sha1 == artifact_info[:sha1]
         end
 
-        # If not using sha1_file mechanism, exit early if file_path odes not exist or is a directory
+        # If not using sha1_file mechanism, exit early if file_path does not exist or is a directory
         if !File.exists?(artifact_info[:file_path]) ||
             File.directory?(artifact_info[:file_path])
           return false
@@ -240,7 +237,6 @@ module KPM
       end
 
       def build_coordinates(coordinate_map)
-
         group_id = coordinate_map[:group_id]
         artifact_id = coordinate_map[:artifact_id]
         packaging = coordinate_map[:packaging]
