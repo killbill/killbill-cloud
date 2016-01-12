@@ -16,8 +16,8 @@ module KPM
     end
 
     def initialize(raw_config, logger=nil)
-      @config = raw_config['killbill'] || {}
-      @kaui_config = raw_config['kaui'] || {}
+      @config = raw_config['killbill']
+      @kaui_config = raw_config['kaui']
 
       if logger.nil?
         logger = Logger.new(STDOUT)
@@ -63,7 +63,9 @@ module KPM
       # Update main config
       root_war_path = manager.setup
       @config['webapp_path'] = root_war_path
-      @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s
+      unless @kaui_config.nil?
+        @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s
+      end
 
       # Help message
       manager.help
