@@ -147,7 +147,7 @@
   :versions:
     :0.14: 1.0.0
     :0.15: 2.0.0
-    :0.16: 3.0.1
+    :0.16: 3.0.2
   :stable_version: 2.0.0
   :require:
   - :api_secret_key
