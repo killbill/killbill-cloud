@@ -122,15 +122,15 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
 
   * Kill Bill [DDL](http://docs.killbill.io/0.16/ddl.sql)
 
-    ```curl http://docs.killbill.io/0.16/ddl.sql | mysql -h $(docker-machine ip default) -Dkillbill -uroot -p```
+    ```curl -s http://docs.killbill.io/0.16/ddl.sql | mysql -h $(docker-machine ip default) -Dkillbill -uroot -p root```
 
   * Analytics [DDL](https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql)
 
-    ```curl https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -uroot -p```
+    ```curl -s https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -uroot -p root```
  
   * Stripe [DDL](https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql)
 
-    ```curl https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -uroot -p```
+    ```curl -s https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -uroot -p root```
 
     Note that the `-e MYSQL_DATABASE=killbill` argument to `docker run` above took care of creating the `killbill` database for us. When deploying to a production scenario, you'll need to do that step explicitly.
 
