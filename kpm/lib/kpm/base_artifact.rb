@@ -59,7 +59,7 @@ module KPM
 
       def pull_and_put_in_place(logger, coordinate_map, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         # Build artifact info
-        artifact_info = artifact_info(coordinate_map, overrides, ssl_verify)
+        artifact_info = artifact_info(logger, coordinate_map, overrides, ssl_verify)
         populate_fs_info(artifact_info, destination_path)
 
         # Update with resolved version in case 'LATEST' was passed
@@ -157,13 +157,17 @@ module KPM
         local_sha1 == artifact_info[:sha1]
       end
 
-      def artifact_info(coordinate_map, overrides={}, ssl_verify=true)
+      def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
         info = {
             :skipped => false
         }
 
         coordinates = build_coordinates(coordinate_map)
-        nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
+        begin
+          nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
+        rescue NexusCli::ArtifactMalformedException => e
+          raise NexusCli::NexusCliError.new("Invalid coordinates #{coordinate_map}")
+        end
 
         xml = REXML::Document.new(nexus_info)
         info[:sha1] = xml.elements['//sha1'].text unless xml.elements['//sha1'].nil?
