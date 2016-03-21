@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'nexus_cli', '~> 4.1.0'
   s.add_dependency 'thor', '~> 0.19.1'
 
-  s.add_development_dependency 'rake', '>= 10.0.0'
+  s.add_development_dependency 'rake', '>= 10.0.0', '< 11.0.0'
   s.add_development_dependency 'rspec', '~> 2.12.0'
 end
 
