@@ -7,10 +7,7 @@ module KPM
     SHA1_FILENAME = 'sha1.yml'
     DEFAULT_BUNDLES_DIR = Pathname.new('/var').join('tmp').join('bundles').to_s
 
-
-
-
-    def initialize(logger, nexus_config, nexus_ssl_verify)
+    def initialize(logger, nexus_config = nil, nexus_ssl_verify = nil)
       @logger = logger
       @nexus_config = nexus_config
       @nexus_ssl_verify = nexus_ssl_verify
@@ -61,16 +58,13 @@ module KPM
                              @nexus_ssl_verify)
     end
 
-
-
     def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true)
 
       # plugin_key needs to exist
       if plugin_key.nil?
-        @logger.warn("Aborting installation: User needs to specify a pluginKey")
+        @logger.warn('Aborting installation: User needs to specify a pluginKey')
         return nil
       end
-
 
       # Lookup artifact and perform validation against input
       looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true, raw_kb_version)
@@ -168,20 +162,19 @@ module KPM
       artifact_info
     end
 
-    def uninstall_plugin(plugin_key, plugin_version=nil, bundles_dir=nil)
-
+    def uninstall_plugin(plugin_name_or_key, plugin_version=nil, bundles_dir=nil)
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
 
-      plugin_name = plugins_manager.get_plugin_name_from_key(plugin_key)
+      plugin_key, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_name_or_key)
       if plugin_name.nil?
-        @logger.warn("Cannot uninstall plugin: Unknown plugin_key = #{plugin_key}");
+        @logger.warn("Cannot uninstall plugin: Unknown plugin name or plugin key = #{plugin_name_or_key}");
         return
       end
 
-      modified = plugins_manager.uninstall(plugin_name, plugin_version)
+      modified = plugins_manager.uninstall(plugin_name, plugin_version || :all)
       plugins_manager.remove_plugin_identifier_key(plugin_key)
       modified
     end

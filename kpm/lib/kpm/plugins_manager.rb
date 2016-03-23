@@ -89,7 +89,6 @@ module KPM
     end
 
     def remove_plugin_identifier_key(plugin_key)
-
       identifiers = read_plugin_identifiers
       # If key does not already exists we update it, if not nothing to do.
       if identifiers.has_key?(plugin_key)
@@ -100,13 +99,17 @@ module KPM
       identifiers
     end
 
-
-    def get_plugin_name_from_key(plugin_key)
+    def get_plugin_key_and_name(plugin_name_or_key)
       identifiers = read_plugin_identifiers
-      return nil if identifiers.nil? || !identifiers.has_key?(plugin_key)
-      identifiers[plugin_key]['plugin_name']
+      if identifiers.has_key?(plugin_name_or_key)
+        # It's a plugin key
+        [plugin_name_or_key, identifiers[plugin_name_or_key]['plugin_name']]
+      else
+        # Check it's already a plugin name
+        identifiers.each { |plugin_key, entry| return [plugin_key, plugin_name_or_key] if entry['plugin_name'] == plugin_name_or_key }
+        nil
+      end
     end
-
 
     def guess_plugin_name(artifact_id)
       return nil if artifact_id.nil?
