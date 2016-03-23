@@ -174,6 +174,10 @@ module KPM
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
+        method_option :destination,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
         method_option :force_download,
                       :type    => :boolean,
                       :default => false,
@@ -187,7 +191,7 @@ module KPM
           response = BaseInstaller.new(logger,
                                        options[:overrides],
                                        options[:ssl_verify])
-                                  .install_default_bundles(nil,
+                                  .install_default_bundles(options[:destination],
                                                            nil,
                                                            kb_version,
                                                            options[:force_download],
