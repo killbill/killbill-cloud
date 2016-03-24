@@ -4,6 +4,11 @@ require 'set'
 module KPM
   class KillbillPluginArtifact < BaseArtifact
     class << self
+      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', plugin_name=nil, destination_path=nil, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
+        coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier, :version => version}
+        pull_and_put_in_place(logger, coordinate_map, plugin_name, destination_path, false, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+      end
+
       def versions(overrides={}, ssl_verify=true)
         plugins = {:java => {}, :ruby => {}}
 

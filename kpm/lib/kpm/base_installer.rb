@@ -110,7 +110,8 @@ module KPM
         destination = plugins_dir.join('ruby')
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
-
+      plugins_manager = PluginsManager.new(plugins_dir, @logger)
+      _, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_key)
 
       # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
       coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
@@ -124,6 +125,7 @@ module KPM
                                                        packaging,
                                                        classifier,
                                                        version,
+                                                       plugin_name,
                                                        destination,
                                                        sha1_file,
                                                        force_download,
