@@ -16,7 +16,7 @@ module KPM
 
 
     def self.list_plugins(latest=false, kb_version)
-      all(latest).inject({}) { |out, (key, val)| out[key]=val[:versions][kb_version.to_sym]; out}
+      all(latest).inject({}) { |out, (key, val)| out[key]=val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym) ; out}
     end
 
     # Note: this API is used in Docker images (see kpm_generator.rb, careful when changing it!)
