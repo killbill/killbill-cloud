@@ -144,8 +144,8 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
-        def install_java_plugin(plugin_key, kb_version='LATEST')
+        desc 'pull_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        def pull_java_plugin(plugin_key, kb_version='LATEST')
 
           response = BaseInstaller.new(logger,
                                        options[:overrides],
@@ -203,8 +203,8 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
-        def install_ruby_plugin(plugin_key, kb_version='LATEST')
+        desc 'pull_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        def pull_ruby_plugin(plugin_key, kb_version='LATEST')
           response = BaseInstaller.new(logger,
                                        options[:overrides],
                                        options[:ssl_verify]).install_plugin(plugin_key,
