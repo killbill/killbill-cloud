@@ -1,4 +1,5 @@
 require 'pathname'
+require 'zip'
 
 module KPM
   class BaseInstaller
@@ -103,6 +104,7 @@ module KPM
         version = specified_version || looked_up_version || LATEST_VERSION
         destination = plugins_dir.join('java').join(artifact_id).join(version)
       else
+        warn_if_jruby_jar_missing(bundles_dir)
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
@@ -255,5 +257,36 @@ module KPM
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       plugins_manager.set_active(artifact_info[:bundle_dir])
     end
+
+    def warn_if_jruby_jar_missing(bundles_dir)
+      platform_dir = bundles_dir.join('platform')
+      jruby_jar = platform_dir.join('jruby.jar')
+      if !File.exists?(jruby_jar)
+        @logger.warn("  Missing installation for jruby.jar under #{platform_dir}. This is required for ruby plugin installation");
+      else
+        version = extract_jruby_jar_version(jruby_jar)
+        if version
+          @logger.info("  Detected jruby.jar version #{version}")
+        else
+          @logger.warn("  Failed to detect jruby.jar version for #{jruby_jar}");
+        end
+      end
+    end
+
+    def extract_jruby_jar_version(jruby_jar)
+      selected_entries = Zip::File.open(jruby_jar) do |zip_file|
+        zip_file.select do |entry|
+          entry.name == 'META-INF/maven/org.kill-bill.billing/killbill-platform-osgi-bundles-jruby/pom.properties'
+        end
+      end
+
+      if selected_entries && selected_entries.size == 1
+        zip_entry = selected_entries[0]
+        content = zip_entry.get_input_stream.read
+        return content.split("\n").select { |e| e.start_with?("version")}[0].split("=")[1]
+      end
+      nil
+    end
+
   end
 end
