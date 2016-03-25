@@ -108,6 +108,26 @@ module KPM
                                                                      options[:ssl_verify]).to_a.join(', ')}", :green
         end
 
+        method_option :group_id,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID,
+                      :desc    => 'The plugin artifact group-id'
+        method_option :artifact_id,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The plugin artifact id'
+        method_option :version,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The plugin artifact version'
+        method_option :packaging,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING,
+                      :desc    => 'The plugin artifact packaging'
+        method_option :classifier,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
+                      :desc    => 'The plugin artifact classifier'
         method_option :destination,
                       :type    => :string,
                       :default => nil,
@@ -124,23 +144,49 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_java_plugin artifact_id <version>', 'Pulls a java plugin from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_java_plugin(artifact_id, version='LATEST')
-          response = KillbillPluginArtifact.pull(logger,
-                                                 KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID,
-                                                 artifact_id,
-                                                 KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING,
-                                                 KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
-                                                 version,
-                                                 options[:destination],
-                                                 options[:sha1_file],
-                                                 options[:force_download],
-                                                 options[:verify_sha1],
-                                                 options[:overrides],
-                                                 options[:ssl_verify])
+        desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        def install_java_plugin(plugin_key, kb_version='LATEST')
+
+          response = BaseInstaller.new(logger,
+                                       options[:overrides],
+                                       options[:ssl_verify]).install_plugin(plugin_key,
+                                                                            kb_version,
+                                                                            options[:group_id],
+                                                                            options[:artifact_id],
+                                                                            options[:packaging],
+                                                                            options[:classifier],
+                                                                            options[:version],
+                                                                            options[:destination],
+                                                                            'java',
+                                                                            options[:force_download],
+                                                                            options[:verify_sha1],
+                                                                            false)
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
+
+
+
+        method_option :group_id,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID,
+                      :desc    => 'The plugin artifact group-id'
+        method_option :artifact_id,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The plugin artifact id'
+        method_option :version,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The plugin artifact version'
+        method_option :packaging,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING,
+                      :desc    => 'The plugin artifact packaging'
+        method_option :classifier,
+                      :type    => :string,
+                      :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
+                      :desc    => 'The plugin artifact classifier'
         method_option :destination,
                       :type    => :string,
                       :default => nil,
@@ -157,21 +203,24 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_ruby_plugin artifact_id <version>', 'Pulls a ruby plugin from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_ruby_plugin(artifact_id, version='LATEST')
-          response = KillbillPluginArtifact.pull(logger,
-                                                 KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID,
-                                                 artifact_id,
-                                                 KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING,
-                                                 KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
-                                                 version,
-                                                 options[:destination],
-                                                 options[:sha1_file],
-                                                 options[:force_download],
-                                                 options[:verify_sha1],
-                                                 options[:overrides],
-                                                 options[:ssl_verify])
+        desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        def install_ruby_plugin(plugin_key, kb_version='LATEST')
+          response = BaseInstaller.new(logger,
+                                       options[:overrides],
+                                       options[:ssl_verify]).install_plugin(plugin_key,
+                                                                            kb_version,
+                                                                            options[:group_id],
+                                                                            options[:artifact_id],
+                                                                            options[:packaging],
+                                                                            options[:classifier],
+                                                                            options[:version],
+                                                                            options[:destination],
+                                                                            'ruby',
+                                                                            options[:force_download],
+                                                                            options[:verify_sha1],
+                                                                            true)
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
+
         end
 
         method_option :destination,
