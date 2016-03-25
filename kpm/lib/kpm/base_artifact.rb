@@ -164,8 +164,10 @@ module KPM
         end
 
         # Finally check if remote_sha1 matches what we have locally
-        local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
-        local_sha1 == artifact_info[:sha1]
+        if !artifact_info[:is_tgz]
+          local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
+          local_sha1 == artifact_info[:sha1]
+        end
       end
 
       def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
