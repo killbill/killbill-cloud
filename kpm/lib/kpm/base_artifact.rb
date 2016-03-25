@@ -275,11 +275,6 @@ module KPM
 
       # Magic methods...
 
-      def is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id)
-        # The second check is for custom ruby plugins
-        group_id == KILLBILL_RUBY_PLUGIN_GROUP_ID || artifact_id.include?('plugin')
-      end
-
       def path_looks_like_a_directory(path)
         # It already is!
         return true if File.directory?(path)
