@@ -25,29 +25,6 @@ describe KPM::BaseArtifact do
     end
   end
 
-  # This test makes sure the top level directory is correctly verify_is_skipped
-  it 'should be able to download and verify .tar.gz ruby artifacts' do
-    # Use the payment-test-plugin as a test, as it is fairly small (2.5M)
-    group_id    = 'org.kill-bill.billing.plugin.ruby'
-    artifact_id = 'payment-test-plugin'
-    packaging   = 'tar.gz'
-    classifier  = nil
-    version     = '1.8.7'
-
-    Dir.mktmpdir do |dir|
-      info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, dir)
-      info[:file_name].should be_nil
-
-      files_in_dir = Dir[info[:file_path] + '/*']
-      files_in_dir.size.should == 1
-      files_in_dir[0].should == info[:file_path] + '/killbill-payment-test'
-
-      File.read(info[:file_path] + '/killbill-payment-test/1.8.7/killbill.properties').should == "mainClass=PaymentTest::PaymentPlugin\nrequire=payment_test\npluginType=PAYMENT\n"
-
-      info[:bundle_dir].should == info[:file_path] + '/killbill-payment-test/1.8.7'
-    end
-  end
-
   it 'should be able to download and verify generic .tar.gz artifacts' do
     # The artifact is not small unfortunately (23.7M)
     group_id    = 'org.kill-bill.billing'

@@ -7,6 +7,30 @@ describe KPM::KillbillPluginArtifact do
     @logger.level = Logger::INFO
   end
 
+  # This test makes sure the top level directory is correctly verify_is_skipped
+  it 'should be able to download and verify .tar.gz ruby artifacts' do
+    # Use the payment-test-plugin as a test, as it is fairly small (2.5M)
+    group_id    = 'org.kill-bill.billing.plugin.ruby'
+    artifact_id = 'payment-test-plugin'
+    packaging   = 'tar.gz'
+    classifier  = nil
+    version     = '1.8.7'
+    plugin_name = 'killbill-payment-test'
+
+    Dir.mktmpdir do |dir|
+      info = KPM::KillbillPluginArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, plugin_name, dir)
+      info[:file_name].should be_nil
+
+      files_in_dir = Dir[info[:file_path] + '/*']
+      files_in_dir.size.should == 1
+      files_in_dir[0].should == info[:file_path] + '/killbill-payment-test'
+
+      File.read(info[:file_path] + '/killbill-payment-test/1.8.7/killbill.properties').should == "mainClass=PaymentTest::PaymentPlugin\nrequire=payment_test\npluginType=PAYMENT\n"
+
+      info[:bundle_dir].should == info[:file_path] + '/killbill-payment-test/1.8.7'
+    end
+  end
+
   it 'should be able to download and verify artifacts' do
     Dir.mktmpdir do |dir|
       sha1_file = dir + '/sha1.yml'
@@ -16,6 +40,7 @@ describe KPM::KillbillPluginArtifact do
                                               KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING,
                                               KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
                                               'LATEST',
+                                              'killbill-analytics',
                                               dir,
                                               sha1_file)
       info[:file_name].should == "analytics-plugin-#{info[:version]}.jar"
@@ -32,6 +57,7 @@ describe KPM::KillbillPluginArtifact do
                                               KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING,
                                               KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
                                               'LATEST',
+                                              'killbill-analytics',
                                               dir,
                                               sha1_file)
 
