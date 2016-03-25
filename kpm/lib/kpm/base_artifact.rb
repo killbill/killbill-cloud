@@ -163,8 +163,11 @@ module KPM
           return true if local_sha1 == artifact_info[:sha1]
         end
 
-        # Finally check if remote_sha1 matches what we have locally
-        if !artifact_info[:is_tgz]
+        if artifact_info[:is_tgz]
+          # tgz artifact seems to be installed, but is not in the sha1 file, so do not skip it
+          false
+        else
+          # Finally check if remote_sha1 matches what we have locally
           local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
           local_sha1 == artifact_info[:sha1]
         end
