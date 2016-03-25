@@ -59,7 +59,7 @@ module KPM
                              @nexus_ssl_verify)
     end
 
-    def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true)
+    def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true, verify_jruby_jar=false)
 
       # plugin_key needs to exist
       if plugin_key.nil?
@@ -104,7 +104,9 @@ module KPM
         version = specified_version || looked_up_version || LATEST_VERSION
         destination = plugins_dir.join('java').join(artifact_id).join(version)
       else
-        warn_if_jruby_jar_missing(bundles_dir)
+
+        warn_if_jruby_jar_missing(bundles_dir) if verify_jruby_jar
+
         group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
         packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
         classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER

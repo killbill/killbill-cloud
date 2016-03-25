@@ -81,7 +81,7 @@ module KPM
 
       infos = []
       @config['plugins']['java'].each do |plugin|
-        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'java', force_download, verify_sha1)
+        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'java', force_download, verify_sha1, false)
       end
 
       infos
@@ -90,9 +90,11 @@ module KPM
     def install_ruby_plugins(force_download, verify_sha1)
       return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
 
+      verify_jruby_jar=true
       infos = []
       @config['plugins']['ruby'].each do |plugin|
-        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'ruby', force_download, verify_sha1)
+        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], @config['plugins_dir'], 'ruby', force_download, verify_sha1, verify_jruby_jar)
+        verify_jruby_jar=false
       end
 
       infos
