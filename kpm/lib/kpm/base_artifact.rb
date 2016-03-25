@@ -37,7 +37,7 @@ module KPM
     class << self
       def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier, :version => version}
-        pull_and_put_in_place(logger, coordinate_map, destination_path, is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id), sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+        pull_and_put_in_place(logger, coordinate_map, nil, destination_path, false, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
       end
 
       def pull_from_fs(logger, file_path, destination_path=nil)
@@ -57,9 +57,10 @@ module KPM
 
       protected
 
-      def pull_and_put_in_place(logger, coordinate_map, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinate_map, plugin_name, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         # Build artifact info
         artifact_info = artifact_info(logger, coordinate_map, overrides, ssl_verify)
+        artifact_info[:plugin_name] = plugin_name
         populate_fs_info(artifact_info, destination_path)
 
         # Update with resolved version in case 'LATEST' was passed
@@ -73,9 +74,12 @@ module KPM
           # We need to do a bit of magic to make sure that artifact_info[:bundle_dir] is correctly populated when we bail early
           if artifact_info[:is_tgz] && coordinate_map[:artifact_id] != 'killbill-platform-osgi-bundles-defaultbundles'
             plugin_dir = File.split(artifact_info[:dir_name])[0]
-            plugins_manager = PluginsManager.new(plugin_dir, logger)
-            artifact_id = coordinates.split(':')[1]
-            plugin_name = plugins_manager.guess_plugin_name(artifact_id)
+            plugin_name = artifact_info[:plugin_name]
+            unless plugin_name
+              plugins_manager = PluginsManager.new(plugin_dir, logger)
+              artifact_id = coordinates.split(':')[1]
+              plugin_name = plugins_manager.guess_plugin_name(artifact_id)
+            end
             if plugin_name.nil?
               logger.warn("Failed to guess plugin_name for #{coordinates}: artifact_info[:bundle_dir] will not be populated correctly")
             else
@@ -139,6 +143,19 @@ module KPM
         # Unclear if this is even possible
         return false if artifact_info[:sha1].nil?
 
+        # If tgz artifact, check if expected exploded folder exists
+        if artifact_info[:is_tgz]
+          artifact_path = Pathname.new(artifact_info[:file_path])
+          if artifact_info[:plugin_name]
+            artifact_path = artifact_path.join(artifact_info[:plugin_name]).join(artifact_info[:version])
+          end
+          return false if !artifact_path.exist?
+        # Else, exit early if file_path does not exist or is a directory
+        elsif !File.exists?(artifact_info[:file_path]) ||
+              File.directory?(artifact_info[:file_path])
+          return false
+        end
+
         # Check entry in sha1_file if exists
         if sha1_file && File.exists?(sha1_file)
           sha1_checker = Sha1Checker.from_file(sha1_file)
@@ -146,15 +163,14 @@ module KPM
           return true if local_sha1 == artifact_info[:sha1]
         end
 
-        # If not using sha1_file mechanism, exit early if file_path does not exist or is a directory
-        if !File.exists?(artifact_info[:file_path]) ||
-            File.directory?(artifact_info[:file_path])
-          return false
+        if artifact_info[:is_tgz]
+          # tgz artifact seems to be installed, but is not in the sha1 file, so do not skip it
+          false
+        else
+          # Finally check if remote_sha1 matches what we have locally
+          local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
+          local_sha1 == artifact_info[:sha1]
         end
-
-        # Finally check if remote_sha1 matches what we have locally
-        local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
-        local_sha1 == artifact_info[:sha1]
       end
 
       def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
@@ -263,11 +279,6 @@ module KPM
       end
 
       # Magic methods...
-
-      def is_ruby_plugin_and_should_skip_top_dir(group_id, artifact_id)
-        # The second check is for custom ruby plugins
-        group_id == KILLBILL_RUBY_PLUGIN_GROUP_ID || artifact_id.include?('plugin')
-      end
 
       def path_looks_like_a_directory(path)
         # It already is!
