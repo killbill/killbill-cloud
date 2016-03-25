@@ -44,7 +44,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validate sha1 sum'
-        desc 'pull_kb_server_war version', 'Pulls Kill Bill server war from Sonatype and places it on your machine.'
+        desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kb_server_war(version='LATEST')
           response = KillbillServerArtifact.pull(logger,
                                                  KillbillServerArtifact::KILLBILL_GROUP_ID,
@@ -82,7 +82,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_kp_server_war version', 'Pulls Kill Pay server war from Sonatype and places it on your machine.'
+        desc 'pull_kp_server_war <version>', 'Pulls Kill Pay server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kp_server_war(version='LATEST')
           response = KillbillServerArtifact.pull(logger,
                                                  KillbillServerArtifact::KILLBILL_GROUP_ID,
@@ -124,7 +124,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_java_plugin artifact_id', 'Pulls a java plugin from Sonatype and places it on your machine.'
+        desc 'pull_java_plugin artifact_id <version>', 'Pulls a java plugin from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_java_plugin(artifact_id, version='LATEST')
           response = KillbillPluginArtifact.pull(logger,
                                                  KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID,
@@ -157,7 +157,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_ruby_plugin artifact_id', 'Pulls a ruby plugin from Sonatype and places it on your machine.'
+        desc 'pull_ruby_plugin artifact_id <version>', 'Pulls a ruby plugin from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_ruby_plugin(artifact_id, version='LATEST')
           response = KillbillPluginArtifact.pull(logger,
                                                  KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID,
@@ -186,7 +186,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_defaultbundles', 'Pulls the default OSGI bundles from Sonatype and places it on your machine.'
+        desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles from Sonatype and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
         def pull_defaultbundles(kb_version='LATEST')
           response = BaseInstaller.new(logger,
                                        options[:overrides],
@@ -230,7 +230,7 @@ module KPM
                       :type    => :boolean,
                       :default => true,
                       :desc    => 'Validates sha1 sum'
-        desc 'pull_kaui_war version', 'Pulls Kaui war from Sonatype and places it on your machine.'
+        desc 'pull_kaui_war <version>', 'Pulls Kaui war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kaui_war(version='LATEST')
           response = KauiArtifact.pull(logger,
                                        KauiArtifact::KAUI_GROUP_ID,
@@ -258,11 +258,21 @@ module KPM
                       :desc => 'Kill Bill version'
         desc 'info', 'Describe information about a Kill Bill version'
         def info
-          info = KillbillServerArtifact.info(options[:version],
+
+          say "Fetching info for version #{options[:version]}...\n"
+
+          versions_info = KillbillServerArtifact.info(options[:version],
                                              options[:overrides],
                                              options[:ssl_verify])
+          say "Dependencies for version #{options[:version]}\n  " + (versions_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
+          say "\n\n"
 
-          say "Dependencies for version #{options[:version]}\n  " + (info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
+          resolved_kb_version = versions_info['killbill']
+          kb_version = resolved_kb_version.split('.').slice(0,2).join(".")
+
+          plugins_info = KPM::PluginsDirectory.list_plugins(true, kb_version)
+
+          say "Known plugin for KB version #{options[:version]}\n  " + (plugins_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
         end
 
         private

@@ -14,6 +14,11 @@ module KPM
       end
     end
 
+
+    def self.list_plugins(latest=false, kb_version)
+      all(latest).inject({}) { |out, (key, val)| out[key]=val[:versions][kb_version.to_sym]; out}
+    end
+
     # Note: this API is used in Docker images (see kpm_generator.rb, careful when changing it!)
     def self.lookup(raw_plugin_key, latest=false, raw_kb_version=nil)
       plugin_key = raw_plugin_key.to_s.downcase
