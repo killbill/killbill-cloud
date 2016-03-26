@@ -9,3 +9,6 @@ RUN kpm pull_kb_server_war --destination=/var/lib/tomcat7/webapps/ROOT.war  $KIL
 
 # Install default bundles
 RUN kpm pull_defaultbundles --destination=/var/lib/killbill/bundles $KILLBILL_VERSION
+
+# Install kpm plugin by default
+RUN kpm pull_ruby_plugin kpm --destination=/var/lib/killbill/bundles $KILLBILL_VERSION

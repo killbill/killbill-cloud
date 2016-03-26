@@ -9,6 +9,8 @@ killbill:
     url: <%= ENV['NEXUS_URL'] %>
     repository: <%= ENV['NEXUS_REPOSITORY'] %>
   plugins:
+    ruby:
+      - name: kpm
   plugins_dir: <%= ENV['KILLBILL_HOME'] %>/bundles
   properties:
     com.sun.management.jmxremote: true
