@@ -324,6 +324,21 @@ module KPM
           say "Known plugin for KB version #{options[:version]}\n  " + (plugins_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
         end
 
+        method_option :destination,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Folder where to download migration files.'
+        method_option :token,
+                      :type => :string,
+                      :default => nil,
+                      :desc => 'GitHub OAuth token.'
+        desc 'migrations repository from to', 'Download migration files for Kill Bill or a plugin'
+        def migrations(repository, from, to = nil)
+          full_repo = repository.include?('/') ? repository : "killbill/#{repository}"
+          dir = KPM::Migrations.new(from, to, full_repo, options[:token], logger).save(options[:destination])
+          say (dir.nil? ? 'No migration required' : "Migrations can be found at #{dir}"), :green
+        end
+
         private
 
         def logger

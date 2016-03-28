@@ -12,6 +12,7 @@ module KPM
   autoload :Tasks, 'kpm/tasks'
   autoload :Cli, 'kpm/cli'
   autoload :PluginsDirectory, 'kpm/plugins_directory'
+  autoload :Migrations, 'kpm/migrations'
 
   class << self
     def root
