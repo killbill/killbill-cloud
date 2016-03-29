@@ -6,7 +6,7 @@ module KPM
     class << self
       def versions(artifact_id, packaging=KPM::BaseArtifact::KILLBILL_PACKAGING, classifier=KPM::BaseArtifact::KILLBILL_CLASSIFIER, overrides={}, ssl_verify=true)
         coordinate_map = {:group_id => KPM::BaseArtifact::KILLBILL_GROUP_ID, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
-        coordinates = build_coordinates(coordinate_map)
+        coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
         versions    = SortedSet.new
         response.elements.each('search-results/data/artifact/version') { |element| versions << element.text }

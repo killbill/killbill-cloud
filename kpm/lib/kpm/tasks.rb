@@ -1,6 +1,7 @@
 require 'highline'
 require 'logger'
 require 'thor'
+require 'pathname'
 
 module KPM
   module Tasks
@@ -337,6 +338,20 @@ module KPM
           full_repo = repository.include?('/') ? repository : "killbill/#{repository}"
           dir = KPM::Migrations.new(from, to, full_repo, options[:token], logger).save(options[:destination])
           say (dir.nil? ? 'No migration required' : "Migrations can be found at #{dir}"), :green
+        end
+
+        method_option :destination,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
+        desc 'inspect', 'Inspect current deployment'
+        def inspect
+
+          inspector = KPM::Inspector.new
+
+          all_plugins = inspector.inspect(options[:destination])
+
+          puts "#{all_plugins.to_json}"
         end
 
         private

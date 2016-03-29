@@ -33,7 +33,7 @@ module KPM
       end
 
       update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
-        FileUtils.rm_f(tmp_dir.join('disabled.txt'))
+          FileUtils.rm_f(tmp_dir.join('disabled.txt'))
         FileUtils.rm_f(tmp_dir.join('restart.txt'))
       end
     end
@@ -109,6 +109,14 @@ module KPM
         identifiers.each { |plugin_key, entry| return [plugin_key, plugin_name_or_key] if entry['plugin_name'] == plugin_name_or_key }
         nil
       end
+    end
+
+    def get_identifier_key_and_entry(plugin_name_or_key)
+      identifiers = read_plugin_identifiers
+      identifiers.each_pair do |key, value|
+        return [key, value] if key == plugin_name_or_key || value['plugin_name'] == plugin_name_or_key
+      end
+      nil
     end
 
     def guess_plugin_name(artifact_id)

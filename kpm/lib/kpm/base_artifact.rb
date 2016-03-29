@@ -65,7 +65,7 @@ module KPM
 
         # Update with resolved version in case 'LATEST' was passed
         coordinate_map[:version] = artifact_info[:version]
-        coordinates = build_coordinates(coordinate_map)
+        coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
 
         # Return early if there's nothing to do
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
@@ -178,7 +178,7 @@ module KPM
             :skipped => false
         }
 
-        coordinates = build_coordinates(coordinate_map)
+        coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         begin
           nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
         rescue NexusCli::ArtifactMalformedException => e
@@ -256,27 +256,6 @@ module KPM
         res
       end
 
-      def build_coordinates(coordinate_map)
-        group_id = coordinate_map[:group_id]
-        artifact_id = coordinate_map[:artifact_id]
-        packaging = coordinate_map[:packaging]
-        classifier = coordinate_map[:classifier]
-        version = coordinate_map[:version]
-
-        if classifier.nil?
-          if version.nil?
-            "#{group_id}:#{artifact_id}:#{packaging}"
-          else
-            "#{group_id}:#{artifact_id}:#{packaging}:#{version}"
-          end
-        else
-          if version.nil?
-            "#{group_id}:#{artifact_id}:#{packaging}:#{classifier}"
-          else
-            "#{group_id}:#{artifact_id}:#{packaging}:#{classifier}:#{version}"
-          end
-        end
-      end
 
       # Magic methods...
 
