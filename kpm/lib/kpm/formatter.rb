@@ -56,6 +56,7 @@ module KPM
       end
 
       def format_sha(sha)
+        return "[???]" if sha.nil?
         "[#{sha[0..5]}..]"
       end
     end
@@ -80,6 +81,9 @@ module KPM
       all_plugins.keys.each do |key|
         v = all_plugins[key]
         labels.each do |e|
+          # sanitize entry at the same time
+          v[e[:label]] = v[e[:label]] || "???"
+
           formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
           prev_size = e.key?(:size) ? e[:size] : formatter.label.size
           cur_size = formatter.size
@@ -89,6 +93,8 @@ module KPM
         end
       end
 
+
+
       border = "_"
       border = (0...labels.size).inject(border) { |res, i| res="#{res}_"; res }
       border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res="#{res}_" }; res }
@@ -96,6 +102,8 @@ module KPM
       format = labels.inject(format) { |res, lbl| res="#{res} %#{lbl[:size]}s |"; res }
 
 
+
+      puts "\n#{border}\n"
       puts "#{format}\n" % labels_format_argument
       puts "#{border}\n"
 
@@ -108,8 +116,9 @@ module KPM
           res << formatter.to_s
         end
         puts "#{format}\n" % arguments
-
       end
+      puts "#{border}\n\n"
+
     end
   end
 end

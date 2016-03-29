@@ -348,6 +348,7 @@ module KPM
         def inspect
           inspector = KPM::Inspector.new
           all_plugins = inspector.inspect(options[:destination])
+          #puts all_plugins.to_json
           inspector.format(all_plugins)
         end
 
