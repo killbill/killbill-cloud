@@ -2,6 +2,7 @@ module KPM
   autoload :Utils, 'kpm/utils'
   autoload :BaseArtifact, 'kpm/base_artifact'
   autoload :Coordinates, 'kpm/coordinates'
+  autoload :Formatter, 'kpm/formatter'
   autoload :Inspector, 'kpm/inspector'
   autoload :Sha1Checker, 'kpm/sha1_checker'
   autoload :TomcatManager, 'kpm/tomcat_manager'

@@ -1,0 +1,115 @@
+# Extend String to be able to instantiate a object based on its classname
+class String
+  def to_class
+    self.split('::').inject(Kernel) do |mod, class_name|
+      mod.const_get(class_name)
+    end
+  end
+end
+
+module KPM
+
+  class Formatter
+
+    def initialize
+    end
+
+    # Used for normal types where to_s is enough
+    class DefaultFormatter
+
+      def initialize(label, input)
+        @label = label
+        @input = input
+      end
+
+      def size
+        to_s.size
+      end
+
+      def to_s
+        @input.to_s
+      end
+
+      def label
+        @label.to_s.upcase.gsub(/_/, ' ')
+      end
+    end
+
+    # Used for the version map
+    class VersionFormatter
+
+      def initialize(label, versions)
+        @label = label
+        @versions = versions
+      end
+
+      def size
+        to_s.size
+      end
+
+      def to_s
+        @versions.map { |q| sha1=format_sha(q[:sha1]); disabled=""; disabled="(!)" if q[:is_disabled]; default=""; default="(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
+      end
+
+      def label
+        "#{@label.to_s.upcase.gsub(/_/, ' ')} sha1=[], def=(*), del=(!)"
+      end
+
+      def format_sha(sha)
+        "[#{sha[0..5]}..]"
+      end
+    end
+
+
+    def format(all_plugins)
+      if all_plugins.size == 0
+        return
+      end
+
+      # What we want to output
+      labels = [{:label => :plugin_name},
+                {:label => :plugin_key},
+                {:label => :type},
+                {:label => :group_id},
+                {:label => :artifact_id},
+                {:label => :packaging},
+                {:label => :versions, :formatter => VersionFormatter.name}]
+
+      # Compute label to print along with max size for each label
+      labels_format_argument = []
+      all_plugins.keys.each do |key|
+        v = all_plugins[key]
+        labels.each do |e|
+          formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
+          prev_size = e.key?(:size) ? e[:size] : formatter.label.size
+          cur_size = formatter.size
+          e[:size] = prev_size < cur_size ? cur_size : prev_size
+          e[:size] += 2
+          labels_format_argument << formatter.label
+        end
+      end
+
+      border = "_"
+      border = (0...labels.size).inject(border) { |res, i| res="#{res}_"; res }
+      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res="#{res}_" }; res }
+      format = "|"
+      format = labels.inject(format) { |res, lbl| res="#{res} %#{lbl[:size]}s |"; res }
+
+
+      puts "#{format}\n" % labels_format_argument
+      puts "#{border}\n"
+
+      all_plugins.keys.each do |key|
+        v = all_plugins[key]
+
+        arguments = []
+        labels.inject(arguments) do |res, e|
+          formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
+          res << formatter.to_s
+        end
+        puts "#{format}\n" % arguments
+
+      end
+    end
+  end
+end

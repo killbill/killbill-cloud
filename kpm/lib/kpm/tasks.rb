@@ -346,12 +346,9 @@ module KPM
                       :desc    => 'A different folder other than the default bundles directory.'
         desc 'inspect', 'Inspect current deployment'
         def inspect
-
           inspector = KPM::Inspector.new
-
           all_plugins = inspector.inspect(options[:destination])
-
-          puts "#{all_plugins.to_json}"
+          inspector.format(all_plugins)
         end
 
         private

@@ -22,28 +22,35 @@ module KPM
       all_plugins
     end
 
+    def format(all_plugins)
+      formatter = KPM::Formatter.new
+      formatter.format(all_plugins)
+    end
+
+
+    private
+
     def add_sha1_info(bundles_dir, all_plugins)
 
       sha1_filename = KPM::BaseInstaller::SHA1_FILENAME
       sha1_file = "#{bundles_dir}/#{sha1_filename}"
       sha1_checker = Sha1Checker.from_file(sha1_file)
 
-      sha1_checker.all_sha1.each do |e|
+      all_plugins.keys.each do |cur_plugin_name|
+        cur = all_plugins[cur_plugin_name]
 
-        coord, sha1 = e
-        coordinate_map = KPM::Coordinates.get_coordinate_map(coord)
-        all_plugins.keys.each do |cur_plugin_name|
-
-          cur = all_plugins[cur_plugin_name]
+        sha1_checker.all_sha1.each do |e|
+          coord, sha1 = e
+          coordinate_map = KPM::Coordinates.get_coordinate_map(coord)
 
           if coordinate_map[:group_id] == cur[:group_id] &&
               coordinate_map[:artifact_id] == cur[:artifact_id] &&
               coordinate_map[:packaging] == cur[:packaging]
-            found_version = cur[:versions].select do |v|
-              v[:version] == coordinate_map[:version]
-            end[0]
-            found_version[:sha1] = found_version ? sha1 : nil
+
+            found_version = cur[:versions].select { |v| v[:version] == coordinate_map[:version] }[0]
+            found_version[:sha1] = sha1 if found_version
           end
+
         end
       end
     end
