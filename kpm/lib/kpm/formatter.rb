@@ -88,7 +88,6 @@ module KPM
           prev_size = e.key?(:size) ? e[:size] : formatter.label.size
           cur_size = formatter.size
           e[:size] = prev_size < cur_size ? cur_size : prev_size
-          e[:size] += 2
           labels_format_argument << formatter.label
         end
       end
