@@ -101,7 +101,7 @@ module KPM
     end
 
     def get_entries(path)
-      Dir.entries(path).select { |v| v != '.' && v != '..' }
+      Dir.entries(path).select { |entry| entry != '.' && entry != '..' && File.directory?(File.join(path, entry)) }
     end
 
   end
