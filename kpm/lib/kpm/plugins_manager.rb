@@ -33,7 +33,7 @@ module KPM
       end
 
       update_fs(plugin_name_or_path, plugin_version) do |tmp_dir|
-          FileUtils.rm_f(tmp_dir.join('disabled.txt'))
+        FileUtils.rm_f(tmp_dir.join('disabled.txt'))
         FileUtils.rm_f(tmp_dir.join('restart.txt'))
       end
     end
@@ -140,6 +140,18 @@ module KPM
       nil
     end
 
+    def read_plugin_identifiers
+      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
+      identifiers = {}
+      begin
+        identifiers = File.open(path, 'r') do |f|
+          JSON.parse(f.read)
+        end
+      rescue Errno::ENOENT
+      end
+      identifiers
+    end
+
     private
 
     def validate_plugin_identifier_key_value(plugin_key, value_type, entry_value, coordinate_value)
@@ -151,18 +163,6 @@ module KPM
         return false
       end
       true
-    end
-
-    def read_plugin_identifiers
-      path = Pathname.new(@plugins_dir).join('plugin_identifiers.json')
-      identifiers = {}
-      begin
-        identifiers = File.open(path, 'r') do |f|
-          JSON.parse(f.read)
-        end
-      rescue Errno::ENOENT
-      end
-      identifiers
     end
 
     def write_plugin_identifiers(identifiers)

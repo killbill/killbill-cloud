@@ -33,6 +33,11 @@ module KPM
       save!
     end
 
+    def remove_entry!(coordinates)
+      @sha1_config['sha1'].delete(coordinates)
+      save!
+    end
+
     private
 
     def save!
