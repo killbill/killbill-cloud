@@ -90,10 +90,19 @@ describe KPM::Uninstaller do
       uninstaller.uninstall_plugin(plugin_name).should be_true
     end
 
-    it 'it does nothing if user cancels' do
+    it 'does nothing if user cancels' do
       KPM.ui.should_receive(:ask).and_return('n')
 
       uninstaller.uninstall_plugin(plugin_name).should be_false
+    end
+
+    it 'uninstalls without confirmation if the force option is given' do
+      FileUtils.should_receive(:rmtree).with(plugin_path)
+      plugins_manager_mock.should_receive(:remove_plugin_identifier_key).with(plugin_key)
+      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version2}")
+
+      uninstaller.uninstall_plugin(plugin_name, true).should be_true
     end
   end
 end
