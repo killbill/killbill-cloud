@@ -1,4 +1,5 @@
 require 'tmpdir'
+require 'thor'
 require 'kpm'
 require 'logger'
 require 'rspec'

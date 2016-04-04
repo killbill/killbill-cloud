@@ -36,6 +36,19 @@ module KPM
         method_option :destination,
                       :type    => :string,
                       :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
+        method_option :force,
+                      :type    => :boolean,
+                      :default => nil,
+                      :desc    => 'Don\'t ask for confirmation while deleting multiple versions of a plugin.'
+        desc 'uninstall plugin', 'Uninstall the specified plugin, identified by its name or key, from current deployment'
+        def uninstall(plugin)
+          say 'Done!' if Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force])
+        end
+
+        method_option :destination,
+                      :type    => :string,
+                      :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
         method_option :force_download,
                       :type    => :boolean,

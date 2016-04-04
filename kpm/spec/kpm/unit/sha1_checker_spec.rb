@@ -65,6 +65,22 @@ describe KPM::Sha1Checker do
     existing.should == 'bbb068c3fd5f95646ce0d09852f43ff67f06fccc'
   end
 
+  context 'when removing an entry' do
+    let(:identifier) { 'killbill-plugin-match-1.0.0.tar.gz' }
+    before do
+      @sha1_checker.remove_entry!(identifier)
+    end
+
+    it 'does not find the entry' do
+      @sha1_checker.sha1(identifier).should be_nil
+    end
+
+    let(:reloaded_checker) { KPM::Sha1Checker.from_file(@tmp_config) }
+    it 'does not find entry in file system' do
+      reloaded_checker.sha1(identifier).should be_nil
+    end
+  end
+
   it 'should work with empty config' do
 
     tmp_destination_dir = Dir.tmpdir()

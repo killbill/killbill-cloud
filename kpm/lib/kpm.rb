@@ -12,6 +12,7 @@ module KPM
   autoload :PluginsManager, 'kpm/plugins_manager'
   autoload :BaseInstaller, 'kpm/base_installer'
   autoload :Installer, 'kpm/installer'
+  autoload :Uninstaller, 'kpm/uninstaller'
   autoload :Tasks, 'kpm/tasks'
   autoload :Cli, 'kpm/cli'
   autoload :PluginsDirectory, 'kpm/plugins_directory'
