@@ -48,11 +48,11 @@ module KPM
       end
 
       def to_s
-        @versions.map { |q| sha1=format_sha(q[:sha1]); disabled=""; disabled="(!)" if q[:is_disabled]; default=""; default="(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
+        @versions.map { |q| sha1=format_sha(q[:sha1]); disabled=""; disabled="(x)" if q[:is_disabled]; default=""; default="(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
       end
 
       def label
-        "#{@label.to_s.upcase.gsub(/_/, ' ')} sha1=[], def=(*), del=(!)"
+        "#{@label.to_s.upcase.gsub(/_/, ' ')} sha1=[], def=(*), del=(x)"
       end
 
       def format_sha(sha)
