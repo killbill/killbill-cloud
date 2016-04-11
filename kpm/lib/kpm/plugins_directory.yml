@@ -41,7 +41,7 @@
   :type: :ruby
   :versions:
     :0.14: 0.0.1
-    :0.16: 0.2.0
+    :0.16: 0.2.1
   :stable_version: 0.1.0
   :require:
     - :merchant_id
@@ -119,7 +119,7 @@
   :versions:
     :0.14: 2.0.0
     :0.15: 3.0.0
-    :0.16: 4.1.1
+    :0.16: 4.1.2
   :stable_version: 2.0.0
   :require:
   - :signature
