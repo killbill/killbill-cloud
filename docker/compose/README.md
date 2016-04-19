@@ -29,7 +29,7 @@ A MariaDB container is automatically started, and can be accessed from the Kill 
 ```
 host> docker exec -ti kb_killbill_1 /bin/bash
 tomcat7@container:/var/lib/tomcat7$ mysql -h db -uroot -pkillbill -e 'create database killbill; create database kaui'
-tomcat7@container:/var/lib/tomcat7$ curl -s http://docs.killbill.io/0.15/ddl.sql | mysql -h db -uroot -pkillbill killbill
+tomcat7@container:/var/lib/tomcat7$ curl -s http://docs.killbill.io/0.16/ddl.sql | mysql -h db -uroot -pkillbill killbill
 tomcat7@container:/var/lib/tomcat7$ curl -s https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql | mysql -h db -uroot -pkillbill kaui
 ```
 
