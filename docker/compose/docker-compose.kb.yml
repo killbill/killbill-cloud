@@ -10,7 +10,7 @@ killbill:
     - KILLBILL_CONFIG_DAO_USER=root
     - KILLBILL_CONFIG_DAO_PASSWORD=killbill
 kaui:
-  image: killbill/kaui:0.3.0
+  image: killbill/kaui:latest
   ports:
     - "9090:8080"
   links:
