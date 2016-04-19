@@ -26,6 +26,6 @@ kaui:
 db:
   image: mariadb
   expose:
-    - "3306:3306"
+    - "3306"
   environment:
     - MYSQL_ROOT_PASSWORD=killbill
