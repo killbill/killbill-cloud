@@ -7,10 +7,10 @@ To create and start the entire stack, run:
 `make`
 
 You can then use `docker-compose`to manage all or individual services (project name is `kb`):
-
-* `docker-compose -p kb ps`
-* `docker-compose -p kb restart killbill`
-* `docker-compose -p kb restart kaui`
+* `cd killbill-cloud/docker/compose`
+* `docker-compose -p kb -f docker-compose.kb.yml ps`
+* `docker-compose -p kb -f docker-compose.kb.yml restart killbill`
+* `docker-compose -p kb -f docker-compose.kb.yml restart kaui`
 
 Note that `docker-compose logs` won't work, because all logs are forwarded to [Elasticsearch](http://localhost:5601). The easiest way to find logs for a specific container is to search for the container ID in Kibana.
 
