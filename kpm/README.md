@@ -52,7 +52,7 @@ You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 
 ## Using KPM
 
-### Custom Installation Through `kpm.yml` file
+### Custom Installation Through `kpm.yml` File
 
 KPM allows you to specify a configuration file, `kpm.yml`, to describe what should be installed. The configuration file is a `yml`. The following shows the syntax of the `kpm.yml` file:
 
