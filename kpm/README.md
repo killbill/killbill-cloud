@@ -50,11 +50,9 @@ To start Kill Bill, simply run
 
 You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 
-## Configuration
+## Custom Installation Through `kpm.yml` file
 
-You can configure the installation process using a kpm.yml file.
-
-For example:
+KPM allows you to specify a configuration file, `kpm.yml`, to describe what should be installed. The configuration file is a `yml`. The following shows the syntax of the `kpm.yml` file:
 
     killbill:
       version: 0.14.0
@@ -82,7 +80,12 @@ Common configuration options:
 
 There are many more options you can specify. Take a look at the configuration file used in the [Docker](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) image for example.
 
-## Internals and Advanced Commands
+
+## Plugin Keys
+
+In the `kpm.yml` example provided above, the plugins are named using their `pluginKey` (the value for the `name` in the  `kpm.yml`) . The `pluginKey` is the identifier  for the plugin:
+* For plugins maintained by the Kill Bill team, this identifier matches the key in the [file based repository](https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml) of well-known plugins
+* For other plugins, this key is either specified when installing the plugin through api call, or default to the `pluginName`. For more information, please refer to the Plugin Developer Guide. 
 
 ### Caching
 
@@ -99,6 +102,7 @@ You can also download specific versions/artifacts directly with the following co
 
 * `kpm pull_kaui_war <version>`
 * `kpm pull_kb_server_war <version>`
-* `kpm pull_ruby_plugin <artifact_id>`
+* `kpm pull_ruby_plugin plugin-key <kb-version>`
+* `kpm pull_java_plugin plugin-key <kb-version>`
 
 For more details see `kpm --help`.
