@@ -50,7 +50,9 @@ To start Kill Bill, simply run
 
 You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 
-## Custom Installation Through `kpm.yml` file
+## Using KPM
+
+### Custom Installation Through `kpm.yml` file
 
 KPM allows you to specify a configuration file, `kpm.yml`, to describe what should be installed. The configuration file is a `yml`. The following shows the syntax of the `kpm.yml` file:
 
@@ -81,13 +83,13 @@ Common configuration options:
 There are many more options you can specify. Take a look at the configuration file used in the [Docker](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) image for example.
 
 
-## Plugin Keys
+### Plugin Keys
 
 In the `kpm.yml` example provided above, the plugins are named using their `pluginKey` (the value for the `name` in the  `kpm.yml`) . The `pluginKey` is the identifier  for the plugin:
 * For plugins maintained by the Kill Bill team, this identifier matches the key in the [file based repository](https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml) of well-known plugins
 * For other plugins, this key is either specified when installing the plugin through api call, or default to the `pluginName`. For more information, please refer to the Plugin Developer Guide. 
 
-## Caching
+### Caching
 
 KPM relies on the kpm.yml file to know what to install, and as it installs the pieces, it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries:
 
@@ -96,7 +98,7 @@ KPM relies on the kpm.yml file to know what to install, and as it installs the p
 
 Note that you can override that behavior with the `--force-download` switch.
 
-## Custom Downloads
+### Custom Downloads
 
 You can also download specific versions/artifacts directly with the following commands -- bypassing the kpm.yml file:
 
