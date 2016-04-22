@@ -87,7 +87,7 @@ In the `kpm.yml` example provided above, the plugins are named using their `plug
 * For plugins maintained by the Kill Bill team, this identifier matches the key in the [file based repository](https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml) of well-known plugins
 * For other plugins, this key is either specified when installing the plugin through api call, or default to the `pluginName`. For more information, please refer to the Plugin Developer Guide. 
 
-### Caching
+## Caching
 
 KPM relies on the kpm.yml file to know what to install, and as it installs the pieces, it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries:
 
@@ -96,7 +96,7 @@ KPM relies on the kpm.yml file to know what to install, and as it installs the p
 
 Note that you can override that behavior with the `--force-download` switch.
 
-### Custom Downloads
+## Custom Downloads
 
 You can also download specific versions/artifacts directly with the following commands -- bypassing the kpm.yml file:
 
