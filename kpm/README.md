@@ -82,6 +82,73 @@ Common configuration options:
 
 There are many more options you can specify. Take a look at the configuration file used in the [Docker](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) image for example.
 
+### Custom Downloads
+
+You can also download specific versions/artifacts directly with the following commands -- bypassing the kpm.yml file:
+
+* `kpm pull_kaui_war <version>`
+* `kpm pull_kb_server_war <version>`
+* `kpm install_ruby_plugin plugin-key <kb-version>`
+* `kpm install_java_plugin plugin-key <kb-version>`
+
+For more details see `kpm help`.
+
+### Dev Mode
+
+If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin:
+
+Let 's assume we are modifying the code for the (ruby) cybersource plugin. You would have to first build the plugin package, and then you could use KPM to install the plugin. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version. Also in the case of `ruby`, the package already contains all the directory structure including the version, so only the location of the `tar.gz` needs to be specified.
+
+```
+> kpm install_ruby_plugin 'dev:cybersource' --from-source-file="<PATH_TO>/killbill-cybersource-3.3.0.tar.gz"
+```
+
+Let 's assume now that we are modifying the code for the (java) adyen plugin. The plugin first needs to be built using the `maven-bundle-plugin` to produce the OSGI jar under the `target` directory. Then, this `jar` can be installed but here we also need to specify a version since the archive does not embed any filesystem structure but only contains the binary (jar). The same applies with regard to the `plugin_key` where we suggest to specify a namespace `dev:`.
+
+```
+> kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
+```
+
+The command `kpm inspect` can be used to see what has been installed. In the case of `dev` plugin most info related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occured.
+
+
+Finally, when it is time to use a released version of a plugin, we first recommend to uninstall the `dev` version, by using the `kpm uninstall` command and using the `plugin_key` and then installing the released version. For instance the following sequence could happen:
+
+```
+> kpm inspect
+___________________________________________________________________________________________________________________________
+|          PLUGIN NAME |      PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
+___________________________________________________________________________________________________________________________
+| killbill-cybersource | dev:cybersource | ruby |      ??? |         ??? |       ??? |                      3.3.0[???](*) |
+|                adyen |       dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
+___________________________________________________________________________________________________________________________
+
+> kpm uninstall 'dev:cybersource'
+Removing the following versions of the killbill-cybersource plugin: 3.3.0
+Done!
+
+> kpm inspect
+
+_____________________________________________________________________________________________________________
+| PLUGIN NAME | PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
+_____________________________________________________________________________________________________________
+|       adyen |  dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
+_____________________________________________________________________________________________________________
+
+> kpm install_ruby_plugin cybersource
+[...]
+
+> kpm inspect
+_______________________________________________________________________________________________________________________________________________________
+|          PLUGIN NAME |  PLUGIN KEY | TYPE |                          GROUP ID |        ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
+_______________________________________________________________________________________________________________________________________________________
+| killbill-cybersource | cybersource | ruby | org.kill-bill.billing.plugin.ruby | cybersource-plugin |    tar.gz |                 4.0.2[e0901f..](*) |
+|                adyen |   dev:adyen | java |                               ??? |                ??? |       ??? |                      0.3.2[???](*) |
+_______________________________________________________________________________________________________________________________________________________
+
+```
+
+## Internals
 
 ### Plugin Keys
 
@@ -98,13 +165,3 @@ KPM relies on the kpm.yml file to know what to install, and as it installs the p
 
 Note that you can override that behavior with the `--force-download` switch.
 
-### Custom Downloads
-
-You can also download specific versions/artifacts directly with the following commands -- bypassing the kpm.yml file:
-
-* `kpm pull_kaui_war <version>`
-* `kpm pull_kb_server_war <version>`
-* `kpm pull_ruby_plugin plugin-key <kb-version>`
-* `kpm pull_java_plugin plugin-key <kb-version>`
-
-For more details see `kpm --help`.
