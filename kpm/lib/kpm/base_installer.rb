@@ -153,7 +153,8 @@ module KPM
       plugins_dir = bundles_dir.join('plugins')
 
       if type.to_s == 'java'
-        destination = plugins_dir.join('java').join(name).join(version)
+        plugin_name = name.nil? ? Pathname.new(file_path).basename.to_s.split('-')[0] : name
+        destination = plugins_dir.join('java').join(plugin_name).join(version)
       else
         destination = plugins_dir.join('ruby')
       end
