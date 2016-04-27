@@ -95,7 +95,7 @@ For more details see `kpm help`.
 
 ### Dev Mode
 
-If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin:
+If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin. Before we look at KPM commands, make sure you read the [Plugin Development Documentation](http://docs.killbill.io/0.16/plugin_development.html).
 
 Let 's assume we are modifying the code for the (ruby) cybersource plugin. You would have to first build the plugin package, and then you could use KPM to install the plugin. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version. Also in the case of `ruby`, the package already contains all the directory structure including the version, so only the location of the `tar.gz` needs to be specified.
 
