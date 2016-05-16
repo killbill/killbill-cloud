@@ -233,7 +233,7 @@ module KPM
           logger.warn("Skip sha1 verification for  #{coordinates}")
         end
 
-        if sha1_file
+        if sha1_file && File.exists?(sha1_file)
           sha1_checker = Sha1Checker.from_file(sha1_file)
           sha1_checker.add_or_modify_entry!(coordinates, remote_sha1)
         end
