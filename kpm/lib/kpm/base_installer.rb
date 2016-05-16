@@ -14,13 +14,16 @@ module KPM
       @nexus_ssl_verify = nexus_ssl_verify
     end
 
-    def install_killbill_server(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil, force_download=false, verify_sha1=true)
+    def install_killbill_server(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
       group_id = specified_group_id || KPM::BaseArtifact::KILLBILL_GROUP_ID
       artifact_id = specified_artifact_id || KPM::BaseArtifact::KILLBILL_ARTIFACT_ID
       packaging = specified_packaging || KPM::BaseArtifact::KILLBILL_PACKAGING
       classifier = specified_classifier || KPM::BaseArtifact::KILLBILL_CLASSIFIER
       version = specified_version || LATEST_VERSION
       webapp_path = specified_webapp_path || KPM::root
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
+      sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+
       @logger.debug("Installing Kill Bill server: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       KPM::KillbillServerArtifact.pull(@logger,
                                        group_id,
@@ -29,20 +32,22 @@ module KPM
                                        classifier,
                                        version,
                                        webapp_path,
-                                       nil,
+                                       sha1_file,
                                        force_download,
                                        verify_sha1,
                                        @nexus_config,
                                        @nexus_ssl_verify)
     end
 
-    def install_kaui(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil, force_download=false, verify_sha1=true)
+    def install_kaui(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
       group_id = specified_group_id || KPM::BaseArtifact::KAUI_GROUP_ID
       artifact_id = specified_artifact_id || KPM::BaseArtifact::KAUI_ARTIFACT_ID
       packaging = specified_packaging || KPM::BaseArtifact::KAUI_PACKAGING
       classifier = specified_classifier || KPM::BaseArtifact::KAUI_CLASSIFIER
       version = specified_version || LATEST_VERSION
       webapp_path = specified_webapp_path || KPM::root
+      bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
+      sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
       @logger.debug("Installing Kaui: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       KPM::KauiArtifact.pull(@logger,
@@ -52,7 +57,7 @@ module KPM
                              classifier,
                              version,
                              webapp_path,
-                             nil,
+                             sha1_file,
                              force_download,
                              verify_sha1,
                              @nexus_config,

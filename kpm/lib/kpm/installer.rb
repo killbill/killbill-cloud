@@ -31,12 +31,12 @@ module KPM
     end
 
     def install(force_download=false, verify_sha1=true)
-      bundles_dir = @config['plugins_dir'] || DEFAULT_BUNDLES_DIR
 
+      bundles_dir = @config['plugins_dir'] || DEFAULT_BUNDLES_DIR
       help = nil
       unless @config.nil?
         help = install_tomcat if @config['webapp_path'].nil?
-        install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], force_download, verify_sha1)
+        install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], bundles_dir, force_download, verify_sha1)
         install_plugins(bundles_dir, force_download, verify_sha1)
         unless @config['default_bundles'] == false
           install_default_bundles(bundles_dir, @config['default_bundles_version'], @config['version'], force_download, verify_sha1)
@@ -50,7 +50,7 @@ module KPM
           return
         end
 
-        install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], force_download, verify_sha1)
+        install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
       help
