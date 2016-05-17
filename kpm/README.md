@@ -160,7 +160,7 @@ In the `kpm.yml` example provided above, the plugins are named using their `plug
 
 KPM relies on the `kpm.yml` file to know what to install, and as it installs the pieces, it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries. The generic logic associated with that file is the following:
 
-1. When installing a binary (`war`, `jar`, `tar.gz`..), KPM will download both the binary and the sha1 from the server, compute the sha1 for the binary and compare the two (verify that binary indeed matches its remote `sha1`). Then, binary is installed and `sha1.yml` file is updated. The `sha1` entry in that `sha1.yml` file will now represent the local `sha1` version (note that for `tar.gz` binaries which have been uncompressed, the local `sha1` is not is not anymore easily recomputable).
+1. When installing a binary (`war`, `jar`, `tar.gz`..), KPM will download both the binary and the `sha1` from the server, compute the `sha1` for the binary and compare the two (verify that binary indeed matches its remote `sha1`). Then, binary is installed and `sha1.yml` file is updated. The `sha1` entry in that `sha1.yml` file will now represent the local `sha1` version (note that for `tar.gz` binaries which have been uncompressed, the local `sha1` is not anymore easily recomputable).
 2. When attempting to download again the same binary, KPM will compare the value in the `sha1.yml` and the one on the remote server if those match, it will not download the binary again.
 
 There are some non standard scenario that could occur in case of bugs of users tampering with the data:
