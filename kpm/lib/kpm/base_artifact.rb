@@ -140,37 +140,25 @@ module KPM
       end
 
       def skip_if_exists(artifact_info, coordinates, sha1_file)
-        # Unclear if this is even possible
+
+        # If there is no sha1 from the binary server, we don't skip
+        # (Unclear if this is even possible)
         return false if artifact_info[:sha1].nil?
 
-        # If tgz artifact, check if expected exploded folder exists
-        if artifact_info[:is_tgz]
-          artifact_path = Pathname.new(artifact_info[:file_path])
-          if artifact_info[:plugin_name]
-            artifact_path = artifact_path.join(artifact_info[:plugin_name]).join(artifact_info[:version])
-          end
-          return false if !artifact_path.exist?
-        # Else, exit early if file_path does not exist or is a directory
-        elsif !File.exists?(artifact_info[:file_path]) ||
-              File.directory?(artifact_info[:file_path])
-          return false
-        end
+        # If there is no such sha1_file, we don't skip
+        return false if sha1_file.nil? || !File.exists?(sha1_file)
 
-        # Check entry in sha1_file if exists
-        if sha1_file && File.exists?(sha1_file)
-          sha1_checker = Sha1Checker.from_file(sha1_file)
-          local_sha1 = sha1_checker.sha1(coordinates)
-          return true if local_sha1 == artifact_info[:sha1]
-        end
+        #
+        # At this point we have a valid sha1_file and a remote sha1
+        #
+        sha1_checker = Sha1Checker.from_file(sha1_file)
+        local_sha1 = sha1_checker.sha1(coordinates)
 
-        if artifact_info[:is_tgz]
-          # tgz artifact seems to be installed, but is not in the sha1 file, so do not skip it
-          false
-        else
-          # Finally check if remote_sha1 matches what we have locally
-          local_sha1 = Digest::SHA1.file(artifact_info[:file_path]).hexdigest
-          local_sha1 == artifact_info[:sha1]
-        end
+        # If there is an entry in the sha1_file and it matches the remote, we can skip
+        # Also support convenient 'SKIP' keyword for allowing hacking deployments (dev mode)
+        return true if local_sha1 == artifact_info[:sha1] || local_sha1 == 'SKIP'
+
+        false
       end
 
       def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
@@ -233,7 +221,7 @@ module KPM
           logger.warn("Skip sha1 verification for  #{coordinates}")
         end
 
-        if sha1_file && File.exists?(sha1_file)
+        if sha1_file
           sha1_checker = Sha1Checker.from_file(sha1_file)
           sha1_checker.add_or_modify_entry!(coordinates, remote_sha1)
         end

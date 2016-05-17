@@ -10,16 +10,16 @@ describe KPM::BaseArtifact do
   it 'should be able to download and verify regular artifacts' do
     Dir.mktmpdir do |dir|
       test_download dir, 'foo-oss.pom.xml'
-      # Verify we skip the second time
-      test_download dir, 'foo-oss.pom.xml', true
+      # Verify we still don't skip the second time (sha1_file is null)
+      test_download dir, 'foo-oss.pom.xml', false
       # Verify the download happens when we set force_download
       test_download dir, 'foo-oss.pom.xml', false, true
     end
 
     Dir.mktmpdir do |dir|
       test_download dir, nil
-      # Verify we skip the second time
-      test_download dir, nil, true
+      # Verify we still don't skip the second time (sha1_file is null)
+      test_download dir, nil, false
       # Verify the download happens when we set force_download
       test_download dir, nil, false, true
     end
