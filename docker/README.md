@@ -116,21 +116,21 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
 2. Configure the database:
   First, modify the database to make sure it is using the `ROW` `binlog_format`:
   ```
-  echo "set global binlog_format = 'ROW'" | mysql -h $(docker-machine ip default) -u root -proot
+  echo "set global binlog_format = 'ROW'" | docker exec -i db mysql -h localhost -uroot -proot
   ```
   And then add the DDLs:
 
   * Kill Bill [DDL](http://docs.killbill.io/0.16/ddl.sql)
 
-    ```curl -s http://docs.killbill.io/0.16/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -u root -proot```
+    ```curl -s http://docs.killbill.io/0.16/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
 
   * Analytics [DDL](https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql)
 
-    ```curl -s https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -u root -proot```
+    ```curl -s https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
  
   * Stripe [DDL](https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql)
 
-    ```curl -s https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | mysql -h $(docker-machine ip default) -D killbill -u root -proot```
+    ```curl -s https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
 
     Note that the `-e MYSQL_DATABASE=killbill` argument to `docker run` above took care of creating the `killbill` database for us. When deploying to a production scenario, you'll need to do that step explicitly.
 
@@ -170,16 +170,16 @@ You can also install Kaui in a similar fashion:
 
   * Create a new database for KAUI
   ```
-  echo "create database kaui;" | mysql -h $(docker-machine ip default) -u root -proot
+  echo "create database kaui;" | docker exec -i db mysql -h localhost -uroot -proot
   ```
 
   * Add the [DDL](https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql) for KAUI
   ```
-  curl -s https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql | mysql -h $(docker-machine ip default) -D kaui -u root -proot
+  curl -s https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D kaui
   ```
   * Add the initial `admin` user in the `KAUI` database: 
   ```
-  echo "insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" | mysql -h $(docker-machine ip default) -D kaui -u root -proot
+  echo "insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" | docker exec -i db mysql -h localhost -uroot -proot -D kaui
   ```
 
   * Start the KAUI container:
