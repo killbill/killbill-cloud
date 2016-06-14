@@ -13,7 +13,7 @@
   :versions:
     :0.14: 0.1.0
     :0.15: 0.2.1
-    :0.16: 0.3.0
+    :0.16: 0.3.2
   :require:
     - :org.killbill.billing.plugin.adyen.merchantAccount
     - :org.killbill.billing.plugin.adyen.username
@@ -119,7 +119,7 @@
   :versions:
     :0.14: 2.0.0
     :0.15: 3.0.0
-    :0.16: 4.1.4
+    :0.16: 4.1.5
   :stable_version: 2.0.0
   :require:
   - :signature
