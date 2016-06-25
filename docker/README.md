@@ -52,6 +52,7 @@ Kill Bill specific environment variables:
   - `KILLBILL_METRICS_GRAPHITE_HOST` (default `localhost`)
   - `KILLBILL_METRICS_GRAPHITE_PORT` (default `2003`)
   - `KILLBILL_QUEUE_CREATOR_NAME` (no default is specified, Kill Bill will use the hostname)
+  - `KILLBILL_SHIRO_NB_HASH_ITERATIONS` (same default value from KillBill SecurityConfig (200000))
 
 Kaui specific environment variables:
 
