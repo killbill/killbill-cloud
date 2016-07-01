@@ -68,17 +68,16 @@ module KPM
 
       # plugin_key needs to exist
       if plugin_key.nil?
-        @logger.warn('Aborting installation: User needs to specify a pluginKey')
-        return nil
+        raise ArgumentError.new 'Aborting installation: User needs to specify a pluginKey'
       end
 
       # Lookup artifact and perform validation against input
       looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true, raw_kb_version)
-      return if !validate_installation_arg(plugin_key, 'group_id', specified_group_id, looked_up_group_id)
-      return if !validate_installation_arg(plugin_key, 'artifact_id', specified_artifact_id, looked_up_artifact_id)
-      return if !validate_installation_arg(plugin_key, 'packaging', specified_packaging, looked_up_packaging)
-      return if !validate_installation_arg(plugin_key, 'type', specified_type, looked_up_type)
-      return if !validate_installation_arg(plugin_key, 'classifier', specified_classifier, looked_up_classifier)
+      validate_installation_arg!(plugin_key, 'group_id', specified_group_id, looked_up_group_id)
+      validate_installation_arg!(plugin_key, 'artifact_id', specified_artifact_id, looked_up_artifact_id)
+      validate_installation_arg!(plugin_key, 'packaging', specified_packaging, looked_up_packaging)
+      validate_installation_arg!(plugin_key, 'type', specified_type, looked_up_type)
+      validate_installation_arg!(plugin_key, 'classifier', specified_classifier, looked_up_classifier)
 
 
       # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
@@ -86,16 +85,14 @@ module KPM
           specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
           specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
           plugin_key.split(':').size == 1
-        @logger.warn("Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)")
-        return nil
+        raise ArgumentError.new "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end
 
 
       # Specified parameters have always precedence except for the artifact_id (to map stripe to stripe-plugin)
       artifact_id = looked_up_artifact_id || specified_artifact_id
       if artifact_id.nil?
-        @logger.warn("Aborting installation: unable to lookup plugin #{specified_artifact_id}")
-        return nil
+        raise ArgumentError.new "Aborting installation: unable to lookup plugin #{specified_artifact_id}"
       end
 
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
@@ -124,7 +121,7 @@ module KPM
 
       # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
       coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
-      return if !validate_plugin_key(plugins_dir, plugin_key, coordinate_map)
+      validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
 
 
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
@@ -182,8 +179,7 @@ module KPM
 
       plugin_key, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_name_or_key)
       if plugin_name.nil?
-        @logger.warn("Cannot uninstall plugin: Unknown plugin name or plugin key = #{plugin_name_or_key}");
-        return
+        raise ArgumentError.new "Cannot uninstall plugin: Unknown plugin name or plugin key = #{plugin_name_or_key}"
       end
 
       modified = plugins_manager.uninstall(plugin_name, plugin_version || :all)
@@ -233,24 +229,22 @@ module KPM
 
     private
 
-    def validate_installation_arg(plugin_key, arg_type, specified_arg, looked_up_arg)
+    def validate_installation_arg!(plugin_key, arg_type, specified_arg, looked_up_arg)
 
       # If nothing was specified, or if we don't find anything from the lookup, nothing to validate against
       if specified_arg.nil? || looked_up_arg.nil?
-        return true
+        return
       end
 
       if specified_arg.to_s != looked_up_arg.to_s
-        @logger.warn("Aborting installation for plugin_key #{plugin_key}: specified value #{specified_arg} for #{arg_type} does not match looked_up value #{looked_up_arg}")
-        return false
+        raise ArgumentError.new "Aborting installation for plugin_key #{plugin_key}: specified value #{specified_arg} for #{arg_type} does not match looked_up value #{looked_up_arg}"
       end
-
-      true
     end
 
-    def validate_plugin_key(plugins_dir, plugin_key, coordinate_map)
+    def validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
-      return plugins_manager.validate_plugin_identifier_key(plugin_key, coordinate_map)
+      res = plugins_manager.validate_plugin_identifier_key(plugin_key, coordinate_map)
+      raise ArgumentError.new "Failed to validate plugin key #{plugin_key}" if !res
     end
 
     def update_plugin_identifier(plugins_dir, plugin_key, type, coordinate_map, artifact_info)

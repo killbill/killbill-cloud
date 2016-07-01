@@ -39,6 +39,20 @@ describe KPM::BaseInstaller do
     end
   end
 
+  it 'should raise an exception when plugin does not exist' do
+    Dir.mktmpdir do |dir|
+      bundles_dir = dir + '/bundles'
+      installer = KPM::BaseInstaller.new(@logger)
+
+      begin
+        installer.install_plugin('invalid', nil, nil, nil, nil, nil, '1.2.3', bundles_dir)
+        fail "Should not succeed to install invalid plugin"
+      rescue ArgumentError => e
+      end
+    end
+  end
+
+
   private
 
   def check_installation(plugins_dir)
