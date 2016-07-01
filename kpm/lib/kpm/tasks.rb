@@ -3,11 +3,19 @@ require 'logger'
 require 'thor'
 require 'pathname'
 
+require 'kpm/version'
+
 module KPM
   module Tasks
     def self.included(base)
       base.send :include, ::Thor::Actions
       base.class_eval do
+
+
+        desc 'KPM version', 'Return current KPM version.'
+        def version
+          say "KPM version #{KPM::VERSION}"
+        end
 
         class_option :overrides,
                      :type    => :hash,
