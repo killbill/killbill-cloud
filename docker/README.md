@@ -46,6 +46,7 @@ Kill Bill specific environment variables:
   - `KILLBILL_CONFIG_OSGI_DAO_URL` (default `$KILLBILL_CONFIG_DAO_URL`)
   - `KILLBILL_CONFIG_OSGI_DAO_USER` (default `$KILLBILL_CONFIG_DAO_USER`)
   - `KILLBILL_CONFIG_OSGI_DAO_PASSWORD` (default `$KILLBILL_CONFIG_OSGI_DAO_PASSWORD`)
+  - `KILLBILL_SERVER_BASE_URL` (default `http://localhost:8080`)
   - `KILLBILL_SHIRO_RESOURCE_PATH` (default `classpath:shiro.ini`)
   - `KILLBILL_SERVER_TEST_MODE` (default `true`)
   - `KILLBILL_METRICS_GRAPHITE` (default `false`)
@@ -128,7 +129,7 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
   * Analytics [DDL](https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql)
 
     ```curl -s https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
- 
+
   * Stripe [DDL](https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql)
 
     ```curl -s https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
@@ -178,7 +179,7 @@ You can also install Kaui in a similar fashion:
   ```
   curl -s https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D kaui
   ```
-  * Add the initial `admin` user in the `KAUI` database: 
+  * Add the initial `admin` user in the `KAUI` database:
   ```
   echo "insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" | docker exec -i db mysql -h localhost -uroot -proot -D kaui
   ```
