@@ -75,8 +75,17 @@ To build an image:
 
     make
 
-In order to build a specific version use `make -e VERSION=0.x.y`.
-In order to build the kaui image `make -e TARGET=kaui` or  `make -e TARGET=kaui -e VERSION=0.x.y`.
+To build a specific Kill Bill version:
+
+    make -e VERSION=0.x.y
+
+To build Kaui:
+
+    make -e TARGET=kaui -e VERSION=0.x.y
+
+To build MariaDB:
+
+    make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.16
 
 To debug it:
 
