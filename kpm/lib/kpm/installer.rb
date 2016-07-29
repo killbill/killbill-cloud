@@ -26,8 +26,8 @@ module KPM
         version = Gem::Version.new(kb_version) rescue nil
         next if version.nil?
 
-        major, minor, patch, _ = version.segments
-        next if minor.nil? || minor.to_i.odd?
+        major, minor, patch, pre = version.segments
+        next if !pre.nil? || minor.nil? || minor.to_i.odd?
 
         latest_stable_version = version if version > latest_stable_version
       end

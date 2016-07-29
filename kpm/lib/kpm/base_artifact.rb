@@ -171,6 +171,9 @@ module KPM
           nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
         rescue NexusCli::ArtifactMalformedException => e
           raise NexusCli::NexusCliError.new("Invalid coordinates #{coordinate_map}")
+        rescue NexusCli::NexusCliError => e
+          logger.warn("Unable to retrieve coordinates #{coordinate_map}")
+          raise e
         end
 
         xml = REXML::Document.new(nexus_info)
