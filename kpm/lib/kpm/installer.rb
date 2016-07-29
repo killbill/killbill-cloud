@@ -8,11 +8,32 @@ module KPM
     def self.from_file(config_path=nil, logger=nil)
       if config_path.nil?
         # Install Kill Bill, Kaui and the KPM plugin by default
-        config = {'killbill' => {'version' => 'LATEST', 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
+        config = build_default_config
       else
         config = YAML::load_file(config_path)
       end
       Installer.new(config, logger)
+    end
+
+    def self.build_default_config(all_kb_versions=nil)
+      all_kb_versions ||= KillbillServerArtifact.versions(KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
+                                                          KillbillServerArtifact::KILLBILL_PACKAGING,
+                                                          KillbillServerArtifact::KILLBILL_CLASSIFIER,
+                                                          nil,
+                                                          true).to_a
+      latest_stable_version = Gem::Version.new('0.0.0')
+      all_kb_versions.each do |kb_version|
+        version = Gem::Version.new(kb_version) rescue nil
+        next if version.nil?
+
+        major, minor, patch, _ = version.segments
+        next if minor.nil? || minor.to_i.odd?
+
+        latest_stable_version = version if version > latest_stable_version
+      end
+
+      # Note: we assume no unstable version of Kaui is published today
+      {'killbill' => {'version' => latest_stable_version.to_s, 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
     end
 
     def initialize(raw_config, logger=nil)
