@@ -18,7 +18,7 @@ describe KPM::Migrations do
 
   context 'killbill' do
     it 'should be able to find migrations between two versions' do
-      migrations = KPM::Migrations.new('work-for-release-0.16.3', 'work-for-release-0.16.4', 'killbill/killbill', ENV['TOKEN']).migrations
+      migrations = KPM::Migrations.new('killbill-0.16.3', 'killbill-0.16.4', 'killbill/killbill', ENV['TOKEN']).migrations
 
       migrations.size.should == 1
       migrations.first[:name].should == 'V20160324060345__revisit_payment_methods_indexes_509.sql'
@@ -28,7 +28,7 @@ describe KPM::Migrations do
     end
 
     it 'should be able to find migrations for a given version' do
-      migrations = KPM::Migrations.new('work-for-release-0.16.4', nil, 'killbill/killbill', ENV['TOKEN']).migrations
+      migrations = KPM::Migrations.new('killbill-0.16.4', nil, 'killbill/killbill', ENV['TOKEN']).migrations
 
       migrations.size.should == 1
       migrations.first[:name].should == 'V20160324060345__revisit_payment_methods_indexes_509.sql'
