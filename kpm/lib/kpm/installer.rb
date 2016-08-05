@@ -52,8 +52,9 @@ module KPM
     end
 
     def install(force_download=false, verify_sha1=true)
+      bundles_dir = !@config.nil? ? @config['plugins_dir'] : (!@kaui_config.nil? ? @kaui_config['plugins_dir'] : nil)
+      bundles_dir ||= DEFAULT_BUNDLES_DIR
 
-      bundles_dir = @config['plugins_dir'] || DEFAULT_BUNDLES_DIR
       help = nil
       unless @config.nil?
         help = install_tomcat if @config['webapp_path'].nil?

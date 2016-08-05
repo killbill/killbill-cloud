@@ -8,6 +8,36 @@ describe KPM::Installer do
     @logger.level = Logger::INFO
   end
 
+  it 'should be able to install only Kill Bill' do
+    Dir.mktmpdir do |dir|
+      kb_webapp_path   = dir + '/KB_ROOT.war'
+      installer        = KPM::Installer.new({
+                                                'killbill' => {
+                                                    'webapp_path' => kb_webapp_path
+                                                }
+                                            },
+                                            @logger)
+
+      # No exception
+      installer.install.should be_nil
+    end
+  end
+
+  it 'should be able to install only Kaui' do
+    Dir.mktmpdir do |dir|
+      kaui_webapp_path = dir + '/KAUI_ROOT.war'
+      installer        = KPM::Installer.new({
+                                                'kaui' => {
+                                                    'webapp_path' => kaui_webapp_path
+                                                }
+                                            },
+                                            @logger)
+
+      # No exception
+      installer.install.should be_nil
+    end
+  end
+
   it 'should be able to install all artifacts' do
     Dir.mktmpdir do |dir|
       kb_webapp_path   = dir + '/KB_ROOT.war'
@@ -36,7 +66,6 @@ describe KPM::Installer do
                                                 'kaui' => {
                                                     'webapp_path' => kaui_webapp_path
                                                 }
-
                                             },
                                             @logger)
 
@@ -54,14 +83,12 @@ describe KPM::Installer do
 
       info = installer.install_plugin('analytics', nil, nil, nil,  nil, nil, '0.7.1', plugins_dir)
       info[:bundle_dir].should == plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
-
     end
   end
 
   private
 
   def check_installation(plugins_dir, kb_webapp_path, kaui_webapp_path)
-
     [
         plugins_dir,
         plugins_dir + '/platform',
@@ -114,6 +141,5 @@ describe KPM::Installer do
     plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
     plugin_identifiers['stripe']['version'].should == '2.0.0'
     plugin_identifiers['stripe']['language'].should == 'ruby'
-
   end
 end

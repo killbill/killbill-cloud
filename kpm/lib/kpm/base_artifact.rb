@@ -140,7 +140,6 @@ module KPM
       end
 
       def skip_if_exists(artifact_info, coordinates, sha1_file)
-
         # If there is no sha1 from the binary server, we don't skip
         # (Unclear if this is even possible)
         return false if artifact_info[:sha1].nil?
@@ -154,11 +153,16 @@ module KPM
         sha1_checker = Sha1Checker.from_file(sha1_file)
         local_sha1 = sha1_checker.sha1(coordinates)
 
-        # If there is an entry in the sha1_file and it matches the remote, we can skip
-        # Also support convenient 'SKIP' keyword for allowing hacking deployments (dev mode)
-        return true if local_sha1 == artifact_info[:sha1] || local_sha1 == 'SKIP'
+        # Support convenient 'SKIP' keyword for allowing hacking deployments (dev mode)
+        return true if local_sha1 == 'SKIP'
 
-        false
+        if artifact_info[:is_tgz]
+          # For Ruby plugins, if there is an entry in the sha1_file and it matches the remote, we can skip
+          local_sha1 == artifact_info[:sha1]
+        else
+          # For Java plugins and other artifacts, verify the file is still around
+          local_sha1 == artifact_info[:sha1] && File.file?(artifact_info[:file_path])
+        end
       end
 
       def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
