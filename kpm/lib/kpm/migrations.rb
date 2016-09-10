@@ -39,6 +39,7 @@ module KPM
       dir ||= Dir.mktmpdir
       @logger.debug("Storing migrations to #{dir}")
       migrations.each do |migration|
+        @logger.info("Migration to run: #{migration[:name]}")
         migration_path = Pathname.new(dir).join(migration[:name])
         File.open(migration_path, 'w') do |file|
           @logger.debug("Storing migration #{migration_path}")
@@ -60,7 +61,7 @@ module KPM
         next unless match_data
 
         migration_name = match_data[1]
-        @logger.info("Found migration #{migration_name}")
+        @logger.debug("Found migration #{migration_name}")
         next if migrations_to_skip.include?(migration_name)
 
         sql = nil
