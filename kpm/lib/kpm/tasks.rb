@@ -58,6 +58,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :bundles_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The location where bundles will be installed (along with sha1 file)'
         method_option :force_download,
                       :type    => :boolean,
                       :default => false,
@@ -68,18 +72,18 @@ module KPM
                       :desc    => 'Validate sha1 sum'
         desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kb_server_war(version='LATEST')
-          response = KillbillServerArtifact.pull(logger,
-                                                 KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                                 KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
-                                                 KillbillServerArtifact::KILLBILL_PACKAGING,
-                                                 KillbillServerArtifact::KILLBILL_CLASSIFIER,
-                                                 version,
-                                                 options[:destination],
-                                                 nil,
-                                                 options[:force_download],
-                                                 options[:verify_sha1],
-                                                 options[:overrides],
-                                                 options[:ssl_verify])
+          installer = BaseInstaller.new(logger,
+                                        options[:overrides],
+                                        options[:ssl_verify])
+          response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
+                                            KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
+                                            KillbillServerArtifact::KILLBILL_PACKAGING,
+                                            KillbillServerArtifact::KILLBILL_CLASSIFIER,
+                                            version,
+                                            options[:destination],
+                                            options[:bundles_dir],
+                                            options[:force_download],
+                                            options[:verify_sha1])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
@@ -96,6 +100,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'A different folder other than the current working directory.'
+        method_option :bundles_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'The location where bundles will be installed (along with sha1 file)'
         method_option :force_download,
                       :type    => :boolean,
                       :default => false,
@@ -106,18 +114,18 @@ module KPM
                       :desc    => 'Validates sha1 sum'
         desc 'pull_kp_server_war <version>', 'Pulls Kill Pay server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kp_server_war(version='LATEST')
-          response = KillbillServerArtifact.pull(logger,
-                                                 KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                                 KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
-                                                 KillbillServerArtifact::KILLPAY_PACKAGING,
-                                                 KillbillServerArtifact::KILLPAY_CLASSIFIER,
-                                                 version,
-                                                 options[:destination],
-                                                 nil,
-                                                 options[:force_download],
-                                                 options[:verify_sha1],
-                                                 options[:overrides],
-                                                 options[:ssl_verify])
+          installer = BaseInstaller.new(logger,
+                                        options[:overrides],
+                                        options[:ssl_verify])
+          response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
+                                            KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
+                                            KillbillServerArtifact::KILLPAY_PACKAGING,
+                                            KillbillServerArtifact::KILLPAY_CLASSIFIER,
+                                            version,
+                                            options[:destination],
+                                            options[:bundles_dir],
+                                            options[:force_download],
+                                            options[:verify_sha1])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
