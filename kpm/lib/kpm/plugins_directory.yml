@@ -125,6 +125,11 @@
     - :org.killbill.billing.plugin.payeezy.token
     - :org.killbill.billing.plugin.payeezy.secret
     - :org.killbill.billing.plugin.payeezy.paymentUrl
+:payment-retries:
+  :type: :java
+  :versions:
+    :0.16: 0.0.1
+    :0.17: 0.1.0
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
