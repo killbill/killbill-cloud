@@ -26,8 +26,8 @@ RUN mkdir -p /var/lib/jruby \
     && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.26/jruby-bin-1.7.26.tar.gz \
     | tar -z -x --strip-components=1 -C /var/lib/jruby
 
-ENV PATH /var/lib/jruby/bin:$PATH \
-    TOMCAT_HOME=/var/lib/tomcat7 \
+ENV PATH /var/lib/jruby/bin:$PATH
+ENV TOMCAT_HOME=/var/lib/tomcat7 \
     TOMCAT_CONFIG=/etc/tomcat7 \
     KILLBILL_CONFIG=/etc/killbill
 
