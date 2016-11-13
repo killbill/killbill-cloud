@@ -58,9 +58,9 @@ Kill Bill specific environment variables:
 
 Kaui specific environment variables:
 
-  - `KAUI_URL` (default `http://127.0.0.1:8080`)
-  - `KAUI_API_KEY` (default `bob`)
-  - `KAUI_API_SECRET` (default `lazar`)
+  - `KAUI_KILLBILL_URL` (default `http://127.0.0.1:8080`)
+  - `KAUI_KILLBILL_API_KEY` (default `bob`)
+  - `KAUI_KILLBILL_API_SECRET` (default `lazar`)
   - `KAUI_CONFIG_DAO_URL` (default `jdbc:mysql://localhost:3306/kaui`)
   - `KAUI_CONFIG_DAO_USER` (default `kaui`)
   - `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
@@ -202,9 +202,9 @@ You can also install Kaui in a similar fashion:
              -p 8989:8080 \
              --link db:dbserver \
              --link killbill_0_16_0:killbill \
-             -e KAUI_URL=http://killbill:8080 \
-             -e KAUI_API_KEY= \
-             -e KAUI_API_SECRET= \
+             -e KAUI_KILLBILL_URL=http://killbill:8080 \
+             -e KAUI_KILLBILL_API_KEY= \
+             -e KAUI_KILLBILL_API_SECRET= \
              -e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
              -e KAUI_CONFIG_DAO_USER=root \
              -e KAUI_CONFIG_DAO_PASSWORD=root \

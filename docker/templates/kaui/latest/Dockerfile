@@ -4,9 +4,9 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 USER root
 
 # Default local and non multi-tenant properties
-ENV KAUI_URL http://127.0.0.1:8080
-ENV KAUI_API_KEY bob
-ENV KAUI_API_SECRET lazar
+ENV KAUI_KILLBILL_URL http://127.0.0.1:8080
+ENV KAUI_KILLBILL_API_KEY bob
+ENV KAUI_KILLBILL_API_SECRET lazar
 
 ENV KAUI_CONFIG_DAO_URL jdbc:mysql://localhost:3306/kaui
 ENV KAUI_CONFIG_DAO_USER kaui

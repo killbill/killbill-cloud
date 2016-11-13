@@ -20,9 +20,9 @@ kaui:
     - KAUI_CONFIG_DAO_URL=jdbc:mysql://db:3306/kaui
     - KAUI_CONFIG_DAO_USER=root
     - KAUI_CONFIG_DAO_PASSWORD=killbill
-    - KAUI_URL=http://killbill:8080
-    - KAUI_API_KEY=bob
-    - KAUI_API_SECRET=lazar
+    - KAUI_KILLBILL_URL=http://killbill:8080
+    - KAUI_KILLBILL_API_KEY=bob
+    - KAUI_KILLBILL_API_SECRET=lazar
 db:
   image: mariadb
   expose:
