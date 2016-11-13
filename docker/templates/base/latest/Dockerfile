@@ -49,11 +49,9 @@ RUN mkdir -p $KILLBILL_HOME && \
     chown -R tomcat7:tomcat7 $KILLBILL_HOME
 
 # Add tomcat into sudo group and reinitialize the password
-RUN adduser --disabled-password --gecos '' tomcat7 && \
-    usermod -aG sudo tomcat7 && \
+RUN usermod -aG sudo tomcat7 && \
     echo 'tomcat7:tomcat7' | chpasswd && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 
 
 
