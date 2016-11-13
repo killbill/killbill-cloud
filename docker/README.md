@@ -34,6 +34,7 @@ Shared environment variables:
   - `KILLBILL_JVM_MAX_PERM_SIZE` (default `1G`)
   - `KILLBILL_JVM_XMS` (default `1G`)
   - `KILLBILL_JVM_XMX` (default `2G`)
+  - `KILLBILL_JVM_CMS_INITIATING_OCCUPANCY_FRACTION` (default `70`)
   - `KPM_PROPS` (default `--verify-sha1`)
   - `NEXUS_URL` (default `https://oss.sonatype.org`)
   - `NEXUS_REPOSITORY` (default `releases`)

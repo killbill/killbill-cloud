@@ -2,7 +2,7 @@ kaui:
   group_id: <%= ENV['KAUI_GROUP_ID'] %>
   artifact_id: <%= ENV['KAUI_ARTIFACT_ID'] %>
   version: <%= ENV['KAUI_VERSION'] %>
-  jvm: "-server -XX:PermSize=<%= ENV['KILLBILL_JVM_PERM_SIZE'] %> -XX:MaxPermSize=<%= ENV['KILLBILL_JVM_MAX_PERM_SIZE'] %> -Xms<%= ENV['KILLBILL_JVM_XMS'] %> -Xmx<%= ENV['KILLBILL_JVM_XMX'] %> -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=12345 -XX:+CMSClassUnloadingEnabled -XX:-OmitStackTraceInFastThrow -XX:+UseConcMarkSweepGC -Xloggc:/var/log/tomcat7/gc.log -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution"
+  jvm: "-server -XX:PermSize=<%= ENV['KILLBILL_JVM_PERM_SIZE'] %> -XX:MaxPermSize=<%= ENV['KILLBILL_JVM_MAX_PERM_SIZE'] %> -Xms<%= ENV['KILLBILL_JVM_XMS'] %> -Xmx<%= ENV['KILLBILL_JVM_XMX'] %> -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=12345 -XX:+CMSClassUnloadingEnabled -XX:-OmitStackTraceInFastThrow -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=<%= ENV['KILLBILL_JVM_CMS_INITIATING_OCCUPANCY_FRACTION'] %> -Xloggc:/var/log/tomcat7/gc.log -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=14 -XX:GCLogFileSize=100M"
   nexus:
     ssl_verify: false
     url: https://oss.sonatype.org
