@@ -36,10 +36,9 @@ module KPM
       if raw_kb_version == 'LATEST'
         version = 'LATEST'
       else
-        # Keep supporting the deprecated key :stable_version for now
         captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d)?/)
         if captures.empty? || captures.first.nil? || captures.first.first.nil?
-          version = plugin[:stable_version] || 'LATEST'
+          version = 'LATEST'
         else
           kb_version = captures.first.first
           version = (plugin[:versions] || {})[kb_version.to_sym] || 'LATEST'
