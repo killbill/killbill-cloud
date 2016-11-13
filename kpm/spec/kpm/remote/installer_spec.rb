@@ -139,7 +139,7 @@ describe KPM::Installer do
     plugin_identifiers['stripe']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
     plugin_identifiers['stripe']['artifact_id'].should == 'stripe-plugin'
     plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
-    plugin_identifiers['stripe']['version'].should == '2.0.0'
+    plugin_identifiers['stripe']['version'].should >= '4.0.0'
     plugin_identifiers['stripe']['language'].should == 'ruby'
   end
 end
