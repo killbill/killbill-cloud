@@ -14,7 +14,9 @@ RUN apt-get update && \
       libtcnative-1 \
       unzip \
       telnet \
-      sudo && \
+      sudo \
+      vim \
+      less &&
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND teletype
 
