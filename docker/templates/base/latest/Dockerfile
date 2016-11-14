@@ -16,7 +16,7 @@ RUN apt-get update && \
       telnet \
       sudo \
       vim \
-      less &&
+      less && \
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND teletype
 

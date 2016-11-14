@@ -18,7 +18,7 @@ RUN apt-get update && \
       unzip \
       zip \
       vim \
-      less &&
+      less && \
     rm -rf /var/lib/apt/lists/*
 
 # Install JRuby (the Ubuntu JRuby package is 1.5.6!)
