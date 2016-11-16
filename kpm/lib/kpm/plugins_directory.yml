@@ -43,6 +43,7 @@
   :versions:
     :0.14: 0.0.1
     :0.16: 0.2.1
+    :0.18: 0.3.0
   :require:
     - :merchant_id
     - :public_key
