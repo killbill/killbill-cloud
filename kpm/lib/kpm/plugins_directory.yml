@@ -103,6 +103,7 @@
   :versions:
     :0.14: 2.0.0
     :0.16: 3.0.0
+    :0.18: 4.0.0
   :require:
     - :account_id
     - :merchant_id
