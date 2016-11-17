@@ -65,6 +65,17 @@
   :require:
     - :login
     - :password
+:dwolla:
+  :type: :java
+  :versions:
+    :0.18: 0.1.0
+  :require:
+    - :org.killbill.billing.plugin.dwolla.baseUrl
+    - :org.killbill.billing.plugin.dwolla.baseOAuthUrl
+    - :org.killbill.billing.plugin.dwolla.scopes
+    - :org.killbill.billing.plugin.dwolla.clientId
+    - :org.killbill.billing.plugin.dwolla.clientSecret
+    - :org.killbill.billing.plugin.dwolla.accountId
 :email-notifications:
   :type: :java
   :artifact_id: killbill-email-notifications-plugin
