@@ -142,6 +142,7 @@
   :versions:
     :0.16: 0.0.1
     :0.17: 0.1.0
+    :0.18: 0.2.0
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
