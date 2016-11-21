@@ -83,6 +83,7 @@
   :versions:
     :0.14: 0.1.0
     :0.16: 0.2.0
+    :0.18: 0.3.0
 :firstdata_e4:
   :type: :ruby
   :artifact_id: firstdata-e4-plugin
