@@ -29,6 +29,10 @@ ENV PATH /var/lib/jruby/bin:$PATH
 
 RUN jruby -S gem install bundler jbundler therubyrhino
 
+RUN ln -s /var/lib/jruby/bin/jruby /var/lib/jruby/bin/ruby
+
+ENV JRUBY_OPTS=-J-Xmx1024m
+
 # Add killbill user into sudo group
 RUN adduser --disabled-password --gecos '' killbill && \
     usermod -aG sudo killbill && \
@@ -44,6 +48,8 @@ RUN chmod +x /etc/init.d/setup.sh
 USER killbill
 WORKDIR $KILLBILL_HOME
 
+ENV TERM=xterm
+
 # Setup Maven
 RUN mkdir -p /home/killbill/.m2
 COPY ./settings.xml /home/killbill/.m2/settings.xml
@@ -51,9 +57,7 @@ COPY ./settings.xml /home/killbill/.m2/settings.xml
 # Setup git
 RUN git config --global user.name "Kill Bill core team" && \
     git config --global user.email "contact@killbill.io" && \
-    git config --global push.default simple
-
-# Setup our repositories
-RUN /etc/init.d/setup.sh
+    git config --global push.default simple && \
+    git config --global credential.helper store
 
 CMD ["bash"]
