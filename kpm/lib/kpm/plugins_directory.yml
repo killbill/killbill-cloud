@@ -177,6 +177,7 @@
   :type: :ruby
   :versions:
     :0.16: 0.1.0
+    :0.18: 0.2.0
   :require:
   - :login
   - :password
