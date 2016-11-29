@@ -134,6 +134,15 @@
     :0.15: 2.0.0
     :0.16: 3.0.0
     :0.18: 4.0.0
+:orbital:
+  :type: :ruby
+  :versions:
+    :0.16: 0.0.2
+    :0.18: 0.1.0
+  :require:
+    - :login
+    - :password
+    - :merchant_id
 :payeezy:
   :type: :java
   :versions:
