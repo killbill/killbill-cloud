@@ -56,6 +56,7 @@
   :artifact_id: killbill-currency-plugin
   :versions:
     :0.16: 2.0.0
+    :0.18: 3.0.0
 :cybersource:
   :type: :ruby
   :versions:
@@ -89,6 +90,7 @@
   :artifact_id: firstdata-e4-plugin
   :versions:
     :0.16: 0.1.0
+    :0.18: 0.2.0
   :require:
   - :login
   - :password
@@ -131,6 +133,7 @@
     :0.14: 1.7.0
     :0.15: 2.0.0
     :0.16: 3.0.0
+    :0.18: 4.0.0
 :payeezy:
   :type: :java
   :versions:
@@ -163,6 +166,8 @@
   :artifact_id: payu-latam-plugin
   :versions:
     :0.14: 0.1.0
+    :0.16: 0.2.0
+    :0.18: 0.3.0
   :require:
   - :api_login
   - :api_key
