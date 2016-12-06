@@ -6,10 +6,10 @@ See also our [Docker Compose recipes](https://github.com/killbill/killbill-cloud
 Quick start
 ===========
 
-To start Kill Bill 0.16.0:
+To start Kill Bill 0.18.1:
 
 ```
-docker run -ti -p 8080:8080 killbill/killbill:0.16.0
+docker run -ti -p 8080:8080 killbill/killbill:0.18.1
 ```
 
 Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the ip address of the container.
