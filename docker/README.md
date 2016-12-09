@@ -66,7 +66,9 @@ Kaui specific environment variables:
   - `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
   - `KAUI_CONFIG_DEMO` (default `false`)
 
-There is a [bug in sonatype where the sha1 is wrong](https://issues.sonatype.org/browse/OSSRH-13936). In order to disable sha1 verification, you can start your container using: `KPM_PROPS="--verify-sha1=false"`.
+There is a [bug in Sonatype where the sha1 is sometimes wrong](https://issues.sonatype.org/browse/OSSRH-13936). In order to disable sha1 verification, you can start your container using: `KPM_PROPS="--verify-sha1=false"`.
+
+Configuration of the images is driven by the [kpm.yml.erb](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) KPM configuration file. Advanced users may need to extend it beyond the plugin properties exposed. To do so, you can create an overlay file as `$KILLBILL_CONFIG/kpm.yml.erb.overlay`: both files will be merged at startup, with the overlay having precedence. Take a look at our [testing](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/testing/Dockerfile) image for an example.
 
 
 Build
