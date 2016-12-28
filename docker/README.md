@@ -179,32 +179,32 @@ Tomcat configuration
 
 1. Expose port 8443:
 
-```
-docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.1
-```
+  ```
+  docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.1
+  ```
 
 2. Import your SSL certificate (see [docs](https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html)). For testing, you can just create a self-signed certificate:
 
-```
-sudo apt-get update
-sudo apt-get install ssl-cert
-sudo usermod -a -G ssl-cert tomcat7
-```
+  ```
+  sudo apt-get update
+  sudo apt-get install ssl-cert
+  sudo usermod -a -G ssl-cert tomcat7
+  ```
 
 3. Update Tomcat's configuration:
 
-```
-# In /var/lib/tomcat7/conf/server.xml
-<Connector executor="tomcatThreadPool"
-           port="8443"
-           connectionTimeout="20000"
-           acceptorThreadCount="2"
-           SSLEnabled="true"
-           SSLCertificateFile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
-           SSLCertificateKeyFile="/etc/ssl/private/ssl-cert-snakeoil.key"
-           scheme="https"
-           secure="true" />
-```
+  ```
+  # In /var/lib/tomcat7/conf/server.xml
+  <Connector executor="tomcatThreadPool"
+             port="8443"
+             connectionTimeout="20000"
+             acceptorThreadCount="2"
+             SSLEnabled="true"
+             SSLCertificateFile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
+             SSLCertificateKeyFile="/etc/ssl/private/ssl-cert-snakeoil.key"
+             scheme="https"
+             secure="true" />
+  ```
 
 
 Build
