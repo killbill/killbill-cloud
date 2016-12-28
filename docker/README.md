@@ -206,6 +206,25 @@ Tomcat configuration
              secure="true" />
   ```
 
+### X-Forwarded headers support
+
+When `org.killbill.jaxrs.location.full.url=true`, Kill Bill will build location headers using a full URL. In a typical load balancer scneario, which receives traffic on port 8443 and forwards it to port 8080 on the Kill Bill instances (i.e. SSL terminated at the load balancer), you probably want the headers to return something like https://killbill-vip.mycompany.net:8443 instead of http://10.1.2.3:8080.
+
+To do so:
+
+1. Enable the `RemoteIpValve` (make sure to configure correctly at least the `internalProxies` and `trustedProxies` attributes depending on your environment, see the [docs](https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Proxies_Support)):
+
+  ```
+  # In /var/lib/tomcat7/conf/server.xml
+  <Valve className="org.apache.catalina.valves.RemoteIpValve"
+         protocolHeader="x-forwarded-proto"
+         portHeader="x-forwarded-port" />
+  ```
+2. Set `org.killbill.jaxrs.location.host=killbill-vip.mycompany.net`
+
+Without any X-Forwarded header, the default Location header will result to something like `http://killbill-vip.mycompany.net:8080`. With `X-Forwarded-For: 10.0.0.0`, `X-Forwarded-Proto: https` and `X-Forwarded-Port: 8443`, the header will become something like `https://killbill-vip.mycompany.net:8443`.
+
+You optionally also want to set `requestAttributesEnabled="true"` to `org.apache.catalina.valves.AccessLogValve`, to log the IP address from the `X-Forwarded-For` header in the access logs.
 
 Build
 =====
