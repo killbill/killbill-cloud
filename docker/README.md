@@ -71,53 +71,8 @@ There is a [bug in Sonatype where the sha1 is sometimes wrong](https://issues.so
 Configuration of the images is driven by the [kpm.yml.erb](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) KPM configuration file. Advanced users may need to extend it beyond the plugin properties exposed. To do so, you can create an overlay file as `$KILLBILL_CONFIG/kpm.yml.erb.overlay`: both files will be merged at startup, with the overlay having precedence. Take a look at our [testing](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/testing/Dockerfile) image for an example.
 
 
-Build
-=====
-
-To build an image:
-
-    make
-
-To build a specific Kill Bill version:
-
-    make -e VERSION=0.x.y
-
-To build Kaui:
-
-    make -e TARGET=kaui -e VERSION=0.x.y
-
-To build MariaDB:
-
-    make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.16
-
-To debug it:
-
-    make run
-
-
-To cleanup containers and images:
-
-    make clean
-
-
-To run it:
-
-    make run-container
-
-To publish an image:
-
-```
-# Build the image locally
-export TARGET=killbill # or base, kaui
-export VERSION=latest # or 0.16.0
-make -e TARGET=$TARGET -e VERSION=$VERSION
-docker login
-docker push killbill/$TARGET:$VERSION
-docker logout
-```
-
 Local Development
-==================
+=================
 
 It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.16.7` (adjust it with the version of your choice).
 
@@ -216,3 +171,83 @@ You can also install Kaui in a similar fashion:
 2. More Play time... with KAUI
 
   You can connnect to KAUI using the url : `http://IP:8989/` where `IP=$(docker-machine ip default)`. You will be able to login as a superadmin using account `admin/password`. From there you can follow our tutorials and documentation.
+
+Tomcat configuration
+====================
+
+### HTTPS
+
+1. Expose port 8443:
+
+```
+docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.1
+```
+
+2. Import your SSL certificate (see [docs](https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html)). For testing, you can just create a self-signed certificate:
+
+```
+sudo apt-get update
+sudo apt-get install ssl-cert
+sudo usermod -a -G ssl-cert tomcat7
+```
+
+3. Update Tomcat's configuration:
+
+```
+# In /var/lib/tomcat7/conf/server.xml
+<Connector executor="tomcatThreadPool"
+           port="8443"
+           connectionTimeout="20000"
+           acceptorThreadCount="2"
+           SSLEnabled="true"
+           SSLCertificateFile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
+           SSLCertificateKeyFile="/etc/ssl/private/ssl-cert-snakeoil.key"
+           scheme="https"
+           secure="true" />
+```
+
+
+Build
+=====
+
+To build an image:
+
+    make
+
+To build a specific Kill Bill version:
+
+    make -e VERSION=0.x.y
+
+To build Kaui:
+
+    make -e TARGET=kaui -e VERSION=0.x.y
+
+To build MariaDB:
+
+    make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.16
+
+To debug it:
+
+    make run
+
+
+To cleanup containers and images:
+
+    make clean
+
+
+To run it:
+
+    make run-container
+
+To publish an image:
+
+```
+# Build the image locally
+export TARGET=killbill # or base, kaui
+export VERSION=latest # or 0.16.0
+make -e TARGET=$TARGET -e VERSION=$VERSION
+docker login
+docker push killbill/$TARGET:$VERSION
+docker logout
+```
