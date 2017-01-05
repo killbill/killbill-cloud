@@ -6,10 +6,10 @@ See also our [Docker Compose recipes](https://github.com/killbill/killbill-cloud
 Quick start
 ===========
 
-To start Kill Bill 0.18.1:
+To start Kill Bill 0.18.x: (`x` being the latest 0.18 release out)
 
 ```
-docker run -ti -p 8080:8080 killbill/killbill:0.18.1
+docker run -ti -p 8080:8080 killbill/killbill:0.18.x
 ```
 
 Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the ip address of the container.
@@ -74,7 +74,7 @@ Configuration of the images is driven by the [kpm.yml.erb](https://github.com/ki
 Local Development
 =================
 
-It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.16.7` (adjust it with the version of your choice).
+It becomes fairly easy to start Kill Bill locally on your laptop. For example let's start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.18.x` (adjust it with the version of your choice).
 
 1. Start the mysql container:
 
@@ -89,9 +89,9 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
   ```
   And then add the DDLs:
 
-  * Kill Bill [DDL](http://docs.killbill.io/0.16/ddl.sql)
+  * Kill Bill [DDL](http://docs.killbill.io/0.18/ddl.sql)
 
-    ```curl -s http://docs.killbill.io/0.16/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
+    ```curl -s http://docs.killbill.io/0.18/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill```
 
   * Analytics [DDL](https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql)
 
@@ -119,7 +119,7 @@ docker run -tid \
            -e KILLBILL_CONFIG_OSGI_DAO_PASSWORD=root \
            -e KILLBILL_PLUGIN_ANALYTICS=1 \
            -e KILLBILL_PLUGIN_STRIPE=1 \
-           killbill/killbill:0.16.7
+           killbill/killbill:0.18.x
   ```
 4. Play time...
 
@@ -243,7 +243,7 @@ To build Kaui:
 
 To build MariaDB:
 
-    make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.16
+    make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.18
 
 To debug it:
 
@@ -264,7 +264,7 @@ To publish an image:
 ```
 # Build the image locally
 export TARGET=killbill # or base, kaui
-export VERSION=latest # or 0.16.0
+export VERSION=latest # or 0.18.0
 make -e TARGET=$TARGET -e VERSION=$VERSION
 docker login
 docker push killbill/$TARGET:$VERSION
