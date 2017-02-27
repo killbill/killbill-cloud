@@ -107,7 +107,7 @@ It becomes fairly easy to start Kill Bill locally on your laptop. For example le
 
   ```
 docker run -tid \
-           --name killbill_0_16_0 \
+           --name killbill \
            -p 8080:8080 \
            -p 12345:12345 \
            --link db:dbserver \
@@ -155,17 +155,17 @@ You can also install Kaui in a similar fashion:
 
   ```
   docker run -tid \
-             --name kaui_0_7_0 \
+             --name kaui \
              -p 8989:8080 \
              --link db:dbserver \
-             --link killbill_0_16_0:killbill \
+             --link killbill:killbill \
              -e KAUI_KILLBILL_URL=http://killbill:8080 \
              -e KAUI_KILLBILL_API_KEY= \
              -e KAUI_KILLBILL_API_SECRET= \
              -e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
              -e KAUI_CONFIG_DAO_USER=root \
              -e KAUI_CONFIG_DAO_PASSWORD=root \
-             killbill/kaui:0.7.0
+             killbill/kaui:0.8.6
   ```
 
 2. More Play time... with KAUI
