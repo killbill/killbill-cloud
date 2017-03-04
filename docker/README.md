@@ -229,6 +229,13 @@ You optionally also want to set `requestAttributesEnabled="true"` to `org.apache
 Build
 =====
 
+All images are based upon a `base` image which (in theory) should not have to be rebuilt too often. In order to build it:
+
+```
+> cd docker/templates/base/latest
+> docker build --no-cache -t killbill/base:latest .
+```
+
 To build an image:
 
     make
