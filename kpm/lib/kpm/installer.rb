@@ -59,7 +59,7 @@ module KPM
       unless @config.nil?
         help = install_tomcat if @config['webapp_path'].nil?
         install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], bundles_dir, force_download, verify_sha1)
-        install_plugins(bundles_dir, force_download, verify_sha1)
+        install_plugins(bundles_dir, @config['version'], force_download, verify_sha1)
         unless @config['default_bundles'] == false
           install_default_bundles(bundles_dir, @config['default_bundles_version'], @config['version'], force_download, verify_sha1)
         end
@@ -96,29 +96,29 @@ module KPM
       manager.help
     end
 
-    def install_plugins(bundles_dir, force_download, verify_sha1)
-      install_java_plugins(bundles_dir, force_download, verify_sha1)
-      install_ruby_plugins(bundles_dir, force_download, verify_sha1)
+    def install_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
+      install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
+      install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
     end
 
-    def install_java_plugins(bundles_dir, force_download, verify_sha1)
+    def install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
       return if @config['plugins'].nil? or @config['plugins']['java'].nil?
 
       infos = []
       @config['plugins']['java'].each do |plugin|
-        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1, false)
+        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1, false)
       end
 
       infos
     end
 
-    def install_ruby_plugins(bundles_dir, force_download, verify_sha1)
+    def install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
       return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
 
       verify_jruby_jar=true
       infos = []
       @config['plugins']['ruby'].each do |plugin|
-        infos << install_plugin(plugin['name'], nil, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'ruby', force_download, verify_sha1, verify_jruby_jar)
+        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'ruby', force_download, verify_sha1, verify_jruby_jar)
         verify_jruby_jar=false
       end
 
