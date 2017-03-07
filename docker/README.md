@@ -165,6 +165,7 @@ You can also install Kaui in a similar fashion:
              -e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
              -e KAUI_CONFIG_DAO_USER=root \
              -e KAUI_CONFIG_DAO_PASSWORD=root \
+             -e KAUI_ROOT_USERNAME=admin \
              killbill/kaui:0.8.6
   ```
 

@@ -15,6 +15,8 @@ ENV KAUI_CONFIG_DAO_ADAPTER jdbcmysql
 
 ENV KAUI_CONFIG_DEMO false
 
+ENV KAUI_ROOT_USERNAME admin
+
 COPY ./kaui.sh /etc/init.d/kaui.sh
 RUN chmod +x /etc/init.d/kaui.sh
 
