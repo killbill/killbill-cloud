@@ -47,6 +47,7 @@ Kill Bill specific environment variables:
   - `KILLBILL_CONFIG_OSGI_DAO_URL` (default `$KILLBILL_CONFIG_DAO_URL`)
   - `KILLBILL_CONFIG_OSGI_DAO_USER` (default `$KILLBILL_CONFIG_DAO_USER`)
   - `KILLBILL_CONFIG_OSGI_DAO_PASSWORD` (default `$KILLBILL_CONFIG_OSGI_DAO_PASSWORD`)
+  - `KILLBILL_CONFIG_DAO_MAX_CONNECTION_AGE` (default 240m)
   - `KILLBILL_SERVER_BASE_URL` (default `http://localhost:8080`)
   - `KILLBILL_SHIRO_RESOURCE_PATH` (default `classpath:shiro.ini`)
   - `KILLBILL_SERVER_TEST_MODE` (default `true`)

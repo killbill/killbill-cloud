@@ -24,6 +24,9 @@ ENV KILLBILL_QUEUE_CREATOR_NAME ''
 
 ENV KILLBILL_SHIRO_NB_HASH_ITERATIONS 200000
 
+# Default mysql wait_timeout config is 28800 (sec) -> 480 min (we use half of that value)
+ENV KILLBILL_CONFIG_DAO_MAX_CONNECTION_AGE 240m
+
 USER root
 
 COPY ./killbill.sh /etc/init.d/killbill.sh
