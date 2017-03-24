@@ -30,6 +30,7 @@ killbill:
     org.killbill.dao.user: <%= ENV['KILLBILL_CONFIG_DAO_USER'] %>
     org.killbill.dao.password: <%= ENV['KILLBILL_CONFIG_DAO_PASSWORD'] %>
     org.killbill.dao.maxConnectionAge: <%= ENV['KILLBILL_CONFIG_DAO_MAX_CONNECTION_AGE'] %>
+    org.killbill.billing.osgi.dao.maxConnectionAge: <%= ENV['KILLBILL_CONFIG_DAO_MAX_CONNECTION_AGE'] %>
     org.killbill.jruby.context.scope: THREADSAFE
     org.killbill.metrics.graphite: <%= ENV['KILLBILL_METRICS_GRAPHITE'] %>
     org.killbill.metrics.graphite.host: <%= ENV['KILLBILL_METRICS_GRAPHITE_HOST'] %>
