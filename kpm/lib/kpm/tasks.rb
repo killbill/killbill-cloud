@@ -403,6 +403,16 @@ module KPM
           #puts all_plugins.to_json
           inspector.format(all_plugins)
         end
+        
+        method_option :destination,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
+        desc 'system', 'Gather information about the system'
+        def system
+          system = KPM::System.new
+          system.information(options[:destination])
+        end
 
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin

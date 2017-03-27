@@ -62,24 +62,27 @@ module KPM
     end
 
 
-    def format(all_plugins)
-      if all_plugins.size == 0
+    def format(data, labels = nil)
+      if data.size == 0
         return
       end
 
-      # What we want to output
-      labels = [{:label => :plugin_name},
-                {:label => :plugin_key},
-                {:label => :type},
-                {:label => :group_id},
-                {:label => :artifact_id},
-                {:label => :packaging},
-                {:label => :versions, :formatter => VersionFormatter.name}]
+      if labels == nil
+
+        # What we want to output
+        labels = [{:label => :plugin_name},
+                  {:label => :plugin_key},
+                  {:label => :type},
+                  {:label => :group_id},
+                  {:label => :artifact_id},
+                  {:label => :packaging},
+                  {:label => :versions, :formatter => VersionFormatter.name}]
+      end
 
       # Compute label to print along with max size for each label
       labels_format_argument = []
-      all_plugins.keys.each do |key|
-        v = all_plugins[key]
+      data.keys.each do |key|
+        v = data[key]
         labels.each do |e|
           # sanitize entry at the same time
           v[e[:label]] = v[e[:label]] || "???"
@@ -106,8 +109,8 @@ module KPM
       puts "#{format}\n" % labels_format_argument
       puts "#{border}\n"
 
-      all_plugins.keys.each do |key|
-        v = all_plugins[key]
+      data.keys.each do |key|
+        v = data[key]
 
         arguments = []
         labels.inject(arguments) do |res, e|
