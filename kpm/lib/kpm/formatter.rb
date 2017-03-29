@@ -63,11 +63,11 @@ module KPM
 
 
     def format(data, labels = nil)
-      if data.size == 0
+      if data.nil? || data.size == 0
         return
       end
 
-      if labels == nil
+      if labels.nil?
 
         # What we want to output
         labels = [{:label => :plugin_name},
