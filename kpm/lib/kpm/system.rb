@@ -238,9 +238,9 @@ module KPM
     end
 
     def get_killbill_version(killbill_web_path = nil)
-      killbil_search_default_dir = Dir[killbill_web_path.nil? ? '' : killbill_web_path][0] || DEFAULT_KILLBILL_SEARCH_BASE_DIR
+      killbill_search_default_dir = Dir[killbill_web_path.nil? ? '' : killbill_web_path][0] || DEFAULT_KILLBILL_SEARCH_BASE_DIR
 
-      file =  Dir[killbil_search_default_dir + File::SEPARATOR + 'META-INF' +  File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
+      file =  Dir[killbill_search_default_dir + File::SEPARATOR + 'META-INF' +  File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
       version = nil
       if not file[0].nil?
         absolute_file_path = File.absolute_path(file[0])

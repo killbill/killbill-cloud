@@ -421,10 +421,15 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'Path for the KAUI web app'
+        method_option :killbill_web_path,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Path for the killbill web app'
         desc 'system', 'Gather information about the system'
         def system
           system = KPM::System.new
-          system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path])
+          system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
+                             options[:killbill_web_path])
         end
 
         map :pull_ruby_plugin => :install_ruby_plugin,
