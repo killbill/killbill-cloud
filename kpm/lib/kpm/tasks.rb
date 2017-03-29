@@ -399,9 +399,37 @@ module KPM
         desc 'inspect', 'Inspect current deployment'
         def inspect
           inspector = KPM::Inspector.new
+          puts options[:destination]
           all_plugins = inspector.inspect(options[:destination])
           #puts all_plugins.to_json
           inspector.format(all_plugins)
+        end
+
+        method_option :bundles_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
+        method_option :config_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'KPM configuration file (yml file)'
+        method_option :as_json,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Set the output format as JSON when true'
+        method_option :kaui_web_path,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Path for the KAUI web app'
+        method_option :killbill_web_path,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Path for the killbill web app'
+        desc 'system', 'Gather information about the system'
+        def system
+          system = KPM::System.new
+          system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
+                             options[:killbill_web_path])
         end
 
         map :pull_ruby_plugin => :install_ruby_plugin,
