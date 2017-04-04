@@ -18,6 +18,7 @@ module KPM
   autoload :PluginsDirectory, 'kpm/plugins_directory'
   autoload :Migrations, 'kpm/migrations'
   autoload :System, 'kpm/system'
+  autoload :Account, 'kpm/account'
 
   class << self
     def root

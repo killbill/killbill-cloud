@@ -432,6 +432,34 @@ module KPM
                              options[:killbill_web_path])
         end
 
+        method_option :export,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'export account for a provided id.'
+        method_option :import,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'import account for a provided previously exported file.'
+        desc 'account', 'export/import accounts'
+        def account
+
+          if options[:export].nil? && options[:import].nil?
+            puts "\e[91;1mNeed to specify an action\e[0m\n\n"
+
+          else
+            account = KPM::Account.new
+
+            if not options[:export].nil?
+              account.export_data(options[:export])
+            end
+
+            if not options[:import].nil?
+              account.import_data(options[:import])
+            end
+          end
+
+        end
+
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin
 
