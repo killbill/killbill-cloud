@@ -19,6 +19,7 @@ module KPM
   autoload :Migrations, 'kpm/migrations'
   autoload :System, 'kpm/system'
   autoload :Account, 'kpm/account'
+  autoload :Database, 'kpm/database'
 
   class << self
     def root
