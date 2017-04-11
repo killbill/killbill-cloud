@@ -43,8 +43,7 @@ module KPM
           query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}"
         end
         query = "SET autocommit=0; #{query} COMMIT;"
-        command = "#{@@mysql_command_line} \"#{query}\" 2>&1"
-        response = `#{command}`
+        response = `#{@@mysql_command_line} "#{query.gsub('"','\\"')}" 2>&1`
 
         if response.include? 'ERROR'
           raise Interrupt, "Importing table #{table_name}...... \e[91;1m#{response}\e[0m"
@@ -61,7 +60,7 @@ module KPM
 
           return true
         end
-        
+
         return true
       end
 
