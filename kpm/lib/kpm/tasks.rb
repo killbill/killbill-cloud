@@ -444,10 +444,10 @@ module KPM
                       :type    => :numeric,
                       :default => nil,
                       :desc    => 'replace the tenant_record_id before importing data.'
-        method_option :account_record_id,
-                      :type    => :numeric,
-                      :default => nil,
-                      :desc    => 'replace the account record_id before importing data.'
+        method_option :reuse_record_id,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'The reuse_record_id will instruct to use the same record_ids of all the tables that were exported'
         method_option :skip_payment_methods,
                       :type    => :boolean,
                       :default => false,
@@ -468,29 +468,37 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
-        method_option :database,
+        method_option :database_name,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'DB name to connect'
+        method_option :database_credentials,
                       :type    => :array,
                       :default => nil,
-                      :desc    => 'DB connection parameters <database> <user> <password>'
+                      :desc    => 'DB credentials <user> <password>'
         desc 'account', 'export/import accounts'
         def account
-          puts "Please wait processing the request!!!\n"
+          logger.info "Please wait processing the request!!!"
           begin
             config_file = nil
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
-              raise Interrupt,"\e[91;1m--killbill_url, required format -> http(s)://something\e[0m\n\n"
+              raise Interrupt,"\e[91;1m--killbill_url, required format -> http(s)://something\e[0m"
             end
 
             if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
-              raise Interrupt,"\e[91;1m--killbill_api_credentials, required format -> <api_key> <api_secrets>\e[0m\n\n"
+              raise Interrupt,"\e[91;1m--killbill_api_credentials, required format -> <api_key> <api_secrets>\e[0m"
             end
 
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
-              raise Interrupt,"\e[91;1m--killbill_credentials, required format -> <user> <password>\e[0m\n\n"
+              raise Interrupt,"\e[91;1m--killbill_credentials, required format -> <user> <password>\e[0m"
             end
 
-            if options[:database] && options[:database].size != 3
-              raise Interrupt,"\e[91;1m--database, required format -> <database> <user> <password>\e[0m\n\n"
+            if options[:database_credentials] && options[:database_credentials].size != 2
+              raise Interrupt,"\e[91;1m--database_credentials, required format -> <user> <password>\e[0m"
+            end
+
+            if options[:database_name] && options[:database_name] == :database_name.to_s
+              raise Interrupt,"\e[91;1m--database_credentials, please provide a valid database name\e[0m"
             end
 
             if options[:config_file] && options[:config_file] == :config_file.to_s
@@ -498,11 +506,12 @@ module KPM
             end
 
             if options[:export].nil? && options[:import].nil?
-              raise Interrupt,"\e[91;1mNeed to specify an action\e[0m\n\n"
+              raise Interrupt,"\e[91;1mNeed to specify an action\e[0m"
             end
 
+
             account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url],options[:database])
+                                       options[:killbill_url],options[:database_name],options[:database_credentials], logger)
             export_file = nil
 
             if not options[:export].nil?
@@ -510,15 +519,14 @@ module KPM
             end
 
             if not options[:import].nil?
-              account.import_data(export_file || options[:import], options[:account_record_id],
+              account.import_data(export_file || options[:import], options[:reuse_record_id],
                                   options[:tenant_record_id], options[:skip_payment_methods])
             end
 
           rescue Exception => e
-            puts "\e[91;1m#{e.message}\e[0m\n\n"
-
+            logger.error "\e[91;1m#{e.message}\e[0m"
             if not e.is_a?(Interrupt)
-              puts e.backtrace.join("\n")
+              logger.error e.backtrace.join("\n")
             end
           end
         end
