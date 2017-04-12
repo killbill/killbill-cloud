@@ -35,7 +35,9 @@ module KPM
     REMOVE_DATA_FROM = {:accounts => [:name, :address1, :address2, :city, :state_or_providence, :phone, :email],
                        :account_history => [:name, :address1, :address2, :city, :state_or_providence, :phone, :email]}
 
-    DATE_COLUMNS_TO_FIX = ['created_date','updated_date','processing_available_date']
+    DATE_COLUMNS_TO_FIX = ['created_date','updated_date','processing_available_date','effective_date',
+                           'boot_date','start_timestamp','last_access_time','payment_date','original_created_date',
+                           'last_sys_update_date','charged_through_date','bundle_start_date','start_date']
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, logger = nil)

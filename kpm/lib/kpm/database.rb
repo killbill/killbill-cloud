@@ -11,7 +11,7 @@ module KPM
       # Destination database
       DATABASE = ENV['DATABASE'] || 'killbill'
       USERNAME = ENV['USERNAME'] || 'root'
-      PASSWORD = ENV['PASSWORD'] || 'welcome0'
+      PASSWORD = ENV['PASSWORD'] || 'root'
 
       MYSQL_COMMAND_LINE = "mysql #{DATABASE} --user=#{USERNAME} --password=#{PASSWORD} -e"
 
