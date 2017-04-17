@@ -125,8 +125,16 @@ module KPM
           table_name = nil
           cols_names = nil
           export_data.split("\n").each do |line|
-            clean_line = process_export_data(line,table_name,cols_names)
+            words = line.strip.split(" ")
+            clean_line = line
+            if not /--/.match(words[0]).nil?
+              table_name = words[1]
+              cols_names = words[2].strip.split("|")
+            elsif not table_name.nil?
+              clean_line = process_export_data(line,table_name,cols_names)
+            end
             io.puts clean_line
+
           end
 
         end
@@ -135,27 +143,18 @@ module KPM
       end
 
       def process_export_data(line_to_process, table_name, cols_names)
-        words = line_to_process.strip.split(" ")
         clean_line = line_to_process
 
-        if /--/.match(words[0])
+        row = []
+        cols = clean_line.strip.split("|")
+        cols_names.each_with_index { |col_name, index|
+          sanitized_value = remove_export_data(table_name,col_name,cols[index])
 
-          table_name = words[1]
-          cols_names = words[2].strip.split("|")
+          row << sanitized_value
 
-        elsif not table_name.nil?
+        }
 
-          row = []
-          cols = line.strip.split("|")
-          cols_names.each_with_index { |col_name, index|
-            sanitized_value = remove_export_data(table_name,col_name,cols[index])
-
-            row << sanitized_value
-
-          }
-
-          clean_line = row.join("|")
-        end
+        clean_line = row.join("|")
 
         clean_line
       end
@@ -163,7 +162,6 @@ module KPM
       def remove_export_data(table_name,col_name,value)
 
         if not REMOVE_DATA_FROM[table_name.to_sym].nil?
-
 
           if REMOVE_DATA_FROM[table_name.to_sym].include? col_name.to_sym
             return nil
