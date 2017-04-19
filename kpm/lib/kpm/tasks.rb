@@ -444,10 +444,10 @@ module KPM
                       :type    => :numeric,
                       :default => nil,
                       :desc    => 'replace the tenant_record_id before importing data.'
-        method_option :reuse_record_id,
+        method_option :generate_record_id,
                       :type    => :boolean,
                       :default => false,
-                      :desc    => 'The reuse_record_id will instruct to use the same record_ids of all the tables that were exported'
+                      :desc    => 'The generate_record_id will instruct to generate the tables record_ids that were exported'
         method_option :skip_payment_methods,
                       :type    => :boolean,
                       :default => false,
@@ -521,8 +521,8 @@ module KPM
             end
 
             if not options[:import].nil?
-              account.import_data(export_file || options[:import], options[:reuse_record_id],
-                                  options[:tenant_record_id], options[:skip_payment_methods], round_trip_export_import)
+              account.import_data(export_file || options[:import],options[:tenant_record_id], options[:skip_payment_methods],
+                                  round_trip_export_import, options[:generate_record_id])
             end
 
           rescue Exception => e

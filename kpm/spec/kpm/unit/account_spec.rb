@@ -273,6 +273,7 @@ describe KPM::Account do
 
     context 'when processing data to import' do
       it 'when column name qty eq column data qty without record_id' do
+        account_class.instance_variable_set(:@generate_record_id,true)
         expect(account_class.send(:process_import_data, cols_data, table_name, cols_names.split('|'), false, []).size).to eq(cols_names.split("|").size-1)
       end
 
@@ -289,17 +290,17 @@ describe KPM::Account do
     context 'when data to import; main import method' do
       it 'when importing data with empty file' do
         File.new(dummy_data_file, 'w+').close
-        expect{account_class.import_data(dummy_data_file,false,nil,true,false) }.to raise_error(Interrupt,"Data on #{dummy_data_file} is invalid")
+        expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt,"Data on #{dummy_data_file} is invalid")
         File.delete(dummy_data_file)
       end
       it 'when importing data with no file' do
-        expect{account_class.import_data(dummy_data_file,false,nil,true,false) }.to raise_error(Interrupt,'Need to specify a valid file')
+        expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt,'Need to specify a valid file')
       end
       it 'when importing data with new record_id' do
         open (dummy_data_file), 'w' do |io|
           io.puts(dummy_data)
         end
-        expect{account_class.import_data(dummy_data_file,false,nil,true,false) }.not_to raise_error(Interrupt)
+        expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.not_to raise_error(Interrupt)
         response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
         expect(response.split("\n")[1]).to eq('1')
         response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
@@ -310,7 +311,7 @@ describe KPM::Account do
         open (dummy_data_file), 'w' do |io|
           io.puts(dummy_data)
         end
-        expect{account_class.import_data(dummy_data_file,true,nil,true,false) }.not_to raise_error(Interrupt)
+        expect{account_class.import_data(dummy_data_file,nil,true,false,false) }.not_to raise_error(Interrupt)
         response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
         expect(response.split("\n")[1]).to eq('1')
         response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
@@ -321,7 +322,7 @@ describe KPM::Account do
         open (dummy_data_file), 'w' do |io|
           io.puts(dummy_data)
         end
-        expect{account_class.import_data(dummy_data_file,false,10,true,false) }.not_to raise_error(Interrupt)
+        expect{account_class.import_data(dummy_data_file,10,true,false,true) }.not_to raise_error(Interrupt)
         response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
         expect(response.split("\n")[1]).to eq('1')
         response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
@@ -332,7 +333,7 @@ describe KPM::Account do
         open (dummy_data_file), 'w' do |io|
           io.puts(dummy_data)
         end
-        expect{account_class.import_data(dummy_data_file,false,10,true,true) }.not_to raise_error(Interrupt)
+        expect{account_class.import_data(dummy_data_file,10,true,true,true) }.not_to raise_error(Interrupt)
         new_account_id = account_class.instance_variable_get(:@tables_id)
 
         response = `#{mysql_cli} "DELETE FROM accounts WHERE id = '#{new_account_id['accounts_id']}'; SELECT ROW_COUNT();" 2>&1`

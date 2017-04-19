@@ -102,9 +102,9 @@ module KPM
       export_file
     end
 
-    def import_data(source_file,reuse_record_id,tenant_record_id, skip_payment_methods, round_trip_export_import = false)
+    def import_data(source_file,tenant_record_id, skip_payment_methods, round_trip_export_import = false, generate_record_id = false)
 
-      @reuse_record_id = reuse_record_id
+      @generate_record_id = generate_record_id
       @tenant_record_id = tenant_record_id
       @round_trip_export_import = round_trip_export_import
 
@@ -218,7 +218,7 @@ module KPM
 
             if /--/.match(words[0])
               if not table_name.nil?
-                if not @reuse_record_id
+                if @generate_record_id
                   cols_names.shift
                 end
 
@@ -242,7 +242,7 @@ module KPM
           end
 
           if not ( table_name.nil? || error_importing_data )
-            if not @reuse_record_id
+            if @generate_record_id
               cols_names.shift
             end
 
@@ -321,7 +321,7 @@ module KPM
           sanitized_value = replace_tenant_record_id(table_name,column_name,sanitized_value)
         end
 
-        if not @reuse_record_id
+        if @generate_record_id
           sanitized_value = replace_account_record_id(table_name,column_name,sanitized_value)
         end
 
