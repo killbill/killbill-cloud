@@ -240,10 +240,6 @@ module KPM
             end
           end
 
-          if tables.empty?
-            error_importing_data = true
-          end
-
           if not ( table_name.nil? || error_importing_data )
             if not @reuse_record_id
               cols_names.shift
@@ -252,6 +248,9 @@ module KPM
             tables[table_name] = { :col_names => cols_names, :rows => rows};
           end
 
+          if tables.empty?
+            error_importing_data = true
+          end
         end
 
         if not error_importing_data
