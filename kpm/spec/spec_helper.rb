@@ -3,6 +3,7 @@ require 'thor'
 require 'kpm'
 require 'logger'
 require 'rspec'
+require 'securerandom'
 
 RSpec.configure do |config|
   config.color_enabled = true
