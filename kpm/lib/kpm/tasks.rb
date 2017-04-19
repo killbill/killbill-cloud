@@ -513,14 +513,16 @@ module KPM
             account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
                                        options[:killbill_url],options[:database_name],options[:database_credentials], logger)
             export_file = nil
+            round_trip_export_import = false
 
             if not options[:export].nil?
               export_file = account.export_data(options[:export])
+              round_trip_export_import = true
             end
 
             if not options[:import].nil?
               account.import_data(export_file || options[:import], options[:reuse_record_id],
-                                  options[:tenant_record_id], options[:skip_payment_methods])
+                                  options[:tenant_record_id], options[:skip_payment_methods], round_trip_export_import)
             end
 
           rescue Exception => e

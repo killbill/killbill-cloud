@@ -2,6 +2,7 @@ require 'net/http'
 require 'tmpdir'
 require 'yaml'
 require 'date'
+require 'securerandom'
 
 module KPM
 
@@ -39,6 +40,32 @@ module KPM
                            'boot_date','start_timestamp','last_access_time','payment_date','original_created_date',
                            'last_sys_update_date','charged_through_date','bundle_start_date','start_date']
 
+    # round trip constants duplicate record
+    ROUND_TRIP_EXPORT_IMPORT_MAP = {:accounts => {:id => :accounts_id, :external_key => :accounts_id}, :all => {:account_id => :accounts_id},
+                                    :account_history => {:id => :account_history_id, :external_key => :accounts_id, :payment_method_id => :payment_methods_id},
+                                    :account_emails => {:id => :account_emails_id}, :account_email_history => {:id => :account_email_history_id},
+                                    :subscription_events => {:id => :subscription_events_id},:subscriptions => {:id => :subscriptions_id},
+                                    :bundles => {:id => :bundles_id},:blocking_states => {:id => :blocking_states_id, :blockable_id => nil},
+                                    :invoice_items => {:id => :invoice_items_id, :child_account_id => nil, :invoice_id => :invoices_id, :bundle_id => :bundles_id, :subscription_id => :subscriptions_id },
+                                    :invoices => {:id => :invoices_id},
+                                    :invoice_payments => {:id => :invoice_payments_id, :invoice_id => :invoices_id, :payment_id => :payments_id},
+                                    :invoice_parent_children => {:id => :invoice_parent_children_id, :parent_invoice_id  => nil, :child_invoice_id  => nil, :child_account_id => nil},
+                                    :payment_attempts => {:id => :payment_attempts_id, :payment_method_id  => :payment_methods_id, :transaction_id   => :payment_transactions_id},
+                                    :payment_attempt_history => {:id => :payment_attempt_history_id, :payment_method_id  => :payment_methods_id, :transaction_id   => :payment_transactions_id},
+                                    :payment_methods => {:id => :payment_methods_id, :external_key => :generate},:payment_method_history => {:id => :payment_method_history_id},
+                                    :payments => {:id => :payments_id, :payment_method_id  => :payment_methods_id},
+                                    :payment_history => {:id => :payment_history_id, :payment_method_id  => :payment_methods_id},
+                                    :payment_transactions => {:id => :payment_transactions_id, :payment_id   => :payments_id},
+                                    :payment_transaction_history => {:id => :payment_transaction_history_id, :payment_id   => :payments_id},
+                                    :_invoice_payment_control_plugin_auto_pay_off  => {:payment_method_id => :payment_methods_id, :payment_id   => :payments_id},
+                                    :rolled_up_usage => {:id => :rolled_up_usage_id, :subscription_id  => :subscriptions_id, :tracking_id => nil},
+                                    :custom_fields  => {:id => :custom_fields_id},:custom_field_history  => {:id => :custom_field_history_id},
+                                    :tag_definitions => {:id => :tag_definitions_id},:tag_definition_history => {:id => :tag_definition_history_id},
+                                    :tags => {:id => :tags_id, :object_id => nil},
+                                    :tag_history => {:id => :tag_history_id, :object_id => nil},
+                                    :audit_log => {:id => :audit_log_id}
+    }
+
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, logger = nil)
       @killbill_api_key = KILLBILL_API_KEY
@@ -47,6 +74,7 @@ module KPM
       @killbill_user = KILLBILL_USER
       @killbill_password = KILLBILL_PASSWORD
       @logger = logger
+      @tables_id = Hash.new
 
 
       set_killbill_options(killbill_api_credentials,killbill_credentials,killbill_url)
@@ -297,6 +325,10 @@ module KPM
           sanitized_value = replace_account_record_id(table_name,column_name,sanitized_value)
         end
 
+        if @round_trip_export_import
+          sanitized_value = replace_uuid(table_name,column_name,sanitized_value)
+        end
+
         sanitized_value
       end
 
@@ -367,6 +399,38 @@ module KPM
         else
           return value
         end
+      end
+
+      def replace_uuid(table_name,column_name,value)
+
+        if column_name == 'id'
+          @tables_id["#{table_name}_id"] = SecureRandom.uuid
+        end
+
+        if ROUND_TRIP_EXPORT_IMPORT_MAP[table_name.to_sym] && ROUND_TRIP_EXPORT_IMPORT_MAP[table_name.to_sym][column_name.to_sym]
+          key = ROUND_TRIP_EXPORT_IMPORT_MAP[table_name.to_sym][column_name.to_sym]
+
+          if key.equal?(:generate)
+            new_value = SecureRandom.uuid
+          else
+            new_value = @tables_id[key.to_s]
+          end
+
+          if new_value.nil?
+            new_value = SecureRandom.uuid
+            @tables_id[key.to_s] = new_value
+          end
+          return new_value
+        end
+
+        if not ROUND_TRIP_EXPORT_IMPORT_MAP[:all][column_name.to_sym].nil?
+          key = ROUND_TRIP_EXPORT_IMPORT_MAP[:all][column_name.to_sym]
+          new_value = @tables_id[key.to_s]
+
+          return new_value
+        end
+
+        value
       end
 
       # helper methods that set up killbill and database options: load_config_from_file; set_config; set_database_options;
