@@ -480,6 +480,8 @@ module KPM
         if not database_name.nil?
           Database.set_database_name(database_name)
         end
+
+        Database.set_mysql_command_line
       end
 
       def set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)
