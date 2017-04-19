@@ -87,14 +87,14 @@ module KPM
     def export_data(account_id = nil)
 
       if account_id === :export.to_s
-        raise Interrupt, "\e[91;1mNeed to specify an account id\e[0m"
+        raise Interrupt, 'Need to specify an account id'
       end
 
       export_data = fetch_export_data(account_id)
       export_file = export(export_data)
 
       if not File.exist?(export_file)
-        raise Interrupt, "\e[91;1mAccount id not found\e[0m"
+        raise Interrupt, 'Account id not found'
       else
         @logger.info "\e[32mData exported under #{export_file}\e[0m"
       end
@@ -102,17 +102,18 @@ module KPM
       export_file
     end
 
-    def import_data(source_file,reuse_record_id,tenant_record_id, skip_payment_methods)
+    def import_data(source_file,reuse_record_id,tenant_record_id, skip_payment_methods, round_trip_export_import = false)
 
       @reuse_record_id = reuse_record_id
       @tenant_record_id = tenant_record_id
+      @round_trip_export_import = round_trip_export_import
 
       if source_file === :import.to_s
-        raise Interrupt, "\e[91;1mNeed to specify a file\e[0m"
+        raise Interrupt, 'Need to specify a file'
       end
 
       if not File.exist?(source_file)
-        raise Interrupt, "\e[91;1mNeed to specify a valid file\e[0m"
+        raise Interrupt, 'Need to specify a valid file'
       end
 
       sanitize_and_import(source_file, skip_payment_methods)
@@ -139,7 +140,7 @@ module KPM
         end
 
         if not response.is_a?(Net::HTTPSuccess)
-          raise Interrupt, "\e[91;1mAccount id not found\e[0m"
+          raise Interrupt, 'Account id not found'
         end
 
         response.body
@@ -256,7 +257,7 @@ module KPM
         if not error_importing_data
           import(tables)
         else
-          raise Interrupt, "\e[91;1mData on #{source_file} is invalid\e[0m\n\n"
+          raise Interrupt, "Data on #{source_file} is invalid"
         end
 
       end

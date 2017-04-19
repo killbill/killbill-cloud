@@ -478,27 +478,27 @@ module KPM
                       :desc    => 'DB credentials <user> <password>'
         desc 'account', 'export/import accounts'
         def account
-          logger.info "Please wait processing the request!!!"
+          logger.info 'Please wait processing the request!!!'
           begin
             config_file = nil
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
-              raise Interrupt,"\e[91;1m--killbill_url, required format -> http(s)://something\e[0m"
+              raise Interrupt,'--killbill_url, required format -> http(s)://something'
             end
 
             if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
-              raise Interrupt,"\e[91;1m--killbill_api_credentials, required format -> <api_key> <api_secrets>\e[0m"
+              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
             end
 
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
-              raise Interrupt,"\e[91;1m--killbill_credentials, required format -> <user> <password>\e[0m"
+              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
             end
 
             if options[:database_credentials] && options[:database_credentials].size != 2
-              raise Interrupt,"\e[91;1m--database_credentials, required format -> <user> <password>\e[0m"
+              raise Interrupt,'--database_credentials, required format -> <user> <password>'
             end
 
             if options[:database_name] && options[:database_name] == :database_name.to_s
-              raise Interrupt,"\e[91;1m--database_credentials, please provide a valid database name\e[0m"
+              raise Interrupt,'--database_credentials, please provide a valid database name'
             end
 
             if options[:config_file] && options[:config_file] == :config_file.to_s
@@ -506,7 +506,7 @@ module KPM
             end
 
             if options[:export].nil? && options[:import].nil?
-              raise Interrupt,"\e[91;1mNeed to specify an action\e[0m"
+              raise Interrupt,'Need to specify an action'
             end
 
 
