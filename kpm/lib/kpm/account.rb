@@ -65,14 +65,19 @@ module KPM
                                     :tag_history => {:id => :tag_history_id, :object_id => nil},
                                     :audit_log => {:id => :audit_log_id}
     }
+    
+    #delimeters to sniff
+    DELIMITERS = [',','|']
+    DEFAULT_DELIMITER = "|"
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
-                   database_name = nil, database_credentials = nil, logger = nil)
+                   database_name = nil, database_credentials = nil, data_delimiter = nil, logger = nil)
       @killbill_api_key = KILLBILL_API_KEY
       @killbill_api_secrets = KILLBILL_API_SECRET
       @killbill_url = KILLBILL_URL
       @killbill_user = KILLBILL_USER
       @killbill_password = KILLBILL_PASSWORD
+      @delimiter = data_delimiter || DEFAULT_DELIMITER
       @logger = logger
       @tables_id = Hash.new
 
@@ -116,6 +121,8 @@ module KPM
         raise Interrupt, 'Need to specify a valid file'
       end
 
+      @delimiter = sniff_delimiter(source_file) || @delimiter 
+
       sanitize_and_import(source_file, skip_payment_methods)
     end
 
@@ -158,7 +165,7 @@ module KPM
             clean_line = line
             if not /--/.match(words[0]).nil?
               table_name = words[1]
-              cols_names = words[2].strip.split("|")
+              cols_names = words[2].strip.split(@delimiter)
             elsif not table_name.nil?
               clean_line = process_export_data(line,table_name,cols_names)
             end
@@ -175,7 +182,7 @@ module KPM
         clean_line = line_to_process
 
         row = []
-        cols = clean_line.strip.split("|")
+        cols = clean_line.strip.split(@delimiter)
         cols_names.each_with_index { |col_name, index|
           sanitized_value = remove_export_data(table_name,col_name,cols[index])
 
@@ -183,7 +190,7 @@ module KPM
 
         }
 
-        clean_line = row.join("|")
+        clean_line = row.join(@delimiter)
 
         clean_line
       end
@@ -226,7 +233,7 @@ module KPM
               end
 
               table_name = words[1]
-              cols_names = words[2].strip.split("|")
+              cols_names = words[2].strip.split(@delimiter)
 
               rows = []
             elsif not table_name.nil?
@@ -263,7 +270,7 @@ module KPM
       end
 
       def process_import_data(line, table_name, cols_names, skip_payment_methods, rows)
-        cols = line.strip.split("|")
+        cols = line.strip.split(@delimiter)
 
         if cols_names.size != cols.size
           return nil
@@ -292,7 +299,7 @@ module KPM
         record_id = nil;
         statements = Database.generate_insert_statement(tables)
         statements.each do |statement|
-          response = Database.execute_insert_statement(statement[:table_name],statement[:query], statement[:qty_to_insert],record_id)
+          response = Database.execute_insert_statement(statement[:table_name],statement[:query], statement[:qty_to_insert], statement[:table_data],record_id)
 
           if statement[:table_name] == 'accounts' && response.is_a?(String)
             record_id = {:variable => '@account_record_id', :value => response}
@@ -389,8 +396,14 @@ module KPM
       end
 
       def fix_dates(value)
-        dt = DateTime.parse(value)
-        return dt.strftime('%F %T').to_s
+        if !value.equal?(:DEFAULT)
+          
+          dt = DateTime.parse(value)
+          return dt.strftime('%F %T').to_s
+        
+        end
+        
+        value
       end
 
       def fill_empty_column(value)
@@ -433,6 +446,24 @@ module KPM
         value
       end
 
+      def sniff_delimiter(file)
+        
+        return nil if File.size?(file).nil?
+        
+        first_line = File.open(file) {|f| f.readline}
+        
+        return nil if first_line.nil?
+        
+        sniff = {}
+        
+        DELIMITERS.each do |delimiter|
+          sniff[delimiter] = first_line.count(delimiter)
+        end
+        
+        sniff = sniff.sort {|a,b| b[1]<=>a[1]}
+        sniff.size > 0 ? sniff[0][0] : nil
+      end
+        
       # helper methods that set up killbill and database options: load_config_from_file; set_config; set_database_options;
       # set_killbill_options;
       def load_config_from_file(config_file)
