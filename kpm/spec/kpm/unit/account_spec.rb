@@ -155,6 +155,18 @@ describe KPM::Account do
   end
 
   # import data tests
+  describe '#sniff_delimiter' do
+    include_context 'account'
+
+    it 'when data delimiter is sniffed as "|"' do
+      open (dummy_data_file), 'w' do |io|
+          io.puts(dummy_data)
+      end
+      
+      expect(account_class.send(:sniff_delimiter, dummy_data_file)).to eq('|')
+    end
+  end
+  
   describe '#fill_empty_column' do
     include_context 'account'
 
