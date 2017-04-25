@@ -432,6 +432,111 @@ module KPM
                              options[:killbill_web_path])
         end
 
+        method_option :export,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'export account for a provided id.'
+        method_option :import,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'import account for a previously exported file.'
+        method_option :tenant_record_id,
+                      :type    => :numeric,
+                      :default => nil,
+                      :desc    => 'replace the tenant_record_id before importing data.'
+        method_option :generate_record_id,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'The generate_record_id will instruct to generate the tables record_ids that were exported'
+        method_option :skip_payment_methods,
+                      :type    => :boolean,
+                      :default => false,
+                      :desc    => 'Skip or swap payment types other than __EXTERNAL_PAYMENT__.'
+        method_option :config_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Yml that contains killbill api connection and DB connection'
+        method_option :killbill_api_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+        method_option :killbill_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill credentials <user> <password>'
+        method_option :killbill_url,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+        method_option :database_name,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'DB name to connect'
+        method_option :database_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'DB credentials <user> <password>'
+        method_option :data_delimiter,
+                      :type    => :string,
+                      :default => "|",
+                      :desc    => 'Data delimiter' 
+        desc 'account', 'export/import accounts'
+        def account
+          logger.info 'Please wait processing the request!!!'
+          begin
+            config_file = nil
+            if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
+              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+            end
+
+            if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
+              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+            end
+
+            if options[:killbill_credentials] && options[:killbill_credentials].size != 2
+              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+            end
+
+            if options[:database_credentials] && options[:database_credentials].size != 2
+              raise Interrupt,'--database_credentials, required format -> <user> <password>'
+            end
+
+            if options[:database_name] && options[:database_name] == :database_name.to_s
+              raise Interrupt,'--database_credentials, please provide a valid database name'
+            end
+
+            if options[:config_file] && options[:config_file] == :config_file.to_s
+              config_file = File.join(File.expand_path(File.dirname(__FILE__)), 'account_export_import.yml')
+            end
+
+            if options[:export].nil? && options[:import].nil?
+              raise Interrupt,'Need to specify an action'
+            end
+
+
+            account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
+                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:data_delimiter], logger)
+            export_file = nil
+            round_trip_export_import = false
+
+            if not options[:export].nil?
+              export_file = account.export_data(options[:export])
+              round_trip_export_import = true
+            end
+
+            if not options[:import].nil?
+              account.import_data(export_file || options[:import],options[:tenant_record_id], options[:skip_payment_methods],
+                                  round_trip_export_import, options[:generate_record_id])
+            end
+
+          rescue Exception => e
+            logger.error "\e[91;1m#{e.message}\e[0m"
+            if not e.is_a?(Interrupt)
+              logger.error e.backtrace.join("\n")
+            end
+          end
+        end
+
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin
 
