@@ -33,8 +33,8 @@ module KPM
     PLUGIN_NAME_COLUMN = 'plugin_name'
 
     # fields to remove from the export files
-    REMOVE_DATA_FROM = {:accounts => [:name, :address1, :address2, :city, :state_or_providence, :phone, :email],
-                       :account_history => [:name, :address1, :address2, :city, :state_or_providence, :phone, :email]}
+    REMOVE_DATA_FROM = {:accounts => [:name, :address1, :address2, :city, :state_or_province, :phone, :email],
+                       :account_history => [:name, :address1, :address2, :city, :state_or_province, :phone, :email]}
 
     DATE_COLUMNS_TO_FIX = ['created_date','updated_date','processing_available_date','effective_date',
                            'boot_date','start_timestamp','last_access_time','payment_date','original_created_date',
