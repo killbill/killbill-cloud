@@ -147,6 +147,21 @@ ________________________________________________________________________________
 _______________________________________________________________________________________________________________________________________________________
 
 ```
+### Test required setups
+
+#### KPM account test
+Modify first the account_spec.yml file with valid data before running the test.
+
+Values to be modified are:
+*database 
+	*credentials (user needs to have CREATE,DROP,DELETE,SELECT,INDEX and INSERT privileges; since the tests it will create a new schema to run the tests)
+	*name (the schema must not exists)
+*killbill 
+	*url
+	*credentials
+	*api key
+	*api password 
+
 
 ## Internals
 

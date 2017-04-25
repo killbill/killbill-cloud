@@ -20,6 +20,14 @@ namespace :test do
       task.pattern = './spec/*/remote/*_spec.rb'
     end
   end
+  
+  namespace :mysql do
+    desc 'Run RSpec MySql related tests'
+    RSpec::Core::RakeTask.new do |task|
+      task.name = 'spec'
+      task.pattern = './spec/*/unit_mysql/*_spec.rb'
+    end
+  end
 end
 
 # Run tests by default

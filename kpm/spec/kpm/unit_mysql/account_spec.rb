@@ -1,45 +1,42 @@
 require 'spec_helper'
 
 describe KPM::Account do
-
+  
   shared_context 'account' do
     let(:logger) {logger       = ::Logger.new(STDOUT)
     logger.level = Logger::FATAL
     logger}
+    let(:yml_file) {YAML::load_file(Dir["#{Dir.pwd}/**/account_spec.yml"][0])}
     let(:dummy_data_file) {Dir.mktmpdir('dummy') + File::SEPARATOR + 'kbdump'}
-    let(:url) {'http://127.0.0.1:8080'}
-    let(:killbill_api_key) {'bob'}
-    let(:killbill_api_secrets) {'lazar'}
-    let(:killbill_user) {'admin'}
-    let(:killbill_password) {'password'}
-    let(:db_name) {'killbill'}
-    let(:db_username) {'root'}
-    let(:db_password) {'welcome0'}
+    let(:url) {"http://#{yml_file['killbill']['host']}:#{yml_file['killbill']['port']}"}
+    let(:killbill_api_key) {yml_file['killbill']['api_key']}
+    let(:killbill_api_secrets) {yml_file['killbill']['api_secret']}
+    let(:killbill_user) {yml_file['killbill']['user']}
+    let(:killbill_password) {yml_file['killbill']['password']}
+    let(:db_name) {yml_file['database']['name']}
+    let(:db_username) {yml_file['database']['user']}
+    let(:db_password) {yml_file['database']['password']}
     let(:account_class) { described_class.new(nil,[killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,
-                                             db_name, [db_username, db_password],logger)}
-     let(:account_id) {'572cc280-1927-49d4-8fb0-d8319d13bfd5'}
+                                             db_name, [db_username, db_password],nil,logger)}
     let(:dummy_account_id) {SecureRandom.uuid}
     let(:account_id_invalid) {SecureRandom.uuid}
     let(:dummy_data) {
       "-- accounts record_id|id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|is_payment_delegated_to_parent|payment_method_id|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|created_date|created_by|updated_date|updated_by|tenant_record_id\n"\
-      "999999|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
+      "5|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
       "-- account_history record_id|id|target_record_id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|payment_method_id|is_payment_delegated_to_parent|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|change_type|created_by|created_date|updated_by|updated_date|tenant_record_id\n"\
-      "999998|#{SecureRandom.uuid}|999999|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|INSERT|demo|2017-04-03T15:50:14.000+0000|demo|2017-04-03T15:50:14.000+0000|2\n"
+      "3|#{SecureRandom.uuid}|5|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|INSERT|demo|2017-04-03T15:50:14.000+0000|demo|2017-04-03T15:50:14.000+0000|2\n"
     }
     let(:cols_names) {dummy_data.split("\n")[0].split(" ")[2]}
     let(:cols_data) {dummy_data.split("\n")[1]}
     let(:table_name) {dummy_data.split("\n")[0].split(" ")[1]}
     let(:obfuscating_marker) {:email}
-
-    let(:mysql_cli) {"mysql #{db_name} --user=#{db_username} --password=#{db_password} -e"}
-    let(:mysql_delete_dummy_account) {"DELETE FROM accounts WHERE id = '#{dummy_account_id}'; SELECT ROW_COUNT();"}
-    let(:mysql_delete_dummy_account_history) {"DELETE FROM account_history WHERE external_key = '#{dummy_account_id}'; SELECT ROW_COUNT();"}
-
+    let(:mysql_cli) {"mysql #{db_name} --user=#{db_username} --password=#{db_password} "}
+    let(:test_ddl) {Dir["#{Dir.pwd}/**/account_test_ddl.sql"][0]}
   end
 
   describe '#initialize' do
-    include_context 'account'
+    include_context 'account'  
 
     context 'when creating an instance of account class' do
 
@@ -71,6 +68,8 @@ describe KPM::Account do
       end
 
       it 'when account id found' do
+        account_id = creating_account_with_client
+        expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect{ account_class.send(:fetch_export_data, account_id) }.not_to raise_error(Interrupt, 'Account id not found')
         expect(account_class.send(:fetch_export_data, account_id)).to match(account_id)
       end
@@ -142,10 +141,14 @@ describe KPM::Account do
       end
 
       it 'when file created' do
+        account_id = creating_account_with_client
+        expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect(File.exist?(account_class.export_data(account_id))).to be_true
       end
 
       it 'when file contains account record' do
+        account_id = creating_account_with_client
+        expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{table_name}/)).to be_true
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{cols_names}/)).to be_true
       end
@@ -257,12 +260,12 @@ describe KPM::Account do
     context 'when round trip true' do
       it 'when replace uuid value' do
         account_class.instance_variable_set(:@round_trip_export_import, true)
-        expect(account_class.send(:replace_uuid, table_name, 'account_id', account_id)).not_to eq(account_id)
+        expect(account_class.send(:replace_uuid, table_name, 'account_id', dummy_account_id)).not_to eq(dummy_account_id)
       end
 
       it 'when do not replace value' do
         account_class.instance_variable_set(:@round_trip_export_import, true)
-        expect(account_class.send(:replace_uuid, table_name, 'other_id', account_id)).to eq(account_id)
+        expect(account_class.send(:replace_uuid, table_name, 'other_id', dummy_account_id)).to eq(dummy_account_id)
       end
     end
 
@@ -300,23 +303,32 @@ describe KPM::Account do
     include_context 'account'
 
     context 'when data to import; main import method' do
+      
+      it 'when creating test schema' do
+        db = create_test_schema
+        expect(db).to eq(db_name)
+      end
+      
       it 'when importing data with empty file' do
         File.new(dummy_data_file, 'w+').close
         expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt,"Data on #{dummy_data_file} is invalid")
         File.delete(dummy_data_file)
       end
+      
       it 'when importing data with no file' do
         expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt,'Need to specify a valid file')
       end
+      
       it 'when importing data with new record_id' do
         open (dummy_data_file), 'w' do |io|
           io.puts(dummy_data)
         end
         expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.not_to raise_error(Interrupt)
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
+
+        row_count_inserted = delete_statement('accounts','id',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
+        row_count_inserted = delete_statement('account_history','external_key',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
       end
 
       it 'when importing data reusing record_id' do
@@ -324,10 +336,11 @@ describe KPM::Account do
           io.puts(dummy_data)
         end
         expect{account_class.import_data(dummy_data_file,nil,true,false,false) }.not_to raise_error(Interrupt)
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
+
+        row_count_inserted = delete_statement('accounts','id',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
+        row_count_inserted = delete_statement('account_history','external_key',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
       end
 
       it 'when importing data with different tenant_record_id' do
@@ -335,10 +348,11 @@ describe KPM::Account do
           io.puts(dummy_data)
         end
         expect{account_class.import_data(dummy_data_file,10,true,false,true) }.not_to raise_error(Interrupt)
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
-        response = `#{mysql_cli} "#{mysql_delete_dummy_account_history}" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
+
+        row_count_inserted = delete_statement('accounts','id',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
+        row_count_inserted = delete_statement('account_history','external_key',dummy_account_id)
+        expect(row_count_inserted).to eq('1')
       end
 
       it 'when round trip' do
@@ -348,13 +362,67 @@ describe KPM::Account do
         expect{account_class.import_data(dummy_data_file,10,true,true,true) }.not_to raise_error(Interrupt)
         new_account_id = account_class.instance_variable_get(:@tables_id)
 
-        response = `#{mysql_cli} "DELETE FROM accounts WHERE id = '#{new_account_id['accounts_id']}'; SELECT ROW_COUNT();" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
-        response = `#{mysql_cli} "DELETE FROM account_history WHERE external_key = '#{new_account_id['accounts_id']}'; SELECT ROW_COUNT();" 2>&1`
-        expect(response.split("\n")[1]).to eq('1')
+        row_count_inserted = delete_statement('accounts','id',new_account_id['accounts_id'])
+        expect(row_count_inserted).to eq('1')
+        row_count_inserted = delete_statement('account_history','external_key',new_account_id['accounts_id'])
+        expect(row_count_inserted).to eq('1')
       end
+      
+      it 'when droping test schema' do
+        response = drop_test_schema
+        expect(response).to match('')
+      end
+     
     end
-
+ 
   end
+  
+  private 
+    def creating_account_with_client
+      if $account_id.nil?
+        KillBillClient.url = url
+        
+        options = {
+          :username => killbill_user,
+          :password => killbill_password,
+          :api_key => killbill_api_key,
+          :api_secret => killbill_api_secrets
+        }
+    
+        account = KillBillClient::Model::Account.new
+        account.name = 'KPM Account Test'
+        account.first_name_length = 3
+        account.external_key = SecureRandom.uuid
+        account.currency = 'USD'
+        account = account.create('kpm_account_test', 'kpm_account_test', 'kpm_account_test', options)
+        
+        $account_id = account.account_id
+
+      end
+      
+      $account_id
+    end
+    
+    def delete_statement(table_name,column_name,account_id)
+      response = `#{mysql_cli} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
+      response_msg = response.split("\n")
+      row_count_inserted = response_msg[response_msg.size - 1]
+        
+      row_count_inserted
+    end
+    
+    def create_test_schema
+      response = `mysql --user=#{db_username} --password=#{db_password} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
+      response = `#{mysql_cli} < "#{test_ddl}" 2>&1`
+      response_msg = response.split("\n")
+      used_database = response_msg[response_msg.size - 1]
+        
+      used_database
+    end
+    
+    def drop_test_schema
+      response = `mysql --user=#{db_username} --password=#{db_password} -e "DROP DATABASE #{db_name};"`;
+      response
+    end
 
 end
