@@ -49,7 +49,7 @@ module KPM
         query = "SET autocommit=0; #{query} COMMIT;"
         
         File.open(STATEMENT_TMP_FILE,'w') do |s|
-          s.puts query.gsub('"','\\"')
+          s.puts query
         end
           
         response = `#{@@mysql_command_line} < "#{STATEMENT_TMP_FILE}" 2>&1`
@@ -65,7 +65,9 @@ module KPM
         end
 
         if response.include? 'ROW_COUNT'
-          @@logger.info "\e[32mImporting table #{table_name}...... Row #{response.split("\n")[1] || 1} of #{qty_to_insert} success\e[0m"
+          response_msg = response.split("\n")
+          row_count_inserted = response_msg[response_msg.size - 1]
+          @@logger.info "\e[32mImporting table #{table_name}...... Row #{ row_count_inserted || 1} of #{qty_to_insert} success\e[0m"
 
           return true
         end
@@ -84,7 +86,7 @@ module KPM
 
           rows = []
           table[:rows].each do |row|
-            rows << row.map{|value| value.is_a?(Symbol) ? value.to_s : "'#{value}'" }.join(",")
+            rows << row.map{|value| value.is_a?(Symbol) ? value.to_s : "'#{value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')}'" }.join(",")
           end
 
           value_data = rows.map{|row| "(#{row})" }.join(",")
