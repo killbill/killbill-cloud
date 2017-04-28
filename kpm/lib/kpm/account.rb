@@ -340,18 +340,7 @@ module KPM
       end
 
       def replace_tenant_record_id(table_name,column_name,value)
-        if column_name == 'tenant_record_id'
-          return @tenant_record_id
-        end
-
-        if column_name == 'search_key2' && table_name == 'bus_ext_events_history'
-          return @tenant_record_id
-        end
-
-        if column_name == 'search_key2' && table_name == 'bus_events_history'
-          return @tenant_record_id
-        end
-
+        return @tenant_record_id if column_name == 'tenant_record_id' || column_name == 'search_key2'
         value
       end
 
