@@ -286,12 +286,6 @@ module KPM
           end
         end
 
-        if table_name == 'payment_methods' && skip_payment_methods
-          if rows.size > 0
-            return nil
-          end
-        end
-
         return row
       end
 
