@@ -149,19 +149,29 @@ ________________________________________________________________________________
 ```
 ### Test required setups
 
-#### KPM account test
-Modify first the account_spec.yml file with valid data before running the test.
+There are 3 suites of tests for KPM (see `rake -T`):
 
-Values to be modified are:
-*database 
-	*credentials (user needs to have CREATE,DROP,DELETE,SELECT,INDEX and INSERT privileges; since the tests it will create a new schema to run the tests)
-	*name (the schema must not exists)
-*killbill 
-	*url
-	*credentials
-	*api key
-	*api password 
+* `rake test:spec` : Fast suite of unit tests
+* `rake test:remote:spec` : Test suite that relies on maven artifacts
+* `rake test:mysql:spec` : Test suite that requires an instance of Kill Bill server running and a properly setup database
 
+#### KPM Unit test
+
+Unit tests don't require any third party system or configuration.
+
+#### KPM remote test
+
+Test suite that verifies the following:\
+
+* KPM `install` command by pulling artifacts from maven repository
+* KPM `migration` command. This requires setting the `TOKEN` system property with a valid GITHUB api token.
+
+#### KPM mysql test
+
+Test suite that requires an instance of `mysql` running and verifies the following:
+
+* KPM `account` command: The `account_spec.yml` file needs to be modified with correct credentials and user must have correct privileges; also the database schema must not exist.
+In addition, one must start an instance of a Kill Bill server
 
 ## Internals
 
