@@ -3,6 +3,7 @@ require 'tmpdir'
 require 'yaml'
 require 'date'
 require 'securerandom'
+require 'killbill_client'
 
 module KPM
 
@@ -130,6 +131,18 @@ module KPM
 
       # export helpers: fetch_export_data; export; process_export_data; remove_export_data;
       def fetch_export_data(account_id)
+        data = nil
+
+        if Object.const_defined?('KillBillClient') && Object.const_defined?('KillBillClient::Model::Export')
+          data = fetch_export_data_with_client(account_id)
+        else
+          data = fetch_export_data_with_gem(account_id)    
+        end  
+        
+        data
+      end
+        
+      def fetch_export_data_with_gem(account_id)
         uri = URI("#{@killbill_url}/#{KILLBILL_API_VERSION}/kb/export/#{account_id}")
 
         request = Net::HTTP::Get.new(uri.request_uri)
@@ -151,6 +164,25 @@ module KPM
         end
 
         response.body
+      end
+      
+      def fetch_export_data_with_client(account_id)
+        
+        KillBillClient.url = @killbill_url
+        options = {
+          :username => @killbill_user,
+          :password => @killbill_password,
+          :api_key => @killbill_api_key,
+          :api_secret => @killbill_api_secrets
+        }
+         
+        begin             
+          account_data = KillBillClient::Model::Export.find_by_account_id(account_id, 'KPM', options)
+        rescue Exception => e 
+            raise Interrupt, 'Account id not found'
+        end  
+       
+        account_data
       end
 
       def export(export_data)
