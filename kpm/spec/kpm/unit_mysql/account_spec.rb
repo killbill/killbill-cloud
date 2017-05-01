@@ -291,10 +291,6 @@ describe KPM::Account do
         account_class.instance_variable_set(:@generate_record_id,true)
         expect(account_class.send(:process_import_data, cols_data, table_name, cols_names.split('|'), false, []).size).to eq(cols_names.split("|").size-1)
       end
-
-      it 'when there is already payment method and skip payment method is true' do
-        expect(account_class.send(:process_import_data, cols_data, 'payment_methods', cols_names.split('|'), true, ['h'])).to be_nil
-      end
     end
 
   end
