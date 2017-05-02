@@ -536,6 +536,58 @@ module KPM
             end
           end
         end
+        
+        method_option :key_prefix,
+                      :type    => :string,
+                      :default => nil,
+                      :enum => KPM::TenantConfig::KEY_PREFIXES,
+                      :desc    => 'Retrieve a per tenant key value based on key prefix'
+        method_option :killbill_api_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+        method_option :killbill_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill credentials <user> <password>'
+        method_option :killbill_url,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+        desc 'tenant_config', 'export all tenant-level configs.'
+        def tenant_config
+          logger.info 'Please wait processing the request!!!'
+          begin
+            
+            if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
+              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+            end
+
+            if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
+              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+            end
+
+            if options[:killbill_credentials] && options[:killbill_credentials].size != 2
+              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+            end
+            
+            if options[:key_prefix] === :key_prefix.to_s
+              raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}"
+            end
+
+            tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials],options[:killbill_credentials],
+                                       options[:killbill_url], logger)
+                                      
+            tenantConfig.export(options[:key_prefix])
+
+          rescue Exception => e
+            logger.error "\e[91;1m#{e.message}\e[0m"
+            if not e.is_a?(Interrupt)
+              logger.error e.backtrace.join("\n")
+            end
+          end
+        end
+
 
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin

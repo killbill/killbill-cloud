@@ -1,0 +1,7 @@
+killbill:
+  user: admin
+  password: password
+  api_key: bob
+  api_secret: lazar
+  host: 127.0.0.1
+  port: 8080

@@ -20,6 +20,7 @@ module KPM
   autoload :System, 'kpm/system'
   autoload :Account, 'kpm/account'
   autoload :Database, 'kpm/database'
+  autoload :TenantConfig, 'kpm/tenant_config.rb'
 
   class << self
     def root
