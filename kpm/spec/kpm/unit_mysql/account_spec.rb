@@ -3,19 +3,8 @@ require 'spec_helper'
 describe KPM::Account do
   
   shared_context 'account' do
-    let(:logger) {logger       = ::Logger.new(STDOUT)
-    logger.level = Logger::FATAL
-    logger}
-    let(:yml_file) {YAML::load_file(Dir["#{Dir.pwd}/**/account_spec.yml"][0])}
-    let(:dummy_data_file) {Dir.mktmpdir('dummy') + File::SEPARATOR + 'kbdump'}
-    let(:url) {"http://#{yml_file['killbill']['host']}:#{yml_file['killbill']['port']}"}
-    let(:killbill_api_key) {yml_file['killbill']['api_key']}
-    let(:killbill_api_secrets) {yml_file['killbill']['api_secret']}
-    let(:killbill_user) {yml_file['killbill']['user']}
-    let(:killbill_password) {yml_file['killbill']['password']}
-    let(:db_name) {yml_file['database']['name']}
-    let(:db_username) {yml_file['database']['user']}
-    let(:db_password) {yml_file['database']['password']}
+    include_context 'connection_setup'
+
     let(:account_class) { described_class.new(nil,[killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,
                                              db_name, [db_username, db_password],nil,logger)}
@@ -51,6 +40,7 @@ describe KPM::Account do
         expect(account_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(account_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(account_class.instance_variable_get(:@killbill_url)).to eq(url)
+
       end
 
     end

@@ -67,10 +67,10 @@ module KPM
         
         pefixes.each do |prefix|
            
-           config_data = call_client(prefix.to_s)
+           config_data = call_client(prefix)
            
            if config_data.size > 0
-             tenant_config << config_data[0]
+             config_data.each {|data| tenant_config << data }
              @logger.info "Data for key prefix \e[1m#{prefix.to_s}\e[0m was \e[1mfound and is ready to be exported\e[0m."
            else
              @logger.info "Data for key prefix \e[1m#{prefix.to_s}\e[0m was \e[31mnot found\e[0m." 

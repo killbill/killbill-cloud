@@ -1,22 +1,20 @@
 require 'spec_helper'
 
 describe KPM::TenantConfig do
-  
+  include_context 'connection_setup'
+
   let(:value) {"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<catalog>\n    <effectiveDate>2017-04-25T15:57:43Z</effectiveDate>\n    <catalogName>DEFAULT</catalogName>\n    <recurringBillingMode>IN_ADVANCE</recurringBillingMode>\n    <currencies/>\n    <units/>\n    <products/>\n    <rules>\n        <changePolicy>\n            <changePolicyCase>\n                <policy>IMMEDIATE</policy>\n            </changePolicyCase>\n        </changePolicy>\n        <changeAlignment>\n            <changeAlignmentCase>\n                <alignment>START_OF_BUNDLE</alignment>\n            </changeAlignmentCase>\n        </changeAlignment>\n        <cancelPolicy>\n            <cancelPolicyCase>\n                <policy>IMMEDIATE</policy>\n            </cancelPolicyCase>\n        </cancelPolicy>\n        <createAlignment>\n            <createAlignmentCase>\n                <alignment>START_OF_BUNDLE</alignment>\n            </createAlignmentCase>\n        </createAlignment>\n        <billingAlignment>\n            <billingAlignmentCase>\n                <alignment>ACCOUNT</alignment>\n            </billingAlignmentCase>\n        </billingAlignment>\n        <priceList>\n            <priceListCase>\n                <toPriceList>DEFAULT</toPriceList>\n            </priceListCase>\n        </priceList>\n    </rules>\n    <plans/>\n    <priceLists>\n        <defaultPriceList name=\"DEFAULT\">\n            <plans/>\n        </defaultPriceList>\n    </priceLists>\n</catalog>\n"}
   let(:key) {'CATALOG_RSPEC'}
-  let(:logger) {logger       = ::Logger.new(STDOUT)
-                logger.level = Logger::FATAL
-                logger}
-  let(:yml_file) {YAML::load_file(Dir["#{Dir.pwd}/**/tenant_config_spec.yml"][0])}
-  let(:dummy_data_file) {Dir.mktmpdir('dummy') + File::SEPARATOR + 'kbdump'}
-  let(:url) {"http://#{yml_file['killbill']['host']}:#{yml_file['killbill']['port']}"}
-  let(:killbill_api_key) {yml_file['killbill']['api_key']}
-  let(:killbill_api_secrets) {yml_file['killbill']['api_secret']}
-  let(:killbill_user) {yml_file['killbill']['user']}
-  let(:killbill_password) {yml_file['killbill']['password']}
+
   let(:user) {'KPM Tenant Spec'}
   let(:tenant_config_class) { described_class.new([killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,logger)}
+  let(:options){{
+        :username => killbill_user,
+        :password => killbill_password,
+        :api_key => killbill_api_key,
+        :api_secret => killbill_api_secrets
+      }}
                                              
   describe '#initialize' do
     context 'when creating an instance of tenant config class' do
@@ -32,6 +30,7 @@ describe KPM::TenantConfig do
         expect(tenant_config_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(tenant_config_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(tenant_config_class.instance_variable_get(:@killbill_url)).to eq(url)
+
       end
 
     end
@@ -39,16 +38,9 @@ describe KPM::TenantConfig do
   end                                           
   
   describe '#export' do
-    it 'when retreiving tenant configuration' do
+    it 'when retrieving tenant configuration' do
       KillBillClient.url = url
-          
-      options = {
-        :username => killbill_user,
-        :password => killbill_password,
-        :api_key => killbill_api_key,
-        :api_secret => killbill_api_secrets
-      }
-      
+
       #Add a new tenant config
       tenant_config = KillBillClient::Model::Tenant.upload_tenant_user_key_value(key, value, user, nil, nil, options)
       expect(tenant_config.key).to eq(key)
