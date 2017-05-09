@@ -25,10 +25,7 @@ notifications:
 
 env:
   global:
-    - JRUBY_OPTS='--2.0 -J-Xmx1024M'
-
-gemfile:
-  - kpm/Gemfile
+    - JRUBY_OPTS='--2.0 -J-Xmx1024M' BUNDLE_GEMFILE=$PWD/kpm/Gemfile
 
 matrix:
   include:
