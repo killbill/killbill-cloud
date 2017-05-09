@@ -6,9 +6,16 @@ cache: bundler
 services:
   - mysql
 
+dist: trusty
+
 before_install:
+  - gem install bundler
   - curl -LO 'https://search.maven.org/remotecontent?filepath=org/kill-bill/billing/killbill-profiles-killbill/0.18.8/killbill-profiles-killbill-0.18.8-jetty-console.war' && java -jar killbill-profiles-killbill-0.18.8-jetty-console.war --port 8080 --headless & sleep 60 && curl -v -X POST -u 'admin:password' -H 'Content-Type:application/json' -H 'X-Killbill-CreatedBy:admin' -d '{"apiKey":"bob", "apiSecret":"lazar"}' "http://127.0.0.1:8080/1.0/kb/tenants"
-  - mysql -uroot -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+  - mysql -uroot -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root')"
+  - mysql -uroot -proot -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+
+before_script:
+  - jdk_switcher use $JDK
 
 script: 'cd kpm && bundle exec rake test:spec test:remote:spec test:mysql:spec'
 
@@ -18,22 +25,24 @@ notifications:
 
 env:
   global:
-    - JRUBY_OPTS='-J-Xmx1024M'
-
-rvm:
-  - jruby-1.7.20
-  - jruby-20mode # latest 1.7.x
-  - jruby-head
+    - JRUBY_OPTS='--2.0 -J-Xmx1024M'
 
 gemfile:
   - kpm/Gemfile
 
-jdk:
-  - openjdk8
-  - oraclejdk8
-
 matrix:
-  allow_failures:
+  include:
+    - rvm: 2.2.0
+    - rvm: ruby-head
+    - rvm: jruby-1.7.26
+      env: JDK=oraclejdk8
+    - rvm: jruby-1.7.26
+      env: JDK=openjdk8
     - rvm: jruby-head
-    - jdk: oraclejdk8
+      env: JDK=oraclejdk8
+    - rvm: jruby-head
+      env: JDK=openjdk8
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-head
   fast_finish: true
