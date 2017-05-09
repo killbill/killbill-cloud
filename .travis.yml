@@ -9,6 +9,7 @@ services:
 dist: trusty
 
 before_install:
+  - export BUNDLE_GEMFILE=$PWD/kpm/Gemfile
   - travis_retry gem install bundler
   - travis_retry curl -LO 'https://search.maven.org/remotecontent?filepath=org/kill-bill/billing/killbill-profiles-killbill/0.18.8/killbill-profiles-killbill-0.18.8-jetty-console.war' && java -Dorg.killbill.catalog.uri=SpyCarAdvanced.xml -Djava.security.egd=file:/dev/./urandom -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -jar killbill-profiles-killbill-0.18.8-jetty-console.war --port 8080 --headless 2>&1 | egrep -v "lvl='INFO'| < | > |[ \t]*at [ \ta-zA-Z0-9\.\:\(\)]+" & sleep 80 && travis_retry curl -v -X POST -u 'admin:password' -H 'Content-Type:application/json' -H 'X-Killbill-CreatedBy:admin' -d '{"apiKey":"bob", "apiSecret":"lazar"}' "http://127.0.0.1:8080/1.0/kb/tenants"
   - mysql -uroot -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root')"
@@ -25,7 +26,7 @@ notifications:
 
 env:
   global:
-    - JRUBY_OPTS='--2.0 -J-Xmx1024M' BUNDLE_GEMFILE=$PWD/kpm/Gemfile
+    - JRUBY_OPTS='--2.0 -J-Xmx1024M'
 
 matrix:
   include:
