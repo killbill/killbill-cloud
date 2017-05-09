@@ -7,7 +7,7 @@ services:
   - mysql
 
 before_install:
-  - curl -LO 'https://search.maven.org/remotecontent?filepath=org/kill-bill/billing/killbill-profiles-killbill/0.18.8/killbill-profiles-killbill-0.18.8-jetty-console.war' && java -jar killbill-profiles-killbill-0.18.8-jetty-console.war --port 8080 --headless & sleep 40 && curl -v -X POST -u 'admin:password' -H 'Content-Type:application/json' -H 'X-Killbill-CreatedBy:admin' -d '{"apiKey":"bob", "apiSecret":"lazar"}' "http://127.0.0.1:8080/1.0/kb/tenants"
+  - curl -LO 'https://search.maven.org/remotecontent?filepath=org/kill-bill/billing/killbill-profiles-killbill/0.18.8/killbill-profiles-killbill-0.18.8-jetty-console.war' && java -jar killbill-profiles-killbill-0.18.8-jetty-console.war --port 8080 --headless & sleep 60 && curl -v -X POST -u 'admin:password' -H 'Content-Type:application/json' -H 'X-Killbill-CreatedBy:admin' -d '{"apiKey":"bob", "apiSecret":"lazar"}' "http://127.0.0.1:8080/1.0/kb/tenants"
   - mysql -uroot -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
 
 script: 'cd kpm && bundle exec rake test:spec test:remote:spec test:mysql:spec'
@@ -29,8 +29,7 @@ gemfile:
   - kpm/Gemfile
 
 jdk:
-  - openjdk7
-  - oraclejdk7
+  - openjdk8
   - oraclejdk8
 
 matrix:
