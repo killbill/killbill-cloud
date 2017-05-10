@@ -3,7 +3,22 @@ language: ruby
 sudo: false
 cache: bundler
 
-script: 'cd kpm && bundle exec rake test:spec test:remote:spec'
+services:
+  - mysql
+
+dist: trusty
+
+before_install:
+  - export BUNDLE_GEMFILE=$PWD/kpm/Gemfile
+  - travis_retry gem install bundler
+  - travis_retry curl -LO 'https://search.maven.org/remotecontent?filepath=org/kill-bill/billing/killbill-profiles-killbill/0.18.8/killbill-profiles-killbill-0.18.8-jetty-console.war' && java -Dorg.killbill.catalog.uri=SpyCarAdvanced.xml -Djava.security.egd=file:/dev/./urandom -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -jar killbill-profiles-killbill-0.18.8-jetty-console.war --port 8080 --headless 2>&1 | egrep -v "lvl='INFO'| < | > |[ \t]*at [ \ta-zA-Z0-9\.\:\(\)]+" & sleep 80 && travis_retry curl -v -X POST -u 'admin:password' -H 'Content-Type:application/json' -H 'X-Killbill-CreatedBy:admin' -d '{"apiKey":"bob", "apiSecret":"lazar"}' "http://127.0.0.1:8080/1.0/kb/tenants"
+  - mysql -uroot -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root')"
+  - mysql -uroot -proot -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+
+before_script:
+  - jdk_switcher use $JDK
+
+script: 'cd kpm && bundle exec rake test:spec test:remote:spec test:mysql:spec'
 
 notifications:
   email:
@@ -11,23 +26,21 @@ notifications:
 
 env:
   global:
-    - JRUBY_OPTS='-J-Xmx1024M'
-
-rvm:
-  - jruby-1.7.20
-  - jruby-20mode # latest 1.7.x
-  - jruby-head
-
-gemfile:
-  - kpm/Gemfile
-
-jdk:
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+    - JRUBY_OPTS='--2.0 -J-Xmx1024M'
 
 matrix:
-  allow_failures:
+  include:
+    - rvm: 2.2.0
+    - rvm: ruby-head
+    - rvm: jruby-1.7.26
+      env: JDK=oraclejdk8
+    - rvm: jruby-1.7.26
+      env: JDK=openjdk8
     - rvm: jruby-head
-    - jdk: oraclejdk8
+      env: JDK=oraclejdk8
+    - rvm: jruby-head
+      env: JDK=openjdk8
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-head
   fast_finish: true

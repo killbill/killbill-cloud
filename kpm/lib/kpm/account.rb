@@ -66,7 +66,7 @@ module KPM
                                     :tag_history => {:id => :tag_history_id, :object_id => nil},
                                     :audit_log => {:id => :audit_log_id}
     }
-    
+
     #delimeters to sniff
     DELIMITERS = [',','|']
     DEFAULT_DELIMITER = "|"
@@ -122,7 +122,7 @@ module KPM
         raise Interrupt, 'Need to specify a valid file'
       end
 
-      @delimiter = sniff_delimiter(source_file) || @delimiter 
+      @delimiter = sniff_delimiter(source_file) || @delimiter
 
       sanitize_and_import(source_file, skip_payment_methods)
     end
@@ -131,43 +131,6 @@ module KPM
 
       # export helpers: fetch_export_data; export; process_export_data; remove_export_data;
       def fetch_export_data(account_id)
-        data = nil
-
-        if Object.const_defined?('KillBillClient') && Object.const_defined?('KillBillClient::Model::Export')
-          data = fetch_export_data_with_client(account_id)
-        else
-          data = fetch_export_data_with_gem(account_id)    
-        end  
-        
-        data
-      end
-        
-      def fetch_export_data_with_gem(account_id)
-        uri = URI("#{@killbill_url}/#{KILLBILL_API_VERSION}/kb/export/#{account_id}")
-
-        request = Net::HTTP::Get.new(uri.request_uri)
-        request.basic_auth(@killbill_user,@killbill_password)
-        request['X-Killbill-ApiKey'] = @killbill_api_key;
-        request['X-Killbill-ApiSecret'] = @killbill_api_secrets;
-        request['X-Killbill-CreatedBy'] = WHO;
-
-        response = Net::HTTP.start(uri.host,uri.port) do |http|
-          http.request(request)
-        end
-
-        if response.to_s.include? 'HTTPUnauthorized'
-          raise Interrupt, "User is unauthorized -> \e[93mUser[#{@killbill_user}],password[#{@killbill_password}],api_key[#{@killbill_api_key}],api_secret[#{@killbill_api_secrets}]\e[0m"
-        end
-
-        if not response.is_a?(Net::HTTPSuccess)
-          raise Interrupt, 'Account id not found'
-        end
-
-        response.body
-      end
-      
-      def fetch_export_data_with_client(account_id)
-        
         KillBillClient.url = @killbill_url
         options = {
           :username => @killbill_user,
@@ -175,13 +138,13 @@ module KPM
           :api_key => @killbill_api_key,
           :api_secret => @killbill_api_secrets
         }
-         
-        begin             
+
+        begin
           account_data = KillBillClient::Model::Export.find_by_account_id(account_id, 'KPM', options)
-        rescue Exception => e 
-            raise Interrupt, 'Account id not found'
-        end  
-       
+        rescue Exception => e
+          raise Interrupt, 'Account id not found'
+        end
+
         account_data
       end
 
@@ -412,12 +375,12 @@ module KPM
 
       def fix_dates(value)
         if !value.equal?(:DEFAULT)
-          
+
           dt = DateTime.parse(value)
           return dt.strftime('%F %T').to_s
-        
+
         end
-        
+
         value
       end
 
@@ -462,23 +425,23 @@ module KPM
       end
 
       def sniff_delimiter(file)
-        
+
         return nil if File.size?(file).nil?
-        
+
         first_line = File.open(file) {|f| f.readline}
-        
+
         return nil if first_line.nil?
-        
+
         sniff = {}
-        
+
         DELIMITERS.each do |delimiter|
           sniff[delimiter] = first_line.count(delimiter)
         end
-        
+
         sniff = sniff.sort {|a,b| b[1]<=>a[1]}
         sniff.size > 0 ? sniff[0][0] : nil
       end
-        
+
       # helper methods that set up killbill and database options: load_config_from_file; set_config; set_database_options;
       # set_killbill_options;
       def load_config_from_file(config_file)
