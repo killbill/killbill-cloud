@@ -6,24 +6,18 @@ kpm can be used interactively to search and download individual artifacts (Kill 
 
 ## Prerequisites
 
-### Ruby
-
-Ruby is required to run KPM itself (it is not a dependency of Kill Bill).
-
-Ruby 2.1+ or JRuby 1.7.20+ is recommended. If you don't have a Ruby installation yet, use [RVM](https://rvm.io/rvm/install):
-
-```
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-\curl -sSL https://get.rvm.io | bash -s stable --ruby
-```
-
-After following the post-installation instructions, you should have access to the `ruby` and `gem` executables.
-
 ### Java
 
 Kill Bill runs on the [Java](https://www.java.com/en/download/) platform, version 6 and above (8 is recommended).
 
 ## Installation
+
+KPM builds are available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.kill-bill.billing.installer%22%20AND%20a%3A%22kpm%22) with coordinates `org.kill-bill.billing.installer:kpm`.
+
+Download the package matching your architecture.
+
+
+Alternatively, KPM is also available through Rubygems:
 
     gem install kpm
 
