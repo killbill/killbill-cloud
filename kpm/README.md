@@ -33,7 +33,7 @@ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB8
 
 After following the post-installation instructions, you should have access to the `ruby` and `gem` executables.
 
-You can the run:
+You can then run:
 
     gem install kpm
 
