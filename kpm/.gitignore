@@ -6,3 +6,4 @@ kpm-*-linux-x86.tar.gz
 kpm-*-linux-x86_64.tar.gz
 kpm-*-osx.tar.gz
 traveling-ruby-*.tar.gz
+*.asc
