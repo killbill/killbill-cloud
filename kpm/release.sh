@@ -27,6 +27,8 @@ if [[ -z "$NO_RELEASE" ]]; then
   $BUNDLE rake release
 fi
 
+$BUNDLE rake package
+
 if [[ -z "$NO_RELEASE" ]]; then
   GOAL=gpg:sign-and-deploy-file
   REPOSITORY_ID=ossrh-releases
