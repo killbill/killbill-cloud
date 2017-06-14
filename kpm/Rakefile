@@ -1,5 +1,7 @@
 #!/usr/bin/env rake
 
+Dir.glob('tasks/*.rake').each { |r| import r }
+
 # Install tasks to build and release the plugin
 require 'bundler/setup'
 Bundler::GemHelper.install_tasks
@@ -20,7 +22,7 @@ namespace :test do
       task.pattern = './spec/*/remote/*_spec.rb'
     end
   end
-  
+
   namespace :mysql do
     desc 'Run RSpec MySql related tests'
     RSpec::Core::RakeTask.new do |task|
