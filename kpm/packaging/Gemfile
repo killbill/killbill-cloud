@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem 'kpm'
+
+group :development do
+  gem 'rake'
+end
