@@ -13,6 +13,8 @@ module KPM
       DATABASE = ENV['DATABASE'] || 'killbill'
       USERNAME = ENV['USERNAME'] || 'root'
       PASSWORD = ENV['PASSWORD'] || 'root'
+      HOST = ENV['HOST'] || 'localhost'
+
       COLUMN_NAME_POS = 3
       
       STATEMENT_TMP_FILE = Dir.mktmpdir('statement') + File::SEPARATOR + 'statement.sql'
@@ -23,6 +25,7 @@ module KPM
       @@username = USERNAME
       @@password = PASSWORD
       @@database = DATABASE
+      @@host = HOST
 
       def set_logger(logger)
         @@logger = logger
@@ -33,12 +36,16 @@ module KPM
         @@password = password
       end
 
+      def set_host(host)
+        @@host = host
+      end
+
       def set_database_name(database_name = nil)
         @@database = database_name
       end
 
       def set_mysql_command_line
-        @@mysql_command_line = "mysql #{@@database} --user=#{@@username} --password=#{@@password} "
+        @@mysql_command_line = "mysql #{@@database} --host=#{@@host} --user=#{@@username} --password=#{@@password} "
       end
 
       def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)

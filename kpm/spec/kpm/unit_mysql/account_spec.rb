@@ -5,9 +5,10 @@ describe KPM::Account do
   shared_context 'account' do
     include_context 'connection_setup'
 
+    let(:db_host) {'localhost'}
     let(:account_class) { described_class.new(nil,[killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,
-                                             db_name, [db_username, db_password],nil,logger)}
+                                             db_name, [db_username, db_password],db_host,nil,logger)}
     let(:dummy_account_id) {SecureRandom.uuid}
     let(:account_id_invalid) {SecureRandom.uuid}
     let(:dummy_data) {
@@ -22,6 +23,7 @@ describe KPM::Account do
     let(:obfuscating_marker) {:email}
     let(:mysql_cli) {"mysql #{db_name} --user=#{db_username} --password=#{db_password} "}
     let(:test_ddl) {Dir["#{Dir.pwd}/**/account_test_ddl.sql"][0]}
+
   end
 
   describe '#initialize' do
