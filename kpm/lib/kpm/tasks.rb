@@ -479,7 +479,11 @@ module KPM
         method_option :data_delimiter,
                       :type    => :string,
                       :default => "|",
-                      :desc    => 'Data delimiter' 
+                      :desc    => 'Data delimiter'
+        method_option :database_host,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Database Host name'
         desc 'account', 'export/import accounts'
         def account
           logger.info 'Please wait processing the request!!!'
@@ -515,7 +519,7 @@ module KPM
 
 
             account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:data_delimiter], logger)
+                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:database_host],options[:data_delimiter], logger)
             export_file = nil
             round_trip_export_import = false
 
