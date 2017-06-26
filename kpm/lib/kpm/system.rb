@@ -65,9 +65,11 @@ module KPM
       kpm_version = KPM::VERSION
       kaui_version = get_kaui_version(get_kaui_web_path || kaui_web_path)
       killbill_version = get_killbill_version(get_killbill_web_path || killbill_web_path)
+      kaui_standalone_version = get_kaui_standalone_version(get_kaui_web_path || kaui_web_path)
 
       environment = Hash[:kpm => {:system=>'KPM',:version => kpm_version},
                          :kaui => {:system=>'Kaui',:version => kaui_version.nil? ? 'not found' : kaui_version},
+                         :kaui_standalone => {:system=>'Kaui standalone',:version => kaui_standalone_version.nil? ? 'not found' : kaui_standalone_version},
                          :killbill => {:system=>'Killbill',:version => killbill_version.nil? ? 'not found' : killbill_version}]
 
       labels = [{:label => :system},
@@ -209,8 +211,21 @@ module KPM
       all_plugins
     end
 
+    def get_kaui_standalone_version(kaui_web_path = nil)
+      kaui_search_default_dir = Dir[kaui_web_path.nil? ? '' : kaui_web_path][0] || DEFAULT_KAUI_SEARCH_BASE_DIR
+      version = nil
+
+      yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
+      unless Dir[yaml_file][0].nil?
+        yml_data = YAML::load_file(yaml_file)
+
+        version = yml_data['version']
+      end
+
+      version
+    end
+
     def get_kaui_version(kaui_web_path = nil)
-      puts kaui_web_path
       kaui_search_default_dir = Dir[kaui_web_path.nil? ? '' : kaui_web_path][0] || DEFAULT_KAUI_SEARCH_BASE_DIR
       version = nil
 
