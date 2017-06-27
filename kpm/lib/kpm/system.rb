@@ -212,7 +212,7 @@ module KPM
     end
 
     def get_kaui_standalone_version(kaui_web_path = nil)
-      kaui_search_default_dir = Dir[kaui_web_path.nil? ? '' : kaui_web_path][0] || DEFAULT_KAUI_SEARCH_BASE_DIR
+      kaui_search_default_dir = Dir[kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : kaui_web_path][0]
       version = nil
 
       yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
