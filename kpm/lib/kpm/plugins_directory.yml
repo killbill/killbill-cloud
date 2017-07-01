@@ -182,7 +182,7 @@
   - :api_key
   - :country_account_id
   - :merchant_id
-:payment-test-plugin:  
+:payment-test:  
   :type: :ruby
   :artifact_id: payment-test-plugin
   :versions:
