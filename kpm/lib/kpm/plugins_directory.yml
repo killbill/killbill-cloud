@@ -182,6 +182,11 @@
   - :api_key
   - :country_account_id
   - :merchant_id
+:payment-test-plugin:  
+  :type: :ruby
+  :artifact_id: payment-test-plugin
+  :versions:
+    :0.18: 4.1.0  
 :securenet:
   :type: :ruby
   :versions:
