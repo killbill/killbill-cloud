@@ -1,0 +1,21 @@
+---
+- name: ensure KPM install dir exists
+  sudo: true
+  file:
+    path: "{{ kpm_install_dir }}"
+    state: directory
+  tags: kpm
+
+- name: install KPM
+  sudo: true
+  unarchive:
+    src: "{{ nexus_url | default('https://oss.sonatype.org/content/repositories/releases') }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
+    remote_src: True
+    dest: "{{ kpm_install_dir }}"
+  tags: kpm
+
+- name: gather KPM facts
+  killbill_facts:
+    kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+  tags: kpm
+

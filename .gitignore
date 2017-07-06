@@ -10,4 +10,5 @@ logs/
 *.classpath
 *.settings
 *.project
-*.retry
+ansible/*.retry
+ansible/hosts
