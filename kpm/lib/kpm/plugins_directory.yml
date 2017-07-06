@@ -186,7 +186,7 @@
   :type: :ruby
   :artifact_id: payment-test-plugin
   :versions:
-    :0.18: 4.1.0  
+    :0.18: 4.2.0  
 :securenet:
   :type: :ruby
   :versions:
