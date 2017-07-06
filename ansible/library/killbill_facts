@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+# WANT_JSON
+
+require 'json'
+require 'pathname'
+
+# Temporary -- https://github.com/killbill/killbill-cloud/issues/78
+def with_captured_stdout
+  require 'stringio'
+  old_stdout = $stdout
+  $stdout = StringIO.new
+  yield
+  JSON.parse($stdout.string.split("\n")[-1])
+ensure
+  $stdout = old_stdout
+end
+
+data = {}
+File.open(ARGV[0]) do |fh|
+  data = JSON.parse(fh.read())
+end
+
+unless data['kpm_path'].nil?
+  ENV['GEM_PATH']="#{data['kpm_path']}/lib/vendor/ruby/2.2.0"
+  Gem.clear_paths
+end
+require 'kpm'
+require 'kpm/version'
+
+kpm_facts = with_captured_stdout { KPM::System.new.information(data['bundles_dir'],
+                                                               true,
+                                                               data['config_file'],
+                                                               data['kaui_web_path'],
+                                                               data['killbill_web_path']) }
+
+result = {
+  'changed' => false,
+  'ansible_facts' => {
+    'kpm' => kpm_facts
+  }
+}
+
+print JSON.dump(result)
