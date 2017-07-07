@@ -1,11 +1,8 @@
 ---
 - name: Deploy Kill Bill
   hosts: all
-  vars:
-    kpm_install_dir: /opt
-    kpm_version: 0.5.3
-    # Unfortunately, we cannot use Jinja2 templates here
-    #ansible_ruby_interpreter: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}/lib/ruby/bin/ruby"
-    ansible_ruby_interpreter: "/opt/kpm-0.5.3-linux-x86_64/lib/ruby/bin/ruby"
   roles:
+    - common
+    - tomcat
     - kpm
+    - killbill

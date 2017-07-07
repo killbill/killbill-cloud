@@ -6,6 +6,19 @@
 ansible-playbook -i <HOST_FILE> play.yml
 ```
 
+The playbook has several roles:
+
+* common: Ansible setup (defines `ansible_ruby_interpreter`)
+* tomcat: `$CATALINA_BASE` setup (does not install nor manage Tomcat itself)
+* kpm: KPM setup and installation
+* killbill: Kill Bill setup and installation
+
+Configuration:
+
+* [group_vars/all.yml](group_vars/all.yml) defines what to install (KPM version, Kill Bill version, plugins, etc.) and the main configuration options. This could be overridden in a child `group_vars` or even in `host_vars` (https://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
+* [roles/killbill/templates/killbill.properties.j2](roles/killbill/templates/killbill.properties.j2) is the main Kill Bill configuration file
+* [roles/tomcat/templates/setenv.sh.j2](roles/tomcat/templates/setenv.sh.j2) defines JVM level system properties
+
 ## killbill_facts module
 
 ```
