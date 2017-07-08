@@ -21,7 +21,7 @@
       <Host name="localhost"
             appBase="webapps"
             unpackWARs="true"
-            autoDeploy="true">
+            autoDeploy="false"><!-- Disable autoDeploy to avoid restarts when running KPM install -->
 
         <Valve className="org.apache.catalina.valves.AccessLogValve"
                directory="logs"

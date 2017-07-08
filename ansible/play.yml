@@ -6,3 +6,7 @@
     - tomcat
     - kpm
     - killbill
+  handlers:
+    - include: roles/tomcat/handlers/main.yml
+      # https://github.com/ansible/ansible/issues/18178
+      static: no

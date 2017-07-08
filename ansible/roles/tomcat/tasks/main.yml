@@ -1,12 +1,4 @@
 ---
-- name: clean up Tomcat deployment files
-  sudo: true
-  file: path={{ catalina_base }}/{{ item }} state=absent
-  with_items:
-    - webapps/ROOT
-    - work/
-  tags: tomcat
-
 - name: ensure Tomcat dirs exist
   sudo: true
   file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
@@ -37,4 +29,9 @@
       name: setenv.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
+    - src: conf
+      name: web.xml
+      mode: u=rw,g=r,o=r
+      dest: "{{ catalina_base }}/conf"
+  notify: "restart Tomcat"
   tags: tomcat

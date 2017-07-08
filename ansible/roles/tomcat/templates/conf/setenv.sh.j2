@@ -1,48 +1,48 @@
 # JVM Options
-JAVA_OPTS="-server
-           -showversion
-           -XX:+PrintCommandLineFlags
-           -XX:+HeapDumpOnOutOfMemoryError
-           -XX:HeapDumpPath={{ catalina_base }}/logs/
-           -XX:+UseCodeCacheFlushing
-           -Xms{{ jvm_initial_memory }}
-           -Xmx{{ jvm_max_memory }}
-           -Xrunjdwp:transport=dt_socket,server={{ jvm_jdwp_server }},suspend=n,address={{ jvm_jdwp_port }}
-           -XX:+CMSClassUnloadingEnabled
-           -XX:-OmitStackTraceInFastThrow
-           -XX:+UseParNewGC
-           -XX:+UseConcMarkSweepGC
-           -XX:+CMSConcurrentMTEnabled
-           -XX:+ScavengeBeforeFullGC
-           -XX:+CMSScavengeBeforeRemark
-           -XX:+CMSParallelRemarkEnabled
-           -XX:+UseCMSInitiatingOccupancyOnly
-           -XX:CMSInitiatingOccupancyFraction={{ jvm_cms_initiating_fraction_threshold }}
-           -XX:NewSize={{ jvm_new_size }}
-           -XX:MaxNewSize={{ jvm_max_new_size }}
-           -XX:SurvivorRatio={{ jvm_survivor_ratio }}
-           -XX:+DisableExplicitGC
-           -Xloggc:{{ catalina_base }}/logs/gc.log
-           -XX:+PrintGCApplicationConcurrentTime
-           -XX:+PrintGCApplicationStoppedTime
-           -XX:+PrintGCDateStamps
-           -XX:+PrintGCDetails
-           -XX:+PrintTenuringDistribution
-           -XX:+UseGCLogFileRotation
-           -XX:NumberOfGCLogFiles=14
-           -XX:GCLogFileSize=100M"
+CATALINA_OPTS="-server
+               -showversion
+               -XX:+PrintCommandLineFlags
+               -XX:+HeapDumpOnOutOfMemoryError
+               -XX:HeapDumpPath={{ catalina_base }}/logs/
+               -XX:+UseCodeCacheFlushing
+               -Xms{{ jvm_initial_memory }}
+               -Xmx{{ jvm_max_memory }}
+               -Xrunjdwp:transport=dt_socket,server={{ jvm_jdwp_server }},suspend=n,address={{ jvm_jdwp_port }}
+               -XX:+CMSClassUnloadingEnabled
+               -XX:-OmitStackTraceInFastThrow
+               -XX:+UseParNewGC
+               -XX:+UseConcMarkSweepGC
+               -XX:+CMSConcurrentMTEnabled
+               -XX:+ScavengeBeforeFullGC
+               -XX:+CMSScavengeBeforeRemark
+               -XX:+CMSParallelRemarkEnabled
+               -XX:+UseCMSInitiatingOccupancyOnly
+               -XX:CMSInitiatingOccupancyFraction={{ jvm_cms_initiating_fraction_threshold }}
+               -XX:NewSize={{ jvm_new_size }}
+               -XX:MaxNewSize={{ jvm_max_new_size }}
+               -XX:SurvivorRatio={{ jvm_survivor_ratio }}
+               -XX:+DisableExplicitGC
+               -Xloggc:{{ catalina_base }}/logs/gc.log
+               -XX:+PrintGCApplicationConcurrentTime
+               -XX:+PrintGCApplicationStoppedTime
+               -XX:+PrintGCDateStamps
+               -XX:+PrintGCDetails
+               -XX:+PrintTenuringDistribution
+               -XX:+UseGCLogFileRotation
+               -XX:NumberOfGCLogFiles=14
+               -XX:GCLogFileSize=100M"
 
 # Java Properties
-export JAVA_OPTS="$JAVA_OPTS
-                  -Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true
-                  -Dcom.sun.management.jmxremote=true
-                  -Dcom.sun.management.jmxremote.authenticate=false
-                  -Dcom.sun.management.jmxremote.port={{ jvm_jmx_port }}
-                  -Dcom.sun.management.jmxremote.rmi.port={{ jvm_jmx_port }}
-                  -Dcom.sun.management.jmxremote.ssl=false
-                  -Djava.rmi.server.hostname={{ inventory_hostname }}
-                  -Djava.security.egd=file:/dev/./urandom
-                  -Djruby.compile.invokedynamic=false
-                  -Dlog4jdbc.sqltiming.error.threshold=1000
-                  -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
-                  -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties"
+export CATALINA_OPTS="$CATALINA_OPTS
+                      -Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true
+                      -Dcom.sun.management.jmxremote=true
+                      -Dcom.sun.management.jmxremote.authenticate=false
+                      -Dcom.sun.management.jmxremote.port={{ jvm_jmx_port }}
+                      -Dcom.sun.management.jmxremote.rmi.port={{ jvm_jmx_port }}
+                      -Dcom.sun.management.jmxremote.ssl=false
+                      -Djava.rmi.server.hostname={{ inventory_hostname }}
+                      -Djava.security.egd=file:/dev/./urandom
+                      -Djruby.compile.invokedynamic=false
+                      -Dlog4jdbc.sqltiming.error.threshold=1000
+                      -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
+                      -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties"

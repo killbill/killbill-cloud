@@ -16,6 +16,7 @@
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+  notify: "restart Tomcat"
   tags: kpm-install
 
 - name: run KPM install
@@ -23,4 +24,5 @@
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"
+  notify: "restart Tomcat"
   tags: kpm-install

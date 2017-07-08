@@ -19,6 +19,19 @@ Configuration:
 * [roles/killbill/templates/killbill.properties.j2](roles/killbill/templates/killbill.properties.j2) is the main Kill Bill configuration file
 * [roles/tomcat/templates/setenv.sh.j2](roles/tomcat/templates/setenv.sh.j2) defines JVM level system properties
 
+Tomcat will automatically be restarted is `catalina_home` is defined.
+
+## tomcat_ubuntu playbook
+
+Example playbook on how to install Tomcat on Ubuntu:
+
+```
+ansible-playbook -i <HOST_FILE> tomcat_ubuntu.yml
+ansible-playbook -i <HOST_FILE> play.yml
+```
+
+# Internals
+
 ## killbill_facts module
 
 ```
