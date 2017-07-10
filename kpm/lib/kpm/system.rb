@@ -14,7 +14,6 @@ module KPM
     end
 
     def information(bundles_dir = nil, output_as_json = false, config_file = nil, kaui_web_path = nil, killbill_web_path = nil)
-      puts 'Retrieving system information'
       set_config(config_file)
       killbill_information = show_killbill_information(kaui_web_path,killbill_web_path,output_as_json)
 
@@ -206,7 +205,7 @@ module KPM
         all_plugins = inspector.inspect(bundles_dir)
       end
 
-      if not output_as_json
+      unless output_as_json
         if all_plugins.nil? || all_plugins.size == 0
           puts "\e[91;1mNo KB plugin information available\e[0m\n\n"
         else
