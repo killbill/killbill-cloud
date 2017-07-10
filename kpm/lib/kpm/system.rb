@@ -1,25 +1,7 @@
 require 'yaml'
+require_relative 'system_helpers/system_proxy'
 
 module KPM
-
-  module OS
-    def OS.windows?
-      (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RbConfig::CONFIG["host_os"]) != nil
-    end
-
-    def OS.mac?
-      (/darwin/ =~ RbConfig::CONFIG["host_os"]) != nil
-    end
-
-    def OS.unix?
-      !OS.windows?
-    end
-
-    def OS.linux?
-      OS.unix? and not OS.mac?
-    end
-  end
-
   class System
 
     MAX_VALUE_COLUMN_WIDTH = 60
@@ -40,6 +22,10 @@ module KPM
 
       environment_information = show_environment_information(java_version, output_as_json)
       os_information = show_os_information(output_as_json)
+      cpu_information = show_cpu_information(output_as_json)
+      memory_information = show_memory_information(output_as_json)
+      disk_space_information = show_disk_space_information(output_as_json)
+      entropy_available = show_entropy_available(output_as_json)
 
       if not java_version.nil?
         command = get_command
@@ -97,35 +83,49 @@ module KPM
       environment
     end
 
-    def show_os_information(output_as_json)
-      os = Hash.new
-      os_data = nil
+    def show_cpu_information(output_as_json)
+      cpu_info = SystemProxy::CpuInformation.fetch
+      labels = SystemProxy::CpuInformation.get_labels
 
-      if OS.windows?
-        os_data = `systeminfo | findstr /C:"OS"`
-
-      elsif OS.linux?
-        os_data = `lsb_release -a 2>&1`
-
-      elsif OS.mac?
-        os_data = `sw_vers`
-
+      unless output_as_json
+        @formatter.format(cpu_info,labels)
       end
 
-      if os_data != nil
-        os_data.split("\n").each do |info|
+      cpu_info
+    end
 
-          infos = info.split(':')
-          os[infos[0]] = {:os_detail => infos[0], :value => infos[1].to_s.strip}
+    def show_memory_information(output_as_json)
+      memory_info = SystemProxy::MemoryInformation.fetch
+      labels = SystemProxy::MemoryInformation.get_labels
 
-        end
+      unless output_as_json
+        @formatter.format(memory_info,labels)
       end
 
-      labels = [{:label => :os_detail},
-                {:label => :value}]
+      memory_info
+    end
 
-      if not output_as_json
-        @formatter.format(os,labels)
+    def show_disk_space_information(output_as_json)
+      disk_space_info = SystemProxy::DiskSpaceInformation.fetch
+      labels = SystemProxy::DiskSpaceInformation.get_labels
+
+      unless output_as_json
+        @formatter.format(disk_space_info,labels)
+      end
+
+      disk_space_info
+    end
+
+    def show_entropy_available(output_as_json)
+      entropy_available = SystemProxy::EntropyAvailable.fetch
+      labels = SystemProxy::EntropyAvailable.get_labels
+
+      unless output_as_json
+        @formatter.format(entropy_available,labels)
+      end
+
+      entropy_available
+    end
       end
 
       os
