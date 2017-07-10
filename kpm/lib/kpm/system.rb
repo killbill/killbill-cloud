@@ -34,16 +34,18 @@ module KPM
 
       plugin_information = show_plugin_information(get_plugin_path || bundles_dir || DEFAULT_BUNDLE_DIR, output_as_json)
 
-      if output_as_json
-        json_data = Hash.new
-        json_data[:killbill_information] = killbill_information
-        json_data[:environment_information] = environment_information
-        json_data[:os_information] = os_information
-        json_data[:java_system_information] = java_system_information
-        json_data[:plugin_information] = plugin_information
+      json_data = Hash.new
+      json_data[:killbill_information] = killbill_information
+      json_data[:environment_information] = environment_information
+      json_data[:os_information] = os_information
+      json_data[:cpu_information] = cpu_information
+      json_data[:memory_information] = memory_information
+      json_data[:disk_space_information] = disk_space_information
+      json_data[:entropy_available] = entropy_available
+      json_data[:java_system_information] = java_system_information
+      json_data[:plugin_information] = plugin_information
 
-        puts json_data.to_json
-      end
+      json_data.to_json
     end
 
     def show_killbill_information(kaui_web_path, killbill_web_path, output_as_json)
@@ -126,9 +128,16 @@ module KPM
 
       entropy_available
     end
+
+    def show_os_information(output_as_json)
+      os_information = SystemProxy::OsInformation.fetch
+      labels = SystemProxy::OsInformation.get_labels
+
+      unless output_as_json
+        @formatter.format(os_information,labels)
       end
 
-      os
+      os_information
     end
 
     def show_java_system_information(command, output_as_json)
