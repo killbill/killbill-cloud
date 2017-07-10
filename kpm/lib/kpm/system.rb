@@ -220,7 +220,8 @@ module KPM
     end
 
     def get_kaui_standalone_version(kaui_web_path = nil)
-      kaui_search_default_dir = Dir[kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : kaui_web_path][0]
+      kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
+      kaui_search_default_dir.gsub!('.war','')
       version = nil
 
       yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
@@ -234,7 +235,8 @@ module KPM
     end
 
     def get_kaui_version(kaui_web_path = nil)
-      kaui_search_default_dir = Dir[kaui_web_path.nil? ? '' : kaui_web_path][0] || DEFAULT_KAUI_SEARCH_BASE_DIR
+      kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
+      kaui_search_default_dir.gsub!('.war','')
       version = nil
 
       gemfile = Dir[kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'Gemfile']
@@ -261,7 +263,9 @@ module KPM
     end
 
     def get_killbill_version(killbill_web_path = nil)
-      killbill_search_default_dir = Dir[killbill_web_path.nil? ? '' : killbill_web_path][0] || DEFAULT_KILLBILL_SEARCH_BASE_DIR
+      killbill_search_default_dir = killbill_web_path.nil? ? DEFAULT_KILLBILL_SEARCH_BASE_DIR : Dir[killbill_web_path][0]
+      killbill_search_default_dir.gsub!('.war','')
+      killbill_search_default_dir.gsub!('webapps','**')
 
       file =  Dir[killbill_search_default_dir + File::SEPARATOR + 'META-INF' +  File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
       version = nil
