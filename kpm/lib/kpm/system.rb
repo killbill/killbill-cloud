@@ -85,8 +85,8 @@ module KPM
     end
 
     def show_cpu_information(output_as_json)
-      cpu_info = SystemProxy::CpuInformation.fetch
-      labels = SystemProxy::CpuInformation.get_labels
+      cpu_info = KPM::SystemProxy::CpuInformation.fetch
+      labels = KPM::SystemProxy::CpuInformation.get_labels
 
       unless output_as_json
         @formatter.format(cpu_info,labels)
@@ -96,8 +96,8 @@ module KPM
     end
 
     def show_memory_information(output_as_json)
-      memory_info = SystemProxy::MemoryInformation.fetch
-      labels = SystemProxy::MemoryInformation.get_labels
+      memory_info = KPM::SystemProxy::MemoryInformation.fetch
+      labels = KPM::SystemProxy::MemoryInformation.get_labels
 
       unless output_as_json
         @formatter.format(memory_info,labels)
@@ -107,8 +107,8 @@ module KPM
     end
 
     def show_disk_space_information(output_as_json)
-      disk_space_info = SystemProxy::DiskSpaceInformation.fetch
-      labels = SystemProxy::DiskSpaceInformation.get_labels
+      disk_space_info = KPM::SystemProxy::DiskSpaceInformation.fetch
+      labels = KPM::SystemProxy::DiskSpaceInformation.get_labels
 
       unless output_as_json
         @formatter.format(disk_space_info,labels)
@@ -118,8 +118,8 @@ module KPM
     end
 
     def show_entropy_available(output_as_json)
-      entropy_available = SystemProxy::EntropyAvailable.fetch
-      labels = SystemProxy::EntropyAvailable.get_labels
+      entropy_available = KPM::SystemProxy::EntropyAvailable.fetch
+      labels = KPM::SystemProxy::EntropyAvailable.get_labels
 
       unless output_as_json
         @formatter.format(entropy_available,labels)
@@ -129,8 +129,8 @@ module KPM
     end
 
     def show_os_information(output_as_json)
-      os_information = SystemProxy::OsInformation.fetch
-      labels = SystemProxy::OsInformation.get_labels
+      os_information = KPM::SystemProxy::OsInformation.fetch
+      labels = KPM::SystemProxy::OsInformation.get_labels
 
       unless output_as_json
         @formatter.format(os_information,labels)
