@@ -1,17 +1,13 @@
 ---
-- name: Deploy Tomcat on Ubuntu
+- name: Deploy Tomcat
   hosts: all
   vars:
     tomcat_version: 8.5.16
     tomcat_install_dir: /opt
     tomcat_owner: tomcat
     tomcat_group: tomcat
-  remote_user: root
   become: yes
-  become_method: sudo
   tasks:
-    - name: install Java
-      apt: name=default-jdk
     - name: add Tomcat group
       group: name="{{ tomcat_group }}"
     - name: add Tomcat user

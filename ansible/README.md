@@ -21,12 +21,12 @@ Configuration:
 
 Tomcat will automatically be restarted is `catalina_home` is defined.
 
-## tomcat_ubuntu playbook
+## tomcat.yml playbook
 
-Example playbook on how to install Tomcat on Ubuntu:
+Example playbook on how to install Tomcat (Java is a pre-requisite):
 
 ```
-ansible-playbook -i <HOST_FILE> tomcat_ubuntu.yml
+ansible-playbook -i <HOST_FILE> tomcat.yml
 ansible-playbook -i <HOST_FILE> play.yml
 ```
 

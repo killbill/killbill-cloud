@@ -6,6 +6,8 @@
   listen: "restart Tomcat"
 
 - name: stop Tomcat (with PID file)
+  become: true
+  become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
@@ -17,6 +19,8 @@
   listen: "restart Tomcat"
 
 - name: stop Tomcat (without PID file)
+  become: true
+  become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
   command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
@@ -27,7 +31,8 @@
   listen: "restart Tomcat"
 
 - name: clean up Tomcat deployment files
-  sudo: true
+  become: true
+  become_user: "{{ tomcat_owner }}"
   file: path={{ catalina_base }}/{{ item }} state=absent
   with_items:
     - webapps/ROOT
@@ -36,6 +41,8 @@
   listen: "restart Tomcat"
 
 - name: start Tomcat
+  become: true
+  become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
