@@ -22,6 +22,10 @@
     group: "{{ tomcat_group }}"
   with_items:
     - src: conf
+      name: context.xml
+      mode: u=rw,g=r,o=r
+      dest: "{{ catalina_base }}/conf"
+    - src: conf
       name: server.xml
       mode: u=rw,g=r,o=r
       dest: "{{ catalina_base }}/conf"
