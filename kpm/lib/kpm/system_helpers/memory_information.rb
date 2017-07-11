@@ -38,7 +38,7 @@ module KPM
               mem[key][:memory_detail] = mem[key][:memory_detail].gsub('Pages','Memory')
             end
 
-            mem_total_data = `system_profiler | grep "  Memory:" 2>&1`
+            mem_total_data = `system_profiler SPHardwareDataType | grep "  Memory:" 2>&1`
             mem_total = get_hash(mem_total_data)
 
             mem = mem_total.merge(mem)

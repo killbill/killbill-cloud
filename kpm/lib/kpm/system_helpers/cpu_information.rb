@@ -29,7 +29,7 @@ module KPM
           end
 
           def fetch_mac
-            cpu_data = `system_profiler | grep -e "Processor Name" -e "Processor Speed" -e "Number of Processors" 2>&1`
+            cpu_data = `system_profiler SPHardwareDataType | grep -e "Processor" -e "Cores" -e "Cache" 2>&1`
             cpu = get_hash(cpu_data)
             cpu
           end

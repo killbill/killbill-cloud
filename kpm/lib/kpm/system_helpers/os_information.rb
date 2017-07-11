@@ -4,16 +4,16 @@ module KPM
       class << self
 
         def fetch
-          entropy_available = nil
+          os_information  = nil
           if OS.windows?
-            entropy_available = fetch_windows
+            os_information  = fetch_windows
           elsif OS.linux?
-            entropy_available = fetch_linux
+            os_information  = fetch_linux
           elsif OS.mac?
-            entropy_available = fetch_mac
+            os_information  = fetch_mac
           end
 
-          entropy_available
+          os_information
         end
 
         def get_labels
