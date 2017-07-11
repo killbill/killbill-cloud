@@ -428,8 +428,13 @@ module KPM
         desc 'system', 'Gather information about the system'
         def system
           system = KPM::System.new
-          system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
+          information = system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
                              options[:killbill_web_path])
+
+          if options[:as_json]
+            puts information
+          end
+
         end
 
         method_option :export,
