@@ -1,6 +1,6 @@
 require 'digest/sha1'
-require 'nexus_cli'
 require 'rexml/document'
+require_relative 'nexus_helper/nexus_facade'
 
 module KPM
 
@@ -45,7 +45,7 @@ module KPM
       end
 
       def nexus_remote(overrides={}, ssl_verify=true)
-        nexus_remote ||= NexusCli::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
+        nexus_remote ||= KPM::NexusFacade::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
       end
 
       def nexus_defaults
@@ -173,9 +173,9 @@ module KPM
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         begin
           nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
-        rescue NexusCli::ArtifactMalformedException => e
-          raise NexusCli::NexusCliError.new("Invalid coordinates #{coordinate_map}")
-        rescue NexusCli::NexusCliError => e
+        rescue KPM::NexusFacade::ArtifactMalformedException => e
+          raise StandardError.new("Invalid coordinates #{coordinate_map}")
+        rescue StandardError => e
           logger.warn("Unable to retrieve coordinates #{coordinate_map}")
           raise e
         end
