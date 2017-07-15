@@ -1,0 +1,21 @@
+---
+- name: Plugin List
+  killbill_plugin:
+    plugin_cmd: LIST
+    kpm_path: "{{ kpm_path }}"
+    username: "{{ username | default('admin') }}"
+    password: "{{ password | default('password') }}"
+    active_only: "{{ active_only | default(false) }}"
+  tags: plugin-list
+
+- name: Plugin Restart
+  killbill_plugin:
+    plugin_cmd: RESTART
+    kpm_path: "{{ kpm_path }}"
+    username: "{{ username | default('admin') }}"
+    password: "{{ password | default('password') }}"
+    plugin_key: "{{ plugin_key }}"
+    local_node_only: "{{ local_node_only | default(false) }}"
+  tags: plugin-restart
+
+

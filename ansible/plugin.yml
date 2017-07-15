@@ -4,22 +4,4 @@
   roles:
     - common
     - kpm
-  tasks:
-    - name: Plugin List
-      killbill_plugin:
-        plugin_cmd: LIST
-        kpm_path: "{{ kpm_path }}"
-        username: "{{ username | default('admin') }}"
-        password: "{{ password | default('password') }}"
-        active_only: "{{ active_only | default(false) }}"
-      tags: plugin_list
-
-    - name: Plugin Restart
-      killbill_plugin:
-        plugin_cmd: RESTART
-        kpm_path: "{{ kpm_path }}"
-        plugin_key: "{{ plugin_key }}"
-        username: "{{ username | default('admin') }}"
-        password: "{{ password | default('password') }}"
-        local_node_only: "{{ local_node_only | default(false) }}"
-      tags: plugin_restart
+    - plugins
