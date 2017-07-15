@@ -30,6 +30,15 @@ ansible-playbook -i <HOST_FILE> tomcat.yml
 ansible-playbook -i <HOST_FILE> play.yml
 ```
 
+## plugin.yml playbook
+
+Allow to restart a specific plugin
+
+For example to restart `adyen` plugin
+```
+ansible-playbook -i <HOST_FILE> plugin.yml --extra-vars "plugin_key=adyen"
+```
+
 # Internals
 
 ## killbill_facts module
