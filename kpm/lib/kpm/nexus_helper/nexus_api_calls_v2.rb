@@ -1,4 +1,5 @@
-require 'httpclient'
+require 'net/http'
+require 'rexml/document'
 
 module KPM
   module NexusFacade
@@ -23,9 +24,9 @@ module KPM
 
     # This is an extract and slim down of functions needed from nexus_cli to maintain the response expected by the base_artifact.
     class NexusApiCallsV2
-      PULL_ARTIFACT_ENDPOINT = 'service/local/artifact/maven/redirect'
-      GET_ARTIFACT_INFO_ENDPOINT = 'service/local/artifact/maven/resolve'
-      SEARCH_FOR_ARTIFACT_ENDPOINT = 'service/local/data_index'
+      PULL_ARTIFACT_ENDPOINT = '/service/local/artifact/maven/redirect'
+      GET_ARTIFACT_INFO_ENDPOINT = '/service/local/artifact/maven/resolve'
+      SEARCH_FOR_ARTIFACT_ENDPOINT = '/service/local/data_index'
 
       attr_reader :version
       attr_reader :configuration
@@ -37,57 +38,49 @@ module KPM
       end
 
       def search_for_artifacts(coordinates)
-        http_client = get_client
-        url = get_url(SEARCH_FOR_ARTIFACT_ENDPOINT, configuration)
-        group_id, artifact_id = coordinates.split(":")
-        response = http_client.get(url, :query => {:g => group_id, :a => artifact_id})
+        response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, [:g, :a])
 
-        case response.status
-          when 200
-            return response.content
+        case response.code
+          when '200'
+            return response.body
           else
-            raise UnexpectedStatusCodeException.new(response.status)
+            raise UnexpectedStatusCodeException.new(response.code)
         end
       end
 
       def get_artifact_info(coordinates)
-        http_client = get_client
-        query_params = get_query_params(coordinates)
-        url = get_url(GET_ARTIFACT_INFO_ENDPOINT, configuration)
-        response = http_client.get(url,query_params)
+        response = get_response(coordinates, GET_ARTIFACT_INFO_ENDPOINT, nil)
 
-        case response.status
-          when 200
-            return response.content
-          when 404
-            raise StandardError.new('The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.')
-          when 503
-            raise StandardError.new('Could not connect to Nexus. Please ensure the url you are using is reachable.')
+        case response.code
+          when '200'
+            return response.body
+          when '404'
+            raise StandardError.new(ERROR_MESSAGE_404)
+          when '503'
+            raise StandardError.new(ERROR_MESSAGE_503)
           else
-            raise UnexpectedStatusCodeException.new(response.status)
+            raise UnexpectedStatusCodeException.new(response.code)
         end
       end
 
       def pull_artifact(coordinates ,destination)
+
         file_name = get_file_name(coordinates)
         destination = File.join(File.expand_path(destination || "."), file_name)
-        http_client = get_client
-        query_params = get_query_params(coordinates)
-        url = get_url(PULL_ARTIFACT_ENDPOINT, configuration)
-        response = http_client.get(url,query_params)
+        response = get_response(coordinates, PULL_ARTIFACT_ENDPOINT, nil)
 
-        case response.status
-          when 301, 307
-            # Follow redirect and stream in chunks.
+        case response.code
+          when '301', '307'
+            location = response['Location'].gsub!(configuration[:url],'')
+            file_response = get_response(nil,location, nil)
+
             File.open(destination, "wb") do |io|
-              http_client.get(response.content.gsub(/If you are not automatically redirected use this url: /, "")) do |chunk|
-                io.write(chunk)
-              end
+                io.write(file_response.body)
             end
           when 404
-            raise StandardError.new('The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.')
+            raise StandardError.new(ERROR_MESSAGE_404)
           else
-            raise UnexpectedStatusCodeException.new(response.status)
+            raise UnexpectedStatusCodeException.new(response.code)
         end
         {
             :file_name => file_name,
@@ -131,24 +124,42 @@ module KPM
           end
         end
 
-        def get_query_params(coordinates)
+        def get_query_params(coordinates, what_parameters = nil)
           artifact = parse_coordinates(coordinates)
-          @version = artifact[:version]
+          @version = artifact[:version].to_s.upcase
+
           query = {:g => artifact[:group_id], :a => artifact[:artifact_id], :e => artifact[:extension], :v => version, :r => configuration[:repository]}
           query.merge!({:c => artifact[:classifier]}) unless artifact[:classifier].nil?
-          query
+
+          params = what_parameters.nil? ? query : Hash.new
+          what_parameters.each {|key| params[key] = query[key] } unless what_parameters.nil?
+
+          params.map{|key,value| "#{key}=#{value}"}.join('&')
         end
 
-        def get_client
-          client = HTTPClient.new
-          client.send_timeout = 6000
-          client.receive_timeout = 6000
-          client.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE unless ssl_verify
-          client
+        def get_response(coordinates, endpoint, what_parameters)
+          http = get_http
+          query_params = get_query_params(coordinates, what_parameters) unless coordinates.nil?
+          endpoint = get_endpoint_with_params(endpoint, query_params) unless coordinates.nil?
+          request = Net::HTTP::Get.new(endpoint)
+
+
+          response = http.request(request)
+          response
         end
 
-        def get_url(endpoint,configuration)
-          File.join(configuration[:url], endpoint)
+        def get_http
+          uri = URI.parse(configuration[:url])
+          http = Net::HTTP.new(uri.host,uri.port)
+          http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT #seconds
+          http.read_timeout = configuration[:read_timeout] || READ_TIMEOUT_DEFAULT #seconds
+          http.use_ssl = true
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless ssl_verify
+          http
+        end
+
+        def get_endpoint_with_params(endpoint,query_params)
+          "#{endpoint}?#{query_params}"
         end
 
     end

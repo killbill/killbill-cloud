@@ -20,7 +20,8 @@ module KPM
   autoload :System, 'kpm/system'
   autoload :Account, 'kpm/account'
   autoload :Database, 'kpm/database'
-  autoload :TenantConfig, 'kpm/tenant_config.rb'
+  autoload :TenantConfig, 'kpm/tenant_config'
+  autoload :NexusFacade, 'kpm/nexus_helper/nexus_facade'
 
   class << self
     def root

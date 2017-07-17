@@ -1,6 +1,5 @@
 require 'digest/sha1'
 require 'rexml/document'
-require_relative 'nexus_helper/nexus_facade'
 
 module KPM
 
