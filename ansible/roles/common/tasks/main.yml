@@ -1,0 +1,4 @@
+---
+- name: ansible_ruby_interpreter setup
+  set_fact: ansible_ruby_interpreter="{{ kpm_path }}/lib/ruby/bin/ruby"
+  tags: common

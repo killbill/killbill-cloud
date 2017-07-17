@@ -1,0 +1,56 @@
+---
+nexus_url: https://oss.sonatype.org
+nexus_repository: releases
+
+kpm_install_dir: /opt
+kpm_version: 0.5.3
+kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+
+catalina_home: /usr/share/tomcat
+catalina_base: /opt/apache-tomcat
+tomcat_owner: "{{ ansible_user_id }}"
+tomcat_group: root
+
+# Base directory for namespacing
+kb_install_dir: /opt/killbill
+# Configuration files (killbill.properties, JRuby files, etc.)
+kb_config_dir: "{{ kb_install_dir }}/config"
+# Kill Bill plugins and OSGI bundles
+kb_plugins_dir: "{{ kb_install_dir }}/bundles"
+# kpm.yml -- see https://github.com/killbill/killbill-cloud/tree/master/kpm
+kpm_yml:
+  killbill:
+    version: 0.18.10
+    webapp_path: "{{ catalina_base }}/webapps/ROOT.war"
+    nexus:
+      ssl_verify: false
+      url: "{{ nexus_url }}"
+      repository: "{{ nexus_repository }}"
+    plugins_dir: "{{ kb_plugins_dir }}"
+    plugins:
+      java:
+        - name: analytics
+      ruby:
+        - name: kpm
+
+# Kill Bill properties
+database_url: "jdbc:h2:file:{{ kb_config_dir }}/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE"
+database_user: killbill
+database_password: killbill
+
+# Kill Bill properties -- recommended defaults
+database_connection_timeout: 100s
+database_max_active: 150
+database_min_idle: 5
+database_idle_max_age: 2m
+jvm_initial_memory: 4G
+jvm_max_memory: 4G
+jvm_jdwp_port: 12345
+jvm_jdwp_server: y
+jvm_cms_initiating_fraction_threshold: 50
+jvm_new_size: 600m
+jvm_max_new_size: 1900m
+jvm_survivor_ratio: 10
+jvm_jmx_port: 8000
+tomcat_port: 8080
+tomcat_max_threads: 150

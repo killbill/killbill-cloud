@@ -1,0 +1,68 @@
+org.killbill.osgi.bundle.install.dir={{ kb_plugins_dir }}
+org.killbill.billing.osgi.bundles.jruby.conf.dir={{ kb_config_dir }}
+
+org.killbill.billing.osgi.dao.connectionTimeout={{ database_connection_timeout }}
+org.killbill.billing.osgi.dao.maxActive={{ database_max_active }}
+org.killbill.billing.osgi.dao.minIdle={{ database_min_idle }}
+org.killbill.billing.osgi.dao.idleMaxAge={{ database_idle_max_age }}
+org.killbill.billing.osgi.dao.url={{ database_url }}
+org.killbill.billing.osgi.dao.user={{ database_user }}
+org.killbill.billing.osgi.dao.password={{ database_password }}
+
+org.killbill.dao.connectionTimeout={{ database_connection_timeout }}
+org.killbill.dao.maxActive={{ database_max_active }}
+org.killbill.dao.minIdle={{ database_min_idle }}
+org.killbill.dao.idleMaxAge={{ database_idle_max_age }}
+org.killbill.dao.url={{ database_url }}
+org.killbill.dao.user={{ database_user }}
+org.killbill.dao.password={{ database_password }}
+
+org.killbill.jruby.context.scope=THREADSAFE
+
+org.killbill.notificationq.analytics.claimed=100
+org.killbill.notificationq.analytics.historyTableName=analytics_notifications_history
+org.killbill.notificationq.analytics.inMemory=false
+org.killbill.notificationq.analytics.max.failure.retry=3
+org.killbill.notificationq.analytics.notification.nbThreads=5
+org.killbill.notificationq.analytics.queue.capacity=30000
+org.killbill.notificationq.analytics.sleep=3000
+org.killbill.notificationq.analytics.sticky=true
+org.killbill.notificationq.analytics.tableName=analytics_notifications
+
+org.killbill.notificationq.main.claimed=100
+org.killbill.notificationq.main.inMemory=false
+org.killbill.notificationq.main.max.failure.retry=3
+org.killbill.notificationq.main.notification.nbThreads=10
+org.killbill.notificationq.main.sleep=70000
+org.killbill.notificationq.main.sticky=true
+
+org.killbill.payment.janitor.rate=5m
+org.killbill.payment.janitor.unknown.retries=1h,6h,17h
+org.killbill.payment.janitor.pending.retries=65m,3h,3h,5h,1d,1d,1d,1d
+
+org.killbill.payment.plugin.threads.nb=100
+org.killbill.payment.plugin.timeout=64s
+
+org.killbill.persistent.bus.external.claim.time=5m
+org.killbill.persistent.bus.external.inMemory=true
+org.killbill.persistent.bus.external.inflight.claimed=500
+org.killbill.persistent.bus.external.max.failure.retry=3
+org.killbill.persistent.bus.external.nbThreads=50
+org.killbill.persistent.bus.external.queue.capacity=1000000
+org.killbill.persistent.bus.external.sleep=0
+org.killbill.persistent.bus.external.sticky=true
+org.killbill.persistent.bus.external.useInflightQ=true
+
+org.killbill.persistent.bus.main.claim.time=5m
+org.killbill.persistent.bus.main.inMemory=false
+org.killbill.persistent.bus.main.inflight.claimed=500
+org.killbill.persistent.bus.main.max.failure.retry=3
+org.killbill.persistent.bus.main.nbThreads=50
+org.killbill.persistent.bus.main.queue.capacity=1000000
+org.killbill.persistent.bus.main.sleep=0
+org.killbill.persistent.bus.main.sticky=true
+org.killbill.persistent.bus.main.useInflightQ=true
+
+org.killbill.jaxrs.location.full.url=true
+
+org.killbill.server.test.mode=true
