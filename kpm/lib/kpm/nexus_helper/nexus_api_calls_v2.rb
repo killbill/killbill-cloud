@@ -28,20 +28,31 @@ module KPM
       GET_ARTIFACT_INFO_ENDPOINT = '/service/local/artifact/maven/resolve'
       SEARCH_FOR_ARTIFACT_ENDPOINT = '/service/local/data_index'
 
+      READ_TIMEOUT_DEFAULT = 60000
+      OPEN_TIMEOUT_DEFAULT = 60000
+
+      ERROR_MESSAGE_404 = 'The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.'
+      ERROR_MESSAGE_503 = 'Could not connect to Nexus. Please ensure the url you are using is reachable.'
+
       attr_reader :version
       attr_reader :configuration
       attr_reader :ssl_verify
+      attr_accessor :logger
 
-      def initialize(configuration, ssl_verify)
+      def initialize(configuration, ssl_verify, logger)
         @configuration = configuration
         @ssl_verify = ssl_verify
+        @logger = logger
       end
 
       def search_for_artifacts(coordinates)
+        logger.debug 'Entered - Search for artifact'
+        logger.debug "coordinates: #{coordinates}"
         response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, [:g, :a])
 
         case response.code
           when '200'
+            #logger.debug "response body: #{response.body}"
             return response.body
           else
             raise UnexpectedStatusCodeException.new(response.code)
@@ -49,10 +60,13 @@ module KPM
       end
 
       def get_artifact_info(coordinates)
+        logger.debug 'Entered - Get artifact info'
+        logger.debug "coordinates: #{coordinates}"
         response = get_response(coordinates, GET_ARTIFACT_INFO_ENDPOINT, nil)
 
         case response.code
           when '200'
+            logger.debug "response body: #{response.body}"
             return response.body
           when '404'
             raise StandardError.new(ERROR_MESSAGE_404)
@@ -64,14 +78,18 @@ module KPM
       end
 
       def pull_artifact(coordinates ,destination)
+        logger.debug 'Entered - Pull artifact'
+        logger.debug "coordinates: #{coordinates}"
 
         file_name = get_file_name(coordinates)
         destination = File.join(File.expand_path(destination || "."), file_name)
+        logger.debug "destination: #{destination}"
         response = get_response(coordinates, PULL_ARTIFACT_ENDPOINT, nil)
 
         case response.code
           when '301', '307'
             location = response['Location'].gsub!(configuration[:url],'')
+            logger.debug 'fetching artifact'
             file_response = get_response(nil,location, nil)
 
             File.open(destination, "wb") do |io|
@@ -143,6 +161,7 @@ module KPM
           endpoint = get_endpoint_with_params(endpoint, query_params) unless coordinates.nil?
           request = Net::HTTP::Get.new(endpoint)
 
+          logger.debug "request endpoint: #{endpoint}"
 
           response = http.request(request)
           response
