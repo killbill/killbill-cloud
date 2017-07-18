@@ -29,8 +29,8 @@ module KPM
       GET_ARTIFACT_INFO_ENDPOINT = '/service/local/artifact/maven/resolve'
       SEARCH_FOR_ARTIFACT_ENDPOINT = '/service/local/data_index'
 
-      READ_TIMEOUT_DEFAULT = 60000
-      OPEN_TIMEOUT_DEFAULT = 60000
+      READ_TIMEOUT_DEFAULT = 60
+      OPEN_TIMEOUT_DEFAULT = 60
 
       ERROR_MESSAGE_404 = 'The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.'
       ERROR_MESSAGE_503 = 'Could not connect to Nexus. Please ensure the url you are using is reachable.'
