@@ -47,13 +47,12 @@ module KPM
       end
 
       def search_for_artifacts(coordinates)
-        logger.debug 'Entered - Search for artifact'
-        logger.debug "coordinates: #{coordinates}"
+        logger.debug "Entered - Search for artifact, coordinates: #{coordinates}"
         response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, [:g, :a])
 
         case response.code
           when '200'
-            #logger.debug "response body: #{response.body}"
+            logger.debug "response body: #{response.body}"
             return response.body
           else
             raise UnexpectedStatusCodeException.new(response.code)
@@ -61,8 +60,7 @@ module KPM
       end
 
       def get_artifact_info(coordinates)
-        logger.debug 'Entered - Get artifact info'
-        logger.debug "coordinates: #{coordinates}"
+        logger.debug "Entered - Get artifact info, coordinates: #{coordinates}"
         response = get_response(coordinates, GET_ARTIFACT_INFO_ENDPOINT, nil)
 
         case response.code
@@ -79,9 +77,7 @@ module KPM
       end
 
       def pull_artifact(coordinates ,destination)
-        logger.debug 'Entered - Pull artifact'
-        logger.debug "coordinates: #{coordinates}"
-
+        logger.debug "Entered - Pull artifact, coordinates: #{coordinates}"
         file_name = get_file_name(coordinates)
         destination = File.join(File.expand_path(destination || "."), file_name)
         logger.debug "destination: #{destination}"
