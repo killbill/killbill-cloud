@@ -107,8 +107,13 @@ module KPM
 
       private
         def parse_coordinates(coordinates)
+
+          if coordinates.nil?
+            raise ArtifactMalformedException
+          end
+
           split_coordinates = coordinates.split(":")
-          if(split_coordinates.size < 3 or split_coordinates.size > 5)
+          if (split_coordinates.size == 0 or split_coordinates.size > 5)
             raise ArtifactMalformedException
           end
 
@@ -147,7 +152,7 @@ module KPM
           query.merge!({:c => artifact[:classifier]}) unless artifact[:classifier].nil?
 
           params = what_parameters.nil? ? query : Hash.new
-          what_parameters.each {|key| params[key] = query[key] } unless what_parameters.nil?
+          what_parameters.each {|key| params[key] = query[key] unless query[key].nil? } unless what_parameters.nil?
 
           params.map{|key,value| "#{key}=#{value}"}.join('&')
         end
