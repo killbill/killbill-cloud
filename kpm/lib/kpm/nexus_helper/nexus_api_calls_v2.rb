@@ -1,4 +1,5 @@
 require 'net/http'
+require 'uri'
 require 'rexml/document'
 
 module KPM
@@ -178,7 +179,7 @@ module KPM
         end
 
         def get_endpoint_with_params(endpoint,query_params)
-          "#{endpoint}?#{query_params}"
+          "#{endpoint}?#{URI.escape(query_params)}"
         end
 
     end
