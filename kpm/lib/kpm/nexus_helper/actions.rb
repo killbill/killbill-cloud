@@ -7,11 +7,9 @@ module KPM
       attr_reader :nexus_api_call
 
       def initialize(overrides, ssl_verify, logger)
-        overrides ||=
-          {
-              url:        'https://oss.sonatype.org',
-              repository: 'releases'
-          }
+        overrides ||= {}
+        overrides[:url] ||= 'https://oss.sonatype.org'
+        overrides[:repository] ||= 'releases'
 
         #this is where the version is verified
         #example if
