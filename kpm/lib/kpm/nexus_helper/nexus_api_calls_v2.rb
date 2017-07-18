@@ -180,7 +180,7 @@ module KPM
         end
 
         def get_endpoint_with_params(endpoint,query_params)
-          "#{endpoint}?#{URI.escape(query_params)}"
+          "#{endpoint}?#{URI::DEFAULT_PARSER.escape(query_params)}"
         end
 
     end
