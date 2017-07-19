@@ -1,0 +1,7 @@
+---
+- name: Plugin Management
+  hosts: all
+  roles:
+    - common
+    - kpm
+    - plugins

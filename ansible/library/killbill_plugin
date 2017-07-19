@@ -1,0 +1,64 @@
+#!/usr/bin/ruby
+# WANT_JSON
+
+# Read TASK input as json (WANT_JSON directive above)
+require 'json'
+data = {}
+File.open(ARGV[0]) do |fh|
+  data = JSON.parse(fh.read())
+end
+
+# Boilerplate code require in our ruby killbill module (depending of KPM)
+unless data['kpm_path'].nil?
+  ENV['GEM_PATH']="#{data['kpm_path']}/lib/vendor/ruby/2.2.0"
+  Gem.clear_paths
+end
+
+
+require 'kpm'
+require 'kpm/version'
+
+require 'killbill_client'
+
+# We expect KB to run on the local host on port 8080
+KillBillClient.url="http://127.0.0.1:8080"
+
+KillBillClient.username=data['username']
+KillBillClient.password=data['password']
+
+def format_res(input, changed, res, msg=nil)
+  {
+      'changed' => changed,
+      'msg' => {
+          'input' => input,
+          'res' => res,
+          'error' => msg
+      }
+  }
+end
+
+if data['plugin_cmd'] == 'LIST'
+
+  plugin_info = KillBillClient::Model::NodesInfo.nodes_info
+
+  # Simplify output to return basic KB plugin info for each node
+  filtered = plugin_info.inject({}) { |m, e| m[e.node_name] = e.plugins_info.select { |u| u.plugin_key }.map {|f| {"pluginKey" => f.plugin_key, "pluginName" => f.plugin_name, "version" => f.version, "state" => f.state }}; m  }
+  # Filter active if requested
+  filtered = filtered.select { |e| e["state"] == "RUNNING"} if data.key?('active_only') && data['active_only']
+
+  result = format_res(data, true, filtered)
+elsif data['plugin_cmd'] == 'RESTART'
+
+  if data['plugin_key']
+    KillBillClient::Model::NodesInfo.stop_plugin(data['plugin_key'], nil, [], data['local_node_only'])
+    plugin_info = KillBillClient::Model::NodesInfo.start_plugin(data['plugin_key'], nil, [], data['local_node_only'])
+    result = format_res(data, true, plugin_info)
+  else
+    result = format_res(data, false, [], "Missing argument plugin_key")
+  end
+else
+  result = format_res(data, true, nil, "Unknown command #{data['plugin_cmd']}")
+end
+
+print JSON.dump(result)
+

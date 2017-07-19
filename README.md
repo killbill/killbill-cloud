@@ -1,9 +1,10 @@
 Utilities to configure and launch Kill Bill
 ===========================================
 
-There are two options to install Kill Bill:
+There are three options to install Kill Bill:
 
 * [KPM](https://github.com/killbill/killbill-cloud/tree/master/kpm)
+* [Ansible](https://github.com/killbill/killbill-cloud/tree/master/ansible) (in beta)
 * [Docker](https://github.com/killbill/killbill-cloud/tree/master/docker) (recommended)
 
 KPM
