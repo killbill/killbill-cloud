@@ -1,3 +1,4 @@
+require 'logger'
 require 'pathname'
 require 'yaml'
 
@@ -40,8 +41,8 @@ module KPM
       @kaui_config = raw_config['kaui']
 
       if logger.nil?
-        logger = LoggerDecorator.new(STDOUT)
-        logger.level = LoggerDecorator::INFO
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
       end
 
       nexus_config = !@config.nil? ? @config['nexus'] : (!@kaui_config.nil? ? @kaui_config['nexus'] : nil)
@@ -74,8 +75,7 @@ module KPM
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
-      @logger.info(help, :help, :msg)
-      @logger.to_hash
+      help
     end
 
     private

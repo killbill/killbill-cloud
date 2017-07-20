@@ -14,8 +14,8 @@ module KPM
       end
 
       def info(version='LATEST', overrides={}, ssl_verify=true)
-        logger = LoggerDecorator.new(STDOUT)
-        logger.level = LoggerDecorator::ERROR
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::ERROR
 
         versions = {}
         Dir.mktmpdir do |dir|

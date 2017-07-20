@@ -18,8 +18,8 @@ require 'kpm'
 
 # Temporary -- https://github.com/killbill/killbill-cloud/issues/91
 log = StringIO.new
-logger = KPM::LoggerDecorator.new(log)
-logger.level = KPM::LoggerDecorator::INFO
+logger = Logger.new(log)
+logger.level = Logger::INFO
 
 kpm_yml = data['kpm_yml'].to_hash
 KPM::Installer.new(kpm_yml, logger).install(kpm_yml['force_download'], kpm_yml['verify_sha1'])

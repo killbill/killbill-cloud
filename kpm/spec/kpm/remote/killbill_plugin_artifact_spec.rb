@@ -3,8 +3,8 @@ require 'spec_helper'
 describe KPM::KillbillPluginArtifact do
 
   before(:all) do
-    @logger       = KPM::LoggerDecorator.new(STDOUT)
-    @logger.level = KPM::LoggerDecorator::INFO
+    @logger       = Logger.new(STDOUT)
+    @logger.level = Logger::INFO
   end
 
   # This test makes sure the top level directory is correctly verify_is_skipped
