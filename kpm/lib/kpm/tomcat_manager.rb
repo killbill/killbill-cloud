@@ -30,7 +30,7 @@ module KPM
         path = Utils.unpack_tgz(file.to_s, @tomcat_dir, true)
       end
 
-      @logger.info "Successful installation of #{DOWNLOAD_URL} to #{path}"
+      @logger.info "Successful installation of #{DOWNLOAD_URL} to #{path}", :installation, :installed
       path
     end
 

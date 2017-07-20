@@ -4,8 +4,8 @@ require 'json'
 describe KPM::Installer do
 
   before(:all) do
-    @logger       = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+    @logger       = KPM::LoggerDecorator.new(STDOUT)
+    @logger.level = KPM::LoggerDecorator::INFO
   end
 
   it 'should be able to install only Kill Bill' do

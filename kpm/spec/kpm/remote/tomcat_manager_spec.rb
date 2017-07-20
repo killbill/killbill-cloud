@@ -3,8 +3,8 @@ require 'spec_helper'
 describe KPM::TomcatManager do
 
   before(:all) do
-    @logger = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+    @logger = KPM::LoggerDecorator.new(STDOUT)
+    @logger.level = KPM::LoggerDecorator::INFO
   end
 
   it 'should be able to download and unpack tomcat' do

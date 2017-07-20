@@ -68,7 +68,7 @@ module KPM
 
         # Return early if there's nothing to do
         if !force_download && skip_if_exists(artifact_info, coordinates, sha1_file)
-          logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists"
+          logger.info "  Skipping installation of #{coordinates} to #{artifact_info[:file_path]}, file already exists", :installation, :skipped
 
           # We need to do a bit of magic to make sure that artifact_info[:bundle_dir] is correctly populated when we bail early
           if artifact_info[:is_tgz] && coordinate_map[:artifact_id] != 'killbill-platform-osgi-bundles-defaultbundles'
@@ -109,7 +109,7 @@ module KPM
             artifact_info[:bundle_dir] = artifact_info[:dir_name]
             artifact_info[:size] = downloaded_artifact_info[:size]
           end
-          logger.info "Successful installation of #{coordinates} to #{artifact_info[:bundle_dir]}"
+          logger.info "Successful installation of #{coordinates} to #{artifact_info[:bundle_dir]}", :installation, :installed
         end
         artifact_info
       end
@@ -133,7 +133,7 @@ module KPM
           FileUtils.cp file_path, artifact_info[:dir_name]
           artifact_info[:bundle_dir] = artifact_info[:dir_name]
         end
-        logger.info "Successful installation of #{file_path} to #{artifact_info[:bundle_dir]}"
+        logger.info "Successful installation of #{file_path} to #{artifact_info[:bundle_dir]}", :installation, :installed
 
         artifact_info
       end

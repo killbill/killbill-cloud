@@ -4,8 +4,8 @@ require 'json'
 describe KPM::BaseInstaller do
 
   before(:all) do
-    @logger = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+    @logger = KPM::LoggerDecorator.new(STDOUT)
+    @logger.level = KPM::LoggerDecorator::INFO
   end
 
   it 'should be able to uninstall via plugin key' do

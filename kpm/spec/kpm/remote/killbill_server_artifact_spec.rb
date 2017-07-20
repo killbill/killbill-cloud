@@ -3,8 +3,8 @@ require 'spec_helper'
 describe KPM::KillbillServerArtifact do
 
   before(:all) do
-    @logger       = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+    @logger       = KPM::LoggerDecorator.new(STDOUT)
+    @logger.level = KPM::LoggerDecorator::INFO
   end
 
   # Takes about 7 minutes...
