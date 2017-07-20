@@ -1,0 +1,53 @@
+---
+- name: check Tomcat PID file
+  stat: path="{{ catalina_base }}/tomcat.pid"
+  register: tomcat_pid
+  when: catalina_home is defined
+  listen: "restart Tomcat"
+
+- name: stop Tomcat (with PID file)
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  environment:
+    CATALINA_BASE: "{{ catalina_base }}"
+    CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
+  command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
+  ignore_errors: True
+  when:
+    - catalina_home is defined
+    - tomcat_pid.stat.exists == True
+  listen: "restart Tomcat"
+
+- name: stop Tomcat (without PID file)
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  environment:
+    CATALINA_BASE: "{{ catalina_base }}"
+  command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
+  ignore_errors: True
+  when:
+    - catalina_home is defined
+    - tomcat_pid.stat.exists == False
+  listen: "restart Tomcat"
+
+- name: clean up Tomcat deployment files
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  file: path={{ catalina_base }}/{{ item }} state=absent
+  with_items:
+    - webapps/ROOT
+    - work/
+  when: catalina_home is defined
+  listen: "restart Tomcat"
+
+- name: start Tomcat
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  environment:
+    CATALINA_BASE: "{{ catalina_base }}"
+    CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
+  command: "{{ catalina_home }}/bin/catalina.sh start"
+  async: 45
+  poll: 0
+  when: catalina_home is defined
+  listen: "restart Tomcat"

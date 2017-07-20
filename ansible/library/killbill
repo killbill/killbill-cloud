@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+# WANT_JSON
+
+require 'json'
+require 'logger'
+require 'stringio'
+
+data = {}
+File.open(ARGV[0]) do |fh|
+  data = JSON.parse(fh.read())
+end
+
+unless data['kpm_path'].nil?
+  ENV['GEM_PATH']="#{data['kpm_path']}/lib/vendor/ruby/2.2.0"
+  Gem.clear_paths
+end
+require 'kpm'
+
+# Temporary -- https://github.com/killbill/killbill-cloud/issues/91
+log = StringIO.new
+logger = Logger.new(log)
+logger.level = Logger::INFO
+
+kpm_yml = data['kpm_yml'].to_hash
+KPM::Installer.new(kpm_yml, logger).install(kpm_yml['force_download'], kpm_yml['verify_sha1'])
+
+result = {
+  'changed' => !(log.string =~ /Successful installation/).nil?,
+  'msg' => log.string
+}
+
+print JSON.dump(result)

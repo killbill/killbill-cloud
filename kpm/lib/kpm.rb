@@ -22,6 +22,7 @@ module KPM
   autoload :Database, 'kpm/database'
   autoload :TenantConfig, 'kpm/tenant_config'
   autoload :DiagnosticFile, 'kpm/diagnostic_file'
+  autoload :NexusFacade, 'kpm/nexus_helper/nexus_facade'
 
   class << self
     def root

@@ -1,5 +1,4 @@
 require 'digest/sha1'
-require 'nexus_cli'
 require 'rexml/document'
 
 module KPM
@@ -44,8 +43,8 @@ module KPM
         pull_from_fs_and_put_in_place(logger, file_path, destination_path)
       end
 
-      def nexus_remote(overrides={}, ssl_verify=true)
-        nexus_remote ||= NexusCli::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify)
+      def nexus_remote(overrides={}, ssl_verify=true, logger=nil)
+        nexus_remote ||= KPM::NexusFacade::RemoteFactory.create(nexus_defaults.merge(overrides || {}), ssl_verify, logger)
       end
 
       def nexus_defaults
@@ -172,10 +171,10 @@ module KPM
 
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         begin
-          nexus_info = nexus_remote(overrides, ssl_verify).get_artifact_info(coordinates)
-        rescue NexusCli::ArtifactMalformedException => e
-          raise NexusCli::NexusCliError.new("Invalid coordinates #{coordinate_map}")
-        rescue NexusCli::NexusCliError => e
+          nexus_info = nexus_remote(overrides, ssl_verify, logger).get_artifact_info(coordinates)
+        rescue KPM::NexusFacade::ArtifactMalformedException => e
+          raise StandardError.new("Invalid coordinates #{coordinate_map}")
+        rescue StandardError => e
           logger.warn("Unable to retrieve coordinates #{coordinate_map}")
           raise e
         end
@@ -219,7 +218,7 @@ module KPM
       end
 
       def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides={}, ssl_verify=true)
-        info = nexus_remote(overrides, ssl_verify).pull_artifact(coordinates, destination_dir)
+        info = nexus_remote(overrides, ssl_verify, logger).pull_artifact(coordinates, destination_dir)
 
         # Always verify sha1 and if incorrect either throw or log when we are asked to bypass sha1 verification
         verified = verify(logger, coordinates, info[:file_path], remote_sha1)

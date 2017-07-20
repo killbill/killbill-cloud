@@ -1,0 +1,25 @@
+---
+- name: Deploy Tomcat
+  hosts: all
+  vars:
+    tomcat_version: 8.5.16
+    tomcat_install_dir: /opt
+    tomcat_owner: tomcat
+    tomcat_group: tomcat
+  become: yes
+  tasks:
+    - name: add Tomcat group
+      group: name="{{ tomcat_group }}"
+    - name: add Tomcat user
+      user: name="{{ tomcat_owner }}" group="{{ tomcat_group }}" home=/usr/share/tomcat createhome=no
+    - name: ensure Tomcat install dir exists
+      file: path="{{ tomcat_install_dir }}" state=directory
+    - name: install Tomcat
+      unarchive:
+        src: "http://archive.apache.org/dist/tomcat/tomcat-8/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        remote_src: True
+        dest: "{{ tomcat_install_dir }}"
+        owner: "{{ tomcat_owner }}"
+        group: "{{ tomcat_group }}"
+    - name: symlink install directory
+      file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path=/usr/share/tomcat state=link

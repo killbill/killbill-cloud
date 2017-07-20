@@ -1,0 +1,41 @@
+---
+- name: ensure Tomcat dirs exist
+  sudo: true
+  file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  with_items:
+    - bin
+    - conf
+    - lib
+    - logs
+    - webapps
+    - work
+    - temp
+  tags: tomcat
+
+- name: generate Tomcat files
+  sudo: true
+  template:
+    src: "{{ item.src }}/{{ item.name }}.j2"
+    dest: "{{ item.dest }}/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+  with_items:
+    - src: conf
+      name: context.xml
+      mode: u=rw,g=r,o=r
+      dest: "{{ catalina_base }}/conf"
+    - src: conf
+      name: server.xml
+      mode: u=rw,g=r,o=r
+      dest: "{{ catalina_base }}/conf"
+    - src: conf
+      name: setenv.sh
+      mode: u=rwx,g=rx,o=rx
+      dest: "{{ catalina_base }}/bin"
+    - src: conf
+      name: web.xml
+      mode: u=rw,g=r,o=r
+      dest: "{{ catalina_base }}/conf"
+  notify: "restart Tomcat"
+  tags: tomcat
