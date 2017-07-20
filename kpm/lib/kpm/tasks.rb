@@ -593,6 +593,43 @@ module KPM
         end
 
 
+        method_option :export,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'export account for a provided id.'
+        method_option :config_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Yml that contains killbill api connection and DB connection'
+        method_option :log_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => '(Optional) Log directory if the default tomcat location has changed'
+        desc 'diagnostic', 'exports and \'zips\' the account data, system, logs and tenant configurations'
+        def diagnostic
+          logger.info 'Please wait processing the request!!!'
+          begin
+
+          if options[:export].nil?
+            raise Interrupt,'--export,  account for a provided id is required'
+          end
+
+          if options[:config_file].nil?
+            raise Interrupt,'--config_file, Yml that contains killbill api connection and DB connection is required'
+          end
+
+          diagnostic = KPM::DiagnosticFile.new
+
+          diagnostic.export_data(options[:export], options[:config_file], options[:log_dir])
+
+          rescue Exception => e
+            logger.error "\e[91;1m#{e.message}\e[0m"
+            if not e.is_a?(Interrupt)
+              logger.error e.backtrace.join("\n")
+            end
+          end
+        end
+
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin
 
