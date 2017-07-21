@@ -38,6 +38,12 @@ database_url: "jdbc:h2:file:{{ kb_config_dir }}/killbill;MODE=MYSQL;DB_CLOSE_DEL
 database_user: killbill
 database_password: killbill
 
+# Kaui specific properties
+killbill_url: http://127.0.0.1:8080
+killbill_api_key: bob
+killbill_api_secret: lazar
+kaui_db_adapter: mysql2
+
 # Kill Bill properties -- recommended defaults
 database_connection_timeout: 100s
 database_max_active: 150

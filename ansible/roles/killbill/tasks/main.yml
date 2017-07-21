@@ -19,6 +19,22 @@
   notify: "restart Tomcat"
   tags: kpm-install
 
+- name: generate Tomcat files
+  sudo: true
+  template:
+    src: "{{ item.src }}/{{ item.name }}.j2"
+    dest: "{{ item.dest }}/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+  with_items:
+    - src: conf
+      name: setenv2.sh
+      mode: u=rwx,g=rx,o=rx
+      dest: "{{ catalina_base }}/bin"
+  notify: "restart Tomcat"
+  tags: tomcat
+
 - name: run KPM install
   sudo: true
   killbill:
