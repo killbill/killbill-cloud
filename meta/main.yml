@@ -1,0 +1,4 @@
+---
+galaxy_info:
+  author: Kill Bill core team
+  description: Ansible roles for installing Kill Bill.
