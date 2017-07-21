@@ -1,4 +1,5 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
                       -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
-                      -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties"
+                      -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties
+                      {{ kb_system_properties }}"

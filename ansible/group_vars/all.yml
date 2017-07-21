@@ -44,6 +44,10 @@ killbill_api_key: bob
 killbill_api_secret: lazar
 kaui_db_adapter: mysql2
 
+# Extra JVM properties (e.g. -Dlogback.configurationFile={{ kb_config_dir }}/logback.xml)
+kaui_system_properties: ''
+kb_system_properties: ''
+
 # Kill Bill properties -- recommended defaults
 database_connection_timeout: 100s
 database_max_active: 150

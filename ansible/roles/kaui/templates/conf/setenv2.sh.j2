@@ -6,4 +6,5 @@ export CATALINA_OPTS="$CATALINA_OPTS
                       -Dkaui.api_secret={{ killbill_api_secret }}
                       -Dkaui.db.url={{ database_url }}
                       -Dkaui.db.password={{ database_user }}
-                      -Dkaui.db.username={{ database_password }}"
+                      -Dkaui.db.username={{ database_password }}
+                      {{ kaui_system_properties }}"
