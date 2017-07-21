@@ -1,0 +1,16 @@
+---
+- name: ensure Kill Bill dirs exist
+  sudo: true
+  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  with_items:
+    - "{{ kb_install_dir }}"
+    - "{{ kb_config_dir }}"
+  tags: kpm-install
+
+- name: run KPM install
+  sudo: true
+  killbill:
+    kpm_path: "{{ kpm_path }}"
+    kpm_yml: "{{ kpm_yml }}"
+  notify: "restart Tomcat"
+  tags: kpm-install
