@@ -1,3 +1,25 @@
+# Installation
+
+1. Update your `ansible.cfg` with:
+
+```
+[defaults]
+roles_path = ~/.ansible/roles/
+library = ~/.ansible/roles/killbill-cloud/ansible/library
+```
+
+2. Create a file `requirements.yml`:
+
+```
+- src: https://github.com/killbill/killbill-cloud
+```
+
+then run `ansible-galaxy install -r requirements.yml`.
+
+The roles can now be referenced in your playbooks via `killbill-cloud/ansible/roles/XXX` (e.g. `killbill-cloud/ansible/roles/kpm`).
+
+See below for example playbooks.
+
 # Usage
 
 ## play.yml playbook
