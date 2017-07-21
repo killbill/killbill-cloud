@@ -18,6 +18,13 @@ then run `ansible-galaxy install -r requirements.yml`.
 
 The roles can now be referenced in your playbooks via `killbill-cloud/ansible/roles/XXX` (e.g. `killbill-cloud/ansible/roles/kpm`).
 
+Note that handlers need to be referenced by their full path, e.g.:
+
+```
+handlers:
+  - include: ~/.ansible/roles/killbill-cloud/ansible/roles/tomcat/handlers/main.yml
+```
+
 See below for example playbooks.
 
 # Usage
