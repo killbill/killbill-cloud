@@ -1,0 +1,7 @@
+---
+- name: Flyway migrations
+  hosts: all
+  roles:
+    - common
+    - kpm
+    - migrations
