@@ -12,6 +12,7 @@ module KPM
       @logger = logger
       @nexus_config = nexus_config
       @nexus_ssl_verify = nexus_ssl_verify
+      @trace_logger = KPM::TraceLogger.new
     end
 
     def install_killbill_server(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
@@ -25,7 +26,7 @@ module KPM
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
       @logger.debug("Installing Kill Bill server: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
-      KPM::KillbillServerArtifact.pull(@logger,
+      artifact_info = KPM::KillbillServerArtifact.pull(@logger,
                                        group_id,
                                        artifact_id,
                                        packaging,
@@ -37,6 +38,10 @@ module KPM
                                        verify_sha1,
                                        @nexus_config,
                                        @nexus_ssl_verify)
+      # store trace info to be returned as JSON by the KPM::Installer.install method
+      @trace_logger.add('killbill',
+                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
     end
 
     def install_kaui(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
@@ -50,7 +55,7 @@ module KPM
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
       @logger.debug("Installing Kaui: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
-      KPM::KauiArtifact.pull(@logger,
+      artifact_info = KPM::KauiArtifact.pull(@logger,
                              group_id,
                              artifact_id,
                              packaging,
@@ -62,6 +67,12 @@ module KPM
                              verify_sha1,
                              @nexus_config,
                              @nexus_ssl_verify)
+      # store trace info to be returned as JSON by the KPM::Installer.install method
+      @trace_logger.add('kaui',
+                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+
+
     end
 
     def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true, verify_jruby_jar=false)
@@ -138,6 +149,10 @@ module KPM
                                                        verify_sha1,
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
+      # store trace info to be returned as JSON by the KPM::Installer.install method
+      @trace_logger.add('plugins', plugin_key,
+                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
 
       # Update with resolved version
       coordinate_map[:version] = artifact_info[:version]
@@ -167,6 +182,10 @@ module KPM
       mark_as_active(plugins_dir, artifact_info)
 
       update_plugin_identifier(plugins_dir, plugin_key, type.to_s, nil, artifact_info)
+
+      # store trace info to be returned as JSON by the KPM::Installer.install method
+      @trace_logger.add('plugins', plugin_key,
+                           artifact_info.merge({'status'=>'INSTALLED'}))
 
       artifact_info
     end
@@ -217,6 +236,10 @@ module KPM
                                     verify_sha1,
                                     @nexus_config,
                                     @nexus_ssl_verify)
+
+      @trace_logger.add('default_bundles',
+                        info.merge({'status'=> (info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                         :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
