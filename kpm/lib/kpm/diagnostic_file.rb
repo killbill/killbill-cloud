@@ -1,7 +1,5 @@
 require 'yaml'
-require 'logger'
 require 'tmpdir'
-require 'rubygems'
 require 'zip'
 require 'json'
 require 'fileutils'
@@ -17,28 +15,40 @@ module KPM
       TMP_DIR         = Dir.mktmpdir(TMP_DIR_PREFIX)
       TMP_LOGS_DIR    = TMP_DIR + File::Separator + 'logs'
 
-      TENANT_FILE     = 'tenant_config'
-      SYSTEM_FILE     = 'system_configuration'
-      ACCOUNT_FILE    = 'account_data'
+      TENANT_FILE     = 'tenant_config.data'
+      SYSTEM_FILE     = 'system_configuration.data'
+      ACCOUNT_FILE    = 'account.data'
 
       TODAY_DATE      = Date.today.strftime('%m-%d-%y')
       ZIP_FILE        = 'killbill-diagnostics-' + TODAY_DATE + '.zip'
       ZIP_LOG_FILE    = 'logs.zip'
 
-      @@catalina_base
+      def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
+                     database_name = nil, database_credentials = nil, database_host = nil, kaui_web_path = nil,
+                     killbill_web_path = nil, logger = nil)
+        @killbill_api_credentials = killbill_api_credentials
+        @killbill_credentials = killbill_credentials
+        @killbill_url = killbill_url
+        @database_name = database_name
+        @database_credentials = database_credentials
+        @database_host = database_host
+        @config_file = config_file
+        @kaui_web_path = kaui_web_path;
+        @killbill_web_path = killbill_web_path;
+        @logger = logger
+        @original_logger_level = logger.level;
+        @catalina_base = nil
+      end
 
-      def export_data(account_id, config_file = nil, log_dir = nil)
-
-        puts TODAY_DATE
-
-        set_config(config_file)
+      def export_data(account_id = nil, log_dir = nil)
+        set_config(@config_file)
 
         tenant_export_file  = get_tenant_config
-        system_export_file  = get_system_config(config_file)
-        account_export_file = get_account_data(config_file, account_id)
+        system_export_file  = get_system_config
+        account_export_file = get_account_data(account_id) unless account_id.nil?
         log_files           = get_log_files(log_dir)
 
-        if File.exist?(account_export_file) && File.exist?(system_export_file) && File.exist?(tenant_export_file)
+        if File.exist?(system_export_file) && File.exist?(tenant_export_file)
 
 
           zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
@@ -47,17 +57,12 @@ module KPM
 
             zipFile.add(TENANT_FILE,  tenant_export_file)
             zipFile.add(SYSTEM_FILE,  system_export_file)
-            zipFile.add(ACCOUNT_FILE, account_export_file)
+            zipFile.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
             zipFile.add(ZIP_LOG_FILE, log_files)
 
           end
 
-          File.delete(tenant_export_file)
-          File.delete(system_export_file)
-          File.delete(account_export_file)
-          File.delete(log_files)
-
-        logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
+          @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
 
         else
           raise Interrupt, 'Account id or configuration file not found'
@@ -71,75 +76,69 @@ module KPM
 
       def get_tenant_config
 
-        logger.info 'Retrieving tenant configuration'
+        @logger.info 'Retrieving tenant configuration'
+        # this suppress the message of where it put the account file, this is to avoid confusion
+        @logger.level = Logger::WARN
 
-        kb_api_credentials = [get_config('killbill', 'api_key'), get_config('killbill','api_secret')]
-        kb_credentials = [get_config('killbill', 'user'), get_config('killbill','password')]
-        kb_url = 'http://' + get_config('killbill', 'host').to_s + ':' + get_config('killbill','port').to_s
+        @killbill_api_credentials ||= [get_config('killbill', 'api_key'), get_config('killbill','api_secret')] unless @config_file.nil?
+        @killbill_credentials ||= [get_config('killbill', 'user'), get_config('killbill','password')] unless @config_file.nil?
+        @killbill_url ||= 'http://' + get_config('killbill', 'host').to_s + ':' + get_config('killbill','port').to_s unless @config_file.nil?
 
-        tenant_config = KPM::TenantConfig.new(kb_api_credentials, kb_credentials, kb_url, logger_suppressed)
+        tenant_config = KPM::TenantConfig.new(@killbill_api_credentials,
+                                              @killbill_credentials, @killbill_url, @logger)
         export_file = tenant_config.export
 
         final = TMP_DIR + File::Separator + TENANT_FILE
-        FileUtils.cp(export_file, final)
-
-        FileUtils.rm_r(export_file.gsub(export_file.split('/').last, ''))
+        FileUtils.move(export_file, final)
+        @logger.level = @original_logger_level
 
         final
       end
 
-      def get_system_config(config_file)
+      def get_system_config
 
-        logger.info 'Retrieving system configuration'
-
+        @logger.info 'Retrieving system configuration'
         system = KPM::System.new
-        export_data = system.information(nil, true, config_file, nil, nil)
+        export_data = system.information(nil, true, @config_file, @kaui_web_path, @killbill_web_path)
 
         get_system_catalina_base(export_data)
 
         export_file = TMP_DIR + File::SEPARATOR + SYSTEM_FILE
         File.open(export_file, 'w') { |io| io.puts export_data }
-
         export_file
       end
 
 
-      def get_account_data(config_file, account_id)
+      def get_account_data(account_id)
 
-        logger.info 'Retrieving account data for id: ' + account_id
+        @logger.info 'Retrieving account data for id: ' + account_id
+        # this suppress the message of where it put the account file, this is to avoid confusion
+        @logger.level = Logger::WARN
 
-
-        account = KPM::Account.new(config_file, nil, nil, nil, nil,
-                                   nil,nil,nil, logger_suppressed)
+        account = KPM::Account.new(@config_file, @killbill_api_credentials, @killbill_credentials,
+                                   @killbill_url, @database_name,
+                                   @database_credentials,@database_host,nil, @logger)
         export_file = account.export_data(account_id)
 
-
         final  = TMP_DIR + File::Separator + ACCOUNT_FILE
-        FileUtils.cp(export_file, final)
-
-        FileUtils.rm_r(export_file.gsub(export_file.split('/').last, ''))
-
+        FileUtils.move(export_file, final)
+        @logger.level = @original_logger_level
         final
       end
 
       def get_log_files(log_dir)
 
-        logger.info 'Collecting log files'
-
-        log_base = log_dir || @@catalina_base
+        @logger.info 'Collecting log files'
+        log_base = log_dir || @catalina_base
         log_items = Dir.glob(log_base + File::Separator + 'logs' + File::Separator + '*')
-
 
         zip_file_name = TMP_DIR + File::Separator + ZIP_LOG_FILE
 
         Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipFile|
 
           log_items.each do |file|
-
             name = file.split('/').last
-
             zipFile.add(name, file)
-
           end
 
         end
@@ -152,7 +151,7 @@ module KPM
       def get_system_catalina_base(export_data)
 
         system_json = JSON.parse(export_data)
-        @@catalina_base = system_json['java_system_information']['catalina.base']['value']
+        @catalina_base = system_json['java_system_information']['catalina.base']['value']
 
       end
 
@@ -183,18 +182,6 @@ module KPM
           end
         end
 
-      end
-
-      def logger
-        logger       = ::Logger.new(STDOUT)
-        logger.level = Logger::INFO
-        logger
-      end
-
-      def logger_suppressed
-        logger_s       = ::Logger.new(STDOUT)
-        logger_s.level = Logger::WARN
-        logger_s
       end
 
     end
