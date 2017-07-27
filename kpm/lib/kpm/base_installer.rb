@@ -170,7 +170,7 @@ module KPM
       plugins_dir = bundles_dir.join('plugins')
 
       if type.to_s == 'java'
-        plugin_name = name.nil? ? Pathname.new(file_path).basename.to_s.split('-')[0] : name
+        plugin_name = name.nil? ? get_plugin_name_from_file_path(file_path) : name
         destination = plugins_dir.join('java').join(plugin_name).join(version)
       else
         destination = plugins_dir.join('ruby')
@@ -315,5 +315,16 @@ module KPM
       nil
     end
 
+    def get_plugin_name_from_file_path(file_path)
+      base = File.basename(file_path).to_s
+      ver = base.match(/(\d+)(\.(\d+)){,6}/)
+      ext = File.extname(base)
+
+      name = base.gsub(ext,'')
+      name = name.gsub(ver[0],'') unless ver.nil?
+      name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
+
+      name
+    end
   end
 end
