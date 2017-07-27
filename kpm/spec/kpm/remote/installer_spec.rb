@@ -19,7 +19,11 @@ describe KPM::Installer do
                                             @logger)
 
       # No exception
-      installer.install.should be_nil
+      response = nil
+      expect{ response = installer.install }.to_not raise_exception
+      response = JSON[response]
+      response['help'].should be_nil
+      response['killbill']['status'].should eq 'INSTALLED'
     end
   end
 
@@ -34,7 +38,11 @@ describe KPM::Installer do
                                             @logger)
 
       # No exception
-      installer.install.should be_nil
+      response = nil
+      expect{ response = installer.install }.to_not raise_exception
+      response = JSON[response]
+      response['help'].should be_nil
+      response['kaui']['status'].should eq 'INSTALLED'
     end
   end
 
