@@ -52,6 +52,20 @@ describe KPM::BaseInstaller do
     end
   end
 
+  it 'should extract plugin name from file path' do
+    installer = KPM::BaseInstaller.new(@logger)
+
+    [
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-1.0.0.jar', :expected => 'xxx'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-bar-1.0.0.jar', :expected => 'xxx-foo-bar'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0.jar', :expected => 'xxx-foo'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0-SNAPSHOT.jar', :expected => 'xxx-foo'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.jar', :expected => 'xxx-foo'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.jar', :expected => 'xxx-foo'}
+    ].each do |test|
+      installer.send(:get_plugin_name_from_file_path, test[:file_path]).should eq test[:expected]
+    end
+  end
 
   private
 

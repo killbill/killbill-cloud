@@ -75,7 +75,8 @@ module KPM
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
-      help
+      @trace_logger.add('help',help)
+      @trace_logger.to_json
     end
 
     private
