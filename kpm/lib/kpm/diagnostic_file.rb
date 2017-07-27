@@ -129,7 +129,7 @@ module KPM
       def get_log_files(log_dir)
 
         @logger.info 'Collecting log files'
-        log_base = log_dir || @catalina_base
+        log_base = log_dir || (@catalina_base + File::Separator + 'logs')
         log_items = Dir.glob(log_base + File::Separator + '*')
 
         zip_file_name = TMP_DIR + File::Separator + ZIP_LOG_FILE
@@ -151,7 +151,6 @@ module KPM
       def get_system_catalina_base(export_data)
         system_json = JSON.parse(export_data)
         @catalina_base = system_json['java_system_information']['catalina.base']['value']
-        @catalina_base = @catalina_base + File::Separator + 'logs'
 
       end
 
