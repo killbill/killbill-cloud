@@ -21,6 +21,7 @@ module KPM
   autoload :Account, 'kpm/account'
   autoload :Database, 'kpm/database'
   autoload :TenantConfig, 'kpm/tenant_config'
+  autoload :DiagnosticFile, 'kpm/diagnostic_file'
   autoload :NexusFacade, 'kpm/nexus_helper/nexus_facade'
   autoload :TraceLogger, 'kpm/trace_logger'
 

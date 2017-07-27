@@ -599,6 +599,99 @@ module KPM
         end
 
 
+        method_option :account_export,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'export account for a provided id.'
+        method_option :log_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => '(Optional) Log directory if the default tomcat location has changed'
+        method_option :config_file,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Yml that contains killbill api connection and DB connection'
+        method_option :killbill_api_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+        method_option :killbill_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'Killbill credentials <user> <password>'
+        method_option :killbill_url,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+        method_option :database_name,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'DB name to connect'
+        method_option :database_credentials,
+                      :type    => :array,
+                      :default => nil,
+                      :desc    => 'DB credentials <user> <password>'
+        method_option :database_host,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Database Host name'
+        method_option :kaui_web_path,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Path for the KAUI web app'
+        method_option :killbill_web_path,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Path for the killbill web app'
+        desc 'diagnostic', 'exports and \'zips\' the account data, system, logs and tenant configurations'
+        def diagnostic
+          logger.info 'Please wait processing the request!!!'
+          begin
+            if options[:account_export] && options[:account_export] == 'account_export'
+              raise Interrupt,'--account_export,  please provide a valid account id'
+            end
+
+            if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
+              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+            end
+
+            if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
+              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+            end
+
+            if options[:killbill_credentials] && options[:killbill_credentials].size != 2
+              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+            end
+
+            if options[:database_credentials] && options[:database_credentials].size != 2
+              raise Interrupt,'--database_credentials, required format -> <user> <password>'
+            end
+
+            if options[:database_name] && options[:database_name] == :database_name.to_s
+              raise Interrupt,'--database_credentials, please provide a valid database name'
+            end
+
+            if options[:kaui_web_path] && options[:kaui_web_path] == :kaui_web_path.to_s
+              raise Interrupt,'--kaui_web_path, please provide a valid kaui web path '
+            end
+
+            if options[:killbill_web_path] && options[:killbill_web_path] == :killbill_web_path.to_s
+              raise Interrupt,'--killbill_web_path, please provide a valid killbill web path'
+            end
+
+            diagnostic = KPM::DiagnosticFile.new(options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
+                                       options[:killbill_url],options[:database_name],options[:database_credentials],
+                                      options[:database_host], options[:kaui_web_path], options[:killbill_web_path],logger)
+            diagnostic.export_data(options[:account_export],  options[:log_dir])
+
+          rescue Exception => e
+            logger.error "\e[91;1m#{e.message}\e[0m"
+            if not e.is_a?(Interrupt)
+              logger.error e.backtrace.join("\n")
+            end
+          end
+        end
+
         map :pull_ruby_plugin => :install_ruby_plugin,
             :pull_java_plugin => :install_java_plugin
 
