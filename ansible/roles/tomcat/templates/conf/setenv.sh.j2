@@ -43,6 +43,9 @@ export CATALINA_OPTS="$CATALINA_OPTS
                       -Djava.rmi.server.hostname={{ inventory_hostname }}
                       -Djava.security.egd=file:/dev/./urandom
                       -Djruby.compile.invokedynamic=false
-                      -Dlog4jdbc.sqltiming.error.threshold=1000
-                      -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
-                      -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties"
+                      -Dlog4jdbc.sqltiming.error.threshold=1000"
+
+# Allow for further customization
+if [ -r "$CATALINA_BASE/bin/setenv2.sh" ]; then
+  . "$CATALINA_BASE/bin/setenv2.sh"
+fi
