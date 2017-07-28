@@ -44,6 +44,18 @@ module KPM
         Pathname(path).each_filename.to_a[1..-1].join(File::SEPARATOR)
       end
 
+      def peek_tgz_file_names(tar_gz_archive)
+        file_names = []
+        Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
+          tar.each do |entry|
+            if entry.file?
+              file_names.push entry.full_name
+            end
+          end
+        end
+
+        file_names
+      end
 
       def get_plugin_name_from_file_path(file_path)
         base = File.basename(file_path).to_s
