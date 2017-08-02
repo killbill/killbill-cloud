@@ -101,6 +101,7 @@ module KPM
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
           downloaded_artifact_info = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
+          remove_old_default_bundles(coordinate_map,artifact_info,downloaded_artifact_info)
           if artifact_info[:is_tgz]
             artifact_info[:bundle_dir] = Utils.unpack_tgz(downloaded_artifact_info[:file_path], artifact_info[:dir_name], skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
@@ -272,6 +273,22 @@ module KPM
 
         # Probably a directory
         true
+      end
+
+      def remove_old_default_bundles(coordinate_map, artifact_info, downloaded_artifact_info)
+        return unless coordinate_map[:artifact_id] == 'killbill-platform-osgi-bundles-defaultbundles'
+
+        downloaded_default_bundles = Utils.peek_tgz_file_names(downloaded_artifact_info[:file_path])
+        existing_default_bundles = Dir.glob("#{artifact_info[:dir_name]}/*")
+
+        existing_default_bundles.each do |bundle|
+          bundle_name = Utils.get_plugin_name_from_file_path(bundle)
+          is_downloaded = downloaded_default_bundles.index {|file_name| file_name.include? bundle_name}
+          unless is_downloaded.nil?
+            FileUtils.remove(bundle)
+          end
+        end
+
       end
     end
   end

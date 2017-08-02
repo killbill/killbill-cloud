@@ -43,6 +43,32 @@ module KPM
       def path_with_skipped_top_level_dir(path)
         Pathname(path).each_filename.to_a[1..-1].join(File::SEPARATOR)
       end
+
+      def peek_tgz_file_names(tar_gz_archive)
+        file_names = []
+        Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
+          tar.each do |entry|
+            if entry.file?
+              file_names.push entry.full_name
+            end
+          end
+        end
+
+        file_names
+      end
+
+      def get_plugin_name_from_file_path(file_path)
+        base = File.basename(file_path).to_s
+        ver = base.match(/(\d+)(\.(\d+)){,6}(-SNAPSHOT){,1}/)
+        ext = File.extname(base)
+
+        name = base.gsub(ext,'')
+        name = name.gsub(ver[0],'') unless ver.nil?
+        name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
+
+        name
+      end
+
     end
   end
 end

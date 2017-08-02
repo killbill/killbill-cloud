@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe KPM::Migrations do
+describe KPM::Migrations, :skip_me_if_nil => ENV['TOKEN'].nil? do
 
   context 'plugins' do
     it 'should be able to find migrations for a java plugin' do
