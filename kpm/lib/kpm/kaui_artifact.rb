@@ -11,7 +11,7 @@ module KPM
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
         versions    = SortedSet.new
-        response.elements.each('search-results/data/artifact/version') { |element| versions << element.text }
+        response.elements.each('searchNGResponse/data/artifact/version') { |element| versions << element.text }
         versions
       end
     end
