@@ -46,6 +46,26 @@ describe KPM::BaseArtifact do
     end
   end
 
+  it 'should be able to download and remove previous version artifacts' do
+    group_id    = 'org.kill-bill.billing'
+    artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
+    packaging   = 'tar.gz'
+    classifier  = nil
+    version     = '0.36.2'
+
+    second_bundle_version = '0.36.10'
+
+    Dir.mktmpdir do |dir|
+      first_take = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, dir)
+      File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar').should be_true
+
+      second_take = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, second_bundle_version, dir)
+      File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar').should be_false
+      File.file?(second_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.10.jar').should be_true
+
+    end
+  end
+
 
   def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false)
     path = filename.nil? ? dir : dir + '/' + filename
