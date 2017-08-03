@@ -16,6 +16,13 @@ module KPM
     end
 
     def self.build_default_config(all_kb_versions=nil)
+      latest_stable_version = get_kb_latest_stable_version(all_kb_versions)
+
+      # Note: we assume no unstable version of Kaui is published today
+      {'killbill' => {'version' => latest_stable_version.to_s, 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
+    end
+
+    def self.get_kb_latest_stable_version(all_kb_versions=nil)
       all_kb_versions ||= KillbillServerArtifact.versions(KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
                                                           KillbillServerArtifact::KILLBILL_PACKAGING,
                                                           KillbillServerArtifact::KILLBILL_CLASSIFIER,
@@ -32,8 +39,7 @@ module KPM
         latest_stable_version = version if version > latest_stable_version
       end
 
-      # Note: we assume no unstable version of Kaui is published today
-      {'killbill' => {'version' => latest_stable_version.to_s, 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
+      latest_stable_version
     end
 
     def initialize(raw_config, logger=nil)

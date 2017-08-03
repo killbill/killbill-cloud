@@ -27,7 +27,7 @@ module KPM
     class NexusApiCallsV2
       PULL_ARTIFACT_ENDPOINT = '/service/local/artifact/maven/redirect'
       GET_ARTIFACT_INFO_ENDPOINT = '/service/local/artifact/maven/resolve'
-      SEARCH_FOR_ARTIFACT_ENDPOINT = '/service/local/data_index'
+      SEARCH_FOR_ARTIFACT_ENDPOINT = '/service/local/lucene/search'
 
       READ_TIMEOUT_DEFAULT = 60
       OPEN_TIMEOUT_DEFAULT = 60

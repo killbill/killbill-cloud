@@ -25,6 +25,11 @@ module KPM
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
+      if version == LATEST_VERSION
+        latest_stable_version = KPM::Installer.get_kb_latest_stable_version
+        version = latest_stable_version unless latest_stable_version.nil?
+      end
+
       @logger.debug("Installing Kill Bill server: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       artifact_info = KPM::KillbillServerArtifact.pull(@logger,
                                        group_id,
