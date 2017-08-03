@@ -34,7 +34,7 @@ module KPM
         next if version.nil?
 
         major, minor, patch, pre = version.segments
-        next if !pre.nil? || minor.nil? || minor.to_i.odd? || patch.to_i.odd?
+        next if !pre.nil? || minor.nil? || minor.to_i.odd?
 
         latest_stable_version = version if version > latest_stable_version
       end
