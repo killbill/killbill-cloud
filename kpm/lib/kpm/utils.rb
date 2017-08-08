@@ -63,15 +63,22 @@ module KPM
         ext = File.extname(base)
 
         name = base.gsub(ext,'')
-        name = name.gsub(ver,'') unless ver.nil?
-        name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
+        if ver.nil?
+          # this will remove SNAPSHOT and any dash that appear before it (ex --SNAPSHOT).
+          name = name.gsub(/((-+){,1}SNAPSHOT){,1}/,'')
+          last_dash = name.rindex('-')
+          name = name[0..last_dash]
+        else
+          name = name.gsub(ver,'')
+        end
 
+        name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
         name
       end
 
       def get_version_from_file_path(file_path)
         base = File.basename(file_path).to_s
-        ver = base.match(/(\d+)(\.(\d+)){,6}(-SNAPSHOT){,1}/)
+        ver = base.match(/(\d+)(\.(\d+)){,6}((-+){,1}SNAPSHOT){,1}/)
 
         return ver if ver.nil?
 
