@@ -60,7 +60,9 @@ describe KPM::BaseInstaller do
       {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0.jar', :expected => 'xxx-foo'},
       {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0-SNAPSHOT.jar', :expected => 'xxx-foo'},
       {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.jar', :expected => 'xxx-foo'}
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.jar', :expected => 'xxx-foo'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc-SNAPSHOT.jar', :expected => 'xxx-foo'},
+      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc.jar', :expected => 'xxx-foo'}
     ].each do |test|
       KPM::Utils.get_plugin_name_from_file_path(test[:file_path]).should eq test[:expected]
     end

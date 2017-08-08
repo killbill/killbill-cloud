@@ -174,6 +174,10 @@ module KPM
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
+      if version.nil?
+        version = Utils.get_version_from_file_path(file_path)
+      end
+
       if type.to_s == 'java'
         plugin_name = name.nil? ? Utils.get_plugin_name_from_file_path(file_path) : name
         destination = plugins_dir.join('java').join(plugin_name).join(version)
