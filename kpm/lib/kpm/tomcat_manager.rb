@@ -47,7 +47,8 @@ module KPM
 
       # Setup default properties
       setenv_sh_path = @tomcat_dir.join('bin').join('setenv.sh')
-      File.write(setenv_sh_path, 'export CATALINA_OPTS="$CATALINA_OPTS -XX:PermSize=512m -XX:MaxPermSize=1G -Xms1G -Xmx2G"')
+
+      File.write(setenv_sh_path, "export CATALINA_OPTS=\"$CATALINA_OPTS #{default_java_properties}\"")
 
       @tomcat_dir.join('webapps').join('ROOT.war').to_s
     end
@@ -57,6 +58,36 @@ module KPM
 Start script: #{@tomcat_dir.join('bin').join('startup.sh').to_s}
 Stop script: #{@tomcat_dir.join('bin').join('shutdown.sh').to_s}
 Logs: #{@tomcat_dir.join('logs').to_s}"
+    end
+
+    private
+
+    def default_java_properties
+      <<HEREDOC.gsub(/\s+/, ' ').strip
+      -server
+      -showversion
+      -XX:+PrintCommandLineFlags
+      -XX:+UseCodeCacheFlushing
+      -XX:PermSize=512m
+      -XX:MaxPermSize=1G
+      -Xms1G
+      -Xmx2G
+      -XX:+CMSClassUnloadingEnabled
+      -XX:-OmitStackTraceInFastThrow
+      -XX:+UseParNewGC
+      -XX:+UseConcMarkSweepGC
+      -XX:+CMSConcurrentMTEnabled
+      -XX:+CMSParallelRemarkEnabled
+      -XX:+UseCMSInitiatingOccupancyOnly
+      -XX:CMSInitiatingOccupancyFraction=70
+      -XX:+ScavengeBeforeFullGC
+      -XX:+CMSScavengeBeforeRemark
+      -XX:NewSize=600m
+      -XX:MaxNewSize=900m
+      -XX:SurvivorRatio=10
+      -XX:+DisableExplicitGC
+      -Djava.security.egd=file:/dev/./urandom
+HEREDOC
     end
   end
 end
