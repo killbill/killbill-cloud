@@ -58,7 +58,7 @@ module KPM
             zipFile.add(TENANT_FILE,  tenant_export_file)
             zipFile.add(SYSTEM_FILE,  system_export_file)
             zipFile.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
-            zipFile.add(ZIP_LOG_FILE, log_files)
+            zipFile.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
 
           end
 
@@ -129,6 +129,12 @@ module KPM
       def get_log_files(log_dir)
 
         @logger.info 'Collecting log files'
+
+        if @catalina_base.nil? && log_dir.nil?
+          @logger.warn 'Unable to find Tomcat process, make sure to run kpm using the same user as the Tomcat process.'
+          return nil
+        end
+
         log_base = log_dir || (@catalina_base + File::Separator + 'logs')
         log_items = Dir.glob(log_base + File::Separator + '*')
 
@@ -149,8 +155,24 @@ module KPM
       # Helpers
 
       def get_system_catalina_base(export_data)
+        @catalina_base = nil
         system_json = JSON.parse(export_data)
-        @catalina_base = system_json['java_system_information']['catalina.base']['value']
+
+        if system_json['java_system_information']['catalina.base'].nil?
+
+          # find jcmd
+          jcmd = ( ENV['JAVA_HOME'] || '/**' ) + File::Separator + 'bin' + File::Separator + 'jcmd'
+          jcmd = Dir[jcmd][0]
+          return if jcmd.nil?
+
+          pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n",'')
+          return if pid.nil? || pid.empty?
+
+          @catalina_base = `#{jcmd} #{pid} VM.system_properties | awk '/catalina.base=/' | cut -d '=' -f 2`.gsub("\n",'')
+
+        else
+          @catalina_base = system_json['java_system_information']['catalina.base']['value']
+        end
 
       end
 

@@ -226,7 +226,7 @@ module KPM
 
       yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
       unless Dir[yaml_file][0].nil?
-        yml_data = YAML::load_file(yaml_file)
+        yml_data = YAML::load_file(Dir[yaml_file][0])
 
         version = yml_data['version']
       end
