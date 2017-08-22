@@ -25,7 +25,7 @@ module KPM
 
       def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                      database_name = nil, database_credentials = nil, database_host = nil, kaui_web_path = nil,
-                     killbill_web_path = nil, logger = nil)
+                     killbill_web_path = nil, bundles_dir = nil, logger = nil)
         @killbill_api_credentials = killbill_api_credentials
         @killbill_credentials = killbill_credentials
         @killbill_url = killbill_url
@@ -38,6 +38,7 @@ module KPM
         @logger = logger
         @original_logger_level = logger.level;
         @catalina_base = nil
+        @bundles_dir = bundles_dir
       end
 
       def export_data(account_id = nil, log_dir = nil)
@@ -99,7 +100,7 @@ module KPM
 
         @logger.info 'Retrieving system configuration'
         system = KPM::System.new
-        export_data = system.information(nil, true, @config_file, @kaui_web_path, @killbill_web_path)
+        export_data = system.information(@bundles_dir, true, @config_file, @kaui_web_path, @killbill_web_path)
 
         get_system_catalina_base(export_data)
 
