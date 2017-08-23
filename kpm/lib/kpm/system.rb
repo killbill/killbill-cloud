@@ -310,6 +310,15 @@ module KPM
 
       end
 
+      return apache_tomcat_pid unless apache_tomcat_pid.nil?
+
+      jcmd = ( ENV['JAVA_HOME'] || '/**' ) + File::Separator + 'bin' + File::Separator + 'jcmd'
+      jcmd = Dir[jcmd][0]
+      return nil if jcmd.nil?
+
+      apache_tomcat_pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n",'')
+      return nil if apache_tomcat_pid.nil? || apache_tomcat_pid.empty?
+
       apache_tomcat_pid
     end
 

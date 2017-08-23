@@ -159,21 +159,9 @@ module KPM
         @catalina_base = nil
         system_json = JSON.parse(export_data)
 
-        if system_json['java_system_information']['catalina.base'].nil?
+        return if system_json['java_system_information']['catalina.base'].nil?
 
-          # find jcmd
-          jcmd = ( ENV['JAVA_HOME'] || '/**' ) + File::Separator + 'bin' + File::Separator + 'jcmd'
-          jcmd = Dir[jcmd][0]
-          return if jcmd.nil?
-
-          pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n",'')
-          return if pid.nil? || pid.empty?
-
-          @catalina_base = `#{jcmd} #{pid} VM.system_properties | awk '/catalina.base=/' | cut -d '=' -f 2`.gsub("\n",'')
-
-        else
-          @catalina_base = system_json['java_system_information']['catalina.base']['value']
-        end
+        @catalina_base = system_json['java_system_information']['catalina.base']['value']
 
       end
 
