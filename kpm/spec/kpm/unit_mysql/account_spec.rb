@@ -6,9 +6,10 @@ describe KPM::Account do
     include_context 'connection_setup'
 
     let(:db_host) {'localhost'}
+    let(:db_port) {'3306'}
     let(:account_class) { described_class.new(nil,[killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,
-                                             db_name, [db_username, db_password],db_host,nil,logger)}
+                                             db_name, [db_username, db_password],db_host,db_port,nil,logger)}
     let(:dummy_account_id) {SecureRandom.uuid}
     let(:account_id_invalid) {SecureRandom.uuid}
     let(:dummy_data) {

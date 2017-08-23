@@ -14,6 +14,7 @@ module KPM
       USERNAME = ENV['USERNAME'] || 'root'
       PASSWORD = ENV['PASSWORD'] || 'root'
       HOST = ENV['HOST'] || 'localhost'
+      PORT = ENV['PORT'] || '3306'
 
       COLUMN_NAME_POS = 3
       
@@ -26,6 +27,7 @@ module KPM
       @@password = PASSWORD
       @@database = DATABASE
       @@host = HOST
+      @@port = PORT
 
       def set_logger(logger)
         @@logger = logger
@@ -40,12 +42,16 @@ module KPM
         @@host = host
       end
 
+      def set_port(port)
+        @@port = port
+      end
+
       def set_database_name(database_name = nil)
         @@database = database_name
       end
 
       def set_mysql_command_line
-        @@mysql_command_line = "mysql #{@@database} --host=#{@@host} --user=#{@@username} --password=#{@@password} "
+        @@mysql_command_line = "mysql #{@@database} --host=#{@@host} --port=#{@@port} --user=#{@@username} --password=#{@@password} "
       end
 
       def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)
@@ -58,10 +64,12 @@ module KPM
         File.open(STATEMENT_TMP_FILE,'w') do |s|
           s.puts query
         end
-          
+
         response = `#{@@mysql_command_line} < "#{STATEMENT_TMP_FILE}" 2>&1`
 
         if response.include? 'ERROR'
+          @@logger.error "\e[91;1mTransaction that fails to be executed\e[0m"
+          @@logger.error "\e[91m#{query}\e[0m"
           raise Interrupt, "Importing table #{table_name}...... \e[91;1m#{response}\e[0m"
         end
 
@@ -89,17 +97,20 @@ module KPM
 
         tables.each_key do |table_name|
           table = tables[table_name]
-          columns_names = table[:col_names].join(",").gsub(/'/,'')
+          if !table[:rows].nil? && table[:rows].size > 0
+            columns_names = table[:col_names].join(",").gsub(/'/,'')
 
-          rows = []
-          table[:rows].each do |row|
-            rows << row.map{|value| value.is_a?(Symbol) ? value.to_s : "'#{value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')}'" }.join(",")
+            rows = []
+            table[:rows].each do |row|
+              rows << row.map{|value| value.is_a?(Symbol) ? value.to_s : "'#{value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')}'" }.join(",")
+            end
+
+            value_data = rows.map{|row| "(#{row})" }.join(",")
+
+            statements << {:query => get_insert_statement(table_name,columns_names,value_data, rows.size),
+                                      :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
+
           end
-
-          value_data = rows.map{|row| "(#{row})" }.join(",")
-
-          statements << {:query => get_insert_statement(table_name,columns_names,value_data, rows.size),
-                                    :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
 
         end
 

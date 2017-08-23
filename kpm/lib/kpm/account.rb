@@ -72,7 +72,7 @@ module KPM
     DEFAULT_DELIMITER = "|"
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
-                   database_name = nil, database_credentials = nil, database_host = nil, data_delimiter = nil, logger = nil)
+                   database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, data_delimiter = nil, logger = nil)
       @killbill_api_key = KILLBILL_API_KEY
       @killbill_api_secrets = KILLBILL_API_SECRET
       @killbill_url = KILLBILL_URL
@@ -84,7 +84,7 @@ module KPM
 
 
       set_killbill_options(killbill_api_credentials,killbill_credentials,killbill_url)
-      set_database_options(database_host,database_name,database_credentials,logger)
+      set_database_options(database_host,database_port,database_name,database_credentials,logger)
 
       load_config_from_file(config_file)
 
@@ -268,6 +268,7 @@ module KPM
         cols = line.strip.split(@delimiter)
 
         if cols_names.size != cols.size
+          @logger.warn "\e[32mWARNING!!! On #{table_name} table there is a mismatch on column count[#{cols.size}] versus header count[#{cols_names.size}]\e[0m"
           return nil
         end
 
@@ -276,7 +277,7 @@ module KPM
         cols_names.each_with_index do |col_name, index|
           sanitized_value = sanitize(table_name,col_name,cols[index], skip_payment_methods)
 
-          if not sanitized_value.nil?
+          unless sanitized_value.nil?
             row << sanitized_value
           end
         end
@@ -479,13 +480,14 @@ module KPM
 
       end
 
-      def set_database_options(database_host = nil, database_name = nil, database_credentials = nil, logger)
+      def set_database_options(database_host = nil, database_port = nil, database_name = nil, database_credentials = nil, logger)
 
         Database.set_logger(logger)
 
         Database.set_credentials(database_credentials[0],database_credentials[1]) unless database_credentials.nil?
         Database.set_database_name(database_name) unless database_name.nil?
         Database.set_host(database_host) unless database_host.nil?
+        Database.set_port(database_port) unless database_port.nil?
 
         Database.set_mysql_command_line
       end
