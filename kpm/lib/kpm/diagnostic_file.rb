@@ -25,7 +25,7 @@ module KPM
 
       def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                      database_name = nil, database_credentials = nil, database_host = nil, kaui_web_path = nil,
-                     killbill_web_path = nil, logger = nil)
+                     killbill_web_path = nil, bundles_dir = nil, logger = nil)
         @killbill_api_credentials = killbill_api_credentials
         @killbill_credentials = killbill_credentials
         @killbill_url = killbill_url
@@ -38,6 +38,7 @@ module KPM
         @logger = logger
         @original_logger_level = logger.level;
         @catalina_base = nil
+        @bundles_dir = bundles_dir
       end
 
       def export_data(account_id = nil, log_dir = nil)
@@ -58,7 +59,7 @@ module KPM
             zipFile.add(TENANT_FILE,  tenant_export_file)
             zipFile.add(SYSTEM_FILE,  system_export_file)
             zipFile.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
-            zipFile.add(ZIP_LOG_FILE, log_files)
+            zipFile.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
 
           end
 
@@ -99,7 +100,7 @@ module KPM
 
         @logger.info 'Retrieving system configuration'
         system = KPM::System.new
-        export_data = system.information(nil, true, @config_file, @kaui_web_path, @killbill_web_path)
+        export_data = system.information(@bundles_dir, true, @config_file, @kaui_web_path, @killbill_web_path)
 
         get_system_catalina_base(export_data)
 
@@ -129,6 +130,12 @@ module KPM
       def get_log_files(log_dir)
 
         @logger.info 'Collecting log files'
+
+        if @catalina_base.nil? && log_dir.nil?
+          @logger.warn 'Unable to find Tomcat process, make sure to run kpm using the same user as the Tomcat process.'
+          return nil
+        end
+
         log_base = log_dir || (@catalina_base + File::Separator + 'logs')
         log_items = Dir.glob(log_base + File::Separator + '*')
 
@@ -149,7 +156,11 @@ module KPM
       # Helpers
 
       def get_system_catalina_base(export_data)
+        @catalina_base = nil
         system_json = JSON.parse(export_data)
+
+        return if system_json['java_system_information']['catalina.base'].nil?
+
         @catalina_base = system_json['java_system_information']['catalina.base']['value']
 
       end

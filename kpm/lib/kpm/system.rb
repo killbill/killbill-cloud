@@ -226,7 +226,7 @@ module KPM
 
       yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
       unless Dir[yaml_file][0].nil?
-        yml_data = YAML::load_file(yaml_file)
+        yml_data = YAML::load_file(Dir[yaml_file][0])
 
         version = yml_data['version']
       end
@@ -309,6 +309,15 @@ module KPM
         end
 
       end
+
+      return apache_tomcat_pid unless apache_tomcat_pid.nil?
+
+      jcmd = ( ENV['JAVA_HOME'] || '/**' ) + File::Separator + 'bin' + File::Separator + 'jcmd'
+      jcmd = Dir[jcmd][0]
+      return nil if jcmd.nil?
+
+      apache_tomcat_pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n",'')
+      return nil if apache_tomcat_pid.nil? || apache_tomcat_pid.empty?
 
       apache_tomcat_pid
     end

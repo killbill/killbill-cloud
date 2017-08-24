@@ -490,6 +490,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'Database Host name'
+        method_option :database_port,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Database Host name'
         desc 'account', 'export/import accounts'
         def account
           logger.info 'Please wait processing the request!!!'
@@ -525,7 +529,7 @@ module KPM
 
 
             account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:database_host],options[:data_delimiter], logger)
+                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:database_host], options[:database_port],options[:data_delimiter], logger)
             export_file = nil
             round_trip_export_import = false
 
@@ -643,6 +647,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'Path for the killbill web app'
+        method_option :bundles_dir,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'A different folder other than the default bundles directory.'
         desc 'diagnostic', 'exports and \'zips\' the account data, system, logs and tenant configurations'
         def diagnostic
           logger.info 'Please wait processing the request!!!'
@@ -681,7 +689,7 @@ module KPM
 
             diagnostic = KPM::DiagnosticFile.new(options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
                                        options[:killbill_url],options[:database_name],options[:database_credentials],
-                                      options[:database_host], options[:kaui_web_path], options[:killbill_web_path],logger)
+                                      options[:database_host], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
             diagnostic.export_data(options[:account_export],  options[:log_dir])
 
           rescue Exception => e
