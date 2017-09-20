@@ -42,9 +42,6 @@ RUN adduser --disabled-password --gecos '' killbill && \
 RUN mkdir -p $KILLBILL_HOME $KILLBILL_CONFIG && \
     chown -R killbill:killbill $KILLBILL_CONFIG $KILLBILL_HOME /var/lib/jruby
 
-COPY ./setup.sh /etc/init.d/setup.sh
-RUN chmod +x /etc/init.d/setup.sh
-
 USER killbill
 WORKDIR $KILLBILL_HOME
 

@@ -49,6 +49,32 @@
         </repository>
       </repositories>
     </profile>
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+          <repository>
+              <snapshots>
+                  <enabled>false</enabled>
+              </snapshots>
+              <id>central</id>
+              <name>bintray</name>
+              <url>http://jcenter.bintray.com</url>
+          </repository>
+      </repositories>
+      <pluginRepositories>
+          <pluginRepository>
+              <snapshots>
+                  <enabled>false</enabled>
+              </snapshots>
+              <id>central</id>
+              <name>bintray-plugins</name>
+              <url>http://jcenter.bintray.com</url>
+          </pluginRepository>
+      </pluginRepositories>
+      <id>bintray</id>
+    </profile>
   </profiles>
   <servers>
     <server>
@@ -65,6 +91,14 @@
       <id>ossrh-releases</id>
       <username>${env.OSSRH_USER}</username>
       <password>${env.OSSRH_PASS}</password>
+    </server>
+    <server>
+      <id>gpg.passphrase</id>
+      <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+    </server>
+    <server>
+      <id>gpg.keyname</id>
+      <passphrase>${env.GPG_KEYNAME}</passphrase>
     </server>
   </servers>
 </settings>
