@@ -12,6 +12,7 @@ RUN apt-get update && \
       maven \
       mysql-client \
       openjdk-8-jdk \
+      postgresql-client \
       sudo \
       telnet \
       tomcat7 \
