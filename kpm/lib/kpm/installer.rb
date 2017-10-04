@@ -18,8 +18,20 @@ module KPM
     def self.build_default_config(all_kb_versions=nil)
       latest_stable_version = get_kb_latest_stable_version(all_kb_versions)
 
-      # Note: we assume no unstable version of Kaui is published today
-      {'killbill' => {'version' => latest_stable_version.to_s, 'plugins' => {'ruby' => [{'name' => 'kpm'}]}}, 'kaui' => {'version' => 'LATEST'}}
+      {
+          'killbill' => {
+              'version' => latest_stable_version.to_s,
+              'plugins' => {
+                  'ruby' => [
+                      {'name' => 'kpm'}
+                  ]
+              }
+          },
+          'kaui' => {
+              # Note: we assume no unstable version of Kaui is published today
+              'version' => 'LATEST'
+          }
+      }
     end
 
     def self.get_kb_latest_stable_version(all_kb_versions=nil)
