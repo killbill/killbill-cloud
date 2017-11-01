@@ -53,6 +53,8 @@ database_connection_timeout: 100s
 database_max_active: 150
 database_min_idle: 5
 database_idle_max_age: 2m
+notificationq_main_claimed: 100
+notificationq_main_sleep: 70000
 jvm_initial_memory: 4G
 jvm_max_memory: 4G
 jvm_jdwp_port: 12345
