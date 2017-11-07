@@ -48,7 +48,6 @@
 
 - name: start Tomcat
   become: true
-  become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
