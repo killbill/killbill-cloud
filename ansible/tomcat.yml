@@ -6,13 +6,14 @@
     tomcat_install_dir: /opt
     tomcat_owner: tomcat
     tomcat_group: tomcat
+    tomcat_home: /usr/share/tomcat
     catalina_home: /usr/share/tomcat
   become: yes
   tasks:
     - name: add Tomcat group
       group: name="{{ tomcat_group }}"
     - name: add Tomcat user
-      user: name="{{ tomcat_owner }}" group="{{ tomcat_group }}" home="{{ catalina_home }}" createhome=no
+      user: name="{{ tomcat_owner }}" group="{{ tomcat_group }}" home="{{ tomcat_home }}" createhome=no
     - name: ensure Tomcat install dir exists
       file: path="{{ tomcat_install_dir }}" state=directory
     - name: install Tomcat
