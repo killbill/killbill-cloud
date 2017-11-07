@@ -1,6 +1,6 @@
 ---
 - name: ensure Tomcat dirs exist
-  sudo: true
+  become: true
   file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
   with_items:
     - bin
@@ -13,7 +13,7 @@
   tags: tomcat
 
 - name: generate Tomcat files
-  sudo: true
+  become: true
   template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"

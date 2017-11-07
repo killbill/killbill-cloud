@@ -1,6 +1,6 @@
 ---
 - name: ensure Kill Bill dirs exist
-  sudo: true
+  become: true
   file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
   with_items:
     - "{{ kb_install_dir }}"
@@ -9,7 +9,7 @@
   tags: kpm-install
 
 - name: generate Kill Bill properties file
-  sudo: true
+  become: true
   template:
     src: killbill.properties.j2
     dest: "{{ kb_config_dir }}/killbill.properties"
@@ -20,7 +20,7 @@
   tags: kpm-install
 
 - name: generate Tomcat files
-  sudo: true
+  become: true
   template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
@@ -36,7 +36,7 @@
   tags: tomcat
 
 - name: run KPM install
-  sudo: true
+  become: true
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"

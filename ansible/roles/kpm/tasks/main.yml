@@ -1,13 +1,13 @@
 ---
 - name: ensure KPM install dir exists
-  sudo: true
+  become: true
   file:
     path: "{{ kpm_install_dir }}"
     state: directory
   tags: kpm
 
 - name: install KPM
-  sudo: true
+  become: true
   unarchive:
     src: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     remote_src: True
