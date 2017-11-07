@@ -7,4 +7,4 @@
       changed_when: true
       notify: "restart Tomcat"
   handlers:
-    - include: roles/tomcat/handlers/main.yml
+    - import_tasks: roles/tomcat/handlers/main.yml

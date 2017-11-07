@@ -22,7 +22,7 @@ Note that handlers need to be referenced by their full path, e.g.:
 
 ```
 handlers:
-  - include: ~/.ansible/roles/killbill-cloud/ansible/roles/tomcat/handlers/main.yml
+  - import_tasks: ~/.ansible/roles/killbill-cloud/ansible/roles/tomcat/handlers/main.yml
 ```
 
 See below for example playbooks.
