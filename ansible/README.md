@@ -46,7 +46,7 @@ Configuration:
 
 * [group_vars/all.yml](group_vars/all.yml) defines what to install (KPM version, Kill Bill version, plugins, etc.) and the main configuration options. This could be overridden in a child `group_vars` or even in `host_vars` (https://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 * [roles/killbill/templates/killbill.properties.j2](roles/killbill/templates/killbill.properties.j2) is the main Kill Bill configuration file
-* [roles/tomcat/templates/setenv.sh.j2](roles/tomcat/templates/setenv.sh.j2) defines JVM level system properties
+* [roles/tomcat/templates/conf/setenv.sh.j2](roles/tomcat/templates/conf/setenv.sh.j2) defines JVM level system properties
 
 Tomcat will automatically be restarted is `catalina_home` is defined.
 
