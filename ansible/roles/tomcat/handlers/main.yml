@@ -2,7 +2,9 @@
 - name: check Tomcat PID file
   stat: path="{{ catalina_base }}/tomcat.pid"
   register: tomcat_pid
-  when: catalina_home is defined
+  when:
+    - catalina_home is defined
+    - run_tomcat_handler
   listen: "restart Tomcat"
 
 - name: stop Tomcat (with PID file)
@@ -16,6 +18,7 @@
   when:
     - catalina_home is defined
     - tomcat_pid.stat.exists == True
+    - run_tomcat_handler
   listen: "restart Tomcat"
 
 - name: stop Tomcat (without PID file)
@@ -28,6 +31,7 @@
   when:
     - catalina_home is defined
     - tomcat_pid.stat.exists == False
+    - run_tomcat_handler
   listen: "restart Tomcat"
 
 - name: clean up Tomcat deployment files
@@ -37,7 +41,9 @@
   with_items:
     - webapps/ROOT
     - work/
-  when: catalina_home is defined
+  when:
+    - catalina_home is defined
+    - run_tomcat_handler
   listen: "restart Tomcat"
 
 - name: start Tomcat
@@ -51,7 +57,8 @@
   poll: 0
   when:
     - catalina_home is defined
-    - tomcat_foreground is not defined
+    - not tomcat_foreground
+    - run_tomcat_handler
   listen: "restart Tomcat"
 
 - name: run Tomcat
@@ -63,5 +70,6 @@
   command: "{{ catalina_home }}/bin/catalina.sh run"
   when:
     - catalina_home is defined
-    - tomcat_foreground is defined
+    - tomcat_foreground
+    - run_tomcat_handler
   listen: "restart Tomcat"
