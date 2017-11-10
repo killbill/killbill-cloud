@@ -69,10 +69,8 @@ CREATE TABLE `session` (
 You also need to add the InfluxDB datasources. Got to [http://localhost:3000/datasources/new](http://localhost:3000/datasources/new):
 
 * Name: influxdb
-* Type: InfluxDB 0.9.x
+* Type: InfluxDB
 * Url: http://influxdb:8086
 * Database: killbill
 * User: killbill
 * Password: killbill
-
-Add a second one `influxdb-cadvisor` connecting to the `cadvisor` database.
