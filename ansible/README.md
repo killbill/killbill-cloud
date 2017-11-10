@@ -18,13 +18,6 @@ then run `ansible-galaxy install -r requirements.yml`.
 
 The roles can now be referenced in your playbooks via `killbill-cloud/ansible/roles/XXX` (e.g. `killbill-cloud/ansible/roles/kpm`).
 
-Note that handlers need to be referenced by their full path, e.g.:
-
-```
-handlers:
-  - import_tasks: ~/.ansible/roles/killbill-cloud/ansible/roles/tomcat/handlers/main.yml
-```
-
 See below for example playbooks.
 
 # Usage
@@ -47,8 +40,6 @@ Configuration:
 * [group_vars/all.yml](group_vars/all.yml) defines what to install (KPM version, Kill Bill version, plugins, etc.) and the main configuration options. This could be overridden in a child `group_vars` or even in `host_vars` (https://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 * [roles/killbill/templates/killbill.properties.j2](roles/killbill/templates/killbill.properties.j2) is the main Kill Bill configuration file
 * [roles/tomcat/templates/conf/setenv.sh.j2](roles/tomcat/templates/conf/setenv.sh.j2) defines JVM level system properties
-
-Tomcat will automatically be restarted is `catalina_home` is defined.
 
 ## tomcat.yml playbook
 

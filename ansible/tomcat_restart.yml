@@ -1,10 +1,7 @@
 ---
 - name: Restart Tomcat
   hosts: all
+  become: yes
   tasks:
     - name: restart Tomcat
-      debug: msg="restarting Tomcat"
-      changed_when: true
-      notify: "restart Tomcat"
-  handlers:
-    - import_tasks: roles/tomcat/handlers/main.yml
+      import_tasks: roles/tomcat/tasks/restart.yml

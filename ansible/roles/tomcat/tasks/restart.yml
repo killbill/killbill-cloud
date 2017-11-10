@@ -4,8 +4,6 @@
   register: tomcat_pid
   when:
     - catalina_home is defined
-    - run_tomcat_handler
-  listen: "restart Tomcat"
 
 - name: stop Tomcat (with PID file)
   become: true
@@ -17,9 +15,7 @@
   ignore_errors: True
   when:
     - catalina_home is defined
-    - tomcat_pid.stat.exists == True
-    - run_tomcat_handler
-  listen: "restart Tomcat"
+    - tomcat_pid is not defined or tomcat_pid.stat.exists == True
 
 - name: stop Tomcat (without PID file)
   become: true
@@ -30,9 +26,7 @@
   ignore_errors: True
   when:
     - catalina_home is defined
-    - tomcat_pid.stat.exists == False
-    - run_tomcat_handler
-  listen: "restart Tomcat"
+    - tomcat_pid is not defined or tomcat_pid.stat.exists == False
 
 - name: clean up Tomcat deployment files
   become: true
@@ -43,8 +37,6 @@
     - work/
   when:
     - catalina_home is defined
-    - run_tomcat_handler
-  listen: "restart Tomcat"
 
 - name: start Tomcat
   become: true
@@ -56,8 +48,6 @@
   when:
     - catalina_home is defined
     - not tomcat_foreground
-    - run_tomcat_handler
-  listen: "restart Tomcat"
 
 - name: run Tomcat
   become: true
@@ -69,5 +59,3 @@
   when:
     - catalina_home is defined
     - tomcat_foreground
-    - run_tomcat_handler
-  listen: "restart Tomcat"

@@ -20,7 +20,6 @@
       name: setenv2.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
-  notify: "restart Tomcat"
   tags: tomcat
 
 - name: run KPM install
@@ -28,5 +27,4 @@
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"
-  notify: "restart Tomcat"
   tags: kpm-install
