@@ -12,3 +12,4 @@ logs/
 *.project
 ansible/*.retry
 ansible/hosts
+ansible-container/ansible-deployment
