@@ -9,5 +9,7 @@
     kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
   become: yes
   tasks:
+    - name: setup
+      import_tasks: roles/common/tasks/main.yml
     - name: install KPM
       import_tasks: roles/kpm/tasks/main.yml
