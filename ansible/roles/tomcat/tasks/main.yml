@@ -21,19 +21,19 @@
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
   with_items:
-    - src: conf
+    - src: tomcat/conf
       name: context.xml
       mode: u=rw,g=r,o=r
       dest: "{{ catalina_base }}/conf"
-    - src: conf
+    - src: tomcat/conf
       name: server.xml
       mode: u=rw,g=r,o=r
       dest: "{{ catalina_base }}/conf"
-    - src: conf
+    - src: tomcat/conf
       name: setenv.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
-    - src: conf
+    - src: tomcat/conf
       name: web.xml
       mode: u=rw,g=r,o=r
       dest: "{{ catalina_base }}/conf"

@@ -12,3 +12,5 @@
   tasks:
     - name: install Tomcat
       import_tasks: roles/tomcat/tasks/install.yml
+    - name: setup Tomcat
+      import_tasks: roles/tomcat/tasks/main.yml

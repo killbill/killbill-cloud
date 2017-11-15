@@ -16,7 +16,7 @@
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
   with_items:
-    - src: conf
+    - src: kaui/conf
       name: setenv2.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
