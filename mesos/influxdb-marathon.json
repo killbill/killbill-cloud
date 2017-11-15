@@ -1,0 +1,70 @@
+{
+  "id": "/influxdb",
+  "instances": 1,
+  "uris": [
+      "https://raw.githubusercontent.com/killbill/killbill-cloud/master/docker/compose/influxdb/config/influxdb.conf"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/etc/influxdb/influxdb.conf",
+        "hostPath": "./influxdb.conf",
+        "mode": "RO"
+      },
+      {
+        "containerPath": "/var/lib/influxdb",
+        "external": {
+          "name": "influxdb",
+          "provider": "dvdi",
+          "options": {
+            "dvdi/driver": "rexray"
+          }
+        },
+        "mode": "RW"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 8086,
+        "hostPort": 0,
+        "labels": {
+          "VIP_0": "/influxdb:8086"
+        },
+        "protocol": "tcp",
+        "name": "influxdb"
+      }
+    ],
+    "docker": {
+      "image": "influxdb:latest",
+      "forcePullImage": true
+    }
+  },
+  "cpus": 1,
+  "mem": 2048,
+  "requirePorts": false,
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "healthChecks": [
+    {
+      "portIndex": 0,
+      "protocol": "MESOS_TCP",
+      "intervalSeconds": 1,
+      "timeoutSeconds": 2,
+      "maxConsecutiveFailures": 5
+    }
+  ],
+  "fetch": [],
+  "constraints": [],
+  "env": {
+    "INFLUXDB_ADMIN_USER": "killbill",
+    "INFLUXDB_ADMIN_PASSWORD": "killbill",
+    "INFLUXDB_USER": "killbill",
+    "INFLUXDB_USER_PASSWORD": "killbill",
+    "INFLUXDB_DB": "killbill"
+  }
+}

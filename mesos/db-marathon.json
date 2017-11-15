@@ -1,0 +1,58 @@
+{
+  "id": "/killbill-db",
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/var/lib/mysql",
+        "external": {
+          "name": "killbill-db",
+          "provider": "dvdi",
+          "options": {
+            "dvdi/driver": "rexray"
+          }
+        },
+        "mode": "RW"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 3306,
+        "hostPort": 0,
+        "labels": {
+          "VIP_0": "/killbill-db:3306"
+        },
+        "protocol": "tcp",
+        "name": "killbill-db"
+      }
+    ],
+    "docker": {
+      "image": "killbill/mariadb:0.18",
+      "forcePullImage": true
+    }
+  },
+  "cpus": 2,
+  "mem": 2048,
+  "requirePorts": false,
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "healthChecks": [
+    {
+      "portIndex": 0,
+      "protocol": "MESOS_TCP",
+      "intervalSeconds": 1,
+      "timeoutSeconds": 2,
+      "maxConsecutiveFailures": 5
+    }
+  ],
+  "fetch": [],
+  "constraints": [],
+  "env": {
+    "MYSQL_ROOT_PASSWORD": "killbill"
+  }
+}

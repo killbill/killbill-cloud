@@ -1,0 +1,53 @@
+{
+  "id": "/kaui",
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 0,
+        "servicePort": 10080,
+        "protocol": "tcp",
+        "name": "kaui"
+      }
+    ],
+    "docker": {
+      "image": "killbill/kaui:latest",
+      "forcePullImage": true
+    }
+  },
+  "cpus": 2,
+  "mem": 2048,
+  "requirePorts": false,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "healthChecks": [
+    {
+      "gracePeriodSeconds": 60,
+      "intervalSeconds": 60,
+      "maxConsecutiveFailures": 3,
+      "path": "/",
+      "portIndex": 0,
+      "protocol": "HTTP",
+      "timeoutSeconds": 20
+    }
+  ],
+  "fetch": [],
+  "constraints": [],
+  "env": {
+    "KAUI_CONFIG_DAO_PASSWORD": "killbill",
+    "KAUI_CONFIG_DAO_URL": "jdbc:mysql://killbill-db.marathon.l4lb.thisdcos.directory:3306/kaui",
+    "KAUI_CONFIG_DAO_USER": "root",
+    "KAUI_KILLBILL_API_KEY": "bob",
+    "KAUI_KILLBILL_API_SECRET": "lazar",
+    "KAUI_KILLBILL_URL": "http://killbill.marathon.l4lb.thisdcos.directory:8080"
+  },
+  "labels":{
+    "HAPROXY_GROUP":"external"
+  }
+}
