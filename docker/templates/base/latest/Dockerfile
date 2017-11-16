@@ -55,7 +55,8 @@ RUN mkdir -p $TOMCAT_HOME/.ansible && \
     touch $TOMCAT_HOME/.ansible_galaxy && \
     chown tomcat $TOMCAT_HOME/.ansible && \
     chown tomcat $TOMCAT_HOME/.ansible_galaxy
-RUN ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git
+ARG KILLBILL_CLOUD_VERSION
+RUN ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
 
