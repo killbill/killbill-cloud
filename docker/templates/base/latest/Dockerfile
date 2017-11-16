@@ -68,9 +68,10 @@ ENV ANSIBLE_OPTS -i localhost, \
 # Install KPM
 ENV NEXUS_URL https://oss.sonatype.org
 ENV NEXUS_REPOSITORY releases
+ENV KPM_INSTALL_DIR /opt
 ENV KPM_VERSION 0.5.3
 RUN ansible-playbook $ANSIBLE_OPTS \
-                     -e kpm_install_dir=/opt \
+                     -e kpm_install_dir=$KPM_INSTALL_DIR \
                      -e nexus_url=$NEXUS_URL \
                      -e nexus_repository=$NEXUS_REPOSITORY \
                      -e kpm_version=$KPM_VERSION \
@@ -82,10 +83,11 @@ ENV CATALINA_BASE $TOMCAT_HOME
 ENV CATALINA_HOME /usr/share/tomcat
 ENV CATALINA_PID $CATALINA_BASE/tomcat.pid
 ENV CATALINA_TMPDIR /var/tmp
+ENV TOMCAT_INSTALL_DIR /opt
 ENV TOMCAT_VERSION 8.5.16
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_version=$TOMCAT_VERSION \
-                     -e tomcat_install_dir=/opt \
+                     -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
                      -e tomcat_owner=$TOMCAT_OWNER \
                      -e tomcat_group=$TOMCAT_GROUP \
                      -e tomcat_home=$TOMCAT_HOME \
@@ -93,13 +95,13 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      -e catalina_base=$CATALINA_BASE \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
 
+ENV START_TOMCAT_CMD ansible-playbook $ANSIBLE_OPTS  \
+                                      -e tomcat_owner=$TOMCAT_OWNER \
+                                      -e tomcat_group=$TOMCAT_GROUP \
+                                      -e tomcat_home=$TOMCAT_HOME \
+                                      -e catalina_home=$CATALINA_HOME \
+                                      -e catalina_base=$CATALINA_BASE \
+                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat_restart.yml
 # Start Tomcat
 EXPOSE 8080
-CMD ["bash", "-c", "ansible-playbook $ANSIBLE_OPTS  \
-                                     -e tomcat_owner=$TOMCAT_OWNER \
-                                     -e tomcat_group=$TOMCAT_GROUP \
-                                     -e tomcat_home=$TOMCAT_HOME \
-                                     -e catalina_home=$CATALINA_HOME \
-                                     -e catalina_base=$CATALINA_BASE \
-                                     $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat_restart.yml && \
-                   tail -f $TOMCAT_HOME/logs/catalina.out"]
+CMD ["bash", "-c", "$START_TOMCAT_CMD && tail -f $CATALINA_BASE/logs/catalina.out"]
