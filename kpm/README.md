@@ -4,12 +4,6 @@ The goal of KPM is to facilitate the installation of Kill Bill, its plugins and 
 
 kpm can be used interactively to search and download individual artifacts (Kill Bill war, plugins, etc.) or to perform an automatic Kill Bill installation using a configuration file.
 
-## Prerequisites
-
-### Java
-
-Kill Bill runs on the [Java](https://www.java.com/en/download/) platform, version 6 and above (8 is recommended).
-
 ## Installation
 
 ### Pre-built binaries (recommended, Linux and MacOS only)
@@ -67,7 +61,7 @@ You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 KPM allows you to specify a configuration file, `kpm.yml`, to describe what should be installed. The configuration file is a `yml`. The following shows the syntax of the `kpm.yml` file:
 
     killbill:
-      version: 0.14.0
+      version: 0.18.0
       plugins:
         java:
           - name: analytics
@@ -76,21 +70,34 @@ KPM allows you to specify a configuration file, `kpm.yml`, to describe what shou
 
 This instructs kpm to:
 
-* Download Kill Bill version 0.14.0
+* Download Kill Bill version 0.18.0
 * Setup the [Analytics](https://github.com/killbill/killbill-analytics-plugin) (Java) plugin and the [Stripe](https://github.com/killbill/killbill-stripe-plugin) (Ruby) plugin
 
 To start the installation:
 
     kpm install kpm.yml
 
-Common configuration options:
+Here is a more advanced example:
 
-* `jvm`: JVM properties
-* `killbill`: Kill Bill properties
-* `plugins_dir`: OSGI bundles and plugins base directory
-* `webapp_path`: path for the Kill Bill war (if specified, Tomcat isn't downloaded)
-
-There are many more options you can specify. Take a look at the configuration file used in the [Docker](https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb) image for example.
+    killbill:
+      group_id: org.kill-bill.billing
+      artifact_id: killbill-profiles-killbill
+      version: 0.18.10
+      default_bundles_version: 0.36.11
+      nexus:
+        ssl_verify: false
+        url: http://nexus.acme
+        repository: public-all
+      plugins:
+        java:
+          - name: analytics
+          - name: acme:custom
+            artifact_id: custom-plugin
+            version: 0.0.1-SNAPSHOT
+        ruby:
+          - name: kpm
+      plugins_dir: /var/tmp/bundles
+      webapp_path: /var/lib/tomcat/webapps/ROOT.war
 
 ### Custom Downloads
 
@@ -105,24 +112,24 @@ For more details see `kpm help`.
 
 ### Dev Mode
 
-If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin. Before we look at KPM commands, make sure you read the [Plugin Development Documentation](http://docs.killbill.io/0.16/plugin_development.html).
+If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin. Before going further, make sure you read the [Plugin Development Documentation](http://docs.killbill.io/latest/plugin_development.html) first.
 
-Let 's assume we are modifying the code for the (ruby) cybersource plugin. You would have to first build the plugin package, and then you could use KPM to install the plugin. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version. Also in the case of `ruby`, the package already contains all the directory structure including the version, so only the location of the `tar.gz` needs to be specified.
-
-```
-> kpm install_ruby_plugin 'dev:cybersource' --from-source-file="<PATH_TO>/killbill-cybersource-3.3.0.tar.gz"
-```
-
-Let 's assume now that we are modifying the code for the (java) adyen plugin. The plugin first needs to be built using the `maven-bundle-plugin` to produce the OSGI jar under the `target` directory. Then, this `jar` can be installed but here we also need to specify a version since the archive does not embed any filesystem structure but only contains the binary (jar). The same applies with regard to the `plugin_key` where we suggest to specify a namespace `dev:`.
+Let's assume you are modifying the code for the (Ruby) CyberSource plugin. You would have to first build the plugin package, and then you could use KPM to install the plugin. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version.
 
 ```
-> kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
+kpm install_ruby_plugin 'dev:cybersource' --from-source-file="<PATH_TO>/killbill-cybersource-3.3.0.tar.gz"
 ```
 
-The command `kpm inspect` can be used to see what has been installed. In the case of `dev` plugin most info related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occured.
+Let's assume now that you are modifying the code for the (Java) Adyen plugin. The plugin first needs to be built using the `maven-bundle-plugin` to produce the OSGI jar under the `target` directory. Then, this `jar` can be installed using KPM (you would also need to specify a version here since the archive does not embed any metadata, unlike Ruby plugins packages). The same applies with regard to the `plugin_key` where we suggest to specify a namespace `dev:`.
+
+```
+kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
+```
+
+The command `kpm inspect` can be used to see what has been installed. In the case of `dev` plugins, most of the infofrmation related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occured.
 
 
-Finally, when it is time to use a released version of a plugin, we first recommend to uninstall the `dev` version, by using the `kpm uninstall` command and using the `plugin_key` and then installing the released version. For instance the following sequence could happen:
+Finally, when it is time to use a released version of a plugin, we first recommend to uninstall the `dev` version, by using the `kpm uninstall` command and using the `plugin_key`, and then installing the released version. For instance the following sequence could happen:
 
 ```
 > kpm inspect
@@ -157,6 +164,7 @@ ________________________________________________________________________________
 _______________________________________________________________________________________________________________________________________________________
 
 ```
+
 ### Test required setups
 
 There are 3 suites of tests for KPM (see `rake -T`):
@@ -171,7 +179,7 @@ Unit tests don't require any third party system or configuration.
 
 #### KPM remote test
 
-Test suite that verifies the following:\
+Test suite that verifies the following:
 
 * KPM `install` command by pulling artifacts from maven repository
 * KPM `migration` command. This requires setting the `TOKEN` system property with a valid GITHUB api token.
