@@ -49,6 +49,6 @@ Go to `$DCOS_PUBLIC_IP:10030` to log-in to Grafana.
 ## VIPs
 
 * Database: `killbill-db.marathon.l4lb.thisdcos.directory:3306` (internal)
-* Kill Bill: `killbill.marathon.l4lb.thisdcos.directory:3306` (internal)
+* Kill Bill: `http://killbill.marathon.l4lb.thisdcos.directory:8080` (internal)
 * Kaui: `http://marathon-lb-external.marathon.mesos:10080` (internal), `$DCOS_PUBLIC_IP:10080` (external)
 * Grafana: `http://marathon-lb-external.marathon.mesos:10030` (internal), `$DCOS_PUBLIC_IP:10030` (external)
