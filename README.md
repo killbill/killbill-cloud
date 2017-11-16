@@ -13,7 +13,7 @@ Besides Kill Bill, you will also need to deploy a database and [Kaui](https://gi
 
 To help orchestrate the deployment of these services, you can use:
 
-* [Docker Compose](https://docs.docker.com/compose/): we provide [recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose) to spawn up Kill Bill and its dependencies. We also maintain recipes to deploy the open-source [Elastic stack](https://www.elastic.co/products) and the open-source [InfluxData stack](https://www.influxdata.com/time-series-platform/) integrated with Kill Bill.
+* [Docker Compose](https://docs.docker.com/compose/): we provide [recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose) to spin up Kill Bill and its dependencies. We also maintain recipes to deploy the open-source [Elastic stack](https://www.elastic.co/products) and the open-source [InfluxData stack](https://www.influxdata.com/time-series-platform/) integrated with Kill Bill.
 * [Ansible Container](https://docs.ansible.com/ansible-container/getting_started.html): we provide an [orchestration document](https://github.com/killbill/killbill-cloud/tree/master/ansible-container) to help with Kubernetes and OpenShift deployments. *ADVANCED USERS ONLY*
 
 Finally, to deploy Kill Bill in the cloud, you can use:
