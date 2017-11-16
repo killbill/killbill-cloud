@@ -23,12 +23,12 @@ First, Tomcat isn't installed by `apt` anymore. Instead, we use our Tomcat Ansib
 
 * Tomcat has been upgraded from 7 to 8.5.
 * Tomcat user is `tomcat` (password `tomcat`).
-* Installation directory (`CATALINA_HOME`) is `opt` (symlinked to `/usr/share/tomcat`). `CATALINA_BASE` is at /var/lib/tomcat.
-* Instaled of the custom `/etc/init.d/tomcat.sh` script, you should now directly use the Tomcat script under `$CATALINA_HOME/bin` (e.g. `$CATALINA_HOME/bin/catalina.sh run`). This also means that the special `jvm` section in the `kpm.yml` isn't supported anymore to set JVM properties. Take a look at `$CATALINA_BASE/bin/setenv.sh` instead.
+* Installation directory (`CATALINA_HOME`) is `/opt` (symlinked to `/usr/share/tomcat`). `CATALINA_BASE` is at /var/lib/tomcat.
+* Instead of the custom `/etc/init.d/tomcat.sh` script, you should now directly use the Tomcat scripts under `$CATALINA_HOME/bin` (e.g. `$CATALINA_HOME/bin/catalina.sh run`). This also means that the special `jvm` section in the `kpm.yml` isn't supported anymore to set JVM properties. Take a look at `$CATALINA_BASE/bin/setenv.sh` instead.
 
 Second, KPM isn't installed by JRuby gems anymore. We now use our KPM Ansible role as well. Among changes:
 
-* Pre-built Ruby binaries specifically for KPM are installed, there is no more system wide Ruby available
+* Pre-built Ruby binaries specifically for KPM are installed, there is no more system wide Ruby available.
 * Regarding binaries to install, the previous behavior was to look for `/etc/killbill/kpm.yml` on startup and generate it from a combination of environment variables, `/etc/killbill/kpm.yml.erb`, and `/etc/killbillkpm.yml.erb.overlay` if not present. This isn't supported anymore, instead you should bind mount `/var/lib/killbill/kpm.yml` when launching the Docker image. This also means that automatic installation of plugins through environment variables like `-e KILLBILL_PLUGIN_STRIPE=1` won't work anymore (specify them in your `kpm.yml` instead).
 * Regarding configuration, the previous behavior was to look for `/etc/killbill/killbill.properties` on startup and generate it from the `properties` section of the `kpm.yml` if not present. This isn't supported anymore, instead you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
 
