@@ -9,6 +9,8 @@ The goal of KPM is to facilitate the installation of Kill Bill, its plugins and 
 
 kpm can be used interactively to search and download individual artifacts (Kill Bill war, plugins, etc.) or to perform an automatic Kill Bill installation using a configuration file.
 
+toc::[]
+
 [[installation]]
 ## Installation
 
@@ -188,6 +190,9 @@ ________________________________________________________________________________
 _______________________________________________________________________________________________________________________________________________________
 ....
 
+[[internals]]
+## Internals
+
 [[test-required-setups]]
 ### Test required setups
 
@@ -216,9 +221,6 @@ Test suite that verifies the following:
 Test suite that requires an instance of `mysql` running and verifies the following:
 
 * KPM `account` command: The `account_spec.yml` file needs to be modified with correct credentials and user must have correct privileges; also the database schema must not exist. In addition, one must start an instance of a Kill Bill server
-
-[[internals]]
-## Internals
 
 [[plugin-keys]]
 ### Plugin Keys
