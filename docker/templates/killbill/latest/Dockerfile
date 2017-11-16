@@ -4,11 +4,15 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 ENV KILLBILL_INSTALL_DIR /var/lib/killbill
 
-RUN sudo mkdir -p $KILLBILL_INSTALL_DIR
+RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
 RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KILLBILL_INSTALL_DIR
 
 # Default kpm.yml, override as needed
 COPY ./kpm.yml $KILLBILL_INSTALL_DIR
+
+# Default configuration options
+ENV KILLBILL_BUNDLE_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles
+ENV KILLBILL_JRUBY_CONF_DIR $KILLBILL_INSTALL_DIR/config
 
 ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
                                      -e kpm_install_dir=$KPM_INSTALL_DIR \
