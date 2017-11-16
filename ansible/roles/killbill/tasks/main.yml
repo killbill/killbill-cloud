@@ -3,7 +3,6 @@
   become: true
   file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
   with_items:
-    - "{{ kb_install_dir }}"
     - "{{ kb_config_dir }}"
     - "{{ kb_plugins_dir }}"
   tags: kpm-install
