@@ -5,7 +5,7 @@
 [[docker-images-for-kill-bill]]
 # Docker images for Kill Bill
 
-If you are new to Docker or Kill Bill, see our https://github.com/killbill/killbill-cloud/tree/master/docker/compose[Docker Compose recipes] instead.
+If you are new to Docker or Kill Bill, see our https://github.com/killbill/killbill-cloud/tree/master/docker/compose[Docker Compose recipes] first.
 
 toc::[]
 
@@ -39,6 +39,8 @@ curl -v http://<IP_ADDRESS>:8080/1.0/healthcheck
 
 [[killbill-variables]]
 #### Kill Bill specific variables
+
+The following environment variables will populate the default `killbill.properties`. For further customization, you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
 
 * `KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS` (default `5`)
 * `KILLBILL_ANALYTICS_QUEUE_CAPACITY` (default `30000`)
@@ -190,11 +192,6 @@ curl -v http://<IP_ADDRESS>:8080/1.0/healthcheck
 * `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
 * `KAUI_CONFIG_DEMO` (default `false`)
 
-There is a https://issues.sonatype.org/browse/OSSRH-13936[bug in Sonatype where the sha1 is sometimes wrong]. In order to disable sha1 verification, you can start your container using: `KPM_PROPS="--verify-sha1=false"`.
-
-Configuration of the images is driven by the https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/latest/kpm.yml.erb[kpm.yml.erb] KPM configuration file. Advanced users may need to extend it beyond the plugin properties exposed. To do so, you can create an overlay file as `$KILLBILL_CONFIG/kpm.yml.erb.overlay`: both files will be merged at startup, with the overlay having precedence. Take a look at our https://github.com/killbill/killbill-cloud/blob/master/docker/templates/killbill/testing/Dockerfile[testing] image for an example.
-
-
 [[changes-since-0.18]]
 ## Changes since 0.18
 
@@ -215,136 +212,30 @@ Second, KPM isn’t installed by JRuby gems anymore. We now use our KPM Ansible 
 
 Python and Ansible are now also installed in the image, in case you need to extend the image through custom Ansible roles.
 
-[[local-development]]
-## Local Development
-
-It becomes fairly easy to start Kill Bill locally on your laptop. For example let’s start 2 containers, one with a MySQL database and another one with a Kill Bill server version `0.18.x` (adjust it with the version of your choice).
-
-1.  Start the mysql container:
-
-....
-docker run -tid --name db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=killbill mariadb
-....
-
-1.  Configure the database: First, modify the database to make sure it is using the `ROW` `binlog_format`:
-
-....
-echo "set global binlog_format = 'ROW'" | docker exec -i db mysql -h localhost -uroot -proot
-....
-
-And then add the DDLs:
-
-* Kill Bill http://docs.killbill.io/0.18/ddl.sql[DDL]
-+
-`curl -s http://docs.killbill.io/0.18/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill`
-* Analytics https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql[DDL]
-+
-`curl -s https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill`
-* Stripe https://github.com/killbill/killbill-stripe-plugin/blob/master/db/ddl.sql[DDL]
-+
-`curl -s https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D killbill`
-+
-Note that the `-e MYSQL_DATABASE=killbill` argument to `docker run` above took care of creating the `killbill` database for us. When deploying to a production scenario, you’ll need to do that step explicitly.
-
-1.  Start the killbill container with the two plugins `analytics` and `stripe`:
-
-....
-docker run -tid \
-         --name killbill \
-         -p 8080:8080 \
-         -p 12345:12345 \
-         --link db:dbserver \
-         -e KILLBILL_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/killbill \
-         -e KILLBILL_CONFIG_DAO_USER=root \
-         -e KILLBILL_CONFIG_DAO_PASSWORD=root \
-         -e KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://dbserver:3306/killbill \
-         -e KILLBILL_CONFIG_OSGI_DAO_USER=root \
-         -e KILLBILL_CONFIG_OSGI_DAO_PASSWORD=root \
-         -e KILLBILL_PLUGIN_ANALYTICS=1 \
-         -e KILLBILL_PLUGIN_STRIPE=1 \
-         killbill/killbill:0.18.x
-....
-
-1.  Play time…
-
-....
-curl -v \
-   -X POST \
-   -u admin:password \
-   -H 'Content-Type: application/json' \
-   -H 'X-Killbill-CreatedBy: admin' \
-   -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
-   "http://$(docker-machine ip default):8080/1.0/kb/tenants"
-....
-
-You can also install Kaui in a similar fashion:
-
-1.  Configure the database:
-
-* Create a new database for KAUI
-
-....
-echo "create database kaui;" | docker exec -i db mysql -h localhost -uroot -proot
-....
-
-* Add the https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql[DDL] for KAUI
-
-....
-curl -s https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql | docker exec -i db mysql -h localhost -uroot -proot -D kaui
-....
-
-* Add the initial `admin` user in the `KAUI` database:
-
-....
-echo "insert into kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" | docker exec -i db mysql -h localhost -uroot -proot -D kaui
-....
-
-* Start the KAUI container:
-
-....
-docker run -tid \
-           --name kaui \
-           -p 8989:8080 \
-           --link db:dbserver \
-           --link killbill:killbill \
-           -e KAUI_KILLBILL_URL=http://killbill:8080 \
-           -e KAUI_KILLBILL_API_KEY= \
-           -e KAUI_KILLBILL_API_SECRET= \
-           -e KAUI_CONFIG_DAO_URL=jdbc:mysql://dbserver:3306/kaui \
-           -e KAUI_CONFIG_DAO_USER=root \
-           -e KAUI_CONFIG_DAO_PASSWORD=root \
-           -e KAUI_ROOT_USERNAME=admin \
-           killbill/kaui:0.8.6
-....
-
-1.  More Play time… with KAUI
-
-You can connnect to KAUI using the url : `http://IP:8989/` where `IP=$(docker-machine ip default)`. You will be able to login as a superadmin using account `admin/password`. From there you can follow our tutorials and documentation.
-
 [[tomcat-configuration]]
 ## Tomcat configuration
 
 [[https]]
-##= HTTPS
+### HTTPS
 
 1.  Expose port 8443:
-
++
 ....
-docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.1
+docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.x
 ....
 
-1.  Import your SSL certificate (see https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html[docs]). For testing, you can just create a self-signed certificate:
-
+2.  Import your SSL certificate (see https://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[docs]). For testing, you can just create a self-signed certificate:
++
 ....
 sudo apt-get update
 sudo apt-get install ssl-cert
-sudo usermod -a -G ssl-cert tomcat7
+sudo usermod -a -G ssl-cert tomcat
 ....
 
 1.  Update Tomcat’s configuration:
 
 ....
-# In /var/lib/tomcat7/conf/server.xml
+# In /var/lib/tomcat/conf/server.xml
 <Connector executor="tomcatThreadPool"
            port="8443"
            connectionTimeout="20000"
@@ -364,15 +255,15 @@ When `org.killbill.jaxrs.location.full.url=true`, Kill Bill will build location 
 To do so:
 
 1.  Enable the `RemoteIpValve` (make sure to configure correctly at least the `internalProxies` and `trustedProxies` attributes depending on your environment, see the https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Proxies_Support[docs]):
-
++
 ....
-# In /var/lib/tomcat7/conf/server.xml
+# In /var/lib/tomcat/conf/server.xml
 <Valve className="org.apache.catalina.valves.RemoteIpValve"
        protocolHeader="x-forwarded-proto"
        portHeader="x-forwarded-port" />
 ....
 
-1.  Set `org.killbill.jaxrs.location.host=killbill-vip.mycompany.net`
+2.  Set `org.killbill.jaxrs.location.host=killbill-vip.mycompany.net`
 
 Without any X-Forwarded header, the default Location header will result to something like `http://killbill-vip.mycompany.net:8080`. With `X-Forwarded-For: 10.0.0.0`, `X-Forwarded-Proto: https` and `X-Forwarded-Port: 8443`, the header will become something like `https://killbill-vip.mycompany.net:8443`.
 
@@ -384,8 +275,8 @@ You optionally also want to set `requestAttributesEnabled="true"` to `org.apache
 All images are based upon a `base` image which (in theory) should not have to be rebuilt too often. In order to build it:
 
 ....
-> cd docker/templates/base/latest
-> docker build --no-cache -t killbill/base:latest .
+cd docker/templates/base/latest
+docker build --no-cache -t killbill/base:latest .
 ....
 
 To build an image:
