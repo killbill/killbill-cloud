@@ -38,5 +38,5 @@
       mode: u=rw,g=r,o=r
       dest: "{{ catalina_base }}/conf"
   when:
-    - item.stat.exists == False
+    - item.src.stat.exists == False
   tags: tomcat
