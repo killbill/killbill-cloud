@@ -22,17 +22,18 @@ See below for example playbooks.
 
 # Usage
 
-## play.yml playbook
+## killbill.yml playbook
+
+Playbook to install Kill Bill (KPM is a pre-requisite):
 
 ```
-ansible-playbook -i <HOST_FILE> play.yml
+ansible-playbook -i <HOST_FILE> killbill.yml
 ```
 
 The playbook has several roles:
 
 * common: Ansible setup (defines `ansible_ruby_interpreter`)
 * tomcat: `$CATALINA_BASE` setup (does not install nor manage Tomcat itself)
-* kpm: KPM setup and installation
 * killbill: Kill Bill setup and installation
 
 Configuration:
@@ -41,13 +42,20 @@ Configuration:
 * [templates/killbill/killbill.properties.j2](templates/killbill/killbill.properties.j2) is the main Kill Bill configuration file
 * [templates/tomcat/conf/setenv.sh.j2](templates/tomcat/conf/setenv.sh.j2) defines JVM level system properties
 
+## kpm.yml playbook
+
+Example playbook on how to install KPM:
+
+```
+ansible-playbook -i <HOST_FILE> kpm.yml
+```
+
 ## tomcat.yml playbook
 
 Example playbook on how to install Tomcat (Java is a pre-requisite):
 
 ```
 ansible-playbook -i <HOST_FILE> tomcat.yml
-ansible-playbook -i <HOST_FILE> play.yml
 ```
 
 ## plugin.yml playbook
@@ -58,6 +66,30 @@ For example to restart `adyen` plugin
 ```
 ansible-playbook -i <HOST_FILE> plugin.yml --extra-vars "plugin_key=adyen"
 ```
+
+# Extending
+
+To build upon these roles, you can create your own play, e.g.:
+
+```
+---
+- name: Deploy Kill Bill
+  hosts: all
+  tasks:
+    - name: setup Ruby
+      include_role:
+        name: killbill-cloud/ansible/roles/common
+    - name: setup Tomcat conf files
+      include_role:
+        name: killbill-cloud/ansible/roles/tomcat
+    - name: install Kill Bill
+      include_role:
+        name: killbill-cloud/ansible/roles/killbill
+    - name: customize Kill Bill
+      import_tasks: roles/acme/tasks/main.yml
+```
+
+Note that you need to have your own templates directory, containing your own templates.
 
 # Internals
 
