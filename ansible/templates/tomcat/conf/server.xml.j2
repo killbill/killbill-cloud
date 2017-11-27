@@ -13,7 +13,8 @@
               namePrefix="catalina-exec-"
               maxThreads="{{ tomcat_max_threads }}"
               maxIdleTime="30000"
-              minSpareThreads="4" />
+              minSpareThreads="4"
+              prestartminSpareThreads="true" />
 
     <Connector executor="tomcatThreadPool"
                port="{{ tomcat_port }}"
