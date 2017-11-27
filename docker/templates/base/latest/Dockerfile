@@ -10,8 +10,14 @@ RUN apt-get update && \
     apt-get install -y \
       apt-utils \
       curl \
+      dpkg-dev \
+      gcc \
       git \
       less \
+      libapr1 \
+      libapr1-dev \
+      libssl-dev \
+      make \
       mysql-client \
       net-tools \
       openjdk-8-jdk \
@@ -86,14 +92,19 @@ ENV CATALINA_PID $CATALINA_BASE/tomcat.pid
 ENV CATALINA_TMPDIR /var/tmp
 ENV TOMCAT_INSTALL_DIR /opt
 ENV TOMCAT_VERSION 8.5.16
+ENV TOMCAT_NATIVE_LIBDIR $CATALINA_HOME/native-jni-lib
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_version=$TOMCAT_VERSION \
                      -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
+                     -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
                      -e tomcat_owner=$TOMCAT_OWNER \
                      -e tomcat_group=$TOMCAT_GROUP \
                      -e tomcat_home=$TOMCAT_HOME \
                      -e catalina_home=$CATALINA_HOME \
                      -e catalina_base=$CATALINA_BASE \
+                     -e apr_config_path="$(which apr-1-config)" \
+                     -e gnu_arch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
 
 ENV START_TOMCAT_CMD ansible-playbook $ANSIBLE_OPTS  \

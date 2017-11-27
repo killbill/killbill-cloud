@@ -1,0 +1,43 @@
+---
+- name: create temporary build directory
+  tempfile:
+    state: directory
+    suffix: tomcat-native-build
+  register: workspace
+  tags: native
+
+- name: expand native libraries archive
+  unarchive:
+    src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
+    dest: "{{ workspace.path }}"
+    extra_opts: [--strip-components=1]
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+  tags: native
+
+- name: configure native libraries
+  command: >
+    ./configure
+      --build="{{ gnu_arch }}"
+      --libdir="{{ tomcat_native_libdir }}"
+      --prefix="{{ catalina_home }}"
+      --with-apr="{{ apr_config_path }}"
+      --with-java-home="{{ java_home }}"
+      --with-ssl=yes
+    chdir="{{ workspace.path }}/native"
+  tags: native
+
+- name: build native libraries
+  command: >
+    make {{ item }}
+    chdir="{{ workspace.path }}/native"
+  with_items:
+    - all
+    - install
+  tags: native
+
+- name: remove temporary directory
+  file:
+    path="{{ workspace.path }}"
+    state=absent
+  tags: native
