@@ -32,24 +32,27 @@
   when: item.stdout_lines is defined
   tags: [migrations, java_migrations]
 
-- name: wait for confirmation for Kill Bill and Java plugins
-  pause: prompt='Should I run these migrations? Press return to continue. Press Ctrl+c and then "a" to abort'
-  tags: [migrations, java_migrations]
+- block:
+  - name: wait for confirmation for Kill Bill and Java plugins
+    pause: prompt='Should I run these migrations? Press return to continue. Press Ctrl+c and then "a" to abort'
+    tags: [migrations, java_migrations]
 
-- name: run migrations for Kill Bill and Java plugins
-  command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ database_url }}' -user={{ database_user }} -password={{ database_password }} migrate
-  with_items:
-    - "{{ migrations['migrations']['killbill'] }}"
-    - "{{ migrations['migrations']['plugins']['java'] }}"
-  when: item['dir'] is defined
-  register: java_migrations
-  tags: [migrations, java_migrations]
+  - name: run migrations for Kill Bill and Java plugins
+    command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ database_url }}' -user={{ database_user }} -password={{ database_password }} migrate
+    with_items:
+      - "{{ migrations['migrations']['killbill'] }}"
+      - "{{ migrations['migrations']['plugins']['java'] }}"
+    when: item['dir'] is defined
+    register: java_migrations
+    tags: [migrations, java_migrations]
 
-- name: Flyway migrations output for Kill Bill and Java plugins
-  debug: var=item.stdout_lines
-  with_items: "{{ java_migrations.results }}"
-  when: item.stdout_lines is defined
-  tags: [migrations, java_migrations]
+  - name: Flyway migrations output for Kill Bill and Java plugins
+    debug: var=item.stdout_lines
+    with_items: "{{ java_migrations.results }}"
+    when: item.stdout_lines is defined
+    tags: [migrations, java_migrations]
+
+  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
 
 # TODO
 # - name: generate SQL migrations for Ruby plugins
