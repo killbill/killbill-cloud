@@ -44,6 +44,7 @@
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
+    UMASK: "{{ tomcat_umask }}"
   command: "nohup {{ catalina_home }}/bin/catalina.sh start"
   when:
     - catalina_home is defined
