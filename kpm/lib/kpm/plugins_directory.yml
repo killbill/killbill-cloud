@@ -138,7 +138,7 @@
   :type: :ruby
   :versions:
     :0.16: 0.0.2
-    :0.18: 0.1.7
+    :0.18: 0.1.8
   :require:
     - :login
     - :password
@@ -157,7 +157,7 @@
   :versions:
     :0.16: 0.0.1
     :0.17: 0.1.0
-    :0.18: 0.2.2
+    :0.18: 0.2.4
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
@@ -165,7 +165,7 @@
     :0.14: 2.0.0
     :0.15: 3.0.0
     :0.16: 4.1.7
-    :0.18: 5.0.5
+    :0.18: 5.0.6
   :require:
   - :signature
   - :login

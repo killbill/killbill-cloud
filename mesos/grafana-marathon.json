@@ -1,0 +1,46 @@
+{
+  "id": "/grafana",
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "portMappings": [
+      {
+        "containerPort": 3000,
+        "hostPort": 0,
+        "servicePort": 10030,
+        "protocol": "tcp",
+        "name": "grafana"
+      }
+    ],
+    "docker": {
+      "image": "grafana/grafana:latest",
+      "forcePullImage": true
+    }
+  },
+  "cpus": 1,
+  "mem": 1024,
+  "requirePorts": false,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "healthChecks": [
+    {
+      "portIndex": 0,
+      "protocol": "MESOS_HTTP",
+      "intervalSeconds": 1,
+      "timeoutSeconds": 2,
+      "maxConsecutiveFailures": 5
+    }
+  ],
+  "fetch": [],
+  "constraints": [],
+  "env": {
+    "GF_ANALYTICS_ENABLED": "false"
+  },
+  "labels":{
+    "HAPROXY_GROUP":"external"
+  }
+}

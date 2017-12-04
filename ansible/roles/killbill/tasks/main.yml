@@ -1,26 +1,24 @@
 ---
 - name: ensure Kill Bill dirs exist
-  sudo: true
+  become: true
   file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
   with_items:
-    - "{{ kb_install_dir }}"
     - "{{ kb_config_dir }}"
     - "{{ kb_plugins_dir }}"
   tags: kpm-install
 
 - name: generate Kill Bill properties file
-  sudo: true
+  become: true
   template:
-    src: killbill.properties.j2
+    src: killbill/killbill.properties.j2
     dest: "{{ kb_config_dir }}/killbill.properties"
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
-  notify: "restart Tomcat"
   tags: kpm-install
 
 - name: generate Tomcat files
-  sudo: true
+  become: true
   template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
@@ -28,17 +26,15 @@
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
   with_items:
-    - src: conf
+    - src: killbill/conf
       name: setenv2.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
-  notify: "restart Tomcat"
   tags: tomcat
 
 - name: run KPM install
-  sudo: true
+  become: true
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"
-  notify: "restart Tomcat"
   tags: kpm-install

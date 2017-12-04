@@ -1,0 +1,50 @@
+{
+  "id": "/killbill",
+  "instances": 2,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 0,
+        "labels": {
+          "VIP_0": "/killbill:8080"
+        },
+        "protocol": "tcp",
+        "name": "killbill"
+      }
+    ],
+    "docker": {
+      "image": "killbill/killbill:latest",
+      "forcePullImage": true
+    }
+  },
+  "cpus": 2,
+  "mem": 2048,
+  "requirePorts": false,
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "healthChecks": [
+    {
+      "gracePeriodSeconds": 30,
+      "intervalSeconds": 60,
+      "maxConsecutiveFailures": 3,
+      "path": "/1.0/healthcheck",
+      "portIndex": 0,
+      "protocol": "MESOS_HTTP",
+      "timeoutSeconds": 20
+    }
+  ],
+  "fetch": [],
+  "constraints": [],
+  "env": {
+    "KILLBILL_CONFIG_DAO_URL": "jdbc:mysql://killbill-db.marathon.l4lb.thisdcos.directory:3306/killbill",
+    "KILLBILL_CONFIG_DAO_USER": "root",
+    "KILLBILL_CONFIG_DAO_PASSWORD": "killbill"
+  }
+}

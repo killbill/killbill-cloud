@@ -20,7 +20,7 @@
             "FS Usage": "#E0F9D7"
           },
           "bars": false,
-          "datasource": "influxdb-cadvisor",
+          "datasource": "influxdb",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -171,7 +171,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "influxdb-cadvisor",
+          "datasource": "influxdb",
           "decimals": null,
           "editable": true,
           "error": false,
@@ -241,7 +241,7 @@
             "TX": "#890F02"
           },
           "bars": false,
-          "datasource": "influxdb-cadvisor",
+          "datasource": "influxdb",
           "editable": true,
           "error": false,
           "fill": 1,
