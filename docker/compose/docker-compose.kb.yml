@@ -4,7 +4,7 @@ volumes:
   db:
 services:
   killbill:
-    image: killbill/killbill:latest
+    image: killbill/killbill:0.18.15
     ports:
       - "8080:8080"
       - "12345:12345"
@@ -12,6 +12,9 @@ services:
       - KILLBILL_CONFIG_DAO_URL=jdbc:mysql://db:3306/killbill
       - KILLBILL_CONFIG_DAO_USER=root
       - KILLBILL_CONFIG_DAO_PASSWORD=killbill
+      - KILLBILL_CONFIG_OSGI_DAO_URL=jdbc:mysql://db:3306/kaui
+      - KILLBILL_CONFIG_OSGI_DAO_USER=root
+      - KILLBILL_CONFIG_OSGI_DAO_PASSWORD=killbill
   kaui:
     image: killbill/kaui:latest
     ports:
