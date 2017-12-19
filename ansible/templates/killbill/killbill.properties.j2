@@ -3,51 +3,83 @@ org.killbill.billing.osgi.bundles.jruby.conf.dir={{ lookup('env', 'KILLBILL_JRUB
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_CACHE_PREP_STMTS') %}
 org.killbill.billing.osgi.dao.cachePrepStmts={{ lookup('env', 'KILLBILL_OSGI_DAO_CACHE_PREP_STMTS') }}
+{% elif lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.cachePrepStmts={{ lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_CONNECTION_TIMEOUT') %}
 org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_OSGI_DAO_CONNECTION_TIMEOUT') }}
+{% elif lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') %}
+org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
 org.killbill.billing.osgi.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
+{% elif lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
+org.killbill.billing.osgi.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_IDLE_MAX_AGE') %}
 org.killbill.billing.osgi.dao.idleMaxAge={{ lookup('env', 'KILLBILL_OSGI_DAO_IDLE_MAX_AGE') }}
+{% elif lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') %}
+org.killbill.billing.osgi.dao.idleMaxAge={{ lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_LOG_LEVEL') %}
 org.killbill.billing.osgi.dao.logLevel={{ lookup('env', 'KILLBILL_OSGI_DAO_LOG_LEVEL') }}
+{% elif lookup('env', 'KILLBILL_DAO_LOG_LEVEL') %}
+org.killbill.billing.osgi.dao.logLevel={{ lookup('env', 'KILLBILL_DAO_LOG_LEVEL') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_MAX_ACTIVE') %}
 org.killbill.billing.osgi.dao.maxActive={{ lookup('env', 'KILLBILL_OSGI_DAO_MAX_ACTIVE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') %}
+org.killbill.billing.osgi.dao.maxActive={{ lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_MAX_CONNECTION_AGE') %}
 org.killbill.billing.osgi.dao.maxConnectionAge={{ lookup('env', 'KILLBILL_OSGI_DAO_MAX_CONNECTION_AGE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') %}
+org.killbill.billing.osgi.dao.maxConnectionAge={{ lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_MIN_IDLE') %}
 org.killbill.billing.osgi.dao.minIdle={{ lookup('env', 'KILLBILL_OSGI_DAO_MIN_IDLE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MIN_IDLE') %}
+org.killbill.billing.osgi.dao.minIdle={{ lookup('env', 'KILLBILL_DAO_MIN_IDLE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_MYSQL_SERVER_VERSION') %}
 org.killbill.billing.osgi.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_OSGI_DAO_MYSQL_SERVER_VERSION') }}
+{% elif lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') %}
+org.killbill.billing.osgi.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') %}
 org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') }}
+{% elif lookup('env', 'KILLBILL_DAO_PASSWORD') %}
+org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_POOLING_TYPE') %}
 org.killbill.billing.osgi.dao.poolingType={{ lookup('env', 'KILLBILL_OSGI_DAO_POOLING_TYPE') }}
+{% elif lookup('env', 'KILLBILL_DAO_POOLING_TYPE') %}
+org.killbill.billing.osgi.dao.poolingType={{ lookup('env', 'KILLBILL_DAO_POOLING_TYPE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SIZE') %}
 org.killbill.billing.osgi.dao.prepStmtCacheSize={{ lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SIZE') }}
+{% elif lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSize={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SQL_LIMIT') %}
 org.killbill.billing.osgi.dao.prepStmtCacheSqlLimit={{ lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SQL_LIMIT') }}
+{% elif lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSqlLimit={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_URL') %}
 org.killbill.billing.osgi.dao.url={{ lookup('env', 'KILLBILL_OSGI_DAO_URL') }}
+{% elif lookup('env', 'KILLBILL_DAO_URL') %}
+org.killbill.billing.osgi.dao.url={{ lookup('env', 'KILLBILL_DAO_URL') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_USE_SERVER_PREP_STMTS') %}
 org.killbill.billing.osgi.dao.useServerPrepStmts={{ lookup('env', 'KILLBILL_OSGI_DAO_USE_SERVER_PREP_STMTS') }}
+{% elif lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.useServerPrepStmts={{ lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_USER') %}
 org.killbill.billing.osgi.dao.user={{ lookup('env', 'KILLBILL_OSGI_DAO_USER') }}
+{% elif lookup('env', 'KILLBILL_DAO_USER') %}
+org.killbill.billing.osgi.dao.user={{ lookup('env', 'KILLBILL_DAO_USER') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_SERVER_NOTIFICATIONS_RETRIES') %}
 org.killbill.billing.server.notifications.retries={{ lookup('env', 'KILLBILL_SERVER_NOTIFICATIONS_RETRIES') }}
