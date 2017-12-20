@@ -28,4 +28,3 @@ Getting started
 To get up and running quickly, we **strongly** recommend using our [Docker Compose recipes](https://github.com/killbill/killbill-cloud/tree/master/docker/compose), which will set up the full Kill Bill stack for you.
 
 If you are not yet familiar with Docker, take a look at the [Get Started with Docker](https://docs.docker.com/get-started/) guide.
-
