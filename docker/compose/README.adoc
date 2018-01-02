@@ -53,9 +53,9 @@ The Kibana UI is available at `http://<IP_ADDRESS>:5601`. Port 9200 for Elastics
 
 The `docker-compose.gi.yml` file sets up Telegraf, InfluxDB, cAdvisor and Grafana.
 
-The Grafana UI is available at `http://<IP_ADDRESS>:3000`.
+The Grafana UI is available at `http://<IP_ADDRESS>:3000` (default credentials: `admin:admin`).
 
-When running the full stack, Grafana uses the MariaDB container as the storage backend. To configure it:
+When running the full stack, Grafana uses the MariaDB container as the storage backend. To configure it (default database credentials `root:killbill`):
 
 ....
 CREATE DATABASE grafana;
