@@ -12,8 +12,8 @@ docker_compose['services'].merge!(YAML.load(File.new('docker-compose.gi.yml').re
 docker_compose['services'].merge!(YAML.load(File.new('docker-compose.kb.yml').read)['services'])
 
 docker_compose['services']['killbill']['environment'] ||= []
-docker_compose['services']['killbill']['environment'] << 'KILLBILL_METRICS_GRAPHITE=true'
-docker_compose['services']['killbill']['environment'] << 'KILLBILL_METRICS_GRAPHITE_HOST=influxdb'
+docker_compose['services']['killbill']['environment'] << 'KILLBILL_METRICS_INFLUXDB=true'
+docker_compose['services']['killbill']['environment'] << 'KILLBILL_METRICS_INFLUXDB_HOST=influxdb'
 
 docker_compose['services']['grafana']['environment'] ||= []
 docker_compose['services']['grafana']['environment'] << 'GF_SESSION_PROVIDER=mysql'
