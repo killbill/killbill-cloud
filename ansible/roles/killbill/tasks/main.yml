@@ -15,6 +15,7 @@
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    force: no
   with_items:
     - name: killbill.properties
     - name: logback.xml
@@ -28,6 +29,7 @@
     mode: "{{ item.mode }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    force: no
   with_items:
     - src: killbill/conf
       name: setenv2.sh
