@@ -37,6 +37,10 @@ namespace :package do
 
   desc 'Install gems to local directory'
   task :bundle_install do
+    # cleanup
+    sh "rm -f #{PACKAGE_NAME}*.tar.gz"
+    sh 'rm -rf packaging/vendor'
+
     # Note! Must match TRAVELING_RUBY_VERSION above
     expected_ruby_version = TRAVELING_RUBY_VERSION.split('-')[-1]
     if RUBY_VERSION !~ /#{Regexp.quote(expected_ruby_version)}/
