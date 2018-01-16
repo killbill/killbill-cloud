@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'kpm'
+gem 'kpm', '~> VERSION'
 
 group :development do
   gem 'rake'
