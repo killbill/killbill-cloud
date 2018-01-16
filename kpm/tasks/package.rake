@@ -1,5 +1,6 @@
 # For Bundler.with_clean_env
 require 'bundler/setup'
+require 'yaml'
 
 PACKAGE_NAME = 'kpm'
 
@@ -36,10 +37,9 @@ namespace :package do
   end
 
   desc 'Install gems to local directory'
-  task :bundle_install do
-    # cleanup
-    sh "rm -f #{PACKAGE_NAME}*.tar.gz"
-    sh 'rm -rf packaging/vendor'
+  task :bundle_install => [:clean] do
+    # abort if version packaging does not exist on repository
+    abort "KPM #{VERSION} does not exists in the repository." unless gem_exists?
 
     # Note! Must match TRAVELING_RUBY_VERSION above
     expected_ruby_version = TRAVELING_RUBY_VERSION.split('-')[-1]
@@ -49,6 +49,7 @@ namespace :package do
     sh 'rm -rf packaging/tmp'
     sh 'mkdir -p packaging/tmp'
     sh 'cp packaging/Gemfile packaging/tmp/'
+    sh "sed -i 's/VERSION/#{VERSION}/g' packaging/tmp/Gemfile"
 
     sh "rm -rf packaging/vendor/ruby/#{expected_ruby_version}/bundler" # if multiple clones of same repo, may load in wrong one
 
@@ -115,4 +116,12 @@ end
 def download_runtime(target)
   sh 'mkdir -p packaging && cd packaging && curl -L -O --fail ' +
          "https://d6r77u77i8pq3.cloudfront.net/releases/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz"
+end
+
+def gem_exists?
+  response = `gem specification 'kpm' -r -v #{VERSION} 2>&1`
+  return false if response.nil?
+
+  specification = YAML::load(response)
+  specification.instance_of?(Gem::Specification)
 end
