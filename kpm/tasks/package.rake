@@ -104,6 +104,7 @@ def create_package(target)
   sh "cp -pR packaging/vendor #{package_dir}/lib/"
 
   sh "cp packaging/Gemfile* #{package_dir}/lib/vendor/"
+  sh "sed -i 's/VERSION/#{VERSION}/g' #{package_dir}/lib/vendor/Gemfile"
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
 
