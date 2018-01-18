@@ -1,19 +1,8 @@
 #!/usr/bin/ruby
 # WANT_JSON
 
-require 'json'
 require 'pathname'
-
-# Temporary -- https://github.com/killbill/killbill-cloud/issues/78
-def with_captured_stdout
-  require 'stringio'
-  old_stdout = $stdout
-  $stdout = StringIO.new
-  yield
-  JSON.parse($stdout.string.split("\n")[-1])
-ensure
-  $stdout = old_stdout
-end
+require 'json'
 
 data = {}
 File.open(ARGV[0]) do |fh|
@@ -27,16 +16,16 @@ end
 require 'kpm'
 require 'kpm/version'
 
-kpm_facts = with_captured_stdout { KPM::System.new.information(data['bundles_dir'],
+kpm_facts = KPM::System.new.information(data['bundles_dir'],
                                                                true,
                                                                data['config_file'],
                                                                data['kaui_web_path'],
-                                                               data['killbill_web_path']) }
+                                                               data['killbill_web_path'])
 
 result = {
   'changed' => false,
   'ansible_facts' => {
-    'kpm' => kpm_facts
+    'kpm' => JSON.parse(kpm_facts)
   }
 }
 

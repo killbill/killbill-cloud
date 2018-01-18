@@ -221,6 +221,7 @@ module KPM
 
     def get_kaui_standalone_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
+      return nil if kaui_search_default_dir.nil?
       kaui_search_default_dir.gsub!('.war','')
       version = nil
 
@@ -236,22 +237,21 @@ module KPM
 
     def get_kaui_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
+      return nil if kaui_search_default_dir.nil?
       kaui_search_default_dir.gsub!('.war','')
       version = nil
 
       gemfile = Dir[kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'Gemfile']
 
-      if not gemfile[0].nil?
+      unless gemfile[0].nil?
         absolute_gemfile_path = File.absolute_path(gemfile[0])
 
         version = open(absolute_gemfile_path) do |f|
           f.each_line.detect do |line|
              if /kaui/.match(line)
-                version = /(\d+)\.(\d+)\.(\d+)/.match(line)
+              version = /(\d+)\.(\d+)\.(\d+)/.match(line)
 
-                if not version.nil?
-                  break;
-                end
+              break unless version.nil?
              end
           end
           version
@@ -264,21 +264,20 @@ module KPM
 
     def get_killbill_version(killbill_web_path = nil)
       killbill_search_default_dir = killbill_web_path.nil? ? DEFAULT_KILLBILL_SEARCH_BASE_DIR : Dir[killbill_web_path][0]
+      return nil if killbill_search_default_dir.nil?
       killbill_search_default_dir.gsub!('.war','')
       killbill_search_default_dir.gsub!('webapps','**')
 
       file =  Dir[killbill_search_default_dir + File::SEPARATOR + 'META-INF' +  File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
       version = nil
-      if not file[0].nil?
+      unless file[0].nil?
         absolute_file_path = File.absolute_path(file[0])
 
         version = open(absolute_file_path) do |f|
           f.each_line.detect do |line|
-              version = /(\d+)\.(\d+)\.(\d+)/.match(line)
+            version = /(\d+)\.(\d+)\.(\d+)/.match(line)
 
-              if not version.nil?
-                break;
-              end
+            break unless version.nil?
           end
           version
         end
