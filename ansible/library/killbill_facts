@@ -25,7 +25,7 @@ kpm_facts = KPM::System.new.information(data['bundles_dir'],
 result = {
   'changed' => false,
   'ansible_facts' => {
-    'kpm' => kpm_facts
+    'kpm' => JSON.parse(kpm_facts)
   }
 }
 
