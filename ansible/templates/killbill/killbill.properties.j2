@@ -1,68 +1,464 @@
-org.killbill.osgi.bundle.install.dir={{ kb_plugins_dir }}
-org.killbill.billing.osgi.bundles.jruby.conf.dir={{ kb_config_dir }}
-
-org.killbill.billing.osgi.dao.connectionTimeout={{ database_connection_timeout }}
-org.killbill.billing.osgi.dao.maxActive={{ database_max_active }}
-org.killbill.billing.osgi.dao.minIdle={{ database_min_idle }}
-org.killbill.billing.osgi.dao.idleMaxAge={{ database_idle_max_age }}
-org.killbill.billing.osgi.dao.url={{ database_url }}
-org.killbill.billing.osgi.dao.user={{ database_user }}
-org.killbill.billing.osgi.dao.password={{ database_password }}
-
-org.killbill.dao.connectionTimeout={{ database_connection_timeout }}
-org.killbill.dao.maxActive={{ database_max_active }}
-org.killbill.dao.minIdle={{ database_min_idle }}
-org.killbill.dao.idleMaxAge={{ database_idle_max_age }}
-org.killbill.dao.url={{ database_url }}
-org.killbill.dao.user={{ database_user }}
-org.killbill.dao.password={{ database_password }}
-
-org.killbill.jruby.context.scope=THREADSAFE
-
-org.killbill.notificationq.analytics.claimed=100
-org.killbill.notificationq.analytics.historyTableName=analytics_notifications_history
-org.killbill.notificationq.analytics.inMemory=false
-org.killbill.notificationq.analytics.max.failure.retry=3
-org.killbill.notificationq.analytics.notification.nbThreads=5
-org.killbill.notificationq.analytics.queue.capacity=30000
-org.killbill.notificationq.analytics.sleep=3000
-org.killbill.notificationq.analytics.sticky=true
-org.killbill.notificationq.analytics.tableName=analytics_notifications
-
-org.killbill.notificationq.main.claimed={{ notificationq_main_claimed }}
-org.killbill.notificationq.main.inMemory=false
-org.killbill.notificationq.main.max.failure.retry=3
-org.killbill.notificationq.main.notification.nbThreads=10
-org.killbill.notificationq.main.sleep={{ notificationq_main_sleep }}
-org.killbill.notificationq.main.sticky=true
-
-org.killbill.payment.janitor.rate=5m
-org.killbill.payment.janitor.unknown.retries=1h,6h,17h
-org.killbill.payment.janitor.pending.retries=65m,3h,3h,5h,1d,1d,1d,1d
-
-org.killbill.payment.plugin.threads.nb=100
-org.killbill.payment.plugin.timeout=64s
-
-org.killbill.persistent.bus.external.claim.time=5m
-org.killbill.persistent.bus.external.inMemory=true
-org.killbill.persistent.bus.external.inflight.claimed=500
-org.killbill.persistent.bus.external.max.failure.retry=3
-org.killbill.persistent.bus.external.nbThreads=50
-org.killbill.persistent.bus.external.queue.capacity=1000000
-org.killbill.persistent.bus.external.sleep=0
-org.killbill.persistent.bus.external.sticky=true
-org.killbill.persistent.bus.external.useInflightQ=true
-
-org.killbill.persistent.bus.main.claim.time=5m
-org.killbill.persistent.bus.main.inMemory=false
-org.killbill.persistent.bus.main.inflight.claimed=500
-org.killbill.persistent.bus.main.max.failure.retry=3
-org.killbill.persistent.bus.main.nbThreads=50
-org.killbill.persistent.bus.main.queue.capacity=1000000
-org.killbill.persistent.bus.main.sleep=0
-org.killbill.persistent.bus.main.sticky=true
-org.killbill.persistent.bus.main.useInflightQ=true
-
-org.killbill.jaxrs.location.full.url=true
-
-org.killbill.server.test.mode=true
+{% if lookup('env', 'KILLBILL_JRUBY_CONF_DIR') %}
+org.killbill.billing.osgi.bundles.jruby.conf.dir={{ lookup('env', 'KILLBILL_JRUBY_CONF_DIR') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_CACHE_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.cachePrepStmts={{ lookup('env', 'KILLBILL_OSGI_DAO_CACHE_PREP_STMTS') }}
+{% elif lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.cachePrepStmts={{ lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_CONNECTION_TIMEOUT') %}
+org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_OSGI_DAO_CONNECTION_TIMEOUT') }}
+{% elif lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') %}
+org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
+org.killbill.billing.osgi.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
+{% elif lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
+org.killbill.billing.osgi.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_IDLE_MAX_AGE') %}
+org.killbill.billing.osgi.dao.idleMaxAge={{ lookup('env', 'KILLBILL_OSGI_DAO_IDLE_MAX_AGE') }}
+{% elif lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') %}
+org.killbill.billing.osgi.dao.idleMaxAge={{ lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_LOG_LEVEL') %}
+org.killbill.billing.osgi.dao.logLevel={{ lookup('env', 'KILLBILL_OSGI_DAO_LOG_LEVEL') }}
+{% elif lookup('env', 'KILLBILL_DAO_LOG_LEVEL') %}
+org.killbill.billing.osgi.dao.logLevel={{ lookup('env', 'KILLBILL_DAO_LOG_LEVEL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_MAX_ACTIVE') %}
+org.killbill.billing.osgi.dao.maxActive={{ lookup('env', 'KILLBILL_OSGI_DAO_MAX_ACTIVE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') %}
+org.killbill.billing.osgi.dao.maxActive={{ lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_MAX_CONNECTION_AGE') %}
+org.killbill.billing.osgi.dao.maxConnectionAge={{ lookup('env', 'KILLBILL_OSGI_DAO_MAX_CONNECTION_AGE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') %}
+org.killbill.billing.osgi.dao.maxConnectionAge={{ lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_MIN_IDLE') %}
+org.killbill.billing.osgi.dao.minIdle={{ lookup('env', 'KILLBILL_OSGI_DAO_MIN_IDLE') }}
+{% elif lookup('env', 'KILLBILL_DAO_MIN_IDLE') %}
+org.killbill.billing.osgi.dao.minIdle={{ lookup('env', 'KILLBILL_DAO_MIN_IDLE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_MYSQL_SERVER_VERSION') %}
+org.killbill.billing.osgi.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_OSGI_DAO_MYSQL_SERVER_VERSION') }}
+{% elif lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') %}
+org.killbill.billing.osgi.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') %}
+org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') }}
+{% elif lookup('env', 'KILLBILL_DAO_PASSWORD') %}
+org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_POOLING_TYPE') %}
+org.killbill.billing.osgi.dao.poolingType={{ lookup('env', 'KILLBILL_OSGI_DAO_POOLING_TYPE') }}
+{% elif lookup('env', 'KILLBILL_DAO_POOLING_TYPE') %}
+org.killbill.billing.osgi.dao.poolingType={{ lookup('env', 'KILLBILL_DAO_POOLING_TYPE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SIZE') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSize={{ lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SIZE') }}
+{% elif lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSize={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SQL_LIMIT') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSqlLimit={{ lookup('env', 'KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SQL_LIMIT') }}
+{% elif lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') %}
+org.killbill.billing.osgi.dao.prepStmtCacheSqlLimit={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_URL') %}
+org.killbill.billing.osgi.dao.url={{ lookup('env', 'KILLBILL_OSGI_DAO_URL') }}
+{% elif lookup('env', 'KILLBILL_DAO_URL') %}
+org.killbill.billing.osgi.dao.url={{ lookup('env', 'KILLBILL_DAO_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_USE_SERVER_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.useServerPrepStmts={{ lookup('env', 'KILLBILL_OSGI_DAO_USE_SERVER_PREP_STMTS') }}
+{% elif lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') %}
+org.killbill.billing.osgi.dao.useServerPrepStmts={{ lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_USER') %}
+org.killbill.billing.osgi.dao.user={{ lookup('env', 'KILLBILL_OSGI_DAO_USER') }}
+{% elif lookup('env', 'KILLBILL_DAO_USER') %}
+org.killbill.billing.osgi.dao.user={{ lookup('env', 'KILLBILL_DAO_USER') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_NOTIFICATIONS_RETRIES') %}
+org.killbill.billing.server.notifications.retries={{ lookup('env', 'KILLBILL_SERVER_NOTIFICATIONS_RETRIES') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_UTIL_BROADCAST_RATE') %}
+org.killbill.billing.util.broadcast.rate={{ lookup('env', 'KILLBILL_UTIL_BROADCAST_RATE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CACHE_CONFIG_LOCATION') %}
+org.killbill.cache.config.location={{ lookup('env', 'KILLBILL_CACHE_CONFIG_LOCATION') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CATALOG_BUNDLE_PATH') %}
+org.killbill.catalog.bundlePath={{ lookup('env', 'KILLBILL_CATALOG_BUNDLE_PATH') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CATALOG_URI') %}
+org.killbill.catalog.uri={{ lookup('env', 'KILLBILL_CATALOG_URI') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CURRENCY_PROVIDER_DEFAULT') %}
+org.killbill.currency.provider.default={{ lookup('env', 'KILLBILL_CURRENCY_PROVIDER_DEFAULT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') %}
+org.killbill.dao.cachePrepStmts={{ lookup('env', 'KILLBILL_DAO_CACHE_PREP_STMTS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') %}
+org.killbill.dao.connectionTimeout={{ lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_CONNECTION_TIMEOUT') %}
+org.killbill.dao.healthCheckConnectionTimeout={{ lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_CONNECTION_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_EXPECTED99TH_PERCENTILE') %}
+org.killbill.dao.healthCheckExpected99thPercentile={{ lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_EXPECTED99TH_PERCENTILE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
+org.killbill.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') %}
+org.killbill.dao.idleMaxAge={{ lookup('env', 'KILLBILL_DAO_IDLE_MAX_AGE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_LOG_LEVEL') %}
+org.killbill.dao.logLevel={{ lookup('env', 'KILLBILL_DAO_LOG_LEVEL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') %}
+org.killbill.dao.maxActive={{ lookup('env', 'KILLBILL_DAO_MAX_ACTIVE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') %}
+org.killbill.dao.maxConnectionAge={{ lookup('env', 'KILLBILL_DAO_MAX_CONNECTION_AGE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_MIN_IDLE') %}
+org.killbill.dao.minIdle={{ lookup('env', 'KILLBILL_DAO_MIN_IDLE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') %}
+org.killbill.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_PASSWORD') %}
+org.killbill.dao.password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_POOLING_TYPE') %}
+org.killbill.dao.poolingType={{ lookup('env', 'KILLBILL_DAO_POOLING_TYPE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') %}
+org.killbill.dao.prepStmtCacheSize={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SIZE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') %}
+org.killbill.dao.prepStmtCacheSqlLimit={{ lookup('env', 'KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_URL') %}
+org.killbill.dao.url={{ lookup('env', 'KILLBILL_DAO_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') %}
+org.killbill.dao.useServerPrepStmts={{ lookup('env', 'KILLBILL_DAO_USE_SERVER_PREP_STMTS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_USER') %}
+org.killbill.dao.user={{ lookup('env', 'KILLBILL_DAO_USER') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DEFAULT_LOCALE') %}
+org.killbill.default.locale={{ lookup('env', 'KILLBILL_DEFAULT_LOCALE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_DRY_RUN_NOTIFICATION_SCHEDULE') %}
+org.killbill.invoice.dryRunNotificationSchedule={{ lookup('env', 'KILLBILL_INVOICE_DRY_RUN_NOTIFICATION_SCHEDULE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_EMAIL_NOTIFICATIONS_ENABLED') %}
+org.killbill.invoice.emailNotificationsEnabled={{ lookup('env', 'KILLBILL_INVOICE_EMAIL_NOTIFICATIONS_ENABLED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_ENABLED') %}
+org.killbill.invoice.enabled={{ lookup('env', 'KILLBILL_INVOICE_ENABLED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_GLOBAL_LOCK_RETRIES') %}
+org.killbill.invoice.globalLock.retries={{ lookup('env', 'KILLBILL_INVOICE_GLOBAL_LOCK_RETRIES') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_MAX_DAILY_NUMBER_OF_ITEMS_SAFETY_BOUND') %}
+org.killbill.invoice.maxDailyNumberOfItemsSafetyBound={{ lookup('env', 'KILLBILL_INVOICE_MAX_DAILY_NUMBER_OF_ITEMS_SAFETY_BOUND') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_MAX_NUMBER_OF_MONTHS_IN_FUTURE') %}
+org.killbill.invoice.maxNumberOfMonthsInFuture={{ lookup('env', 'KILLBILL_INVOICE_MAX_NUMBER_OF_MONTHS_IN_FUTURE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_READ_MAX_RAW_USAGE_PREVIOUS_PERIOD') %}
+org.killbill.invoice.readMaxRawUsagePreviousPeriod={{ lookup('env', 'KILLBILL_INVOICE_READ_MAX_RAW_USAGE_PREVIOUS_PERIOD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_INVOICE_SANITY_SAFETY_BOUND_ENABLED') %}
+org.killbill.invoice.sanitySafetyBoundEnabled={{ lookup('env', 'KILLBILL_INVOICE_SANITY_SAFETY_BOUND_ENABLED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_LOCATION_FULL_URL') %}
+org.killbill.jaxrs.location.full.url={{ lookup('env', 'KILLBILL_LOCATION_FULL_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JAXRS_LOCATION_HOST') %}
+org.killbill.jaxrs.location.host={{ lookup('env', 'KILLBILL_JAXRS_LOCATION_HOST') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JAXRS_LOCATION_USE_FORWARD_HEADERS') %}
+org.killbill.jaxrs.location.useForwardHeaders={{ lookup('env', 'KILLBILL_JAXRS_LOCATION_USE_FORWARD_HEADERS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_THREADS_POOL_NB') %}
+org.killbill.jaxrs.threads.pool.nb={{ lookup('env', 'KILLBILL_THREADS_POOL_NB') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JAXRS_TIMEOUT') %}
+org.killbill.jaxrs.timeout={{ lookup('env', 'KILLBILL_JAXRS_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JRUBY_CONTEXT_SCOPE') %}
+org.killbill.jruby.context.scope={{ lookup('env', 'KILLBILL_JRUBY_CONTEXT_SCOPE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MANUAL_PAY_TEMPLATE_NAME') %}
+org.killbill.manualPayTemplate.name={{ lookup('env', 'KILLBILL_MANUAL_PAY_TEMPLATE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_GRAPHITE_HOST') %}
+org.killbill.metrics.graphite.host={{ lookup('env', 'KILLBILL_METRICS_GRAPHITE_HOST') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_GRAPHITE_INTERVAL') %}
+org.killbill.metrics.graphite.interval={{ lookup('env', 'KILLBILL_METRICS_GRAPHITE_INTERVAL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_GRAPHITE_PORT') %}
+org.killbill.metrics.graphite.port={{ lookup('env', 'KILLBILL_METRICS_GRAPHITE_PORT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_GRAPHITE_PREFIX') %}
+org.killbill.metrics.graphite.prefix={{ lookup('env', 'KILLBILL_METRICS_GRAPHITE_PREFIX') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_GRAPHITE') %}
+org.killbill.metrics.graphite={{ lookup('env', 'KILLBILL_METRICS_GRAPHITE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_DATABASE') %}
+org.killbill.metrics.influxDb.database={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_DATABASE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_HOST') %}
+org.killbill.metrics.influxDb.host={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_HOST') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_INTERVAL') %}
+org.killbill.metrics.influxDb.interval={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_INTERVAL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_PORT') %}
+org.killbill.metrics.influxDb.port={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_PORT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_PREFIX') %}
+org.killbill.metrics.influxDb.prefix={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_PREFIX') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_SENDER_TYPE') %}
+org.killbill.metrics.influxDb.senderType={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_SENDER_TYPE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB_SOCKET_TIMEOUT') %}
+org.killbill.metrics.influxDb.socketTimeout={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB_SOCKET_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_METRICS_INFLUXDB') %}
+org.killbill.metrics.influxDb={{ lookup('env', 'KILLBILL_METRICS_INFLUXDB') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_CLAIMED') %}
+org.killbill.notificationq.analytics.claimed={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_CLAIMED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_HISTORY_TABLE_NAME') %}
+org.killbill.notificationq.analytics.historyTableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_HISTORY_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_IN_MEMORY') %}
+org.killbill.notificationq.analytics.inMemory={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_IN_MEMORY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') %}
+org.killbill.notificationq.analytics.max.failure.retry={{ lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS') %}
+org.killbill.notificationq.analytics.notification.nbThreads={{ lookup('env', 'KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_QUEUE_CAPACITY') %}
+org.killbill.notificationq.analytics.queue.capacity={{ lookup('env', 'KILLBILL_ANALYTICS_QUEUE_CAPACITY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_SLEEP') %}
+org.killbill.notificationq.analytics.sleep={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_SLEEP') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_TABLE_NAME') %}
+org.killbill.notificationq.analytics.tableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') %}
+org.killbill.notificationq.main.claim.time={{ lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_CLAIMED') %}
+org.killbill.notificationq.main.claimed={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_CLAIMED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_HISTORY_TABLE_NAME') %}
+org.killbill.notificationq.main.historyTableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_HISTORY_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_IN_MEMORY') %}
+org.killbill.notificationq.main.inMemory={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_IN_MEMORY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') %}
+org.killbill.notificationq.main.max.failure.retry={{ lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_NOTIFICATION_NB_THREADS') %}
+org.killbill.notificationq.main.notification.nbThreads={{ lookup('env', 'KILLBILL_MAIN_NOTIFICATION_NB_THREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_NOTIFICATION_OFF') %}
+org.killbill.notificationq.main.notification.off={{ lookup('env', 'KILLBILL_MAIN_NOTIFICATION_OFF') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') %}
+org.killbill.notificationq.main.queue.capacity={{ lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_QUEUE_MODE') %}
+org.killbill.notificationq.main.queue.mode={{ lookup('env', 'KILLBILL_MAIN_QUEUE_MODE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_SLEEP') %}
+org.killbill.notificationq.main.sleep={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_SLEEP') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_TABLE_NAME') %}
+org.killbill.notificationq.main.tableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUNDLE_CACHE_NAME') %}
+org.killbill.osgi.bundle.cache.name={{ lookup('env', 'KILLBILL_BUNDLE_CACHE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUNDLE_INSTALL_DIR') %}
+org.killbill.osgi.bundle.install.dir={{ lookup('env', 'KILLBILL_BUNDLE_INSTALL_DIR') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUNDLE_PROPERTY_NAME') %}
+org.killbill.osgi.bundle.property.name={{ lookup('env', 'KILLBILL_BUNDLE_PROPERTY_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_ROOT_DIR') %}
+org.killbill.osgi.root.dir={{ lookup('env', 'KILLBILL_OSGI_ROOT_DIR') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXPORT_PACKAGES_API') %}
+org.killbill.osgi.system.bundle.export.packages.api={{ lookup('env', 'KILLBILL_EXPORT_PACKAGES_API') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXPORT_PACKAGES_EXTRA') %}
+org.killbill.osgi.system.bundle.export.packages.extra={{ lookup('env', 'KILLBILL_EXPORT_PACKAGES_EXTRA') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXPORT_PACKAGES_JAVA') %}
+org.killbill.osgi.system.bundle.export.packages.java={{ lookup('env', 'KILLBILL_EXPORT_PACKAGES_JAVA') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_OVERDUE_URI') %}
+org.killbill.overdue.uri={{ lookup('env', 'KILLBILL_OVERDUE_URI') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_RETRY_MAX_ATTEMPTS') %}
+org.killbill.payment.failure.retry.max.attempts={{ lookup('env', 'KILLBILL_RETRY_MAX_ATTEMPTS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_FAILURE_RETRY_MULTIPLIER') %}
+org.killbill.payment.failure.retry.multiplier={{ lookup('env', 'KILLBILL_FAILURE_RETRY_MULTIPLIER') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_RETRY_START_SEC') %}
+org.killbill.payment.failure.retry.start.sec={{ lookup('env', 'KILLBILL_RETRY_START_SEC') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_GLOBAL_LOCK_RETRIES') %}
+org.killbill.payment.globalLock.retries={{ lookup('env', 'KILLBILL_PAYMENT_GLOBAL_LOCK_RETRIES') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_INVOICE_PLUGIN') %}
+org.killbill.payment.invoice.plugin={{ lookup('env', 'KILLBILL_PAYMENT_INVOICE_PLUGIN') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JANITOR_ATTEMPTS_DELAY') %}
+org.killbill.payment.janitor.attempts.delay={{ lookup('env', 'KILLBILL_JANITOR_ATTEMPTS_DELAY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JANITOR_PENDING_RETRIES') %}
+org.killbill.payment.janitor.pending.retries={{ lookup('env', 'KILLBILL_JANITOR_PENDING_RETRIES') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_JANITOR_RATE') %}
+org.killbill.payment.janitor.rate={{ lookup('env', 'KILLBILL_PAYMENT_JANITOR_RATE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_JANITOR_UNKNOWN_RETRIES') %}
+org.killbill.payment.janitor.unknown.retries={{ lookup('env', 'KILLBILL_JANITOR_UNKNOWN_RETRIES') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PLUGIN_THREADS_NB') %}
+org.killbill.payment.plugin.threads.nb={{ lookup('env', 'KILLBILL_PLUGIN_THREADS_NB') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_PLUGIN_TIMEOUT') %}
+org.killbill.payment.plugin.timeout={{ lookup('env', 'KILLBILL_PAYMENT_PLUGIN_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_PROVIDER_DEFAULT') %}
+org.killbill.payment.provider.default={{ lookup('env', 'KILLBILL_PAYMENT_PROVIDER_DEFAULT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_PAYMENT_RETRY_DAYS') %}
+org.killbill.payment.retry.days={{ lookup('env', 'KILLBILL_PAYMENT_RETRY_DAYS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXTERNAL_CLAIM_TIME') %}
+org.killbill.persistent.bus.external.claim.time={{ lookup('env', 'KILLBILL_EXTERNAL_CLAIM_TIME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_HISTORY_TABLE_NAME') %}
+org.killbill.persistent.bus.external.historyTableName={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_HISTORY_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_IN_MEMORY') %}
+org.killbill.persistent.bus.external.inMemory={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_IN_MEMORY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXTERNAL_INFLIGHT_CLAIMED') %}
+org.killbill.persistent.bus.external.inflight.claimed={{ lookup('env', 'KILLBILL_EXTERNAL_INFLIGHT_CLAIMED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') %}
+org.killbill.persistent.bus.external.max.failure.retry={{ lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_NB_THREADS') %}
+org.killbill.persistent.bus.external.nbThreads={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_NB_THREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_EXTERNAL_QUEUE_CAPACITY') %}
+org.killbill.persistent.bus.external.queue.capacity={{ lookup('env', 'KILLBILL_EXTERNAL_QUEUE_CAPACITY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_SLEEP') %}
+org.killbill.persistent.bus.external.sleep={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_SLEEP') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_TABLE_NAME') %}
+org.killbill.persistent.bus.external.tableName={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_USE_INFLIGHT_Q') %}
+org.killbill.persistent.bus.external.useInflightQ={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_USE_INFLIGHT_Q') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') %}
+org.killbill.persistent.bus.main.claim.time={{ lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_CLAIMED') %}
+org.killbill.persistent.bus.main.claimed={{ lookup('env', 'KILLBILL_BUS_MAIN_CLAIMED') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_HISTORY_TABLE_NAME') %}
+org.killbill.persistent.bus.main.historyTableName={{ lookup('env', 'KILLBILL_BUS_MAIN_HISTORY_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_IN_MEMORY') %}
+org.killbill.persistent.bus.main.inMemory={{ lookup('env', 'KILLBILL_BUS_MAIN_IN_MEMORY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') %}
+org.killbill.persistent.bus.main.max.failure.retry={{ lookup('env', 'KILLBILL_MAX_FAILURE_RETRY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_NB_THREADS') %}
+org.killbill.persistent.bus.main.nbThreads={{ lookup('env', 'KILLBILL_BUS_MAIN_NB_THREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_OFF') %}
+org.killbill.persistent.bus.main.off={{ lookup('env', 'KILLBILL_BUS_MAIN_OFF') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') %}
+org.killbill.persistent.bus.main.queue.capacity={{ lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_QUEUE_MODE') %}
+org.killbill.persistent.bus.main.queue.mode={{ lookup('env', 'KILLBILL_MAIN_QUEUE_MODE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_SLEEP') %}
+org.killbill.persistent.bus.main.sleep={{ lookup('env', 'KILLBILL_BUS_MAIN_SLEEP') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_TABLE_NAME') %}
+org.killbill.persistent.bus.main.tableName={{ lookup('env', 'KILLBILL_BUS_MAIN_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_RBAC_GLOBAL_SESSION_TIMEOUT') %}
+org.killbill.rbac.globalSessionTimeout={{ lookup('env', 'KILLBILL_RBAC_GLOBAL_SESSION_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SECURITY_SHIRO_NB_HASH_ITERATIONS') %}
+org.killbill.security.shiroNbHashIterations={{ lookup('env', 'KILLBILL_SECURITY_SHIRO_NB_HASH_ITERATIONS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SECURITY_SHIRO_RESOURCE_PATH') %}
+org.killbill.security.shiroResourcePath={{ lookup('env', 'KILLBILL_SECURITY_SHIRO_RESOURCE_PATH') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_BASE_URL') %}
+org.killbill.server.baseUrl={{ lookup('env', 'KILLBILL_SERVER_BASE_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_HTTP_GZIP') %}
+org.killbill.server.http.gzip={{ lookup('env', 'KILLBILL_SERVER_HTTP_GZIP') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_MULTITENANT') %}
+org.killbill.server.multitenant={{ lookup('env', 'KILLBILL_SERVER_MULTITENANT') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_REGION') %}
+org.killbill.server.region={{ lookup('env', 'KILLBILL_SERVER_REGION') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_SHUTDOWN_DELAY') %}
+org.killbill.server.shutdownDelay={{ lookup('env', 'KILLBILL_SERVER_SHUTDOWN_DELAY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_SERVER_TEST_MODE') %}
+org.killbill.server.test.mode={{ lookup('env', 'KILLBILL_SERVER_TEST_MODE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_TEMPLATE_BUNDLE_PATH') %}
+org.killbill.template.bundlePath={{ lookup('env', 'KILLBILL_TEMPLATE_BUNDLE_PATH') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_TEMPLATE_INVOICE_FORMATTER_FACTORY_CLASS') %}
+org.killbill.template.invoiceFormatterFactoryClass={{ lookup('env', 'KILLBILL_TEMPLATE_INVOICE_FORMATTER_FACTORY_CLASS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_TEMPLATE_NAME') %}
+org.killbill.template.name={{ lookup('env', 'KILLBILL_TEMPLATE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') %}
+org.killbill.tenant.broadcast.rate={{ lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') }}
+{% endif %}

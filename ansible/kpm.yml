@@ -5,7 +5,7 @@
     kpm_install_dir: /opt
     nexus_url: https://oss.sonatype.org
     nexus_repository: releases
-    kpm_version: 0.5.3
+    kpm_version: 0.6.1
     kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
   become: yes
   tasks:

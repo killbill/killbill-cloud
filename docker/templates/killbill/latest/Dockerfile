@@ -1,42 +1,28 @@
-FROM killbill/base
+# Shell image that installs Kill Bill on startup
+FROM killbill/base:0.19.x
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
-RUN mkdir -p $KILLBILL_HOME/bundles
+ENV KILLBILL_INSTALL_DIR /var/lib/killbill
 
-ENV KILLBILL_CONFIG_DAO_URL jdbc:h2:file:$KILLBILL_HOME/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE
-ENV KILLBILL_CONFIG_DAO_USER killbill
-ENV KILLBILL_CONFIG_DAO_PASSWORD killbill
-ENV KILLBILL_CONFIG_OSGI_DAO_URL ''
-ENV KILLBILL_CONFIG_OSGI_DAO_USER ''
-ENV KILLBILL_CONFIG_OSGI_DAO_PASSWORD ''
+RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
+RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KILLBILL_INSTALL_DIR
 
-ENV KILLBILL_SERVER_BASE_URL http://localhost:8080
+# Default kpm.yml, override as needed
+COPY ./kpm.yml $KILLBILL_INSTALL_DIR
 
-ENV KILLBILL_SHIRO_RESOURCE_PATH classpath:shiro.ini
+# Default configuration options
+ENV KILLBILL_BUNDLE_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles
+ENV KILLBILL_JRUBY_CONF_DIR $KILLBILL_INSTALL_DIR/config
 
-ENV KILLBILL_SERVER_TEST_MODE true
-
-ENV KILLBILL_METRICS_GRAPHITE false
-ENV KILLBILL_METRICS_GRAPHITE_HOST localhost
-ENV KILLBILL_METRICS_GRAPHITE_PORT 2003
-
-ENV KILLBILL_QUEUE_CREATOR_NAME ''
-
-ENV KILLBILL_SHIRO_NB_HASH_ITERATIONS 200000
-
-# Default mysql wait_timeout config is 28800 (sec) -> 480 min (we use half of that value)
-ENV KILLBILL_CONFIG_DAO_MAX_CONNECTION_AGE 240m
-
-USER root
-
-COPY ./killbill.sh /etc/init.d/killbill.sh
-RUN chmod +x /etc/init.d/killbill.sh
-
-USER tomcat7
-
-COPY ./properties_generator.rb $KILLBILL_CONFIG/
-
-COPY ./logback.xml $KILLBILL_CONFIG/
-COPY ./kpm.yml.erb $KILLBILL_CONFIG/
-
-CMD ["/etc/init.d/killbill.sh", "run"]
+ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
+                                     -e kpm_install_dir=$KPM_INSTALL_DIR \
+                                     -e kpm_version=$KPM_VERSION \
+                                     -e kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
+                                     -e kb_config_dir=$KILLBILL_INSTALL_DIR \
+                                     -e kb_plugins_dir=$KILLBILL_INSTALL_DIR/bundles \
+                                     -e tomcat_owner=$TOMCAT_OWNER \
+                                     -e tomcat_group=$TOMCAT_GROUP \
+                                     -e catalina_base=$CATALINA_BASE \
+                                     $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill.yml
+# Run kpm install
+CMD ["bash", "-c", "$KPM_INSTALL_CMD && $START_TOMCAT_CMD && tail -f $CATALINA_BASE/logs/catalina.out"]

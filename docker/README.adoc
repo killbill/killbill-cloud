@@ -1,0 +1,334 @@
+:toc: macro
+:toc-title:
+:toclevels: 9
+
+[[docker-images-for-kill-bill]]
+# Docker images for Kill Bill
+
+If you are new to Docker or Kill Bill, see our https://github.com/killbill/killbill-cloud/tree/master/docker/compose[Docker Compose recipes] first.
+
+toc::[]
+
+[[quick-start]]
+## Quick start
+
+To start Kill Bill 0.18.x: (`x` being the latest 0.18 release out, see https://hub.docker.com/r/killbill/killbill/tags/[Docker Hub]):
+
+....
+docker run -ti -p 8080:8080 killbill/killbill:0.18.x
+....
+
+Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the IP address of the container. You can verify the Kill Bill status by checking the healthcheck:
+
+....
+curl -v http://<IP_ADDRESS>:8080/1.0/healthcheck
+....
+
+[[available-images]]
+## Available images
+
+* `killbill/base:latest`: shared base image with Tomcat and KPM inside Ubuntu 16.04 LTS.
+* `killbill/killbill:latest`: empty base Kill Bill image. It runs `kpm install` on startup before running Kill Bill. If no custom `kpm.yml` file is specified, the latest version of Kill Bill and the KPM plugin are downloaded.
+* `killbill/killbill:0.X.Y`: image with a specific version of Kill Bill installed and the KPM plugin.
+* `killbill/kaui:latest`: empty base Kaui image. It runs `kpm install` on startup before running Kaui. If no custom `kpm.yml` file is specified, the latest version of Kaui is downloaded.
+* `killbill/kaui:0.X.Y`: image with a specific version of Kaui installed.
+* `killbill/killbill:build`: official build environment for all published Kill Bill artifacts (useful for developers).
+
+[[environment-variables]]
+### Environment variables
+
+[[killbill-variables]]
+#### Kill Bill specific variables
+
+The following environment variables will populate the default `killbill.properties`. For further customization, you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
+
+* `KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS` (default `5`)
+* `KILLBILL_ANALYTICS_QUEUE_CAPACITY` (default `30000`)
+* `KILLBILL_BUNDLE_CACHE_NAME` (default `osgi-cache`)
+* `KILLBILL_BUNDLE_INSTALL_DIR` (default `/var/lib/killbill/bundles`)
+* `KILLBILL_BUNDLE_PROPERTY_NAME` (default `killbill.properties`)
+* `KILLBILL_BUS_EXTERNAL_HISTORY_TABLE_NAME` (default `bus_ext_events_history`)
+* `KILLBILL_BUS_EXTERNAL_IN_MEMORY` (default `true`)
+* `KILLBILL_BUS_EXTERNAL_NB_THREADS` (default `50`)
+* `KILLBILL_BUS_EXTERNAL_SLEEP` (default `0`)
+* `KILLBILL_BUS_EXTERNAL_TABLE_NAME` (default `bus_ext_events`)
+* `KILLBILL_BUS_EXTERNAL_USE_INFLIGHT_Q` (default `true`)
+* `KILLBILL_BUS_MAIN_CLAIMED` (default `10`)
+* `KILLBILL_BUS_MAIN_HISTORY_TABLE_NAME` (default `bus_events_history`)
+* `KILLBILL_BUS_MAIN_IN_MEMORY` (default `false`)
+* `KILLBILL_BUS_MAIN_NB_THREADS` (default `50`)
+* `KILLBILL_BUS_MAIN_OFF` (default `false`)
+* `KILLBILL_BUS_MAIN_SLEEP` (default `0`)
+* `KILLBILL_BUS_MAIN_TABLE_NAME` (default `bus_events`)
+* `KILLBILL_CACHE_CONFIG_LOCATION` (default `ehcache.xml`)
+* `KILLBILL_CATALOG_BUNDLE_PATH` (default `org/killbill/billing/util/template/translation/CatalogTranslation`)
+* `KILLBILL_CATALOG_URI` (default `SpyCarBasic.xml`)
+* `KILLBILL_CURRENCY_PROVIDER_DEFAULT` (default `killbill-currency-plugin`)
+* `KILLBILL_DAO_CACHE_PREP_STMTS` (default `true`)
+* `KILLBILL_DAO_CONNECTION_TIMEOUT` (default `100s`)
+* `KILLBILL_DAO_HEALTH_CHECK_CONNECTION_TIMEOUT` (default `10s`)
+* `KILLBILL_DAO_HEALTH_CHECK_EXPECTED99TH_PERCENTILE` (default `50ms`)
+* `KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD` (default `5m`)
+* `KILLBILL_DAO_IDLE_MAX_AGE` (default `2m`)
+* `KILLBILL_DAO_LOG_LEVEL` (default `DEBUG`)
+* `KILLBILL_DAO_MAX_ACTIVE` (default `150`)
+* `KILLBILL_DAO_MAX_CONNECTION_AGE` (default `0m`)
+* `KILLBILL_DAO_MIN_IDLE` (default `5`)
+* `KILLBILL_DAO_MYSQL_SERVER_VERSION` (default `4.0`)
+* `KILLBILL_DAO_PASSWORD` (default `killkill`)
+* `KILLBILL_DAO_POOLING_TYPE` (default `HIKARICP`)
+* `KILLBILL_DAO_PREP_STMT_CACHE_SIZE` (default `500`)
+* `KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT` (default `2048`)
+* `KILLBILL_DAO_URL` (default `jdbc:h2:file:/var/lib/killbill/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE`)
+* `KILLBILL_DAO_USER` (default `killbill`)
+* `KILLBILL_DAO_USE_SERVER_PREP_STMTS` (default `true`)
+* `KILLBILL_DEFAULT_LOCALE` (default `en_US`)
+* `KILLBILL_EXPORT_PACKAGES_API` (default `org.killbill.billing.account.api,org.killbill.billing.analytics.api.sanity,org.killbill.billing.analytics.api.user,org.killbill.billing.beatrix.bus.api,org.killbill.billing.catalog.api,org.killbill.billing.catalog.api.rules,org.killbill.billing.invoice.plugin.api,org.killbill.billing.invoice.api,org.killbill.billing.invoice.api.formatters,org.killbill.billing.entitlement.api,org.killbill.billing,org.killbill.clock,org.killbill.billing.notification.api,org.killbill.billing.notification.plugin.api,org.killbill.billing.notification.plugin,org.killbill.billing.osgi.api,org.killbill.billing.osgi.api.config,org.killbill.billing.overdue,org.killbill.billing.payment.api,org.killbill.billing.payment.plugin.api,org.killbill.billing.control.plugin.api,org.killbill.billing.tenant.api,org.killbill.billing.usage.api,org.killbill.billing.util.api,org.killbill.billing.util.nodes,org.killbill.billing.util.audit,org.killbill.billing.util.callcontext,org.killbill.billing.util.customfield,org.killbill.billing.util.email,org.killbill.billing.util.entity,org.killbill.billing.util.tag,org.killbill.billing.util.template,org.killbill.billing.util.template.translation,org.killbill.billing.currency.plugin.api,org.killbill.billing.catalog.plugin.api,org.killbill.billing.entitlement.plugin.api,org.killbill.billing.currency.api,org.killbill.billing.security.api,org.killbill.billing.osgi.libs.killbill,org.joda.time;org.joda.time.format;version=2.9,org.slf4j;version=1.7.2,org.osgi.service.log;version=1.3,org.osgi.service.http;version=1.2.0,org.osgi.service.deploymentadmin;version=1.1.0,org.osgi.service.event;version=1.2.0`)
+* `KILLBILL_EXPORT_PACKAGES_EXTRA` (default ``)
+* `KILLBILL_EXPORT_PACKAGES_JAVA` (default `com.sun.xml.internal.ws,com.sun.xml.internal.ws.addressing,com.sun.xml.internal.ws.addressing.model,com.sun.xml.internal.ws.addressing.policy,com.sun.xml.internal.ws.addressing.v200408,com.sun.xml.internal.ws.api,com.sun.xml.internal.ws.api.addressing,com.sun.xml.internal.ws.api.client,com.sun.xml.internal.ws.api.config.management,com.sun.xml.internal.ws.api.config.management.policy,com.sun.xml.internal.ws.api.fastinfoset,com.sun.xml.internal.ws.api.ha,com.sun.xml.internal.ws.api.handler,com.sun.xml.internal.ws.api.message,com.sun.xml.internal.ws.api.message.stream,com.sun.xml.internal.ws.api.model,com.sun.xml.internal.ws.api.model.soap,com.sun.xml.internal.ws.api.model.wsdl,com.sun.xml.internal.ws.api.pipe,com.sun.xml.internal.ws.api.pipe.helper,com.sun.xml.internal.ws.api.policy,com.sun.xml.internal.ws.api.server,com.sun.xml.internal.ws.api.streaming,com.sun.xml.internal.ws.api.wsdl.parser,com.sun.xml.internal.ws.api.wsdl.writer,com.sun.xml.internal.ws.binding,com.sun.xml.internal.ws.client,com.sun.xml.internal.ws.client.dispatch,com.sun.xml.internal.ws.client.sei,com.sun.xml.internal.ws.config.management.policy,com.sun.xml.internal.ws.developer,com.sun.xml.internal.ws.encoding,com.sun.xml.internal.ws.encoding.fastinfoset,com.sun.xml.internal.ws.encoding.policy,com.sun.xml.internal.ws.encoding.soap,com.sun.xml.internal.ws.encoding.soap.streaming,com.sun.xml.internal.ws.encoding.xml,com.sun.xml.internal.ws.fault,com.sun.xml.internal.ws.handler,com.sun.xml.internal.ws.message,com.sun.xml.internal.ws.message.jaxb,com.sun.xml.internal.ws.message.saaj,com.sun.xml.internal.ws.message.source,com.sun.xml.internal.ws.message.stream,com.sun.xml.internal.ws.model,com.sun.xml.internal.ws.model.soap,com.sun.xml.internal.ws.model.wsdl,com.sun.xml.internal.ws.org.objectweb.asm,com.sun.xml.internal.ws.policy,com.sun.xml.internal.ws.policy.jaxws,com.sun.xml.internal.ws.policy.jaxws.spi,com.sun.xml.internal.ws.policy.privateutil,com.sun.xml.internal.ws.policy.sourcemodel,com.sun.xml.internal.ws.policy.sourcemodel.attach,com.sun.xml.internal.ws.policy.sourcemodel.wspolicy,com.sun.xml.internal.ws.policy.spi,com.sun.xml.internal.ws.policy.subject,com.sun.xml.internal.ws.protocol.soap,com.sun.xml.internal.ws.protocol.xml,com.sun.xml.internal.ws.resources,com.sun.xml.internal.ws.server,com.sun.xml.internal.ws.server.provider,com.sun.xml.internal.ws.server.sei,com.sun.xml.internal.ws.spi,com.sun.xml.internal.ws.streaming,com.sun.xml.internal.ws.transport,com.sun.xml.internal.ws.transport.http,com.sun.xml.internal.ws.transport.http.client,com.sun.xml.internal.ws.transport.http.server,com.sun.xml.internal.ws.util,com.sun.xml.internal.ws.util.exception,com.sun.xml.internal.ws.util.localization,com.sun.xml.internal.ws.util.pipe,com.sun.xml.internal.ws.util.xml,com.sun.xml.internal.ws.wsdl,com.sun.xml.internal.ws.wsdl.parser,com.sun.xml.internal.ws.wsdl.writer,com.sun.xml.internal.ws.wsdl.writer.document,com.sun.xml.internal.ws.wsdl.writer.document.http,com.sun.xml.internal.ws.wsdl.writer.document.soap,com.sun.xml.internal.ws.wsdl.writer.document.soap12,com.sun.xml.internal.ws.wsdl.writer.document.xsd,javax.annotation,javax.management,javax.naming,javax.naming.ldap,javax.net,javax.net.ssl,javax.crypto,javax.crypto.spec,javax.sql,javax.sql.rowset,javax.sql.rowset.serial,javax.transaction,javax.transaction.xa,javax.xml,javax.xml.bind,javax.xml.validation,javax.xml.namespace,javax.xml.parsers,javax.xml.validation,javax.xml.stream,javax.xml.stream.events,javax.xml.stream.util,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.sax,javax.xml.transform.stax,javax.xml.transform.stream,javax.xml.xpath,javax.jws.soap,com.sun.org,com.sun.org.apache,com.sun.org.apache.xml,com.sun.org.apache.xml.internal,com.sun.org.apache.xml.internal.utils,com.sun.org.apache.xpath,com.sun.org.apache.xpath.internal,com.sun.org.apache.xpath.internal.jaxp,com.sun.org.apache.xpath.internal.objects,org.w3c.dom,org.w3c.dom.bootstrap,org.w3c.dom.events,org.w3c.dom.ls,org.w3c.dom.css,org.w3c.dom.html,org.w3c.dom.ranges,org.w3c.dom.stylesheets,org.w3c.dom.traversal,org.w3c.dom.views,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpers,sun.misc,sun.misc.unsafe,sun.security,sun.security.util,javax.servlet;version=3.1,javax.servlet.http;version=3.1`)
+* `KILLBILL_EXTERNAL_CLAIM_TIME` (default `5m`)
+* `KILLBILL_EXTERNAL_INFLIGHT_CLAIMED` (default `500`)
+* `KILLBILL_EXTERNAL_QUEUE_CAPACITY` (default `1000000`)
+* `KILLBILL_FAILURE_RETRY_MULTIPLIER` (default `2`)
+* `KILLBILL_INVOICE_DRY_RUN_NOTIFICATION_SCHEDULE` (default `0s`)
+* `KILLBILL_INVOICE_ENABLED` (default `true`)
+* `KILLBILL_INVOICE_GLOBAL_LOCK_RETRIES` (default `50`)
+* `KILLBILL_INVOICE_MAX_DAILY_NUMBER_OF_ITEMS_SAFETY_BOUND` (default `15`)
+* `KILLBILL_INVOICE_MAX_NUMBER_OF_MONTHS_IN_FUTURE` (default `36`)
+* `KILLBILL_INVOICE_READ_MAX_RAW_USAGE_PREVIOUS_PERIOD` (default `2`)
+* `KILLBILL_INVOICE_SANITY_SAFETY_BOUND_ENABLED` (default `true`)
+* `KILLBILL_JANITOR_ATTEMPTS_DELAY` (default `12h`)
+* `KILLBILL_JANITOR_PENDING_RETRIES` (default `65m,3h,3h,5h,1d,1d,1d,1d`)
+* `KILLBILL_JANITOR_UNKNOWN_RETRIES` (default `1h,6h,17h`)
+* `KILLBILL_JAXRS_LOCATION_HOST` (default ``)
+* `KILLBILL_JAXRS_LOCATION_USE_FORWARD_HEADERS` (default `true`)
+* `KILLBILL_JAXRS_TIMEOUT` (default `30s`)
+* `KILLBILL_JRUBY_CONF_DIR` (default `/var/lib/killbill/config`)
+* `KILLBILL_JRUBY_CONTEXT_SCOPE` (default `THREADSAFE`)
+* `KILLBILL_LOCATION_FULL_URL` (default `true`)
+* `KILLBILL_MAIN_CLAIM_TIME` (default `5m`)
+* `KILLBILL_MAIN_NOTIFICATION_NB_THREADS` (default `10`)
+* `KILLBILL_MAIN_NOTIFICATION_OFF` (default `false`)
+* `KILLBILL_MAIN_QUEUE_CAPACITY` (default `1000000`)
+* `KILLBILL_MAIN_QUEUE_CAPACITY` (default `100`)
+* `KILLBILL_MAIN_QUEUE_MODE` (default `STICKY_POLLING`)
+* `KILLBILL_MANUAL_PAY_TEMPLATE_NAME` (default `org/killbill/billing/util/email/templates/HtmlInvoiceTemplate.mustache`)
+* `KILLBILL_MAX_FAILURE_RETRY` (default `3`)
+* `KILLBILL_METRICS_GRAPHITE_HOST` (default `localhost`)
+* `KILLBILL_METRICS_GRAPHITE_INTERVAL` (default `30`)
+* `KILLBILL_METRICS_GRAPHITE_PORT` (default `2003`)
+* `KILLBILL_METRICS_GRAPHITE_PREFIX` (default `killbill`)
+* `KILLBILL_METRICS_GRAPHITE` (default `false`)
+* `KILLBILL_METRICS_INFLUXDB_DATABASE` (default `30`)
+* `KILLBILL_METRICS_INFLUXDB_HOST` (default `localhost`)
+* `KILLBILL_METRICS_INFLUXDB_INTERVAL` (default `30`)
+* `KILLBILL_METRICS_INFLUXDB_PORT` (default `2003`)
+* `KILLBILL_METRICS_INFLUXDB_PREFIX` (default `killbill`)
+* `KILLBILL_METRICS_INFLUXDB_SENDER_TYPE` (default `killbill`)
+* `KILLBILL_METRICS_INFLUXDB_SOCKET_TIMEOUT` (default `30`)
+* `KILLBILL_METRICS_INFLUXDB` (default `false`)
+* `KILLBILL_NOTIFICATIONQ_ANALYTICS_CLAIMED` (default `100`)
+* `KILLBILL_NOTIFICATIONQ_ANALYTICS_HISTORY_TABLE_NAME` (default `analytics_notifications_history`)
+* `KILLBILL_NOTIFICATIONQ_ANALYTICS_IN_MEMORY` (default `false`)
+* `KILLBILL_NOTIFICATIONQ_ANALYTICS_SLEEP` (default `3000`)
+* `KILLBILL_NOTIFICATIONQ_ANALYTICS_TABLE_NAME` (default `analytics_notifications`)
+* `KILLBILL_NOTIFICATIONQ_MAIN_CLAIMED` (default `100`)
+* `KILLBILL_NOTIFICATIONQ_MAIN_HISTORY_TABLE_NAME` (default `notifications_history`)
+* `KILLBILL_NOTIFICATIONQ_MAIN_IN_MEMORY` (default `false`)
+* `KILLBILL_NOTIFICATIONQ_MAIN_SLEEP` (default `70000`)
+* `KILLBILL_NOTIFICATIONQ_MAIN_TABLE_NAME` (default `notifications`)
+* `KILLBILL_OSGI_DAO_CACHE_PREP_STMTS` (default `true`)
+* `KILLBILL_OSGI_DAO_CONNECTION_TIMEOUT` (default `100s`)
+* `KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD` (default `5m`)
+* `KILLBILL_OSGI_DAO_IDLE_MAX_AGE` (default `2m`)
+* `KILLBILL_OSGI_DAO_LOG_LEVEL` (default `DEBUG`)
+* `KILLBILL_OSGI_DAO_MAX_ACTIVE` (default `150`)
+* `KILLBILL_OSGI_DAO_MAX_CONNECTION_AGE` (default `0m`)
+* `KILLBILL_OSGI_DAO_MIN_IDLE` (default `5`)
+* `KILLBILL_OSGI_DAO_MYSQL_SERVER_VERSION` (default `4.0`)
+* `KILLBILL_OSGI_DAO_PASSWORD` (default `killbill`)
+* `KILLBILL_OSGI_DAO_POOLING_TYPE` (default `HIKARICP`)
+* `KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SIZE` (default `500`)
+* `KILLBILL_OSGI_DAO_PREP_STMT_CACHE_SQL_LIMIT` (default `2048`)
+* `KILLBILL_OSGI_DAO_URL` (default `jdbc:h2:file:/var/lib/killbill/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE`)
+* `KILLBILL_OSGI_DAO_USER` (default `killbill`)
+* `KILLBILL_OSGI_DAO_USE_SERVER_PREP_STMTS` (default `true`)
+* `KILLBILL_OSGI_ROOT_DIR` (default `/var/tmp/felix`)
+* `KILLBILL_OVERDUE_URI` (default `NoOverdueConfig.xml`)
+* `KILLBILL_PAYMENT_GLOBAL_LOCK_RETRIES` (default `50`)
+* `KILLBILL_PAYMENT_INVOICE_PLUGIN` (default ``)
+* `KILLBILL_PAYMENT_JANITOR_RATE` (default `5m`)
+* `KILLBILL_PAYMENT_PLUGIN_TIMEOUT` (default `64s`)
+* `KILLBILL_PAYMENT_PROVIDER_DEFAULT` (default `__EXTERNAL_PAYMENT__`)
+* `KILLBILL_PAYMENT_RETRY_DAYS` (default `8,8,8`)
+* `KILLBILL_PLUGIN_THREADS_NB` (default `100`)
+* `KILLBILL_RBAC_GLOBAL_SESSION_TIMEOUT` (default `1h`)
+* `KILLBILL_RETRY_MAX_ATTEMPTS` (default `8`)
+* `KILLBILL_RETRY_START_SEC` (default `300`)
+* `KILLBILL_SECURITY_SHIRO_NB_HASH_ITERATIONS` (default `200000`)
+* `KILLBILL_SECURITY_SHIRO_RESOURCE_PATH` (default `classpath:shiro.ini`)
+* `KILLBILL_SERVER_BASE_URL` (default `http://127.0.0.1:8080`)
+* `KILLBILL_SERVER_HTTP_GZIP` (default `false`)
+* `KILLBILL_SERVER_MULTITENANT` (default `true`)
+* `KILLBILL_SERVER_NOTIFICATIONS_RETRIES` (default `15m,30m,2h,12h,1d`)
+* `KILLBILL_SERVER_REGION` (default `local`)
+* `KILLBILL_SERVER_SHUTDOWN_DELAY` (default `0s`)
+* `KILLBILL_SERVER_TEST_MODE` (default `true`)
+* `KILLBILL_TEMPLATE_BUNDLE_PATH` (default `org/killbill/billing/util/template/translation/InvoiceTranslation`)
+* `KILLBILL_TEMPLATE_INVOICE_FORMATTER_FACTORY_CLASS` (default `org.killbill.billing.invoice.template.formatters.DefaultInvoiceFormatterFactory`)
+* `KILLBILL_TEMPLATE_NAME` (default `org/killbill/billing/util/email/templates/HtmlInvoiceTemplate.mustache`)
+* `KILLBILL_TENANT_BROADCAST_RATE` (default `5s`)
+* `KILLBILL_THREADS_POOL_NB` (default `30`)
+* `KILLBILL_UTIL_BROADCAST_RATE` (default `5s`)
+
+[[kaui-variables]]
+#### Kaui specific variables
+
+* `KAUI_KILLBILL_URL` (default `http://127.0.0.1:8080`)
+* `KAUI_KILLBILL_API_KEY` (default `bob`)
+* `KAUI_KILLBILL_API_SECRET` (default `lazar`)
+* `KAUI_CONFIG_DAO_URL` (default `jdbc:mysql://localhost:3306/kaui`)
+* `KAUI_CONFIG_DAO_USER` (default `kaui`)
+* `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
+* `KAUI_CONFIG_DEMO` (default `false`)
+
+[[changes-since-0.18]]
+## Changes since 0.18
+
+Starting with 0.19, the images are built differently.
+
+First, Tomcat isn’t installed by `apt` anymore. Instead, we use our Tomcat Ansible role to do it. Among changes:
+
+* Tomcat has been upgraded from 7 to 8.5.
+* Tomcat user is `tomcat` (password `tomcat`).
+* Installation directory (`CATALINA_HOME`) is `/opt` (symlinked to `/usr/share/tomcat`). `CATALINA_BASE` is at /var/lib/tomcat.
+* Instead of the custom `/etc/init.d/tomcat.sh` script, you should now directly use the Tomcat scripts under `$CATALINA_HOME/bin` (e.g. `$CATALINA_HOME/bin/catalina.sh run`). This also means that the special `jvm` section in the `kpm.yml` isn’t supported anymore to set JVM properties. Take a look at `$CATALINA_BASE/bin/setenv.sh` instead.
+
+Second, KPM isn’t installed by JRuby gems anymore. We now use our KPM Ansible role as well. Among changes:
+
+* Pre-built Ruby binaries specifically for KPM are installed, there is no more system wide Ruby available.
+* Regarding binaries to install, the previous behavior was to look for `/etc/killbill/kpm.yml` on startup and generate it from a combination of environment variables, `/etc/killbill/kpm.yml.erb`, and `/etc/killbillkpm.yml.erb.overlay` if not present. This isn’t supported anymore, instead you should bind mount `/var/lib/killbill/kpm.yml` when launching the Docker image. This also means that automatic installation of plugins through environment variables like `-e KILLBILL_PLUGIN_STRIPE=1` won’t work anymore (specify them in your `kpm.yml` instead).
+* Regarding configuration, the previous behavior was to look for `/etc/killbill/killbill.properties` on startup and generate it from the `properties` section of the `kpm.yml` if not present. This isn’t supported anymore, instead you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
+
+Python and Ansible are now also installed in the image, in case you need to extend the image through custom Ansible roles.
+
+[[tomcat-configuration]]
+## Tomcat configuration
+
+[[https]]
+### HTTPS
+
+1.  Expose port 8443:
++
+....
+docker run -ti -p 8080:8080 -p 8443:8443 killbill/killbill:0.18.x
+....
+
+2.  Import your SSL certificate (see https://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[docs]). For testing, you can just create a self-signed certificate:
++
+....
+sudo apt-get update
+sudo apt-get install ssl-cert
+sudo usermod -a -G ssl-cert tomcat
+....
+
+1.  Update Tomcat’s configuration:
+
+....
+# In /var/lib/tomcat/conf/server.xml
+<Connector executor="tomcatThreadPool"
+           port="8443"
+           connectionTimeout="20000"
+           acceptorThreadCount="2"
+           SSLEnabled="true"
+           SSLCertificateFile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
+           SSLCertificateKeyFile="/etc/ssl/private/ssl-cert-snakeoil.key"
+           scheme="https"
+           secure="true" />
+....
+
+[[x-forwarded-headers-support]]
+### X-Forwarded headers support
+
+When `org.killbill.jaxrs.location.full.url=true`, Kill Bill will build location headers using a full URL. In a typical load balancer scneario, which receives traffic on port 8443 and forwards it to port 8080 on the Kill Bill instances (i.e. SSL terminated at the load balancer), you probably want the headers to return something like https://killbill-vip.mycompany.net:8443 instead of http://10.1.2.3:8080.
+
+To do so:
+
+1.  Enable the `RemoteIpValve` (make sure to configure correctly at least the `internalProxies` and `trustedProxies` attributes depending on your environment, see the https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Proxies_Support[docs]):
++
+....
+# In /var/lib/tomcat/conf/server.xml
+<Valve className="org.apache.catalina.valves.RemoteIpValve"
+       protocolHeader="x-forwarded-proto"
+       portHeader="x-forwarded-port" />
+....
+
+2.  Set `org.killbill.jaxrs.location.host=killbill-vip.mycompany.net`
+
+Without any X-Forwarded header, the default Location header will result to something like `http://killbill-vip.mycompany.net:8080`. With `X-Forwarded-For: 10.0.0.0`, `X-Forwarded-Proto: https` and `X-Forwarded-Port: 8443`, the header will become something like `https://killbill-vip.mycompany.net:8443`.
+
+You optionally also want to set `requestAttributesEnabled="true"` to `org.apache.catalina.valves.AccessLogValve`, to log the IP address from the `X-Forwarded-For` header in the access logs.
+
+[[build]]
+## Build
+
+All images are based upon a `base` image which (in theory) should not have to be rebuilt too often. In order to build it:
+
+....
+cd docker/templates/base/latest
+docker build --no-cache -t killbill/base:latest .
+....
+
+To build an image:
+
+....
+make
+....
+
+To build a specific Kill Bill version:
+
+....
+make -e VERSION=0.x.y
+....
+
+To build Kaui:
+
+....
+make -e TARGET=kaui -e VERSION=0.x.y
+....
+
+To build MariaDB:
+
+....
+make -e TARGET=mariadb -e VERSION=0.x # e.g. 0.18
+....
+
+To debug it:
+
+....
+make run
+....
+
+To cleanup containers and images:
+
+....
+make clean
+....
+
+To run it:
+
+....
+make run-container
+....
+
+To publish an image:
+
+....
+# Build the image locally
+export TARGET=killbill # or base, kaui
+export VERSION=latest # or 0.18.0
+make -e TARGET=$TARGET -e VERSION=$VERSION
+docker login
+docker push killbill/$TARGET:$VERSION
+docker logout
+....
