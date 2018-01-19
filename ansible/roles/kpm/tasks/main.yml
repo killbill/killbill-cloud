@@ -14,11 +14,3 @@
     dest: "{{ kpm_install_dir }}"
   tags: kpm
 
-- name: gather KPM facts
-  killbill_facts:
-    kpm_path: "{{ kpm_path }}"
-    bundles_dir: "{{ kb_plugins_dir }}"
-    kaui_web_path: "{{ catalina_base }}/webapps/ROOT.war"
-    killbill_web_path: "{{ catalina_base }}/webapps/ROOT.war"
-  tags: kpm
-
