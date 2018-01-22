@@ -1,6 +1,6 @@
 ---
 killbill:
-  version: LATEST
+  version: 0.19.0
   plugins:
     ruby:
     - name: kpm
