@@ -59,7 +59,7 @@ RUN usermod -aG sudo tomcat7 && \
 
 
 # Install KPM
-RUN gem install kpm
+RUN gem install kpm -v 0.5.3
 
 ENV NEXUS_URL=https://oss.sonatype.org \
     NEXUS_REPOSITORY=releases \
