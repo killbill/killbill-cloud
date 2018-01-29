@@ -20,11 +20,13 @@ init() {
   if [[ $VERSION != 'latest' ]]; then
     clean
     cat "$TAGGED_PATH/Dockerfile.template"  | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/Dockerfile"
+    cat "$TAGGED_PATH/kpm.yml.template"  | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/kpm.yml"
   fi
 }
 
 clean() {
     rm -f "$TAGGED_PATH/Dockerfile"
+    rm -f "$TAGGED_PATH/kpm.yml"
 }
 
 while getopts "hict:v:" OPTION; do

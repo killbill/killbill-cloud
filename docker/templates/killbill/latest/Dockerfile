@@ -25,4 +25,4 @@ ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
                                      -e catalina_base=$CATALINA_BASE \
                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill.yml
 # Run kpm install
-CMD ["bash", "-c", "$KPM_INSTALL_CMD && $START_TOMCAT_CMD && tail -f $CATALINA_BASE/logs/catalina.out"]
+CMD ["bash", "-c", "$KPM_INSTALL_CMD && $START_TOMCAT_CMD && tail -f $CATALINA_BASE/logs/killbill.out"]

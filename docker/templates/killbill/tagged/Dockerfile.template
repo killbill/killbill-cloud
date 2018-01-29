@@ -4,6 +4,9 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 # VERSION will be expanded in Makefile
 ENV KILLBILL_VERSION __VERSION__
 
+# Default kpm.yml, override as needed
+COPY ./kpm.yml $KILLBILL_INSTALL_DIR
+
 # Install Kill Bill
 RUN kpm pull_kb_server_war --destination=/var/lib/tomcat/webapps/ROOT.war --bundles_dir=/var/lib/killbill/bundles $KILLBILL_VERSION
 
