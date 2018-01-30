@@ -222,7 +222,7 @@ module KPM
       classifier = nil
 
       version = specified_version
-      if version.nil?
+      if version.nil? || version == LATEST_VERSION
         info = KPM::KillbillServerArtifact.info(kb_version || LATEST_VERSION, @nexus_config, @nexus_ssl_verify)
         version = info['killbill-platform']
       end

@@ -17,6 +17,8 @@ module KPM
         logger = Logger.new(STDOUT)
         logger.level = Logger::ERROR
 
+        version = KPM::Installer.get_kb_latest_stable_version if version == 'LATEST'
+
         versions = {}
         Dir.mktmpdir do |dir|
           # Retrieve the main Kill Bill pom

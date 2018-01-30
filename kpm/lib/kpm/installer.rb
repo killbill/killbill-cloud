@@ -58,6 +58,8 @@ module KPM
       @config = raw_config['killbill']
       @kaui_config = raw_config['kaui']
 
+      @config['version'] = KPM::Installer.get_kb_latest_stable_version if @config['version'].nil? || @config['version'] == 'LATEST'
+
       if logger.nil?
         logger = Logger.new(STDOUT)
         logger.level = Logger::INFO
