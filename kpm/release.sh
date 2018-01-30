@@ -27,6 +27,9 @@ if [[ -z "$NO_RELEASE" ]]; then
   $BUNDLE rake release
 fi
 
+# Wait for the gem to be propagated
+sleep 15
+
 $BUNDLE rake package
 
 if [[ -z "$NO_RELEASE" ]]; then
