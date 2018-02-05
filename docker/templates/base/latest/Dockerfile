@@ -116,4 +116,4 @@ ENV START_TOMCAT_CMD ansible-playbook $ANSIBLE_OPTS  \
                                       $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat_restart.yml
 # Start Tomcat
 EXPOSE 8080
-CMD ["bash", "-c", "$START_TOMCAT_CMD && tail -f $CATALINA_BASE/logs/catalina.out"]
+CMD ["bash", "-c", "$START_TOMCAT_CMD && tail -F $CATALINA_BASE/logs/catalina.out"]
