@@ -2,6 +2,8 @@ database:
   name: test_kpm
   user: test_user
   password: test_password
+  host: 127.0.0.1
+  port: 3306
 
 killbill:
   user: admin

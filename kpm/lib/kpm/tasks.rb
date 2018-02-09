@@ -493,7 +493,7 @@ module KPM
         method_option :database_port,
                       :type    => :string,
                       :default => nil,
-                      :desc    => 'Database Host name'
+                      :desc    => 'Database port'
         desc 'account', 'export/import accounts'
         def account
           logger.info 'Please wait processing the request!!!'
@@ -550,7 +550,7 @@ module KPM
             end
           end
         end
-        
+
         method_option :key_prefix,
                       :type    => :string,
                       :default => nil,
@@ -572,7 +572,7 @@ module KPM
         def tenant_config
           logger.info 'Please wait processing the request!!!'
           begin
-            
+
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
               raise Interrupt,'--killbill_url, required format -> http(s)://something'
             end
@@ -584,14 +584,14 @@ module KPM
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
               raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
             end
-            
+
             if options[:key_prefix] === :key_prefix.to_s
               raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}"
             end
 
             tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials],options[:killbill_credentials],
                                        options[:killbill_url], logger)
-                                      
+
             tenantConfig.export(options[:key_prefix])
 
           rescue Exception => e
@@ -639,6 +639,10 @@ module KPM
                       :type    => :string,
                       :default => nil,
                       :desc    => 'Database Host name'
+        method_option :database_port,
+                      :type    => :string,
+                      :default => nil,
+                      :desc    => 'Database port'
         method_option :kaui_web_path,
                       :type    => :string,
                       :default => nil,
@@ -689,7 +693,7 @@ module KPM
 
             diagnostic = KPM::DiagnosticFile.new(options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
                                        options[:killbill_url],options[:database_name],options[:database_credentials],
-                                      options[:database_host], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
+                                      options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
             diagnostic.export_data(options[:account_export],  options[:log_dir])
 
           rescue Exception => e

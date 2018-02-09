@@ -30,4 +30,6 @@ shared_context 'connection_setup' do
   let(:db_name) {yml_file['database']['name']}
   let(:db_username) {yml_file['database']['user']}
   let(:db_password) {yml_file['database']['password']}
+  let(:db_host) {yml_file['database']['host']}
+  let(:db_port) {yml_file['database']['port']}
 end
