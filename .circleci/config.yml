@@ -20,7 +20,7 @@ jobs:
           command: |
             cd kpm
             mkdir -p $BUNDLE_PATH
-            bundle install --jobs=4 --retry=3 --deployment --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
       - save_cache:
           paths:
             - $BUNDLE_PATH
