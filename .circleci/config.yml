@@ -14,7 +14,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v3-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v4-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -24,8 +24,9 @@ jobs:
       - save_cache:
           paths:
             - kpm/Gemfile.lock
+            - kpm/.bundle
             - kpm/vendor/bundle
-          key: v3-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v4-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
   test-mysql:
     <<: *defaults
@@ -37,7 +38,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v3-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v4-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Setup DDL
           command: |
