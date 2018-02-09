@@ -3,7 +3,6 @@ defaults: &defaults
   environment:
     JRUBY_OPTS: --2.0 -J-Xmx1024M
     BUNDLE_GEMFILE: /home/killbill/repo/kpm/Gemfile
-    BUNDLE_PATH: /home/killbill/repo/kpm/vendor/bundle
 
 version: 2
 jobs:
@@ -19,8 +18,7 @@ jobs:
           name: Install gem dependencies
           command: |
             cd kpm
-            mkdir -p $BUNDLE_PATH
-            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
       - save_cache:
           paths:
             - kpm/Gemfile.lock
@@ -103,10 +101,9 @@ jobs:
           name: Install gem dependencies
           command: |
             cd kpm
-            mkdir -p $BUNDLE_PATH
             source /usr/share/rvm/scripts/rvm
             rvm use ruby-2.2.2
-            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
       - save_cache:
           paths:
             - kpm/Gemfile.lock
@@ -191,10 +188,9 @@ jobs:
           name: Install gem dependencies
           command: |
             cd kpm
-            mkdir -p $BUNDLE_PATH
             source /usr/share/rvm/scripts/rvm
             rvm use ruby-2.4.2
-            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
       - save_cache:
           paths:
             - kpm/Gemfile.lock
@@ -279,10 +275,9 @@ jobs:
           name: Install gem dependencies
           command: |
             cd kpm
-            mkdir -p $BUNDLE_PATH
             source /usr/share/rvm/scripts/rvm
             rvm use jruby-9.1.14.0
-            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
       - save_cache:
           paths:
             - kpm/Gemfile.lock
