@@ -54,7 +54,7 @@ jobs:
               sleep 5
             done
             set -e
-            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
       - run:
           name: Setup Kill Bill
           command: |
