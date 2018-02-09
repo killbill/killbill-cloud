@@ -32,6 +32,7 @@ jobs:
     <<: *defaults
     docker:
       - image: killbill/kbbuild:0.1.0
+      - image: killbill/killbill:0.18.16
       - image: killbill/mariadb:0.18
         environment:
         - MYSQL_ROOT_PASSWORD=root
@@ -54,6 +55,28 @@ jobs:
             done
             set -e
             mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+      - run:
+          name: Setup Kill Bill
+          command: |
+            set +e
+            count=0
+            until $(curl --output /dev/null --silent --fail http://127.0.0.1:8080/1.0/healthcheck); do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+
+              printf '.'
+              sleep 5
+            done
+            set -e
+            curl -v \
+                 -X POST \
+                 -u admin:password \
+                 -H 'Content-Type: application/json' \
+                 -H 'X-Killbill-CreatedBy: CircleCI' \
+                 -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+                 "http://127.0.0.1:8080/1.0/kb/tenants"
       - run:
           name: Run tests
           command: |
