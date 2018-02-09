@@ -99,7 +99,7 @@ module KPM
       export_data = fetch_export_data(account_id)
       export_file = export(export_data)
 
-      if not File.exist?(export_file)
+      unless File.exist?(export_file)
         raise Interrupt, 'Account id not found'
       else
         @logger.info "\e[32mData exported under #{export_file}\e[0m"
@@ -108,7 +108,7 @@ module KPM
       export_file
     end
 
-    def import_data(source_file,tenant_record_id, skip_payment_methods, round_trip_export_import = false, generate_record_id = false)
+    def import_data(source_file, tenant_record_id, skip_payment_methods, round_trip_export_import = false, generate_record_id = false)
 
       @generate_record_id = generate_record_id
       @tenant_record_id = tenant_record_id
@@ -118,7 +118,7 @@ module KPM
         raise Interrupt, 'Need to specify a file'
       end
 
-      if not File.exist?(source_file)
+      unless File.exist?(source_file)
         raise Interrupt, 'Need to specify a valid file'
       end
 
@@ -219,7 +219,7 @@ module KPM
             words = line.strip.split(" ")
 
             if /--/.match(words[0])
-              if not table_name.nil?
+              unless table_name.nil?
                 if @generate_record_id
                   cols_names.shift
                 end
@@ -256,7 +256,7 @@ module KPM
           end
         end
 
-        if not error_importing_data
+        unless error_importing_data
           import(tables)
         else
           raise Interrupt, "Data on #{source_file} is invalid"
@@ -265,7 +265,8 @@ module KPM
       end
 
       def process_import_data(line, table_name, cols_names, skip_payment_methods, rows)
-        cols = line.strip.split(@delimiter)
+        # to make sure that the last column is not omitted if is empty
+        cols = line.strip.split(@delimiter,line.count(@delimiter)+1)
 
         if cols_names.size != cols.size
           @logger.warn "\e[32mWARNING!!! On #{table_name} table there is a mismatch on column count[#{cols.size}] versus header count[#{cols_names.size}]\e[0m"
