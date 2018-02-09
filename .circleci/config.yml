@@ -2,8 +2,8 @@ defaults: &defaults
   working_directory: ~/repo
   environment:
     JRUBY_OPTS: --2.0 -J-Xmx1024M
-    BUNDLE_GEMFILE: ~/repo/kpm/Gemfile
-    BUNDLE_PATH: ~/repo/kpm/vendor/bundle
+    BUNDLE_GEMFILE: /home/killbill/repo/kpm/Gemfile
+    BUNDLE_PATH: /home/killbill/repo/kpm/vendor/bundle
 
 version: 2
 jobs:
@@ -23,6 +23,7 @@ jobs:
             bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=$BUNDLE_PATH
       - save_cache:
           paths:
+            - kpm/Gemfile.lock
             - kpm/vendor/bundle
           key: v2-dependencies-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
