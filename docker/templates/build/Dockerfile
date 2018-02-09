@@ -13,6 +13,7 @@ RUN apt-get update && \
       mysql-client \
       openjdk-8-jdk \
       postgresql-client \
+      software-properties-common \
       sudo \
       telnet \
       tomcat7 \
@@ -20,9 +21,12 @@ RUN apt-get update && \
       zip \
       vim \
       less && \
+    apt-add-repository -y ppa:rael-gc/rvm && \
+    apt-get update && \
+    apt-get install -y rvm && \
     rm -rf /var/lib/apt/lists/*
 
-# Install JRuby (the Ubuntu JRuby package is 1.5.6!)
+# Install JRuby as default (the Ubuntu JRuby package is 1.5.6!)
 RUN mkdir -p /var/lib/jruby \
     && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.26/jruby-bin-1.7.26.tar.gz \
     | tar -z -x --strip-components=1 -C /var/lib/jruby
@@ -33,6 +37,12 @@ RUN jruby -S gem install bundler jbundler therubyrhino
 RUN ln -s /var/lib/jruby/bin/jruby /var/lib/jruby/bin/ruby
 
 ENV JRUBY_OPTS=-J-Xmx1024m
+
+# Add extra rubies
+RUN /bin/bash -l -c "rvm install ruby-1.8.7-p374 && rvm use ruby-1.8.7-p374 && gem install bundler && \
+                     rvm install ruby-2.2.2 && rvm use ruby-2.2.2 && gem install bundler && \
+                     rvm install ruby-2.4.2 && rvm use ruby-2.4.2 && gem install bundler && \
+                     rvm install jruby-9.1.14.0 && rvm use jruby-9.1.14.0 && gem install bundler"
 
 # Add killbill user into sudo group
 RUN adduser --disabled-password --gecos '' killbill && \
