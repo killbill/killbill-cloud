@@ -361,17 +361,17 @@ workflows:
       # Kill Bill plugins
       - build-jruby-1.7.26
       # Self-contained KPM
-      - build-ruby-2.2.2
-        requires:
-          - build-jruby-1.7.26
+      - build-ruby-2.2.2:
+          requires:
+            - build-jruby-1.7.26
       # Kaui and other gems
-      - build-ruby-2.4.2
-        requires:
-          - build-jruby-1.7.26
+      - build-ruby-2.4.2:
+          requires:
+            - build-jruby-1.7.26
       # Self-contained Kaui
-      - build-jruby-9.1.14.0
-        requires:
-          - build-jruby-1.7.26
+      - build-jruby-9.1.14.0:
+          requires:
+            - build-jruby-1.7.26
       - test-mysql-jruby-1.7.26:
           requires:
             - build-jruby-1.7.26
