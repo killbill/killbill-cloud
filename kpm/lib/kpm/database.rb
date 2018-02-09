@@ -56,7 +56,7 @@ module KPM
 
       def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)
 
-        if not record_id.nil?
+        unless record_id.nil?
           query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}"
         end
         query = "SET autocommit=0; #{query} COMMIT;"
