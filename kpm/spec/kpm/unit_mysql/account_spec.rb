@@ -5,8 +5,6 @@ describe KPM::Account do
   shared_context 'account' do
     include_context 'connection_setup'
 
-    let(:db_host) {'localhost'}
-    let(:db_port) {'3306'}
     let(:account_class) { described_class.new(nil,[killbill_api_key,killbill_api_secrets],
                                              [killbill_user, killbill_password],url,
                                              db_name, [db_username, db_password],db_host,db_port,nil,logger)}
@@ -22,7 +20,7 @@ describe KPM::Account do
     let(:cols_data) {dummy_data.split("\n")[1]}
     let(:table_name) {dummy_data.split("\n")[0].split(" ")[1]}
     let(:obfuscating_marker) {:email}
-    let(:mysql_cli) {"mysql #{db_name} --user=#{db_username} --password=#{db_password} "}
+    let(:mysql_cli) {"mysql --user=#{db_username} --password=#{db_password} --host=#{db_host} --port=#{db_port} "}
     let(:test_ddl) {Dir["#{Dir.pwd}/**/account_test_ddl.sql"][0]}
 
   end
@@ -393,7 +391,7 @@ describe KPM::Account do
     end
     
     def delete_statement(table_name,column_name,account_id)
-      response = `#{mysql_cli} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
+      response = `#{mysql_cli} #{db_name} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
       response_msg = response.split("\n")
       row_count_inserted = response_msg[response_msg.size - 1]
         
@@ -401,8 +399,8 @@ describe KPM::Account do
     end
     
     def create_test_schema
-      response = `mysql --user=#{db_username} --password=#{db_password} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
-      response = `#{mysql_cli} < "#{test_ddl}" 2>&1`
+      response = `#{mysql_cli} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
+      response = `#{mysql_cli} #{db_name} < "#{test_ddl}" 2>&1`
       response_msg = response.split("\n")
       used_database = response_msg[response_msg.size - 1]
         
@@ -410,7 +408,7 @@ describe KPM::Account do
     end
     
     def drop_test_schema
-      response = `mysql --user=#{db_username} --password=#{db_password} -e "DROP DATABASE #{db_name};"`;
+      response = `#{mysql_cli} -e "DROP DATABASE #{db_name};"`;
       response
     end
 

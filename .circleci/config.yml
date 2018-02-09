@@ -1,0 +1,384 @@
+defaults: &defaults
+  working_directory: ~/repo
+  environment:
+    JRUBY_OPTS: --2.0 -J-Xmx1024M
+    BUNDLE_GEMFILE: /home/killbill/repo/kpm/Gemfile
+
+version: 2
+jobs:
+  build-jruby-1.7.26:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Install gem dependencies
+          command: |
+            cd kpm
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
+      - save_cache:
+          paths:
+            - kpm/Gemfile.lock
+            - kpm/.bundle
+            - kpm/vendor/bundle
+          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+
+  test-mysql-jruby-1.7.26:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+      - image: killbill/killbill:0.18.16
+      - image: killbill/mariadb:0.18
+        environment:
+        - MYSQL_ROOT_PASSWORD=root
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Setup DDL
+          command: |
+            set +e
+            count=0
+            until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+              printf '.'
+              sleep 5
+            done
+            set -e
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
+      - run:
+          name: Setup Kill Bill
+          command: |
+            set +e
+            count=0
+            until $(curl --output /dev/null --silent --fail http://127.0.0.1:8080/1.0/healthcheck); do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+
+              printf '.'
+              sleep 5
+            done
+            set -e
+            curl -v \
+                 -X POST \
+                 -u admin:password \
+                 -H 'Content-Type: application/json' \
+                 -H 'X-Killbill-CreatedBy: CircleCI' \
+                 -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+                 "http://127.0.0.1:8080/1.0/kb/tenants"
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            bundle exec rspec --format documentation \
+                              --out /tmp/test-results/rspec.txt \
+                              $(circleci tests glob "spec/*/*/*_spec.rb")
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+  build-ruby-2.2.2:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Install gem dependencies
+          command: |
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use ruby-2.2.2
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
+      - save_cache:
+          paths:
+            - kpm/Gemfile.lock
+            - kpm/.bundle
+            - kpm/vendor/bundle
+          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+
+  test-mysql-ruby-2.2.2:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+      - image: killbill/killbill:0.18.16
+      - image: killbill/mariadb:0.18
+        environment:
+        - MYSQL_ROOT_PASSWORD=root
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Setup DDL
+          command: |
+            set +e
+            count=0
+            until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+              printf '.'
+              sleep 5
+            done
+            set -e
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
+      - run:
+          name: Setup Kill Bill
+          command: |
+            set +e
+            count=0
+            until $(curl --output /dev/null --silent --fail http://127.0.0.1:8080/1.0/healthcheck); do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+
+              printf '.'
+              sleep 5
+            done
+            set -e
+            curl -v \
+                 -X POST \
+                 -u admin:password \
+                 -H 'Content-Type: application/json' \
+                 -H 'X-Killbill-CreatedBy: CircleCI' \
+                 -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+                 "http://127.0.0.1:8080/1.0/kb/tenants"
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use ruby-2.2.2
+            bundle exec rspec --format documentation \
+                              --out /tmp/test-results/rspec.txt \
+                              $(circleci tests glob "spec/*/*/*_spec.rb")
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+  build-ruby-2.4.2:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Install gem dependencies
+          command: |
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use ruby-2.4.2
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
+      - save_cache:
+          paths:
+            - kpm/Gemfile.lock
+            - kpm/.bundle
+            - kpm/vendor/bundle
+          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+
+  test-mysql-ruby-2.4.2:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+      - image: killbill/killbill:0.18.16
+      - image: killbill/mariadb:0.18
+        environment:
+        - MYSQL_ROOT_PASSWORD=root
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Setup DDL
+          command: |
+            set +e
+            count=0
+            until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+              printf '.'
+              sleep 5
+            done
+            set -e
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
+      - run:
+          name: Setup Kill Bill
+          command: |
+            set +e
+            count=0
+            until $(curl --output /dev/null --silent --fail http://127.0.0.1:8080/1.0/healthcheck); do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+
+              printf '.'
+              sleep 5
+            done
+            set -e
+            curl -v \
+                 -X POST \
+                 -u admin:password \
+                 -H 'Content-Type: application/json' \
+                 -H 'X-Killbill-CreatedBy: CircleCI' \
+                 -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+                 "http://127.0.0.1:8080/1.0/kb/tenants"
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use ruby-2.4.2
+            bundle exec rspec --format documentation \
+                              --out /tmp/test-results/rspec.txt \
+                              $(circleci tests glob "spec/*/*/*_spec.rb")
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+  build-jruby-9.1.14.0:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Install gem dependencies
+          command: |
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use jruby-9.1.14.0
+            bundle install --jobs=4 --retry=3 --gemfile=$BUNDLE_GEMFILE --path=/home/killbill/repo/kpm/vendor/bundle
+      - save_cache:
+          paths:
+            - kpm/Gemfile.lock
+            - kpm/.bundle
+            - kpm/vendor/bundle
+          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+
+  test-mysql-jruby-9.1.14.0:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.2.0
+      - image: killbill/killbill:0.18.16
+      - image: killbill/mariadb:0.18
+        environment:
+        - MYSQL_ROOT_PASSWORD=root
+    steps:
+      - checkout
+      - restore_cache:
+          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Setup DDL
+          command: |
+            set +e
+            count=0
+            until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+              printf '.'
+              sleep 5
+            done
+            set -e
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
+      - run:
+          name: Setup Kill Bill
+          command: |
+            set +e
+            count=0
+            until $(curl --output /dev/null --silent --fail http://127.0.0.1:8080/1.0/healthcheck); do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+
+              printf '.'
+              sleep 5
+            done
+            set -e
+            curl -v \
+                 -X POST \
+                 -u admin:password \
+                 -H 'Content-Type: application/json' \
+                 -H 'X-Killbill-CreatedBy: CircleCI' \
+                 -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+                 "http://127.0.0.1:8080/1.0/kb/tenants"
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use jruby-9.1.14.0
+            bundle exec rspec --format documentation \
+                              --out /tmp/test-results/rspec.txt \
+                              $(circleci tests glob "spec/*/*/*_spec.rb")
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      # Kill Bill plugins
+      - build-jruby-1.7.26
+      # Self-contained KPM
+      - build-ruby-2.2.2:
+          requires:
+            - build-jruby-1.7.26
+      # Kaui and other gems
+      - build-ruby-2.4.2:
+          requires:
+            - build-jruby-1.7.26
+      # Self-contained Kaui
+      - build-jruby-9.1.14.0:
+          requires:
+            - build-jruby-1.7.26
+      - test-mysql-jruby-1.7.26:
+          requires:
+            - build-jruby-1.7.26
+      - test-mysql-ruby-2.2.2:
+          requires:
+            - build-ruby-2.2.2
+            - test-mysql-jruby-1.7.26
+      - test-mysql-ruby-2.4.2:
+          requires:
+            - build-ruby-2.4.2
+            - test-mysql-jruby-1.7.26
+      - test-mysql-jruby-9.1.14.0:
+          requires:
+            - build-jruby-9.1.14.0
+            - test-mysql-jruby-1.7.26

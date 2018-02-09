@@ -67,7 +67,7 @@ module KPM
           # this will remove SNAPSHOT and any dash that appear before it (ex --SNAPSHOT).
           name = name.gsub(/((-+){,1}SNAPSHOT){,1}/,'')
           last_dash = name.rindex('-')
-          name = name[0..last_dash]
+          name = name[0..last_dash] unless last_dash.nil?
         else
           name = name.gsub(ver,'')
         end
