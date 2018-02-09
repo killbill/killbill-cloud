@@ -1,0 +1,72 @@
+defaults: &defaults
+  working_directory: ~/repo
+  environment:
+    JRUBY_OPTS: --2.0 -J-Xmx1024M
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.1.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install gem dependencies
+          command: |
+            bundle install --jobs=4 --retry=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+
+  test-mysql:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.1.0
+      - image: killbill/mariadb:0.18
+        environment:
+        - MYSQL_ROOT_PASSWORD=root
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Setup DDL
+          command: |
+            set +e
+            count=0
+            until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+              if [[ "$count" == "25" ]]; then
+                exit 1
+              fi
+              (( count++ ))
+              printf '.'
+              sleep 5
+            done
+            set -e
+            mysql -uroot -proot -h 127.0.0.1 -e "CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost'; FLUSH PRIVILEGES;"
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            bundle exec rspec --format documentation \
+                              --out /tmp/test-results/rspec.txt \
+                              $(circleci tests glob "spec/*/*/*_spec.rb")
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      - test-mysql:
+          requires:
+            - build
