@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "kpm/Gemfile.lock" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -20,7 +20,7 @@ jobs:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "kpm/Gemfile.lock" }}
 
   test-mysql:
     <<: *defaults
@@ -32,7 +32,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependencies-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "kpm/Gemfile.lock" }}
       - run:
           name: Setup DDL
           command: |
