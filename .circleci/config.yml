@@ -82,7 +82,7 @@ jobs:
             cd kpm
             bundle exec rspec --format documentation \
                               --out /tmp/test-results/rspec.txt \
-                              $(circleci tests glob "spec/*/*/*_spec.rb")
+                              $(circleci tests glob "spec/**/*_spec.rb")
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -169,7 +169,7 @@ jobs:
             rvm use ruby-2.2.2
             bundle exec rspec --format documentation \
                               --out /tmp/test-results/rspec.txt \
-                              $(circleci tests glob "spec/*/*/*_spec.rb")
+                              $(circleci tests glob "spec/**/*_spec.rb")
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -256,7 +256,7 @@ jobs:
             rvm use ruby-2.4.2
             bundle exec rspec --format documentation \
                               --out /tmp/test-results/rspec.txt \
-                              $(circleci tests glob "spec/*/*/*_spec.rb")
+                              $(circleci tests glob "spec/**/*_spec.rb")
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -343,7 +343,7 @@ jobs:
             rvm use jruby-9.1.14.0
             bundle exec rspec --format documentation \
                               --out /tmp/test-results/rspec.txt \
-                              $(circleci tests glob "spec/*/*/*_spec.rb")
+                              $(circleci tests glob "spec/**/*_spec.rb")
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
