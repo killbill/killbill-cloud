@@ -145,6 +145,10 @@
     - :login
     - :password
     - :merchant_id
+:payment_bridge:
+  :type: :java
+  :versions:
+    :0.19: 0.0.1
 :payeezy:
   :type: :java
   :versions:
