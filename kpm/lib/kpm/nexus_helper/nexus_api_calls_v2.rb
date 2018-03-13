@@ -174,7 +174,7 @@ module KPM
           http = Net::HTTP.new(uri.host,uri.port)
           http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT #seconds
           http.read_timeout = configuration[:read_timeout] || READ_TIMEOUT_DEFAULT #seconds
-          http.use_ssl = true
+          http.use_ssl = ssl_verify
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless ssl_verify
           http
         end
