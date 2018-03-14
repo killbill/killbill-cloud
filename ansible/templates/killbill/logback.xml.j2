@@ -1,4 +1,5 @@
 <configuration scan="true" scanPeriod="30 seconds">
+  <jmxConfigurator />
   <property name="LOGS_DIR" value="{{ catalina_base }}/logs" />
   <conversionRule conversionWord="maskedMsg" converterClass="org.killbill.billing.server.log.obfuscators.ObfuscatorConverter" />
 
