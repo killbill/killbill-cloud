@@ -17,18 +17,12 @@ unless data['kpm_path'].nil?
 end
 require 'kpm'
 
-
-
 # Temporary -- https://github.com/killbill/killbill-cloud/issues/91
 log = StringIO.new
 logger = Logger.new(log)
 logger.level = Logger::INFO
 
 kpm_yml = data['kpm_yml'].is_a?(String) ? YAML.load_file(data['kpm_yml']).to_hash : data['kpm_yml'].to_hash
-
-tmp = kpm_yml["killbill"]["nexus"]
-kpm_yml["killbill"]["nexus"] = Hash[tmp.map{|(k,v)| [k.to_sym,v]}]
-
 KPM::Installer.new(kpm_yml, logger).install(kpm_yml['force_download'], kpm_yml['verify_sha1'])
 
 result = {
