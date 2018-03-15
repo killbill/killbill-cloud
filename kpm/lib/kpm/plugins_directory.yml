@@ -30,7 +30,7 @@
     :0.16: 3.0.2
     :0.17: 4.0.5
     :0.18: 4.2.5
-    :0.19: 5.0.1
+    :0.19: 5.0.2
 :avatax:
   :type: :java
   :versions:
@@ -116,7 +116,7 @@
     :0.16: 0.0.5
     :0.17: 1.0.0
     :0.18: 1.1.2
-    :0.19: 1.2.1
+    :0.19: 1.2.2
 :litle:
   :type: :ruby
   :versions:
@@ -150,7 +150,7 @@
   :type: :java
   :artifact_id: bridge-plugin
   :versions:
-    :0.19: 0.0.1
+    :0.19: 0.0.2
 :payeezy:
   :type: :java
   :versions:
