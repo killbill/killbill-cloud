@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get install -y \
       curl \
       git \
+      libmysqlclient-dev \
       maven \
       mysql-client \
       openjdk-8-jdk \
