@@ -10,6 +10,8 @@ RUN apt-get update && \
       build-essential \
       curl \
       git \
+      libcurl3 \
+      libcurl4-openssl-dev \
       libmysqlclient-dev \
       libpq-dev \
       maven \

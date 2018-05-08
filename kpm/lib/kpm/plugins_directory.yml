@@ -16,7 +16,7 @@
     :0.15: 0.2.1
     :0.16: 0.3.2
     :0.17: 0.4.10
-    :0.18: 0.5.7
+    :0.18: 0.5.10
   :require:
     - :org.killbill.billing.plugin.adyen.merchantAccount
     - :org.killbill.billing.plugin.adyen.username
@@ -30,7 +30,7 @@
     :0.16: 3.0.2
     :0.17: 4.0.5
     :0.18: 4.2.5
-    :0.19: 5.0.2
+    :0.19: 5.0.6
 :avatax:
   :type: :java
   :versions:
@@ -38,7 +38,7 @@
     :0.15: 0.2.0
     :0.16: 0.3.0
     :0.18: 0.4.1
-    :0.19: 0.5.0
+    :0.19: 0.5.1
   :require:
     - :org.killbill.billing.plugin.avatax.url
     - :org.killbill.billing.plugin.avatax.accountNumber
@@ -65,7 +65,7 @@
     :0.14: 1.0.0
     :0.15: 3.3.0
     :0.16: 4.0.12
-    :0.18: 5.2.4
+    :0.18: 5.2.5
   :require:
     - :login
     - :password
@@ -86,7 +86,7 @@
   :versions:
     :0.14: 0.1.0
     :0.16: 0.2.0
-    :0.18: 0.3.0
+    :0.18: 0.3.1
 :firstdata_e4:
   :type: :ruby
   :artifact_id: firstdata-e4-plugin
@@ -116,7 +116,7 @@
     :0.16: 0.0.5
     :0.17: 1.0.0
     :0.18: 1.1.2
-    :0.19: 1.2.2
+    :0.19: 1.2.3
 :litle:
   :type: :ruby
   :versions:
@@ -141,7 +141,7 @@
   :type: :ruby
   :versions:
     :0.16: 0.0.2
-    :0.18: 0.1.8
+    :0.18: 0.1.9
   :require:
     - :login
     - :password
@@ -150,7 +150,7 @@
   :type: :java
   :artifact_id: bridge-plugin
   :versions:
-    :0.19: 0.0.2
+    :0.19: 0.0.6
 :payeezy:
   :type: :java
   :versions:
@@ -173,7 +173,7 @@
     :0.14: 2.0.0
     :0.15: 3.0.0
     :0.16: 4.1.7
-    :0.18: 5.0.6
+    :0.18: 5.0.7
   :require:
   - :signature
   - :login
