@@ -17,6 +17,7 @@
     :0.16: 0.3.2
     :0.17: 0.4.10
     :0.18: 0.5.10
+    :0.19: 0.6.0
   :require:
     - :org.killbill.billing.plugin.adyen.merchantAccount
     - :org.killbill.billing.plugin.adyen.username
@@ -30,7 +31,7 @@
     :0.16: 3.0.2
     :0.17: 4.0.5
     :0.18: 4.2.5
-    :0.19: 5.1.0
+    :0.19: 5.1.1
 :avatax:
   :type: :java
   :versions:
