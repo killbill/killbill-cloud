@@ -13,6 +13,13 @@ describe KPM::Sha1Checker do
     @sha1_checker = KPM::Sha1Checker.from_file(@tmp_config)
   end
 
+  it 'should create intermediate directories' do
+    Dir.mktmpdir do |dir|
+      config = File.join(dir, 'foo', 'bar', 'baz', 'sha1_test.yml')
+      KPM::Sha1Checker.from_file(config)
+    end
+  end
+
   it 'should find matching sha1' do
     existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
@@ -48,13 +55,11 @@ describe KPM::Sha1Checker do
   end
 
   it 'should add allow to modify an entry and find them all' do
-
     existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should == 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9'
 
     @sha1_checker.add_or_modify_entry!('killbill-plugin-match-1.0.0.tar.gz', 'dde068c3fd5f95646ce0d09852f43ff67f06f0aa')
-
 
     existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
@@ -82,7 +87,6 @@ describe KPM::Sha1Checker do
   end
 
   it 'should work with empty config' do
-
     tmp_destination_dir = Dir.tmpdir()
     empty_config = File.join(tmp_destination_dir, 'sha1_test.yml')
     if File.exists?(empty_config)

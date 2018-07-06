@@ -67,7 +67,7 @@ module KPM
     def create_sha1_directory_if_missing
       sha1_dir = Pathname(@sha1_file).dirname
       if ! File.directory?(sha1_dir)
-        Dir.mkdir(sha1_dir)
+        FileUtils.mkdir_p(sha1_dir)
       end
     end
 
