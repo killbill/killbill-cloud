@@ -69,7 +69,7 @@ ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansi
 ARG HOST_IP=localhost
 ENV ENV_HOST_IP ${HOST_IP}
 
-ENV ANSIBLE_OPTS -i $ENV_HOST_IP, \
+ENV ANSIBLE_OPTS -i localhost, \
                  -e ansible_connection=local \
                  -e ansible_python_interpreter=/usr/bin/python \
                  -e java_home=$JAVA_HOME \
