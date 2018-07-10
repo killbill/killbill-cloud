@@ -35,7 +35,7 @@ ENV JAVA_HOME /usr/lib/jvm/default-java
 ENV JSSE_HOME $JAVA_HOME/jre/
 
 # Install latest Ansible version (deb package is too old)
-RUN pip install pip --upgrade && \
+RUN python -m pip install --upgrade pip && \
     pip install setuptools --upgrade && \
     pip install ansible
 
@@ -65,6 +65,9 @@ ARG KILLBILL_CLOUD_VERSION
 RUN ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
+
+ARG HOST_IP=localhost
+ENV ENV_HOST_IP ${HOST_IP}
 
 ENV ANSIBLE_OPTS -i localhost, \
                  -e ansible_connection=local \

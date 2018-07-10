@@ -198,11 +198,18 @@ Python and Ansible are now also installed in the image, in case you need to exte
 [[build]]
 ## Build
 
-All images are based upon a `base` image which (in theory) should not have to be rebuilt too often. In order to build it:
+All images are based upon a `base` image which (in theory) should not have to be rebuilt too often.
+For example; jconsole and Swagger won't work by default out of the box unless `HOST_IP` is defined. In order to build it:
 
 ....
 cd docker/templates/base/latest
 docker build --no-cache -t killbill/base:latest .
+....
+
+With HOST_IP:
+....
+cd docker/templates/base/latest
+docker build --build-arg HOST_IP=$(docker-machine inspect default -f '{{.Driver.IPAddress}}') -t killbill/base:latest .
 ....
 
 To build an image:
