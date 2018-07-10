@@ -66,8 +66,7 @@ RUN ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$K
 
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
 
-ARG HOST_IP=localhost
-ENV ENV_HOST_IP ${HOST_IP}
+ENV ENV_HOST_IP localhost
 
 ENV ANSIBLE_OPTS -i localhost, \
                  -e ansible_connection=local \

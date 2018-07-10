@@ -23,6 +23,8 @@ toc::[]
 [[killbill-variables]]
 #### Kill Bill specific variables
 
+For jConsole and remote debugging, you need to pass the host IP address as `ENV_HOST_IP` when starting the container (e.g. 192.168.99.100 if using docker-machine).
+
 The following environment variables will populate the default `killbill.properties`. For further customization, you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
 
 * `KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS` (default `5`)
@@ -198,18 +200,11 @@ Python and Ansible are now also installed in the image, in case you need to exte
 [[build]]
 ## Build
 
-All images are based upon a `base` image which (in theory) should not have to be rebuilt too often.
-For example; jconsole and Swagger won't work by default out of the box unless `HOST_IP` is defined. In order to build it:
+All images are based upon a `base` image which (in theory) should not have to be rebuilt too often. In order to build it:
 
 ....
 cd docker/templates/base/latest
 docker build --no-cache -t killbill/base:latest .
-....
-
-With HOST_IP:
-....
-cd docker/templates/base/latest
-docker build --build-arg HOST_IP=$(docker-machine inspect default -f '{{.Driver.IPAddress}}') -t killbill/base:latest .
 ....
 
 To build an image:
