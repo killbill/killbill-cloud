@@ -23,6 +23,8 @@ toc::[]
 [[killbill-variables]]
 #### Kill Bill specific variables
 
+For jConsole and remote debugging, you need to pass the host IP address as `ENV_HOST_IP` when starting the container (e.g. 192.168.99.100 if using docker-machine).
+
 The following environment variables will populate the default `killbill.properties`. For further customization, you should bind mount `/var/lib/killbill/killbill.properties` when launching the Docker image.
 
 * `KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS` (default `5`)
