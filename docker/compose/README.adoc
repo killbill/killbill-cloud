@@ -1,0 +1,78 @@
+:toc: macro
+:toc-title:
+:toclevels: 9
+
+[[docker-compose-recipes]]
+# docker-compose recipes
+
+toc::[]
+
+## Quick start
+
+https://docs.docker.com/compose/:[Docker Compose] is the easiest way to setup the Kill Bill stack:
+
+```
+docker-compose -f docker-compose.kb.yml -p kb up
+```
+
+Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the IP address of the container.
+
+Then go to `http://<IP_ADDRESS>:9090/` and log-in via `admin/password`.
+
+## Logging and Metrics infrastructure
+
+The `Makefile` generates a Docker Compose file which sets up the Kill Bill stack along with services for logging and recording metrics.
+
+To launch the full stack, run:
+
+....
+make
+....
+
+Notes:
+
+* the `Makefile` will look for the Docker container IP via `docker-machine ip default`. Adapt to your setup if necessary.
+* `docker-compose logs` won’t work, because all logs are forwarded to http://<IP_ADDRESS>:5601[Elasticsearch]. The easiest way to find logs for a specific container is to search for the container ID in Kibana.
+* You need several GB of RAM to run the entire stack in the host: on Mac-OS, open Virtual Box and check the VM has 2GB or more of RAM (you need to poweroff the VM first).
+
+[[logging]]
+### Logging
+
+The https://www.elastic.co/webinars/introduction-elk-stack:[Elastic Stack] setup (Elasticseach, Logstash, Kibana) is provided in the `docker-compose.elk.yml` file.
+
+It will give you the ability to analyze any data set by using the searching/aggregation capabilities of Elasticseach and the visualization power of Kibana.
+
+Logstash listens on 1514 (Syslog protocol). For debugging purposes, the stdout plugin is enabled:
+
+`docker logs -f elk_logstash_1`
+
+The Kibana UI is available at `http://<IP_ADDRESS>:5601`. Port 9200 for Elasticsearch is open for available to the host for Sense.
+
+[[monitoring]]
+### Metrics
+
+The `docker-compose.gi.yml` file sets up Telegraf, InfluxDB, cAdvisor and Grafana.
+
+The Grafana UI is available at `http://<IP_ADDRESS>:3000` (default credentials: `admin:admin`).
+
+When running the full stack, Grafana uses the MariaDB container as the storage backend. To configure it (default database credentials `root:killbill`):
+
+....
+CREATE DATABASE grafana;
+USE grafana;
+CREATE TABLE `session` (
+    `key`       CHAR(16) NOT NULL,
+    `data`      BLOB,
+    `expiry`    INT(11) UNSIGNED NOT NULL,
+    PRIMARY KEY (`key`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+....
+
+You also need to add the InfluxDB datasources. Got to http://<IP_ADDRESS>:3000/datasources/new:
+
+* Name: influxdb
+* Type: InfluxDB
+* Url: http://influxdb:8086
+* Database: killbill
+* User: killbill
+* Password: killbill

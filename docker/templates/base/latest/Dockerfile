@@ -2,84 +2,118 @@
 FROM ubuntu:16.04
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
+USER root
+
 # Install Kill Bill dependencies and useful tools
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
       apt-utils \
-      openjdk-8-jdk \
       curl \
+      dpkg-dev \
+      gcc \
+      git \
+      less \
+      libapr1 \
+      libapr1-dev \
+      libssl-dev \
+      make \
       mysql-client \
-      tomcat7 \
-      libtcnative-1 \
-      unzip \
-      telnet \
-      sudo \
-      vim \
       net-tools \
-      less && \
+      openjdk-8-jdk \
+      python-pip \
+      sudo \
+      telnet \
+      unzip \
+      vim && \
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND teletype
 
 # Configure default JAVA_HOME path
 RUN ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
+ENV JAVA_HOME /usr/lib/jvm/default-java
+ENV JSSE_HOME $JAVA_HOME/jre/
 
-# Install JRuby (the Ubuntu JRuby package is 1.5.6!)
-RUN mkdir -p /var/lib/jruby \
-    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.26/jruby-bin-1.7.26.tar.gz \
-    | tar -z -x --strip-components=1 -C /var/lib/jruby
-ENV PATH /var/lib/jruby/bin:$PATH
+# Install latest Ansible version (deb package is too old)
+RUN pip install pip --upgrade && \
+    pip install setuptools --upgrade && \
+    pip install ansible
 
-ENV TOMCAT_HOME=/var/lib/tomcat7 \
-    TOMCAT_CONFIG=/etc/tomcat7 \
-    KILLBILL_CONFIG=/etc/killbill
+# Add tomcat user
+ENV TOMCAT_OWNER tomcat
+ENV TOMCAT_GROUP tomcat
+ENV TOMCAT_HOME /var/lib/tomcat
+RUN adduser $TOMCAT_OWNER \
+            --home $TOMCAT_HOME \
+            --disabled-password \
+            --gecos ''
 
-# Configure Tomcat
-RUN mkdir -p /usr/share/tomcat7/common/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/common/classes && \
-    mkdir -p /usr/share/tomcat7/common && chown -R tomcat7:tomcat7 /usr/share/tomcat7/common && \
-    mkdir -p /usr/share/tomcat7/server/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/server/classes && \
-    mkdir -p /usr/share/tomcat7/server && chown -R tomcat7:tomcat7 /usr/share/tomcat7/server && \
-    mkdir -p /usr/share/tomcat7/shared/classes && chown -R tomcat7:tomcat7 /usr/share/tomcat7/shared/classes && \
-    mkdir -p /usr/share/tomcat7/shared && chown -R tomcat7:tomcat7 /usr/share/tomcat7/shared && \
-    mkdir -p /tmp/tomcat7-tomcat7-tmp && chown -R tomcat7:tomcat7 /tmp/tomcat7-tomcat7-tmp && \
-    chmod g+w /etc/tomcat7/catalina.properties && \
-    rm -rf $TOMCAT_HOME/webapps/* && \
-    mkdir -p $KILLBILL_CONFIG && \
-    chown -R tomcat7:tomcat7 $KILLBILL_CONFIG
-
-ENV KILLBILL_HOME /var/lib/killbill
-RUN mkdir -p $KILLBILL_HOME && \
-    chown -R tomcat7:tomcat7 $KILLBILL_HOME
-
-# Add tomcat into sudo group and reinitialize the password
-RUN usermod -aG sudo tomcat7 && \
-    echo 'tomcat7:tomcat7' | chpasswd && \
+# Add tomcat user into sudo group and reinitialize the password
+RUN usermod -aG sudo $TOMCAT_GROUP && \
+    echo "$TOMCAT_OWNER:$TOMCAT_OWNER" | chpasswd && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-
-
-# Install KPM
-RUN gem install kpm -v 0.5.3
-
-ENV NEXUS_URL=https://oss.sonatype.org \
-    NEXUS_REPOSITORY=releases \
-    KPM_PROPS=--verify-sha1 \
-    KILLBILL_JVM_PERM_SIZE=512m \
-    KILLBILL_JVM_MAX_PERM_SIZE=1G \
-    KILLBILL_JVM_CMS_INITIATING_OCCUPANCY_FRACTION=70 \
-    KILLBILL_JVM_XMS=1G \
-    KILLBILL_JVM_XMX=2G
-
-COPY ./ROOT.xml $TOMCAT_CONFIG/Catalina/localhost/ROOT.xml
-COPY ./server.xml $TOMCAT_CONFIG/server.xml
-COPY ./tomcat.sh /etc/init.d/tomcat.sh
-RUN chmod +x /etc/init.d/tomcat.sh
-
-COPY ./kpm_generator.rb $KILLBILL_CONFIG/
-
-USER tomcat7
+USER $TOMCAT_OWNER
 WORKDIR $TOMCAT_HOME
 
-EXPOSE 8080
+# Install roles dependencies
+RUN mkdir -p $TOMCAT_HOME/.ansible && \
+    touch $TOMCAT_HOME/.ansible_galaxy && \
+    chown tomcat $TOMCAT_HOME/.ansible && \
+    chown tomcat $TOMCAT_HOME/.ansible_galaxy
+ARG KILLBILL_CLOUD_VERSION
+RUN ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 
-CMD ["/etc/init.d/tomcat.sh", "run_tomcat"]
+ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
+
+ENV ANSIBLE_OPTS -i localhost, \
+                 -e ansible_connection=local \
+                 -e ansible_python_interpreter=/usr/bin/python \
+                 -e java_home=$JAVA_HOME \
+                 -vv
+
+# Install KPM
+ENV NEXUS_URL https://oss.sonatype.org
+ENV NEXUS_REPOSITORY releases
+ENV KPM_INSTALL_DIR /opt
+ENV KPM_VERSION 0.6.4
+RUN ansible-playbook $ANSIBLE_OPTS \
+                     -e kpm_install_dir=$KPM_INSTALL_DIR \
+                     -e nexus_url=$NEXUS_URL \
+                     -e nexus_repository=$NEXUS_REPOSITORY \
+                     -e kpm_version=$KPM_VERSION \
+                     $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
+ENV PATH "/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
+
+# Install Tomcat
+ENV CATALINA_BASE $TOMCAT_HOME
+ENV CATALINA_HOME /usr/share/tomcat
+ENV CATALINA_PID $CATALINA_BASE/tomcat.pid
+ENV CATALINA_TMPDIR /var/tmp
+ENV TOMCAT_INSTALL_DIR /opt
+ENV TOMCAT_VERSION 8.5.16
+ENV TOMCAT_NATIVE_LIBDIR $CATALINA_HOME/native-jni-lib
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
+RUN ansible-playbook $ANSIBLE_OPTS \
+                     -e tomcat_version=$TOMCAT_VERSION \
+                     -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
+                     -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
+                     -e tomcat_owner=$TOMCAT_OWNER \
+                     -e tomcat_group=$TOMCAT_GROUP \
+                     -e tomcat_home=$TOMCAT_HOME \
+                     -e catalina_home=$CATALINA_HOME \
+                     -e catalina_base=$CATALINA_BASE \
+                     -e apr_config_path="$(which apr-1-config)" \
+                     -e gnu_arch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+                     $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
+
+ENV START_TOMCAT_CMD ansible-playbook $ANSIBLE_OPTS  \
+                                      -e tomcat_owner=$TOMCAT_OWNER \
+                                      -e tomcat_group=$TOMCAT_GROUP \
+                                      -e tomcat_home=$TOMCAT_HOME \
+                                      -e catalina_home=$CATALINA_HOME \
+                                      -e catalina_base=$CATALINA_BASE \
+                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat_restart.yml
+# Start Tomcat
+EXPOSE 8080
+CMD ["bash", "-c", "$START_TOMCAT_CMD && tail -F $CATALINA_BASE/logs/catalina.out"]

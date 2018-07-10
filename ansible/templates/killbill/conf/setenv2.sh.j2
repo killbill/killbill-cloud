@@ -1,5 +1,10 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
+{% if lookup('env', 'KILLBILL_QUEUE_CREATOR_NAME') %}
+                      -Dorg.killbill.queue.creator.name={{ lookup('env', 'KILLBILL_QUEUE_CREATOR_NAME') }}
+{% else %}
                       -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
+{% endif %}
+                      -Dlogback.configurationFile={{ kb_config_dir }}/logback.xml
                       -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties
                       {{ kb_system_properties }}"

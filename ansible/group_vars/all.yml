@@ -3,7 +3,7 @@ nexus_url: https://oss.sonatype.org
 nexus_repository: releases
 
 kpm_install_dir: /opt
-kpm_version: 0.5.3
+kpm_version: 0.6.5
 kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
 
 catalina_home: /usr/share/tomcat
@@ -35,11 +35,6 @@ kpm_yml:
       ruby:
         - name: kpm
 
-# Kill Bill properties
-database_url: "jdbc:h2:file:{{ kb_config_dir }}/killbill;MODE=MYSQL;DB_CLOSE_DELAY=-1;MVCC=true;DB_CLOSE_ON_EXIT=FALSE"
-database_user: killbill
-database_password: killbill
-
 # Kaui specific properties
 killbill_url: http://127.0.0.1:8080
 killbill_api_key: bob
@@ -50,13 +45,7 @@ kaui_db_adapter: mysql2
 kaui_system_properties: ''
 kb_system_properties: ''
 
-# Kill Bill properties -- recommended defaults
-database_connection_timeout: 100s
-database_max_active: 150
-database_min_idle: 5
-database_idle_max_age: 2m
-notificationq_main_claimed: 100
-notificationq_main_sleep: 70000
+# Tomcat and JVM properties -- recommended defaults
 jvm_initial_memory: 4G
 jvm_max_memory: 4G
 jvm_jdwp_port: 12345

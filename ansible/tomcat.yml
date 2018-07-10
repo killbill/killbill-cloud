@@ -12,5 +12,8 @@
   tasks:
     - name: install Tomcat
       import_tasks: roles/tomcat/tasks/install.yml
+    - name: install Tomcat native libraries
+      import_tasks: roles/tomcat/tasks/native.yml
+      when: apr_config_path is defined
     - name: setup Tomcat
       import_tasks: roles/tomcat/tasks/main.yml
