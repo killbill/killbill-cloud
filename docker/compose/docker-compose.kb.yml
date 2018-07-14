@@ -4,7 +4,7 @@ volumes:
   db:
 services:
   killbill:
-    image: killbill/killbill:0.19.19
+    image: killbill/killbill:0.20.0
     ports:
       - "8080:8080"
       - "8000:8000"
@@ -25,7 +25,7 @@ services:
       - KAUI_KILLBILL_API_KEY=bob
       - KAUI_KILLBILL_API_SECRET=lazar
   db:
-    image: killbill/mariadb:0.19
+    image: killbill/mariadb:0.20
     volumes:
       - type: volume
         source: db
