@@ -17,6 +17,15 @@ toc::[]
 * `killbill/kaui:0.X.Y`: image with a specific version of Kaui installed.
 * `killbill/killbill:build`: official build environment for all published Kill Bill artifacts (useful for developers).
 
+[[tips-and-tricks]]
+### Tips and tricks
+
+The container STDOUT isn't that useful: to access logs, look at the `killbill.out` log file instead:
+
+```
+docker exec CONTAINER_ID tail -f logs/killbill.out
+```
+
 [[environment-variables]]
 ### Environment variables
 
@@ -260,3 +269,9 @@ docker login
 docker push killbill/$TARGET:$VERSION
 docker logout
 ....
+
+### Custom ansible playboook
+
+```
+docker build --no-cache --build-arg KILLBILL_CLOUD_VERSION=work-for-release-0.19.x -t killbill/base:0.19.x .
+```
