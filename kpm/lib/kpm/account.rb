@@ -109,6 +109,7 @@ module KPM
     end
 
     def import_data(source_file, tenant_record_id, skip_payment_methods, round_trip_export_import = false, generate_record_id = false)
+      source_file = File.expand_path(source_file)
 
       @generate_record_id = generate_record_id
       @tenant_record_id = tenant_record_id
@@ -119,7 +120,7 @@ module KPM
       end
 
       unless File.exist?(source_file)
-        raise Interrupt, 'Need to specify a valid file'
+        raise Interrupt, "File #{source_file} does not exist"
       end
 
       @delimiter = sniff_delimiter(source_file) || @delimiter
