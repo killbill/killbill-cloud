@@ -303,7 +303,7 @@ describe KPM::Account do
       end
       
       it 'when importing data with no file' do
-        expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt,'Need to specify a valid file')
+        expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.to raise_error(Interrupt, "File #{dummy_data_file} does not exist")
       end
       
       it 'when importing data with new record_id' do
