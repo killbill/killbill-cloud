@@ -67,7 +67,8 @@ describe KPM::Installer do
                                                                        'version' => '1.8.7'
                                                                    },
                                                                    {
-                                                                       'name' => 'stripe'
+                                                                       'name' => 'stripe',
+                                                                       'version' => '3.0.3'
                                                                    }]
                                                     }
                                                 },
@@ -147,7 +148,7 @@ describe KPM::Installer do
     plugin_identifiers['stripe']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
     plugin_identifiers['stripe']['artifact_id'].should == 'stripe-plugin'
     plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
-    plugin_identifiers['stripe']['version'].should >= '4.0.0'
+    plugin_identifiers['stripe']['version'].should == '3.0.3'
     plugin_identifiers['stripe']['language'].should == 'ruby'
   end
 end
