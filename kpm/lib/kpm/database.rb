@@ -102,7 +102,16 @@ module KPM
 
             rows = []
             table[:rows].each do |row|
-              rows << row.map{|value| value.is_a?(Symbol) ? value.to_s : "'#{value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')}'" }.join(",")
+              rows << row.map do |value|
+                if value.is_a?(Symbol)
+                  value.to_s
+                else
+                  escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
+                                            .gsub('\N{LINE FEED}', "\n")
+                                            .gsub('\N{VERTICAL LINE}', "|")
+                  "'#{escaped_value}'"
+                end
+              end.join(",")
             end
 
             value_data = rows.map{|row| "(#{row})" }.join(",")

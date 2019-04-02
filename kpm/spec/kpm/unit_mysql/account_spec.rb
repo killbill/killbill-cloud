@@ -12,9 +12,9 @@ describe KPM::Account do
     let(:account_id_invalid) {SecureRandom.uuid}
     let(:dummy_data) {
       "-- accounts record_id|id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|is_payment_delegated_to_parent|payment_method_id|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|created_date|created_by|updated_date|updated_by|tenant_record_id\n"\
-      "5|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
+      "5|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||Company\\N{VERTICAL LINE}\\N{LINE FEED}Name||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
       "-- account_history record_id|id|target_record_id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|payment_method_id|is_payment_delegated_to_parent|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|change_type|created_by|created_date|updated_by|updated_date|tenant_record_id\n"\
-      "3|#{SecureRandom.uuid}|5|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||||||||||false|INSERT|demo|2017-04-03T15:50:14.000+0000|demo|2017-04-03T15:50:14.000+0000|2\n"
+      "3|#{SecureRandom.uuid}|5|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||Company\\N{VERTICAL LINE}\\N{LINE FEED}Name||||||||false|INSERT|demo|2017-04-03T15:50:14.000+0000|demo|2017-04-03T15:50:14.000+0000|2\n"
     }
     let(:cols_names) {dummy_data.split("\n")[0].split(" ")[2]}
     let(:cols_data) {dummy_data.split("\n")[1]}
@@ -312,6 +312,8 @@ describe KPM::Account do
         end
         expect{account_class.import_data(dummy_data_file,nil,true,false,true) }.not_to raise_error(Interrupt)
 
+        verify_data(dummy_account_id)
+
         row_count_inserted = delete_statement('accounts','id',dummy_account_id)
         expect(row_count_inserted).to eq('1')
         row_count_inserted = delete_statement('account_history','external_key',dummy_account_id)
@@ -323,6 +325,8 @@ describe KPM::Account do
           io.puts(dummy_data)
         end
         expect{account_class.import_data(dummy_data_file,nil,true,false,false) }.not_to raise_error(Interrupt)
+
+        verify_data(dummy_account_id)
 
         row_count_inserted = delete_statement('accounts','id',dummy_account_id)
         expect(row_count_inserted).to eq('1')
@@ -336,6 +340,8 @@ describe KPM::Account do
         end
         expect{account_class.import_data(dummy_data_file,10,true,false,true) }.not_to raise_error(Interrupt)
 
+        verify_data(dummy_account_id)
+
         row_count_inserted = delete_statement('accounts','id',dummy_account_id)
         expect(row_count_inserted).to eq('1')
         row_count_inserted = delete_statement('account_history','external_key',dummy_account_id)
@@ -348,6 +354,8 @@ describe KPM::Account do
         end
         expect{account_class.import_data(dummy_data_file,10,true,true,true) }.not_to raise_error(Interrupt)
         new_account_id = account_class.instance_variable_get(:@tables_id)
+
+        verify_data(new_account_id['accounts_id'])
 
         row_count_inserted = delete_statement('accounts','id',new_account_id['accounts_id'])
         expect(row_count_inserted).to eq('1')
@@ -389,8 +397,16 @@ describe KPM::Account do
       
       $account_id
     end
-    
-    def delete_statement(table_name,column_name,account_id)
+
+  def verify_data(account_id)
+    response = `#{mysql_cli} #{db_name} -e "select company_name FROM accounts WHERE id = '#{account_id}';" 2>&1`
+    response_msg = response.split("\n")
+    company_name = response_msg[response_msg.size - 1]
+
+    expect(company_name).to eq("Company|\\nName")
+   end
+
+   def delete_statement(table_name,column_name,account_id)
       response = `#{mysql_cli} #{db_name} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
       response_msg = response.split("\n")
       row_count_inserted = response_msg[response_msg.size - 1]
