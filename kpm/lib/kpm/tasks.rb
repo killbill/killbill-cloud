@@ -496,7 +496,6 @@ module KPM
                       :desc    => 'Database port'
         desc 'account', 'export/import accounts'
         def account
-          logger.info 'Please wait processing the request!!!'
           begin
             config_file = nil
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
@@ -570,7 +569,6 @@ module KPM
                       :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
         desc 'tenant_config', 'export all tenant-level configs.'
         def tenant_config
-          logger.info 'Please wait processing the request!!!'
           begin
 
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
@@ -657,7 +655,6 @@ module KPM
                       :desc    => 'A different folder other than the default bundles directory.'
         desc 'diagnostic', 'exports and \'zips\' the account data, system, logs and tenant configurations'
         def diagnostic
-          logger.info 'Please wait processing the request!!!'
           begin
             if options[:account_export] && options[:account_export] == 'account_export'
               raise Interrupt,'--account_export,  please provide a valid account id'
@@ -711,7 +708,7 @@ module KPM
 
         def logger
           logger       = ::Logger.new(STDOUT)
-          logger.level = Logger::INFO
+          logger.level = ENV['KPM_DEBUG'] ? Logger::DEBUG : Logger::INFO
           logger
         end
       end

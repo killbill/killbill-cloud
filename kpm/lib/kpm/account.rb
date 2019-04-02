@@ -276,6 +276,7 @@ module KPM
 
         row = []
 
+        @logger.debug "Processing table_name=#{table_name}, line=#{line}"
         cols_names.each_with_index do |col_name, index|
           sanitized_value = sanitize(table_name,col_name,cols[index], skip_payment_methods)
 
