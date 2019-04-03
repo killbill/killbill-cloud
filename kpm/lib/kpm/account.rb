@@ -39,7 +39,7 @@ module KPM
 
     DATE_COLUMNS_TO_FIX = ['created_date','updated_date','processing_available_date','effective_date',
                            'boot_date','start_timestamp','last_access_time','payment_date','original_created_date',
-                           'last_sys_update_date','charged_through_date','bundle_start_date','start_date']
+                           'last_sys_update_date','charged_through_date','bundle_start_date','start_date', 'reference_time']
 
     # round trip constants duplicate record
     ROUND_TRIP_EXPORT_IMPORT_MAP = {:accounts => {:id => :accounts_id, :external_key => :accounts_id}, :all => {:account_id => :accounts_id},
@@ -109,6 +109,7 @@ module KPM
     end
 
     def import_data(source_file, tenant_record_id, skip_payment_methods, round_trip_export_import = false, generate_record_id = false)
+      source_file = File.expand_path(source_file)
 
       @generate_record_id = generate_record_id
       @tenant_record_id = tenant_record_id
@@ -119,7 +120,7 @@ module KPM
       end
 
       unless File.exist?(source_file)
-        raise Interrupt, 'Need to specify a valid file'
+        raise Interrupt, "File #{source_file} does not exist"
       end
 
       @delimiter = sniff_delimiter(source_file) || @delimiter
@@ -275,6 +276,7 @@ module KPM
 
         row = []
 
+        @logger.debug "Processing table_name=#{table_name}, line=#{line}"
         cols_names.each_with_index do |col_name, index|
           sanitized_value = sanitize(table_name,col_name,cols[index], skip_payment_methods)
 
