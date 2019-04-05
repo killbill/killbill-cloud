@@ -48,7 +48,8 @@ org.killbill.billing.osgi.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_DAO_
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') %}
 org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_OSGI_DAO_PASSWORD') }}
-{% elif lookup('env', 'KILLBILL_DAO_PASSWORD') %}
+{% else %}
+{# Allow for blank passwords (SSL certificates usecase) #}
 org.killbill.billing.osgi.dao.password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_POOLING_TYPE') %}
@@ -132,9 +133,8 @@ org.killbill.dao.minIdle={{ lookup('env', 'KILLBILL_DAO_MIN_IDLE') }}
 {% if lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') %}
 org.killbill.dao.mysqlServerVersion={{ lookup('env', 'KILLBILL_DAO_MYSQL_SERVER_VERSION') }}
 {% endif %}
-{% if lookup('env', 'KILLBILL_DAO_PASSWORD') %}
+{# Allow for blank passwords (SSL certificates usecase) #}
 org.killbill.dao.password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
-{% endif %}
 {% if lookup('env', 'KILLBILL_DAO_POOLING_TYPE') %}
 org.killbill.dao.poolingType={{ lookup('env', 'KILLBILL_DAO_POOLING_TYPE') }}
 {% endif %}
