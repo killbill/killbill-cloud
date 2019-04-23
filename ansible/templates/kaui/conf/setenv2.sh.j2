@@ -1,10 +1,24 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
-                      -Dkaui.db.adapter={{ kaui_db_adapter }}
-                      -Dkaui.url={{ killbill_url }}
-                      -Dkaui.api_key={{ killbill_api_key }}
-                      -Dkaui.api_secret={{ killbill_api_secret }}
-                      -Dkaui.db.url={{ database_url }}
-                      -Dkaui.db.password={{ database_user }}
-                      -Dkaui.db.username={{ database_password }}
+{% if lookup('env', 'KAUI_CONFIG_DAO_ADAPTER') %}
+                      -Dkaui.db.adapter={{ lookup('env', 'KAUI_CONFIG_DAO_ADAPTER') }}
+{% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_URL') %}
+                      -Dkaui.url={{ lookup('env', 'KAUI_KILLBILL_URL') }}
+{% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_API_KEY') %}
+                      -Dkaui.api_key={{ lookup('env', 'KAUI_KILLBILL_API_KEY') }}
+{% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_API_SECRET') %}
+                      -Dkaui.api_secret={{ lookup('env', 'KAUI_KILLBILL_API_SECRET') }}
+{% endif %}
+{% if lookup('env', 'KAUI_CONFIG_DAO_URL') %}
+                      -Dkaui.db.url={{ lookup('env', 'KAUI_CONFIG_DAO_URL') }}
+{% endif %}
+{% if lookup('env', 'KAUI_CONFIG_DAO_PASSWORD') %}
+                      -Dkaui.db.password={{ lookup('env', 'KAUI_CONFIG_DAO_PASSWORD') }}
+{% endif %}
+{% if lookup('env', 'KAUI_CONFIG_DAO_USER') %}
+                      -Dkaui.db.username={{ lookup('env', 'KAUI_CONFIG_DAO_USER') }}
+{% endif %}
                       {{ kaui_system_properties }}"
