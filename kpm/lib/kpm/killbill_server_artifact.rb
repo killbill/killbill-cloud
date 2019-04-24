@@ -71,10 +71,11 @@ module KPM
       rescue StandardError => e
         # Network down? Hopefully, we have something in the cache
         cached_version = sha1_checker ? sha1_checker.killbill_info(version) : nil
-        if cached_version
-          cached_version
-        else
+        if force_download || !cached_version
           raise e
+        else
+          # Use the cache
+          return cached_version
         end
       end
     end
