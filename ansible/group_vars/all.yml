@@ -19,27 +19,6 @@ kb_install_dir: /opt/killbill
 kb_config_dir: "{{ kb_install_dir }}/config"
 # Kill Bill plugins and OSGI bundles
 kb_plugins_dir: "{{ kb_install_dir }}/bundles"
-# kpm.yml -- see https://github.com/killbill/killbill-cloud/tree/master/kpm
-kpm_yml:
-  killbill:
-    version: 0.18.10
-    webapp_path: "{{ catalina_base }}/webapps/ROOT.war"
-    nexus:
-      ssl_verify: false
-      url: "{{ nexus_url }}"
-      repository: "{{ nexus_repository }}"
-    plugins_dir: "{{ kb_plugins_dir }}"
-    plugins:
-      java:
-        - name: analytics
-      ruby:
-        - name: kpm
-
-# Kaui specific properties
-killbill_url: http://127.0.0.1:8080
-killbill_api_key: bob
-killbill_api_secret: lazar
-kaui_db_adapter: mysql2
 
 # Extra JVM properties (e.g. -Dlogback.configurationFile={{ kb_config_dir }}/logback.xml)
 kaui_system_properties: ''
