@@ -365,8 +365,11 @@ module KPM
           say "Fetching info for version #{options[:version]}...\n"
 
           versions_info = KillbillServerArtifact.info(options[:version],
-                                             options[:overrides],
-                                             options[:ssl_verify])
+                                                      options[:sha1_file],
+                                                      options[:force_download],
+                                                      options[:verify_sha1],
+                                                      options[:overrides],
+                                                      options[:ssl_verify])
           say "Dependencies for version #{options[:version]}\n  " + (versions_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
           say "\n\n"
 
