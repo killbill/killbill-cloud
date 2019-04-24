@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -24,7 +24,7 @@ jobs:
             - kpm/Gemfile.lock
             - kpm/.bundle
             - kpm/vendor/bundle
-          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
   test-mysql-jruby-1.7.26:
     <<: *defaults
@@ -37,7 +37,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-1.7.26-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Setup DDL
           command: |
@@ -96,7 +96,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -109,7 +109,7 @@ jobs:
             - kpm/Gemfile.lock
             - kpm/.bundle
             - kpm/vendor/bundle
-          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
   test-mysql-ruby-2.2.2:
     <<: *defaults
@@ -122,7 +122,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.2.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Setup DDL
           command: |
@@ -183,7 +183,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -196,7 +196,7 @@ jobs:
             - kpm/Gemfile.lock
             - kpm/.bundle
             - kpm/vendor/bundle
-          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
   test-mysql-ruby-2.4.2:
     <<: *defaults
@@ -209,7 +209,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Setup DDL
           command: |
@@ -270,7 +270,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Install gem dependencies
           command: |
@@ -283,7 +283,7 @@ jobs:
             - kpm/Gemfile.lock
             - kpm/.bundle
             - kpm/vendor/bundle
-          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
 
   test-mysql-jruby-9.1.14.0:
     <<: *defaults
@@ -296,7 +296,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v4-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+          key: v5-dependencies-jruby-9.1.14.0-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
       - run:
           name: Setup DDL
           command: |

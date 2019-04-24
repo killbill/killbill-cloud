@@ -1,27 +1,24 @@
+# Shell image that installs Kaui on startup
 FROM killbill/base
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
-USER root
+ENV KAUI_INSTALL_DIR /var/lib/kaui
 
-# Default local and non multi-tenant properties
-ENV KAUI_KILLBILL_URL http://127.0.0.1:8080
-ENV KAUI_KILLBILL_API_KEY bob
-ENV KAUI_KILLBILL_API_SECRET lazar
+RUN sudo mkdir -p $KAUI_INSTALL_DIR
+RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KAUI_INSTALL_DIR
 
-ENV KAUI_CONFIG_DAO_URL jdbc:mysql://localhost:3306/kaui
-ENV KAUI_CONFIG_DAO_USER kaui
-ENV KAUI_CONFIG_DAO_PASSWORD kaui
-ENV KAUI_CONFIG_DAO_ADAPTER jdbcmysql
+# Default kpm.yml, override as needed
+COPY ./kpm.yml $KAUI_INSTALL_DIR
 
-ENV KAUI_CONFIG_DEMO false
+COPY ./kaui.sh $KAUI_INSTALL_DIR
 
-ENV KAUI_ROOT_USERNAME admin
-
-COPY ./kaui.sh /etc/init.d/kaui.sh
-RUN chmod +x /etc/init.d/kaui.sh
-
-USER tomcat7
-
-COPY ./kpm.yml.erb $KILLBILL_CONFIG
-
-CMD ["/etc/init.d/kaui.sh", "run"]
+ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
+                                     -e kpm_install_dir=$KPM_INSTALL_DIR \
+                                     -e kpm_version=$KPM_VERSION \
+                                     -e kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
+                                     -e tomcat_owner=$TOMCAT_OWNER \
+                                     -e tomcat_group=$TOMCAT_GROUP \
+                                     -e catalina_base=$CATALINA_BASE \
+                                     $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui.yml
+# Run kpm install and start Tomcat
+CMD ["/var/lib/kaui/kaui.sh"]

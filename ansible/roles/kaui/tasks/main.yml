@@ -1,12 +1,4 @@
 ---
-- name: ensure Kill Bill dirs exist
-  become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
-  with_items:
-    - "{{ kb_install_dir }}"
-    - "{{ kb_config_dir }}"
-  tags: kpm-install
-
 - name: generate Tomcat files
   become: true
   template:

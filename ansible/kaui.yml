@@ -1,0 +1,18 @@
+---
+- name: Deploy Kaui
+  hosts: all
+  vars:
+    catalina_base: /var/lib/tomcat
+    tomcat_owner: tomcat
+    tomcat_group: tomcat
+    kpm_install_dir: /opt
+    kpm_version: 0.6.2
+    kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+    kpm_yml: /var/lib/kaui/kpm.yml
+  tasks:
+    - name: setup Ruby
+      import_tasks: roles/common/tasks/main.yml
+    - name: setup Tomcat
+      import_tasks: roles/tomcat/tasks/main.yml
+    - name: install Kaui
+      import_tasks: roles/kaui/tasks/main.yml
