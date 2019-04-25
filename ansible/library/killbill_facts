@@ -17,10 +17,10 @@ require 'kpm'
 require 'kpm/version'
 
 kpm_facts = KPM::System.new.information(data['bundles_dir'],
-                                                               true,
-                                                               data['config_file'],
-                                                               data['kaui_web_path'],
-                                                               data['killbill_web_path'])
+                                        true,
+                                        data['config_file'],
+                                        data['kaui_web_path'],
+                                        data['killbill_web_path'])
 
 result = {
   'changed' => false,

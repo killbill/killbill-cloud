@@ -10,52 +10,46 @@
   register: migrations
   tags: migrations
 
+- name: ensure Kill Bill install dir exists
+  become: true
+  file: path={{ kb_install_dir }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  tags: migrations
+
 - name: install Flyway
   # maven_artifact module requires xml on the host
   get_url:
-    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/0.18.11/killbill-util-0.18.11-flyway.jar"
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ migrations['migrations']['from'] }}/killbill-util-{{ migrations['migrations']['from'] }}-flyway.jar"
     dest: "{{ kb_install_dir }}/killbill-flyway.jar"
-  tags: [migrations, java_migrations]
+  tags: migrations
 
-- name: generate SQL migrations for Kill Bill and Java plugins
-  command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ database_url }}' -user={{ database_user }} -password={{ database_password }} dryRunMigrate
+- name: generate Flyway baseline tables
+  command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }} baseline
+  with_items:
+    - "{{ migrations['migrations']['killbill'] }}"
+    - "{{ migrations['migrations']['plugins']['java'] }}"
+  when: item['dir'] is defined
+  tags: migrations
+
+# We verify that all migrations can be generated before attempting to run them one by one
+- name: validate SQL migrations for Kill Bill and Java plugins
+  command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }} dryRunMigrate
   with_items:
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   register: java_dry_run_migrations
-  tags: [migrations, java_migrations]
+  tags: migrations
 
-- name: SQL migrations for Kill Bill and Java plugins
-  debug: var=item.stdout_lines
-  with_items: "{{ java_dry_run_migrations.results }}"
-  when: item.stdout_lines is defined
-  tags: [migrations, java_migrations]
+# Run core migrations
+- include_tasks: migrate.yml
+  loop:
+    - "{{ migrations['migrations']['killbill'] }}"
+  loop_control:
+    loop_var: migration
 
-- block:
-  - name: wait for confirmation for Kill Bill and Java plugins
-    pause: prompt='Should I run these migrations? Press return to continue. Press Ctrl+c and then "a" to abort'
-    tags: [migrations, java_migrations]
+# Run plugin migrations
+- include_tasks: migrate.yml
+  loop: "{{ migrations['migrations']['plugins']['java']|flatten(levels=1) }}"
+  loop_control:
+    loop_var: migration
 
-  - name: run migrations for Kill Bill and Java plugins
-    command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} -url='{{ database_url }}' -user={{ database_user }} -password={{ database_password }} migrate
-    with_items:
-      - "{{ migrations['migrations']['killbill'] }}"
-      - "{{ migrations['migrations']['plugins']['java'] }}"
-    when: item['dir'] is defined
-    register: java_migrations
-    tags: [migrations, java_migrations]
-
-  - name: Flyway migrations output for Kill Bill and Java plugins
-    debug: var=item.stdout_lines
-    with_items: "{{ java_migrations.results }}"
-    when: item.stdout_lines is defined
-    tags: [migrations, java_migrations]
-
-  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
-
-# TODO
-# - name: generate SQL migrations for Ruby plugins
-#   local_action: killbill-migration
-#   with_items: "{{ migrations['migrations']['plugins']['ruby'] }}"
-#   tags: [migrations, ruby_migrations]
