@@ -28,6 +28,9 @@
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
+  register: baselineout
+  failed_when: baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
+  changed_when: "'already initialized with' not in baselineout.stdout and 'as it already contains migrations' not in baselineout.stderr"
   tags: migrations
 
 # We verify that all migrations can be generated before attempting to run them one by one
