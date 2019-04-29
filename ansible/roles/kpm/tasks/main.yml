@@ -6,11 +6,16 @@
     state: directory
   tags: kpm
 
+- name: check if KPM is already installed
+  stat:
+    path: "{{ kpm_path }}/kpm"
+  register: kpm_bin
+
 - name: install KPM
   become: true
   unarchive:
     src: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     remote_src: True
     dest: "{{ kpm_install_dir }}"
+  when: kpm_bin.stat.exists == False
   tags: kpm
-
