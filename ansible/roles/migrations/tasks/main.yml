@@ -40,6 +40,7 @@
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
+  changed_when: False
   register: java_dry_run_migrations
   tags: migrations
 
@@ -49,10 +50,12 @@
     - "{{ migrations['migrations']['killbill'] }}"
   loop_control:
     loop_var: migration
+  when: migration['dir'] is defined
 
 # Run plugin migrations
 - include_tasks: migrate.yml
   loop: "{{ migrations['migrations']['plugins']['java']|flatten(levels=1) }}"
   loop_control:
     loop_var: migration
+  when: migration['dir'] is defined
 

@@ -1,29 +1,38 @@
 - name: generate SQL migration
   command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }} dryRunMigrate
-  when: migration['dir'] is defined
   register: java_dry_run_migrations
   changed_when: java_dry_run_migrations.stdout_lines
   tags: migrations
 
-- debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
-  when: java_dry_run_migrations.stdout_lines
-  tags: migrations
-
-- name: prompt for SQL migration
-  pause: prompt='Should I run these migrations? Enter yes or no'
-  register: should_continue
-  when: java_dry_run_migrations.stdout_lines is defined
+- debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
+  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
   tags: migrations
 
 - block:
-    - name: run SQL migration
-      command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }} migrate
-      when: migration['dir'] is defined
-      register: java_migrations
-      changed_when: java_migrations.stdout_lines
+    - debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
+      when: java_dry_run_migrations.stdout_lines
       tags: migrations
 
-    - debug: msg="{{ java_migrations.stdout_lines }}"
-      when: java_migrations.stdout_lines
+    - name: prompt for SQL migration
+      pause: prompt='Should I run these migrations? Enter yes or no'
+      register: should_continue
+      when: java_dry_run_migrations.stdout_lines is defined
       tags: migrations
-  when: should_continue.user_input | bool
+
+    - block:
+        - name: run SQL migration
+          command: java -jar {{ kb_install_dir }}/killbill-flyway.jar -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }} migrate
+          register: java_migrations
+          ignore_errors: True
+          tags: migrations
+
+        - name: fail the play if the previous command did not succeed
+          fail: msg="{{ java_migrations.stderr_lines }}"
+          when: java_migrations.rc != 0 and 'contains a failed migration'
+          tags: migrations
+
+        - debug: msg="{{ java_migrations.stdout_lines }}"
+          when: java_migrations.stdout_lines
+          tags: migrations
+      when: should_continue.user_input | bool
+  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1
