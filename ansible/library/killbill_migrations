@@ -51,7 +51,11 @@ all_migrations[:from] = kb_from_version
 all_migrations[:to] = kb_to_version
 
 if kb_from_version == 'not found'
-  errors << "killbill version not found"
+  print JSON.dump({
+                      'failed' => true,
+                      'msg'    => 'Unable to retrieve Kill Bill version'
+                  })
+  exit(1)
 else
   kb_from_tag = "killbill-#{kb_from_version}"
 

@@ -3,22 +3,27 @@ nexus_url: https://oss.sonatype.org
 nexus_repository: releases
 
 kpm_install_dir: /opt
-kpm_version: 0.6.5
+kpm_version: 0.7.1
 kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
 
 catalina_home: /usr/share/tomcat
-catalina_base: /opt/apache-tomcat
-tomcat_owner: "{{ ansible_user_id }}"
-tomcat_group: root
+catalina_base: /var/lib/tomcat
+tomcat_owner: tomcat
+tomcat_group: tomcat
 
 tomcat_foreground: false
 
 # Base directory for namespacing
-kb_install_dir: /opt/killbill
+kb_install_dir: /var/lib/killbill
 # Configuration files (killbill.properties, JRuby files, etc.)
 kb_config_dir: "{{ kb_install_dir }}/config"
 # Kill Bill plugins and OSGI bundles
 kb_plugins_dir: "{{ kb_install_dir }}/bundles"
+# kpm.yml file
+kpm_yml: "{{ kb_install_dir }}/kpm.yml"
+
+flyway_install_dir: /opt
+flyway: java -jar {{ flyway_install_dir }}/killbill-flyway.jar -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }}
 
 # Extra JVM properties (e.g. -Dlogback.configurationFile={{ kb_config_dir }}/logback.xml)
 kaui_system_properties: ''
