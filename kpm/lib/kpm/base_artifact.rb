@@ -61,7 +61,7 @@ module KPM
 
       def pull_and_put_in_place(logger, coordinate_map, plugin_name, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         # Build artifact info
-        artifact_info = artifact_info(logger, coordinate_map, overrides, ssl_verify)
+        artifact_info = artifact_info(logger, coordinate_map, sha1_file, force_download, overrides, ssl_verify)
         artifact_info[:plugin_name] = plugin_name
         populate_fs_info(artifact_info, destination_path)
 
@@ -168,19 +168,27 @@ module KPM
         end
       end
 
-      def artifact_info(logger, coordinate_map, overrides={}, ssl_verify=true)
+      def artifact_info(logger, coordinate_map, sha1_file=nil, force_download=false, overrides={}, ssl_verify=true)
         info = {
             :skipped => false
         }
+
+        sha1_checker = sha1_file ? Sha1Checker.from_file(sha1_file) : nil
 
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         begin
           nexus_info = nexus_remote(overrides, ssl_verify, logger).get_artifact_info(coordinates)
         rescue KPM::NexusFacade::ArtifactMalformedException => e
-          raise StandardError.new("Invalid coordinates #{coordinate_map}")
+          raise StandardError.new("Invalid coordinates #{coordinate_map}: #{e}")
         rescue StandardError => e
-          logger.warn("Unable to retrieve coordinates #{coordinate_map}")
-          raise e
+          logger.warn("Unable to retrieve coordinates #{coordinate_map}: #{e}")
+          cached_coordinates = sha1_checker ? sha1_checker.artifact_info(coordinates) : nil
+          if force_download || !cached_coordinates
+            raise e
+          else
+            # Use the cache
+            return cached_coordinates
+          end
         end
 
         xml = REXML::Document.new(nexus_info)
@@ -188,6 +196,8 @@ module KPM
         info[:version] = xml.elements['//version'].text unless xml.elements['//version'].nil?
         info[:repository_path] = xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
         info[:is_tgz] = info[:repository_path].end_with?('.tar.gz') || info[:repository_path].end_with?('.tgz')
+
+        sha1_checker.cache_artifact_info(coordinates, info) if sha1_checker
 
         info
       end

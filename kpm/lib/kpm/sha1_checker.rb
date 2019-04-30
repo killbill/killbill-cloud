@@ -39,7 +39,35 @@ module KPM
       save!
     end
 
+    def artifact_info(coordinates)
+      nexus_cache[coordinates]
+    end
+
+    def cache_artifact_info(coordinates, artifact_info)
+      # See BaseArtifact#artifact_info
+      nexus_keys = [:sha1, :version, :repository_path, :is_tgz]
+      nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key,_| nexus_keys.include? key } : nil
+      save!
+    end
+
+    def killbill_info(version)
+      killbill_cache[version]
+    end
+
+    def cache_killbill_info(version, dependencies)
+      killbill_cache[version] = dependencies
+      save!
+    end
+
     private
+
+    def nexus_cache
+      @sha1_config['nexus'] ||= {}
+    end
+
+    def killbill_cache
+      @sha1_config['killbill'] ||= {}
+    end
 
     def save!
       Dir.mktmpdir do |tmp_destination_dir|

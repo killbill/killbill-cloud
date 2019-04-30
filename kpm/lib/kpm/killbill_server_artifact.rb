@@ -13,11 +13,13 @@ module KPM
         versions
       end
 
-      def info(version='LATEST', overrides={}, ssl_verify=true)
+      def info(version='LATEST', sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
         logger = Logger.new(STDOUT)
         logger.level = Logger::ERROR
 
         version = KPM::Installer.get_kb_latest_stable_version if version == 'LATEST'
+
+        sha1_checker = sha1_file ? Sha1Checker.from_file(sha1_file) : nil
 
         versions = {}
         Dir.mktmpdir do |dir|
@@ -29,9 +31,9 @@ module KPM
                              nil,
                              version,
                              dir,
-                             nil,
-                             false,
-                             true,
+                             sha1_file,
+                             force_download,
+                             verify_sha1,
                              overrides,
                              ssl_verify)
 
@@ -51,9 +53,9 @@ module KPM
                               nil,
                               oss_parent_version,
                               dir,
-                              nil,
-                              false,
-                              true,
+                              sha1_file,
+                              force_download,
+                              verify_sha1,
                               overrides,
                               ssl_verify)
 
@@ -62,8 +64,19 @@ module KPM
           %w(killbill-api killbill-plugin-api killbill-commons killbill-platform).each do |property|
             versions[property] = properties_element.elements["#{property}.version"].text
           end
+
+          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
         end
         versions
+      rescue StandardError => e
+        # Network down? Hopefully, we have something in the cache
+        cached_version = sha1_checker ? sha1_checker.killbill_info(version) : nil
+        if force_download || !cached_version
+          raise e
+        else
+          # Use the cache
+          return cached_version
+        end
       end
     end
   end

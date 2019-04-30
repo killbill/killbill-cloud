@@ -223,7 +223,8 @@ module KPM
 
       version = specified_version
       if version.nil? || version == LATEST_VERSION
-        info = KPM::KillbillServerArtifact.info(kb_version || LATEST_VERSION, @nexus_config, @nexus_ssl_verify)
+        sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
+        info = KPM::KillbillServerArtifact.info(kb_version || LATEST_VERSION, sha1_file, force_download, verify_sha1, @nexus_config, @nexus_ssl_verify)
         version = info['killbill-platform']
       end
       version ||= LATEST_VERSION

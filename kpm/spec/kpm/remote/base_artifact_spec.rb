@@ -25,6 +25,23 @@ describe KPM::BaseArtifact do
     end
   end
 
+  it 'should be able to handle download errors' do
+    nexus_down = {:url => 'https://does.not.exist'}
+    Dir.mktmpdir do |dir|
+      sha1_file = "#{dir}/sha1.yml"
+      test_download dir, 'foo-oss.pom.xml', false, false, sha1_file
+      # Verify we skip the second time
+      test_download dir, 'foo-oss.pom.xml', true, false, sha1_file
+      # Verify the download is skipped gracefully when Nexus isn't reachable
+      test_download dir, 'foo-oss.pom.xml', true, false, sha1_file, nexus_down
+      # Verify the download fails when Nexus isn't reachable and force_download is set
+      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_error(SocketError)
+      # Verify the download fails when Nexus isn't reachable and the Nexus cache is empty
+      KPM::Sha1Checker.from_file(sha1_file).cache_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:LATEST', nil)
+      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_error(SocketError)
+    end
+  end
+
   it 'should be able to download and verify generic .tar.gz artifacts' do
     # The artifact is not small unfortunately (23.7M)
     group_id    = 'org.kill-bill.billing'
@@ -66,11 +83,10 @@ describe KPM::BaseArtifact do
     end
   end
 
-
-  def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false)
+  def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false, sha1_file=nil, overrides={})
     path = filename.nil? ? dir : dir + '/' + filename
 
-    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, nil, force_download, true, {}, true)
+    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, sha1_file, force_download, true, overrides, true)
     info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
     info[:skipped].should == verify_is_skipped
     if !info[:skipped]
