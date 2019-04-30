@@ -5,17 +5,6 @@ require 'json'
 require 'pathname'
 require 'set'
 
-# Temporary -- https://github.com/killbill/killbill-cloud/issues/78
-def with_captured_stdout
-  require 'stringio'
-  old_stdout = $stdout
-  $stdout = StringIO.new
-  yield
-  JSON.parse($stdout.string.split("\n")[-1])
-ensure
-  $stdout = old_stdout
-end
-
 data = {}
 File.open(ARGV[0]) do |fh|
   data = JSON.parse(fh.read())
@@ -28,12 +17,20 @@ end
 require 'kpm'
 require 'kpm/version'
 
-kpm_facts = with_captured_stdout { KPM::System.new.information(data['bundles_dir'],
-                                                               true,
-                                                               data['config_file'],
-                                                               data['kaui_web_path'],
-                                                               data['killbill_web_path']) }
+kpm_facts = KPM::System.new.information(data['bundles_dir'],
+                                        true,
+                                        data['config_file'],
+                                        data['kaui_web_path'],
+                                        data['killbill_web_path'])
 
+require 'json'
+kpm_facts = JSON.parse(kpm_facts)
+
+require 'yaml'
+kpm_yml = data['kpm_yml']
+if kpm_yml.is_a?(String)
+  kpm_yml = YAML::load_file(data['kpm_yml'])
+end
 
 errors = []
 all_migrations = {
@@ -44,6 +41,39 @@ all_migrations = {
   }
 }
 
+logger = Logger.new(STDOUT)
+logger.level = Logger::INFO
+
+# Core migrations
+kb_from_version = kpm_facts['killbill_information']['killbill']['version']
+kb_to_version = kpm_yml['killbill']['version']
+all_migrations[:from] = kb_from_version
+all_migrations[:to] = kb_to_version
+
+if kb_from_version == 'not found'
+  print JSON.dump({
+                      'failed' => true,
+                      'msg'    => 'Unable to retrieve Kill Bill version'
+                  })
+  exit(1)
+else
+  kb_from_tag = "killbill-#{kb_from_version}"
+
+  if kb_to_version.nil? || kb_to_version == 'LATEST'
+    kb_to_version = KPM::Installer.get_kb_latest_stable_version
+  end
+  kb_to_tag = "killbill-#{kb_to_version}"
+
+  migrations_dir = KPM::Migrations.new(kb_from_tag, kb_to_tag, "killbill/killbill", data['gh_token'], logger).save
+
+  all_migrations[:killbill] = {
+    :from_tag => kb_from_tag,
+    :to_tag => kb_to_tag,
+    :table => 'schema_version',
+    :dir => migrations_dir
+  } unless migrations_dir.nil?
+end
+
 # Plugins migrations
 kpm_facts['plugin_information'].each do |plugin_name, plugin_details|
   from_version_details = plugin_details['versions'].find { |v| v['is_default'] }
@@ -51,28 +81,43 @@ kpm_facts['plugin_information'].each do |plugin_name, plugin_details|
     errors << "#{plugin_name} disabled"
     next
   end
-
-  to_version_details = data['kpm_yml']['killbill']['plugins'][plugin_details['type']].find { |p| p['name'] == plugin_details['plugin_key'] }
-  if to_version_details.nil?
-    # TODO Should we remove it? Upgrade it nonetheless?
-    errors << "#{plugin_name} not scheduled to be installed"
+  from_version = from_version_details['version']
+  if from_version.nil?
+    errors << "Unable to retrieve current version for #{plugin_name}"
     next
   end
 
-  from_version = from_version_details['version']
+  to_version_details = kpm_yml['killbill']['plugins'][plugin_details['type']].find { |p| p['name'] == plugin_details['plugin_key'] }
+  if to_version_details.nil?
+    errors << "#{plugin_name} is not scheduled to be upgraded"
+    next
+  end
   to_version = to_version_details['version']
+  if to_version.nil?
+    _, _, _, _, to_version, _ = KPM::PluginsDirectory.lookup(to_version_details['name'], true, kb_to_version)
+    if to_version.nil? || to_version == 'LATEST'
+      errors << "#{plugin_name} isn't availble for upgrade"
+      next
+    end
+  end
 
   is_ruby = plugin_details['type'] == 'ruby'
   if is_ruby
     from_tag = "v#{from_version}"
-    to_tag = to_version.nil? ? nil : "v#{to_version}"
+    to_tag = "v#{to_version}"
   else
     from_tag = "#{plugin_details['artifact_id']}-#{from_version}"
-    to_tag = to_version.nil? ? nil : "#{plugin_details['artifact_id']}-#{to_version}"
+    to_tag = "#{plugin_details['artifact_id']}-#{to_version}"
   end
 
   repository = "killbill-#{plugin_details['artifact_id']}"
-  migrations_dir = KPM::Migrations.new(from_tag, to_tag, "killbill/#{repository}", data['gh_token']).save
+  begin
+    migrations_dir = KPM::Migrations.new(from_tag, to_tag, "killbill/#{repository}", data['gh_token'], logger).save
+  rescue OpenURI::HTTPError => e
+    errors << "#{plugin_name} isn't availble for upgrade"
+    next
+  end
+
   next if migrations_dir.nil?
 
   if is_ruby
@@ -90,26 +135,6 @@ kpm_facts['plugin_information'].each do |plugin_name, plugin_details|
       :dir => migrations_dir
     }
   end
-end
-
-# Core migrations
-kb_from_version = kpm_facts['killbill_information']['killbill']['version']
-if kb_from_version == 'not found'
-  errors << "killbill version not found"
-else
-  kb_from_tag = "killbill-#{kb_from_version}"
-
-  kb_to_version = data['kpm_yml']['killbill']['version']
-  kb_to_tag = kb_to_version.nil? || kb_to_version == 'LATEST' ? nil : "killbill-#{kb_to_version}"
-
-  migrations_dir = KPM::Migrations.new(kb_from_tag, kb_to_tag, "killbill/killbill", data['gh_token']).save
-
-  all_migrations[:killbill] = {
-    :from_tag => kb_from_tag,
-    :to_tag => kb_to_tag,
-    :table => 'schema_version',
-    :dir => migrations_dir
-    } unless migrations_dir.nil?
 end
 
 result = {
