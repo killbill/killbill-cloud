@@ -10,17 +10,9 @@
   register: migrations
   tags: migrations
 
-- name: ensure Flyway install dir exists
-  become: true
-  file: path={{ flyway_install_dir }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
-  tags: migrations
-
-- name: install Flyway
-  # maven_artifact module requires xml on the host
-  get_url:
-    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ migrations['migrations']['from'] }}/killbill-util-{{ migrations['migrations']['from'] }}-flyway.jar"
-    dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
-  tags: migrations
+- include_tasks: flyway.yml
+  vars:
+    flyway_version: "{{ migrations['migrations']['from'] }}"
 
 - name: generate Flyway baseline tables
   command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"

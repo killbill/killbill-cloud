@@ -58,14 +58,14 @@ Example playbook on how to install Tomcat (Java is a pre-requisite):
 ansible-playbook -i <HOST_FILE> tomcat.yml
 ```
 
-## flyway.yml playbook
+## migrations.yml playbook
 
-Playbook to manage Kill Bill (and its plugins) migrations.
+Playbook to manage Kill Bill (and its plugins) database migrations.
 
 Assuming Kill Bill is installed locally (`/var/lib/tomcat/webapps/ROOT.war` by default) and your `kpm.yml` (`/var/lib/killbill/kpm.yml` by default) points to the **new** version of Kill Bill:
 
 ```
-ansible-playbook -i localhost, -e ansible_connection=local -e gh_token=XXX flyway.yml
+ansible-playbook -i localhost, -e ansible_connection=local -e gh_token=XXX migrations.yml
 ```
 
 This will install Flyway, fetch all migrations and prompt the user whether they should be applied.

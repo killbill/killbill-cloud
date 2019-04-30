@@ -1,0 +1,7 @@
+---
+- name: Database migrations
+  hosts: all
+  roles:
+    - common
+    - kpm
+    - migrations

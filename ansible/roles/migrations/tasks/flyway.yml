@@ -1,0 +1,39 @@
+---
+- name: ensure Flyway install dir exists
+  become: true
+  file: path={{ flyway_install_dir }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  tags: migrations
+
+# Note: we don't check the version but the binary is rarely updated
+- name: check if Flyway is already installed
+  stat:
+    path: "{{ flyway_install_dir }}/killbill-flyway.jar"
+  register: flyway_bin
+  tags: migrations
+
+- block:
+    - name: resolve LATEST version
+      killbill_facts:
+        kpm_path: "{{ kpm_path }}"
+        bundles_dir: "{{ kb_plugins_dir }}"
+        kaui_web_path: "{{ catalina_base }}/webapps/ROOT.war"
+        killbill_web_path: "{{ catalina_base }}/webapps/ROOT.war"
+        version: LATEST
+      register: kb_facts
+      when: flyway_version is undefined
+      tags: migrations
+
+    - name: set flyway_version
+      set_fact:
+        flyway_version: "{{ kb_facts['ansible_facts']['versions_info']['killbill'] }}"
+      when: flyway_version is undefined
+      tags: migrations
+
+    - name: install Flyway
+      # maven_artifact module requires xml on the host
+      get_url:
+        url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
+        dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
+      tags: migrations
+  when: flyway_bin.stat.exists == False
+  tags: migrations
