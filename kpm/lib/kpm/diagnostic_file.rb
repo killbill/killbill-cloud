@@ -66,6 +66,7 @@ module KPM
 
           @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
 
+          return zip_file_name
         else
           raise Interrupt, 'Account id or configuration file not found'
         end
