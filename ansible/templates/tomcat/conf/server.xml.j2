@@ -34,6 +34,10 @@
                pattern="%h %l %u %t &quot;%m %U&quot; %s %b %D" />
 
         <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+               protocolHeader="x-forwarded-proto"
+               portHeader="x-forwarded-port" />
       </Host>
     </Engine>
   </Service>
