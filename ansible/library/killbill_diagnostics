@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+# WANT_JSON
+
+require 'json'
+require 'logger'
+require 'pathname'
+require 'set'
+require 'uri'
+require 'yaml'
+
+data = {}
+File.open(ARGV[0]) do |fh|
+  data = JSON.parse(fh.read())
+end
+
+unless data['kpm_path'].nil?
+  ENV['GEM_PATH']="#{data['kpm_path']}/lib/vendor/ruby/2.2.0"
+  Gem.clear_paths
+end
+require 'kpm'
+require 'kpm/version'
+
+logger = Logger.new(STDOUT)
+logger.level = Logger::INFO
+
+killbill_api_credentials = [data['killbill_api_key'], data['killbill_api_secret']]
+killbill_credentials = [data['killbill_user'], data['killbill_password']]
+
+diagnostic = KPM::DiagnosticFile.new(nil,
+                                     killbill_api_credentials,
+                                     killbill_credentials,
+                                     data['killbill_url'],
+                                     nil,
+                                     nil,
+                                     nil,
+                                     nil,
+                                     data['kaui_web_path'],
+                                     data['killbill_web_path'],
+                                     data['bundles_dir'],
+                                     logger)
+
+killbill_account = data['killbill_account'].empty? ? nil : data['killbill_account']
+diagnostic_file = diagnostic.export_data(killbill_account,  data['log_dir'])
+
+result = {
+  'changed' => true,
+  'diagnostic_file' => diagnostic_file
+}
+
+print JSON.dump(result)
