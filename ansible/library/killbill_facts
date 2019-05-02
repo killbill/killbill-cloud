@@ -1,8 +1,10 @@
 #!/usr/bin/ruby
 # WANT_JSON
 
-require 'pathname'
 require 'json'
+require 'pathname'
+require 'set'
+require 'yaml'
 
 data = {}
 File.open(ARGV[0]) do |fh|
@@ -22,10 +24,14 @@ kpm_facts = KPM::System.new.information(data['bundles_dir'],
                                         data['kaui_web_path'],
                                         data['killbill_web_path'])
 
+versions_info = KPM::KillbillServerArtifact.info(data['version'],
+                                                 data['overrides'],
+                                                 data['ssl_verify'])
 result = {
   'changed' => false,
   'ansible_facts' => {
-    'kpm' => JSON.parse(kpm_facts)
+    'kpm' => JSON.parse(kpm_facts),
+    'versions_info' => versions_info
   }
 }
 

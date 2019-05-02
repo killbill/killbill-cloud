@@ -4,6 +4,7 @@
 require 'json'
 require 'pathname'
 require 'set'
+require 'yaml'
 
 data = {}
 File.open(ARGV[0]) do |fh|
@@ -23,10 +24,8 @@ kpm_facts = KPM::System.new.information(data['bundles_dir'],
                                         data['kaui_web_path'],
                                         data['killbill_web_path'])
 
-require 'json'
 kpm_facts = JSON.parse(kpm_facts)
 
-require 'yaml'
 kpm_yml = data['kpm_yml']
 if kpm_yml.is_a?(String)
   kpm_yml = YAML::load_file(data['kpm_yml'])
