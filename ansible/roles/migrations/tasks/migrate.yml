@@ -21,7 +21,7 @@
 
     - block:
         - name: run SQL migration
-          command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} migrate"
+          command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
           register: java_migrations
           ignore_errors: True
           tags: migrations
