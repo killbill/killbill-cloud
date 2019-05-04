@@ -255,6 +255,12 @@ org.killbill.notificationq.analytics.max.failure.retry={{ lookup('env', 'KILLBIL
 {% if lookup('env', 'KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS') %}
 org.killbill.notificationq.analytics.notification.nbThreads={{ lookup('env', 'KILLBILL_ANALYTICS_NOTIFICATION_NB_THREADS') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_LIFECYCLE_DISPATCH_NBTHREADS') %}
+org.killbill.notificationq.analytics.lifecycle.dispatch.nbThreads={{ lookup('env', 'KILLBILL_ANALYTICS_LIFECYCLE_DISPATCH_NBTHREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_LIFECYCLE_COMPLETE_NBTHREADS') %}
+org.killbill.notificationq.analytics.lifecycle.complete.nbThreads={{ lookup('env', 'KILLBILL_ANALYTICS_LIFECYCLE_COMPLETE_NBTHREADS') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_ANALYTICS_QUEUE_CAPACITY') %}
 org.killbill.notificationq.analytics.queue.capacity={{ lookup('env', 'KILLBILL_ANALYTICS_QUEUE_CAPACITY') }}
 {% endif %}
@@ -284,6 +290,12 @@ org.killbill.notificationq.main.notification.nbThreads={{ lookup('env', 'KILLBIL
 {% endif %}
 {% if lookup('env', 'KILLBILL_MAIN_NOTIFICATION_OFF') %}
 org.killbill.notificationq.main.notification.off={{ lookup('env', 'KILLBILL_MAIN_NOTIFICATION_OFF') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_LIFECYCLE_DISPATCH_NBTHREADS') %}
+org.killbill.notificationq.main.lifecycle.dispatch.nbThreads={{ lookup('env', 'KILLBILL_MAIN_LIFECYCLE_DISPATCH_NBTHREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_MAIN_LIFECYCLE_COMPLETE_NBTHREADS') %}
+org.killbill.notificationq.main.lifecycle.complete.nbThreads={{ lookup('env', 'KILLBILL_MAIN_LIFECYCLE_COMPLETE_NBTHREADS') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') %}
 org.killbill.notificationq.main.queue.capacity={{ lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') }}
@@ -378,6 +390,12 @@ org.killbill.persistent.bus.external.max.failure.retry={{ lookup('env', 'KILLBIL
 {% if lookup('env', 'KILLBILL_BUS_EXTERNAL_NB_THREADS') %}
 org.killbill.persistent.bus.external.nbThreads={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_NB_THREADS') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_LIFECYCLE_DISPATCH_NBTHREADS') %}
+org.killbill.persistent.bus.external.lifecycle.dispatch.nbThreads={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_LIFECYCLE_DISPATCH_NBTHREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_LIFECYCLE_COMPLETE_NBTHREADS') %}
+org.killbill.persistent.bus.external.lifecycle.complete.nbThreads={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_LIFECYCLE_COMPLETE_NBTHREADS') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_EXTERNAL_QUEUE_CAPACITY') %}
 org.killbill.persistent.bus.external.queue.capacity={{ lookup('env', 'KILLBILL_EXTERNAL_QUEUE_CAPACITY') }}
 {% endif %}
@@ -410,6 +428,12 @@ org.killbill.persistent.bus.main.nbThreads={{ lookup('env', 'KILLBILL_BUS_MAIN_N
 {% endif %}
 {% if lookup('env', 'KILLBILL_BUS_MAIN_OFF') %}
 org.killbill.persistent.bus.main.off={{ lookup('env', 'KILLBILL_BUS_MAIN_OFF') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_LIFECYCLE_DISPATCH_NBTHREADS') %}
+org.killbill.persistent.bus.main.lifecycle.dispatch.nbThreads={{ lookup('env', 'KILLBILL_BUS_MAIN_LIFECYCLE_DISPATCH_NBTHREADS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_LIFECYCLE_COMPLETE_NBTHREADS') %}
+org.killbill.persistent.bus.main.lifecycle.complete.nbThreads={{ lookup('env', 'KILLBILL_BUS_MAIN_LIFECYCLE_COMPLETE_NBTHREADS') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') %}
 org.killbill.persistent.bus.main.queue.capacity={{ lookup('env', 'KILLBILL_MAIN_QUEUE_CAPACITY') }}
