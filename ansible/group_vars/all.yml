@@ -30,7 +30,7 @@ kaui_system_properties: ''
 kb_system_properties: ''
 
 # Tomcat and JVM properties -- recommended defaults
-jvm_initial_memory: 4G
+jvm_initial_memory: 1G
 jvm_max_memory: 4G
 jvm_jdwp_port: 12345
 jvm_jdwp_server: y
