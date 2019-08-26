@@ -7,8 +7,16 @@ CATALINA_OPTS="-server
                -XX:+HeapDumpOnOutOfMemoryError
                -XX:HeapDumpPath={{ catalina_base }}/logs/
                -XX:+UseCodeCacheFlushing
+{% if lookup('env', 'TOMCAT_JAVA_XMS') %}
+               -Xms{{ lookup('env', 'TOMCAT_JAVA_XMS') }}
+{% else %}
                -Xms{{ jvm_initial_memory }}
+{% endif %}
+{% if lookup('env', 'TOMCAT_JAVA_XMX') %}
+               -Xmx{{ lookup('env', 'TOMCAT_JAVA_XMX') }}
+{% else %}
                -Xmx{{ jvm_max_memory }}
+{% endif %}
                -Xrunjdwp:transport=dt_socket,server={{ jvm_jdwp_server }},suspend=n,address={{ jvm_jdwp_port }}
                -XX:+CMSClassUnloadingEnabled
                -XX:-OmitStackTraceInFastThrow
@@ -20,8 +28,16 @@ CATALINA_OPTS="-server
                -XX:+CMSParallelRemarkEnabled
                -XX:+UseCMSInitiatingOccupancyOnly
                -XX:CMSInitiatingOccupancyFraction={{ jvm_cms_initiating_fraction_threshold }}
+{% if lookup('env', 'TOMCAT_JAVA_NEW_SIZE') %}
+               -XX:NewSize={{ lookup('env', 'TOMCAT_JAVA_NEW_SIZE') }}
+{% else %}
                -XX:NewSize={{ jvm_new_size }}
+{% endif %}
+{% if lookup('env', 'TOMCAT_JAVA_MAX_NEW_SIZE') %}
+               -XX:MaxNewSize={{ lookup('env', 'TOMCAT_JAVA_MAX_NEW_SIZE') }}
+{% else %}
                -XX:MaxNewSize={{ jvm_max_new_size }}
+{% endif %}
                -XX:SurvivorRatio={{ jvm_survivor_ratio }}
                -XX:+DisableExplicitGC
                -Xloggc:{{ catalina_base }}/logs/gc.log
