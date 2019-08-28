@@ -40,6 +40,7 @@ CATALINA_OPTS="-server
 {% endif %}
                -XX:SurvivorRatio={{ jvm_survivor_ratio }}
                -XX:+DisableExplicitGC
+{% if not lookup('env', 'TOMCAT_DISABLE_GC_LOGGING') %}
                -Xloggc:{{ catalina_base }}/logs/gc.log
                -XX:+PrintGCApplicationConcurrentTime
                -XX:+PrintGCApplicationStoppedTime
@@ -48,7 +49,9 @@ CATALINA_OPTS="-server
                -XX:+PrintTenuringDistribution
                -XX:+UseGCLogFileRotation
                -XX:NumberOfGCLogFiles=14
-               -XX:GCLogFileSize=100M"
+               -XX:GCLogFileSize=100M
+{% endif %}
+               "
 
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
