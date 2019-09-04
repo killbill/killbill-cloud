@@ -35,7 +35,7 @@ module KPM
 
     # fields to remove from the export files
     REMOVE_DATA_FROM = {:accounts => [:name, :address1, :address2, :city, :state_or_province, :phone, :email],
-                       :account_history => [:name, :address1, :address2, :city, :state_or_province, :phone, :email]}
+                        :account_history => [:name, :address1, :address2, :city, :state_or_province, :phone, :email]}
 
     DATE_COLUMNS_TO_FIX = ['created_date','updated_date','processing_available_date','effective_date',
                            'boot_date','start_timestamp','last_access_time','payment_date','original_created_date',
@@ -58,9 +58,9 @@ module KPM
                                     :payment_history => {:id => :payment_history_id, :payment_method_id  => :payment_methods_id},
                                     :payment_transactions => {:id => :payment_transactions_id, :payment_id   => :payments_id},
                                     :payment_transaction_history => {:id => :payment_transaction_history_id, :payment_id   => :payments_id},
-                                    :_invoice_payment_control_plugin_auto_pay_off  => {:payment_method_id => :payment_methods_id, :payment_id   => :payments_id},
+                                    :_invoice_payment_control_plugin_auto_pay_off => {:payment_method_id => :payment_methods_id, :payment_id   => :payments_id},
                                     :rolled_up_usage => {:id => :rolled_up_usage_id, :subscription_id  => :subscriptions_id, :tracking_id => nil},
-                                    :custom_fields  => {:id => :custom_fields_id},:custom_field_history  => {:id => :custom_field_history_id},
+                                    :custom_fields => {:id => :custom_fields_id},:custom_field_history  => {:id => :custom_field_history_id},
                                     :tag_definitions => {:id => :tag_definitions_id},:tag_definition_history => {:id => :tag_definition_history_id},
                                     :tags => {:id => :tags_id, :object_id => nil},
                                     :tag_history => {:id => :tag_history_id, :object_id => nil},

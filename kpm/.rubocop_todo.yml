@@ -36,22 +36,6 @@ Layout/AlignArray:
     - 'lib/kpm/system.rb'
     - 'lib/kpm/tenant_config.rb'
 
-# Offense count: 183
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleStyles, EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
-# SupportedHashRocketStyles: key, separator, table
-# SupportedColonStyles: key, separator, table
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/AlignHash:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/base_artifact.rb'
-    - 'lib/kpm/base_installer.rb'
-    - 'lib/kpm/database.rb'
-    - 'lib/kpm/nexus_helper/nexus_api_calls_v2.rb'
-    - 'lib/kpm/tasks.rb'
-    - 'spec/kpm/remote/nexus_facade_spec.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 Layout/BlockEndNewline:

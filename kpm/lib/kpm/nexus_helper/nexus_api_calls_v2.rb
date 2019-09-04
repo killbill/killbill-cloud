@@ -101,8 +101,8 @@ module KPM
         {
             :file_name => file_name,
             :file_path => File.expand_path(destination),
-            :version   => version,
-            :size      => File.size(File.expand_path(destination))
+            :version => version,
+            :size => File.size(File.expand_path(destination))
         }
       end
 

@@ -52,7 +52,7 @@ module KPM
 
       def nexus_defaults
         {
-            url:        'https://oss.sonatype.org',
+            url: 'https://oss.sonatype.org',
             repository: 'releases'
         }
       end

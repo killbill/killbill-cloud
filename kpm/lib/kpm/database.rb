@@ -117,7 +117,7 @@ module KPM
             value_data = rows.map{|row| "(#{row})" }.join(",")
 
             statements << {:query => get_insert_statement(table_name,columns_names,value_data, rows.size),
-                                      :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
+                           :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
 
           end
 

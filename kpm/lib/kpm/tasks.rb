@@ -18,23 +18,23 @@ module KPM
         end
 
         class_option :overrides,
-                     :type    => :hash,
+                     :type => :hash,
                      :default => nil,
-                     :desc    => "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                     :desc => "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
 
         class_option :ssl_verify,
-                     :type    => :boolean,
+                     :type => :boolean,
                      :default => true,
-                     :desc    => 'Set to false to disable SSL Verification.'
+                     :desc => 'Set to false to disable SSL Verification.'
 
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validate sha1 sum'
+                      :desc => 'Validate sha1 sum'
         desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
         def install(config_file=nil)
           help = Installer.from_file(config_file).install(options[:force_download], options[:verify_sha1])
@@ -43,34 +43,34 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the default bundles directory.'
+                      :desc => 'A different folder other than the default bundles directory.'
         method_option :force,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => nil,
-                      :desc    => 'Don\'t ask for confirmation while deleting multiple versions of a plugin.'
+                      :desc => 'Don\'t ask for confirmation while deleting multiple versions of a plugin.'
         desc 'uninstall plugin', 'Uninstall the specified plugin, identified by its name or key, from current deployment'
         def uninstall(plugin)
           say 'Done!' if Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force])
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the current working directory.'
+                      :desc => 'A different folder other than the current working directory.'
         method_option :bundles_dir,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The location where bundles will be installed (along with sha1 file)'
+                      :desc => 'The location where bundles will be installed (along with sha1 file)'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validate sha1 sum'
+                      :desc => 'Validate sha1 sum'
         desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kb_server_war(version='LATEST')
           installer = BaseInstaller.new(logger,
@@ -98,21 +98,21 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the current working directory.'
+                      :desc => 'A different folder other than the current working directory.'
         method_option :bundles_dir,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The location where bundles will be installed (along with sha1 file)'
+                      :desc => 'The location where bundles will be installed (along with sha1 file)'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc => 'Validates sha1 sum'
         desc 'pull_kp_server_war <version>', 'Pulls Kill Pay server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kp_server_war(version='LATEST')
           installer = BaseInstaller.new(logger,
@@ -140,45 +140,45 @@ module KPM
         end
 
         method_option :group_id,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID,
-                      :desc    => 'The plugin artifact group-id'
+                      :desc => 'The plugin artifact group-id'
         method_option :artifact_id,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The plugin artifact id'
+                      :desc => 'The plugin artifact id'
         method_option :version,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The plugin artifact version'
+                      :desc => 'The plugin artifact version'
         method_option :packaging,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING,
-                      :desc    => 'The plugin artifact packaging'
+                      :desc => 'The plugin artifact packaging'
         method_option :classifier,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER,
-                      :desc    => 'The plugin artifact classifier'
+                      :desc => 'The plugin artifact classifier'
         method_option :from_source_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Specify the plugin jar that should be used for the installation.'
+                      :desc => 'Specify the plugin jar that should be used for the installation.'
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the current working directory.'
+                      :desc => 'A different folder other than the current working directory.'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :sha1_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Location of the sha1 file'
+                      :desc => 'Location of the sha1 file'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc => 'Validates sha1 sum'
         desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_java_plugin(plugin_key, kb_version='LATEST')
 
@@ -211,45 +211,45 @@ module KPM
 
 
         method_option :group_id,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID,
-                      :desc    => 'The plugin artifact group-id'
+                      :desc => 'The plugin artifact group-id'
         method_option :artifact_id,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The plugin artifact id'
+                      :desc => 'The plugin artifact id'
         method_option :version,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'The plugin artifact version'
+                      :desc => 'The plugin artifact version'
         method_option :packaging,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING,
-                      :desc    => 'The plugin artifact packaging'
+                      :desc => 'The plugin artifact packaging'
         method_option :classifier,
-                      :type    => :string,
+                      :type => :string,
                       :default => KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
-                      :desc    => 'The plugin artifact classifier'
+                      :desc => 'The plugin artifact classifier'
         method_option :from_source_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Specify the ruby plugin archive that should be used for the installation.'
+                      :desc => 'Specify the ruby plugin archive that should be used for the installation.'
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the current working directory.'
+                      :desc => 'A different folder other than the current working directory.'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :sha1_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Location of the sha1 file'
+                      :desc => 'Location of the sha1 file'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc => 'Validates sha1 sum'
         desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_ruby_plugin(plugin_key, kb_version='LATEST')
           installer = BaseInstaller.new(logger,
@@ -278,17 +278,17 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the default bundles directory.'
+                      :desc => 'A different folder other than the default bundles directory.'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc => 'Validates sha1 sum'
         desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles from Sonatype and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
         def pull_defaultbundles(kb_version='LATEST')
           response = BaseInstaller.new(logger,
@@ -318,21 +318,21 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the current working directory.'
+                      :desc => 'A different folder other than the current working directory.'
         method_option :force_download,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Force download of the artifact even if it exists'
+                      :desc => 'Force download of the artifact even if it exists'
         method_option :sha1_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Location of the sha1 file'
+                      :desc => 'Location of the sha1 file'
         method_option :verify_sha1,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => true,
-                      :desc    => 'Validates sha1 sum'
+                      :desc => 'Validates sha1 sum'
         desc 'pull_kaui_war <version>', 'Pulls Kaui war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kaui_war(version='LATEST')
           response = KauiArtifact.pull(logger,
@@ -382,9 +382,9 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Folder where to download migration files.'
+                      :desc => 'Folder where to download migration files.'
         method_option :token,
                       :type => :string,
                       :default => nil,
@@ -397,9 +397,9 @@ module KPM
         end
 
         method_option :destination,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the default bundles directory.'
+                      :desc => 'A different folder other than the default bundles directory.'
         desc 'inspect', 'Inspect current deployment'
         def inspect
           inspector = KPM::Inspector.new
@@ -410,25 +410,25 @@ module KPM
         end
 
         method_option :bundles_dir,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the default bundles directory.'
+                      :desc => 'A different folder other than the default bundles directory.'
         method_option :config_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'KPM configuration file (yml file)'
+                      :desc => 'KPM configuration file (yml file)'
         method_option :as_json,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Set the output format as JSON when true'
+                      :desc => 'Set the output format as JSON when true'
         method_option :kaui_web_path,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Path for the KAUI web app'
+                      :desc => 'Path for the KAUI web app'
         method_option :killbill_web_path,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Path for the killbill web app'
+                      :desc => 'Path for the killbill web app'
         desc 'system', 'Gather information about the system'
         def system
           system = KPM::System.new
@@ -442,61 +442,61 @@ module KPM
         end
 
         method_option :export,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'export account for a provided id.'
+                      :desc => 'export account for a provided id.'
         method_option :import,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'import account for a previously exported file.'
+                      :desc => 'import account for a previously exported file.'
         method_option :tenant_record_id,
-                      :type    => :numeric,
+                      :type => :numeric,
                       :default => nil,
-                      :desc    => 'replace the tenant_record_id before importing data.'
+                      :desc => 'replace the tenant_record_id before importing data.'
         method_option :generate_record_id,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'The generate_record_id will instruct to generate the tables record_ids that were exported'
+                      :desc => 'The generate_record_id will instruct to generate the tables record_ids that were exported'
         method_option :skip_payment_methods,
-                      :type    => :boolean,
+                      :type => :boolean,
                       :default => false,
-                      :desc    => 'Skip or swap payment types other than __EXTERNAL_PAYMENT__.'
+                      :desc => 'Skip or swap payment types other than __EXTERNAL_PAYMENT__.'
         method_option :config_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Yml that contains killbill api connection and DB connection'
+                      :desc => 'Yml that contains killbill api connection and DB connection'
         method_option :killbill_api_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+                      :desc => 'Killbill api credentials <api_key> <api_secrets>'
         method_option :killbill_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill credentials <user> <password>'
+                      :desc => 'Killbill credentials <user> <password>'
         method_option :killbill_url,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+                      :desc => 'Killbill URL ex. http://127.0.0.1:8080'
         method_option :database_name,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'DB name to connect'
+                      :desc => 'DB name to connect'
         method_option :database_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'DB credentials <user> <password>'
+                      :desc => 'DB credentials <user> <password>'
         method_option :data_delimiter,
-                      :type    => :string,
+                      :type => :string,
                       :default => "|",
-                      :desc    => 'Data delimiter'
+                      :desc => 'Data delimiter'
         method_option :database_host,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Database Host name'
+                      :desc => 'Database Host name'
         method_option :database_port,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Database port'
+                      :desc => 'Database port'
         desc 'account', 'export/import accounts'
         def account
           begin
@@ -554,22 +554,22 @@ module KPM
         end
 
         method_option :key_prefix,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
                       :enum => KPM::TenantConfig::KEY_PREFIXES,
-                      :desc    => 'Retrieve a per tenant key value based on key prefix'
+                      :desc => 'Retrieve a per tenant key value based on key prefix'
         method_option :killbill_api_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+                      :desc => 'Killbill api credentials <api_key> <api_secrets>'
         method_option :killbill_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill credentials <user> <password>'
+                      :desc => 'Killbill credentials <user> <password>'
         method_option :killbill_url,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+                      :desc => 'Killbill URL ex. http://127.0.0.1:8080'
         desc 'tenant_config', 'export all tenant-level configs.'
         def tenant_config
           begin
@@ -605,57 +605,57 @@ module KPM
 
 
         method_option :account_export,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'export account for a provided id.'
+                      :desc => 'export account for a provided id.'
         method_option :log_dir,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => '(Optional) Log directory if the default tomcat location has changed'
+                      :desc => '(Optional) Log directory if the default tomcat location has changed'
         method_option :config_file,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Yml that contains killbill api connection and DB connection'
+                      :desc => 'Yml that contains killbill api connection and DB connection'
         method_option :killbill_api_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill api credentials <api_key> <api_secrets>'
+                      :desc => 'Killbill api credentials <api_key> <api_secrets>'
         method_option :killbill_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'Killbill credentials <user> <password>'
+                      :desc => 'Killbill credentials <user> <password>'
         method_option :killbill_url,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Killbill URL ex. http://127.0.0.1:8080'
+                      :desc => 'Killbill URL ex. http://127.0.0.1:8080'
         method_option :database_name,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'DB name to connect'
+                      :desc => 'DB name to connect'
         method_option :database_credentials,
-                      :type    => :array,
+                      :type => :array,
                       :default => nil,
-                      :desc    => 'DB credentials <user> <password>'
+                      :desc => 'DB credentials <user> <password>'
         method_option :database_host,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Database Host name'
+                      :desc => 'Database Host name'
         method_option :database_port,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Database port'
+                      :desc => 'Database port'
         method_option :kaui_web_path,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Path for the KAUI web app'
+                      :desc => 'Path for the KAUI web app'
         method_option :killbill_web_path,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'Path for the killbill web app'
+                      :desc => 'Path for the killbill web app'
         method_option :bundles_dir,
-                      :type    => :string,
+                      :type => :string,
                       :default => nil,
-                      :desc    => 'A different folder other than the default bundles directory.'
+                      :desc => 'A different folder other than the default bundles directory.'
         desc 'diagnostic', 'exports and \'zips\' the account data, system, logs and tenant configurations'
         def diagnostic
           begin

@@ -3,16 +3,16 @@ require 'rexml/document'
 
 describe KPM::NexusFacade do
 
-  let(:coordinates_map){ {:version  => '0.1.4',
-                      :group_id => 'org.kill-bill.billing',
-                      :artifact_id => 'killbill-platform-osgi-api',
-                      :packaging => 'jar',
-                      :classifier => nil} }
-  let(:coordinates_with_classifier_map){ {:version  => '0.1.1',
-                      :group_id => 'org.kill-bill.billing',
-                      :artifact_id => 'killbill-platform-osgi-bundles-jruby',
-                      :packaging => 'jar',
-                      :classifier => 'javadoc'} }
+  let(:coordinates_map){ {:version => '0.1.4',
+                          :group_id => 'org.kill-bill.billing',
+                          :artifact_id => 'killbill-platform-osgi-api',
+                          :packaging => 'jar',
+                          :classifier => nil} }
+  let(:coordinates_with_classifier_map){ {:version => '0.1.1',
+                                          :group_id => 'org.kill-bill.billing',
+                                          :artifact_id => 'killbill-platform-osgi-bundles-jruby',
+                                          :packaging => 'jar',
+                                          :classifier => 'javadoc'} }
   let(:coordinates) { KPM::Coordinates.build_coordinates(coordinates_map)}
   let(:coordinates_with_classifier) { KPM::Coordinates.build_coordinates(coordinates_with_classifier_map)}
   let(:nexus_remote) { described_class::RemoteFactory.create(nil, true)}
