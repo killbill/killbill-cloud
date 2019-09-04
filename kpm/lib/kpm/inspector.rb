@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module KPM
   class Inspector
-    def initialize
-    end
+    def initialize; end
 
     def inspect(bundles_dir)
       bundles_dir = Pathname.new(bundles_dir || KPM::BaseInstaller::DEFAULT_BUNDLES_DIR).expand_path
@@ -39,13 +40,12 @@ module KPM
           coord, sha1 = e
           coordinate_map = KPM::Coordinates.get_coordinate_map(coord)
 
-          if coordinate_map[:group_id] == cur[:group_id] &&
-             coordinate_map[:artifact_id] == cur[:artifact_id] &&
-             coordinate_map[:packaging] == cur[:packaging]
+          next unless coordinate_map[:group_id] == cur[:group_id] &&
+                      coordinate_map[:artifact_id] == cur[:artifact_id] &&
+                      coordinate_map[:packaging] == cur[:packaging]
 
-            found_version = cur[:versions].select { |v| v[:version] == coordinate_map[:version] }[0]
-            found_version[:sha1] = sha1 if found_version
-          end
+          found_version = cur[:versions].select { |v| v[:version] == coordinate_map[:version] }[0]
+          found_version[:sha1] = sha1 if found_version
         end
       end
     end
@@ -63,29 +63,25 @@ module KPM
     end
 
     def build_plugins_for_type(plugins_path, type, res)
-      if !File.exists?(plugins_path)
-        return []
-      end
+      return [] unless File.exists?(plugins_path)
 
-      get_entries(plugins_path).inject(res) do |out, e|
+      get_entries(plugins_path).each_with_object(res) do |e, out|
         plugin_map = build_plugin_map(e, plugins_path.join(e), type)
         out[e] = plugin_map
-        out
       end
     end
 
     def build_plugin_map(plugin_name, plugin_path, type)
-      plugin_map = { :plugin_name => plugin_name, :plugin_path => plugin_path.to_s, :type => type }
+      plugin_map = { plugin_name: plugin_name, plugin_path: plugin_path.to_s, type: type }
       entries = get_entries(plugin_path)
-      set_default = entries.select { |e| e == "SET_DEFAULT" }[0]
+      set_default = entries.select { |e| e == 'SET_DEFAULT' }[0]
       default_version = File.basename(File.readlink(plugin_path.join(set_default))) if set_default
 
-      versions = entries.select do |e|
-        e != "SET_DEFAULT"
-      end.inject([]) do |out, e|
+      versions = entries.reject do |e|
+        e == 'SET_DEFAULT'
+      end.each_with_object([]) do |e, out|
         is_disabled = File.exists?(plugin_path.join(e).join('tmp').join('disabled.txt'))
-        out << { :version => e, :is_default => default_version == e, :is_disabled => is_disabled, :sha1 => nil };
-        out
+        out << { version: e, is_default: default_version == e, is_disabled: is_disabled, sha1: nil }
       end
 
       versions.sort! { |a, b| a[:version] <=> b[:version] }

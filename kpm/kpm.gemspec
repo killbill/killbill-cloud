@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2014 The Billing Project, LLC
 #
@@ -14,7 +16,7 @@
 # under the License.
 #
 
-$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('lib', __dir__)
 require 'kpm/version'
 
 Gem::Specification.new do |s|
@@ -35,7 +37,7 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.bindir        = 'bin'
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  s.require_paths = ['lib']
 
   s.rdoc_options << '--exclude' << '.'
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'zip'
 
@@ -20,7 +22,7 @@ module KPM
       packaging = specified_packaging || KPM::BaseArtifact::KILLBILL_PACKAGING
       classifier = specified_classifier || KPM::BaseArtifact::KILLBILL_CLASSIFIER
       version = specified_version || LATEST_VERSION
-      webapp_path = specified_webapp_path || KPM::root
+      webapp_path = specified_webapp_path || KPM.root
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
@@ -44,8 +46,8 @@ module KPM
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('killbill',
-                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
-                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
+                        artifact_info.merge('status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
     end
 
     def install_kaui(specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, specified_webapp_path = nil, bundles_dir = nil, force_download = false, verify_sha1 = true)
@@ -54,7 +56,7 @@ module KPM
       packaging = specified_packaging || KPM::BaseArtifact::KAUI_PACKAGING
       classifier = specified_classifier || KPM::BaseArtifact::KAUI_CLASSIFIER
       version = specified_version || LATEST_VERSION
-      webapp_path = specified_webapp_path || KPM::root
+      webapp_path = specified_webapp_path || KPM.root
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
 
@@ -73,15 +75,13 @@ module KPM
                                              @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('kaui',
-                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
-                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
+                        artifact_info.merge('status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
     end
 
     def install_plugin(plugin_key, raw_kb_version = nil, specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, bundles_dir = nil, specified_type = nil, force_download = false, verify_sha1 = true, verify_jruby_jar = false)
       # plugin_key needs to exist
-      if plugin_key.nil?
-        raise ArgumentError.new 'Aborting installation: User needs to specify a pluginKey'
-      end
+      raise ArgumentError, 'Aborting installation: User needs to specify a pluginKey' if plugin_key.nil?
 
       # Lookup artifact and perform validation against input
       looked_up_group_id, looked_up_artifact_id, looked_up_packaging, looked_up_classifier, looked_up_version, looked_up_type = KPM::PluginsDirectory.lookup(plugin_key, true, raw_kb_version)
@@ -96,14 +96,12 @@ module KPM
          specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
          specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
          plugin_key.split(':').size == 1
-        raise ArgumentError.new "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
+        raise ArgumentError, "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end
 
       # Specified parameters have always precedence except for the artifact_id (to map stripe to stripe-plugin)
       artifact_id = looked_up_artifact_id || specified_artifact_id
-      if artifact_id.nil?
-        raise ArgumentError.new "Aborting installation: unable to lookup plugin #{specified_artifact_id}"
-      end
+      raise ArgumentError, "Aborting installation: unable to lookup plugin #{specified_artifact_id}" if artifact_id.nil?
 
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
@@ -130,7 +128,7 @@ module KPM
       _, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_key)
 
       # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
-      coordinate_map = { :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }
+      coordinate_map = { group_id: group_id, artifact_id: artifact_id, packaging: packaging, classifier: classifier }
       validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
 
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
@@ -149,8 +147,8 @@ module KPM
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
-                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
+                        artifact_info.merge('status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
 
       # Update with resolved version
       coordinate_map[:version] = artifact_info[:version]
@@ -166,9 +164,7 @@ module KPM
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
-      if version.nil?
-        version = Utils.get_version_from_file_path(file_path)
-      end
+      version = Utils.get_version_from_file_path(file_path) if version.nil?
 
       if type.to_s == 'java'
         plugin_name = name.nil? ? Utils.get_plugin_name_from_file_path(file_path) : name
@@ -186,7 +182,7 @@ module KPM
 
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                        artifact_info.merge({ 'status' => 'INSTALLED' }))
+                        artifact_info.merge('status' => 'INSTALLED'))
 
       artifact_info
     end
@@ -198,9 +194,7 @@ module KPM
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
 
       plugin_key, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_name_or_key)
-      if plugin_name.nil?
-        raise ArgumentError.new "Cannot uninstall plugin: Unknown plugin name or plugin key = #{plugin_name_or_key}"
-      end
+      raise ArgumentError, "Cannot uninstall plugin: Unknown plugin name or plugin key = #{plugin_name_or_key}" if plugin_name.nil?
 
       modified = plugins_manager.uninstall(plugin_name, plugin_version || :all)
       plugins_manager.remove_plugin_identifier_key(plugin_key)
@@ -240,14 +234,12 @@ module KPM
                                     @nexus_ssl_verify)
 
       @trace_logger.add('default_bundles',
-                        info.merge({ 'status' => (info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
-                                     :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
+                        info.merge('status' => (info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                   :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
-      unless info[:skipped]
-        File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, destination.join('jruby.jar')
-      end
+      File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, destination.join('jruby.jar') unless info[:skipped]
 
       info
     end
@@ -256,19 +248,15 @@ module KPM
 
     def validate_installation_arg!(plugin_key, arg_type, specified_arg, looked_up_arg)
       # If nothing was specified, or if we don't find anything from the lookup, nothing to validate against
-      if specified_arg.nil? || looked_up_arg.nil?
-        return
-      end
+      return if specified_arg.nil? || looked_up_arg.nil?
 
-      if specified_arg.to_s != looked_up_arg.to_s
-        raise ArgumentError.new "Aborting installation for plugin_key #{plugin_key}: specified value #{specified_arg} for #{arg_type} does not match looked_up value #{looked_up_arg}"
-      end
+      raise ArgumentError, "Aborting installation for plugin_key #{plugin_key}: specified value #{specified_arg} for #{arg_type} does not match looked_up value #{looked_up_arg}" if specified_arg.to_s != looked_up_arg.to_s
     end
 
     def validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       res = plugins_manager.validate_plugin_identifier_key(plugin_key, coordinate_map)
-      raise ArgumentError.new "Failed to validate plugin key #{plugin_key}" if !res
+      raise ArgumentError, "Failed to validate plugin key #{plugin_key}" unless res
     end
 
     def update_plugin_identifier(plugins_dir, plugin_key, type, coordinate_map, artifact_info)
@@ -290,13 +278,13 @@ module KPM
       platform_dir = bundles_dir.join('platform')
       jruby_jar = platform_dir.join('jruby.jar')
       if !File.exists?(jruby_jar)
-        @logger.warn("  Missing installation for jruby.jar under #{platform_dir}. This is required for ruby plugin installation");
+        @logger.warn("  Missing installation for jruby.jar under #{platform_dir}. This is required for ruby plugin installation")
       else
         version = extract_jruby_jar_version(jruby_jar)
         if version
           @logger.info("  Detected jruby.jar version #{version}")
         else
-          @logger.warn("  Failed to detect jruby.jar version for #{jruby_jar}");
+          @logger.warn("  Failed to detect jruby.jar version for #{jruby_jar}")
         end
       end
     end
@@ -311,7 +299,7 @@ module KPM
       if selected_entries && selected_entries.size == 1
         zip_entry = selected_entries[0]
         content = zip_entry.get_input_stream.read
-        return content.split("\n").select { |e| e.start_with?("version") }[0].split("=")[1]
+        return content.split("\n").select { |e| e.start_with?('version') }[0].split('=')[1]
       end
       nil
     end

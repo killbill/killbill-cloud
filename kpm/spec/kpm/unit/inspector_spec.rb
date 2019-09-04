@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::Inspector do
@@ -19,12 +21,12 @@ describe KPM::Inspector do
 
     @manager = KPM::PluginsManager.new(@plugins_dir, @logger)
 
-    @sha1_file = @bundles_dir.join("sha1.yml")
+    @sha1_file = @bundles_dir.join('sha1.yml')
     @sha1_checker = KPM::Sha1Checker.from_file(@sha1_file)
   end
 
   it 'should parse a correctly setup env' do
-    add_plugin('foo', 'plugin_foo', ['1.2.3', '2.0.0', '2.0.1'], 'ruby', 'com.foo', 'foo', 'tar.gz', nil, ['12345', '23456', '34567'], '2.0.1', ['1.2.3'])
+    add_plugin('foo', 'plugin_foo', ['1.2.3', '2.0.0', '2.0.1'], 'ruby', 'com.foo', 'foo', 'tar.gz', nil, %w[12345 23456 34567], '2.0.1', ['1.2.3'])
     add_plugin('bar', 'plugin_bar', ['1.0.0'], 'java', 'com.bar', 'bar', 'jar', nil, ['98765'], nil, [])
 
     inspector = KPM::Inspector.new
@@ -65,7 +67,7 @@ describe KPM::Inspector do
     plugin_dir = language == 'ruby' ? @ruby_plugins_dir.join(plugin_name) : @java_plugins_dir.join(plugin_name)
 
     versions.each_with_index do |v, idx|
-      coordinate_map = { :group_id => group_id, :artifact_id => artifact_id, :version => v, :packaging => packaging, :classifier => classifier }
+      coordinate_map = { group_id: group_id, artifact_id: artifact_id, version: v, packaging: packaging, classifier: classifier }
       coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
 
       @manager.add_plugin_identifier_key(plugin_key, plugin_name, language, coordinate_map)

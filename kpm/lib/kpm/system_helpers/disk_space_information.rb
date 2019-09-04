@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   module SystemProxy
     module DiskSpaceInformation
@@ -17,7 +19,7 @@ module KPM
 
         def get_labels
           labels = []
-          @@data_keys.each { |key| labels.push({ :label => key.gsub(' ', '_').to_sym }) }
+          @@data_keys.each { |key| labels.push(label: key.gsub(' ', '_').to_sym) }
           labels
         end
 
@@ -36,7 +38,7 @@ module KPM
         end
 
         def get_hash(data, cols_count, merge_last_two_columns)
-          disk_space = Hash.new
+          disk_space = {}
 
           unless data.nil?
 
@@ -53,23 +55,21 @@ module KPM
             data_table.each do |row|
               cols = row.split(' ')
               row_num += 1
-              unless cols[0].to_s.eql?(@@data_keys[0])
-                key = 'DiskInfo_' + row_num.to_s
-                disk_space[key] = Hash.new
-                cols.each_index do |idx|
-                  if idx > cols_count
-                    break
-                  end
+              next if cols[0].to_s.eql?(@@data_keys[0])
 
-                  value = cols[idx].to_s.strip
-                  if idx == cols_count && cols.length - 1 > idx
-                    for i in cols_count + 1..cols.length
-                      value += ' ' + cols[i].to_s.strip
-                    end
-                  end
+              key = 'DiskInfo_' + row_num.to_s
+              disk_space[key] = {}
+              cols.each_index do |idx|
+                break if idx > cols_count
 
-                  disk_space[key][@@data_keys[idx].gsub(' ', '_').to_sym] = value
+                value = cols[idx].to_s.strip
+                if idx == cols_count && cols.length - 1 > idx
+                  (cols_count + 1..cols.length).each do |i|
+                    value += ' ' + cols[i].to_s.strip
+                  end
                 end
+
+                disk_space[key][@@data_keys[idx].gsub(' ', '_').to_sym] = value
               end
             end
           end

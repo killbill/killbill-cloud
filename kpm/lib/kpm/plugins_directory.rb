@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'yaml'
 
@@ -10,17 +12,17 @@ module KPM
           source = URI.parse('https://raw.githubusercontent.com/killbill/killbill-cloud/master/kpm/lib/kpm/plugins_directory.yml').read
         rescue StandardError
           # Default to built-in version if GitHub isn't accessible
-          return self.all(false)
+          return all(false)
         end
-        YAML.load(source)
+        YAML.safe_load(source)
       else
-        source = File.join(File.expand_path(File.dirname(__FILE__)), 'plugins_directory.yml')
+        source = File.join(__dir__, 'plugins_directory.yml')
         YAML.load_file(source)
       end
     end
 
     def self.list_plugins(latest = false, kb_version)
-      all(latest).inject({}) { |out, (key, val)| out[key] = val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym); out }
+      all(latest).each_with_object({}) { |(key, val), out| out[key] = val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym); }
     end
 
     def self.lookup(raw_plugin_key, latest = false, raw_kb_version = nil)

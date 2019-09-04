@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'json'
 
 module KPM
   class TraceLogger
     def initialize
-      @trace = Hash.new
+      @trace = {}
     end
 
     # Return JSON representation of the logs
@@ -22,7 +24,7 @@ module KPM
     end
 
     def add(group = nil, key, message)
-      add_to_hash(group, key, message);
+      add_to_hash(group, key, message)
     end
 
     private
@@ -34,19 +36,19 @@ module KPM
       else
         container_key = group.to_sym
 
-        @trace[container_key] ||= Hash.new
+        @trace[container_key] ||= {}
         child_key = key.to_sym
 
-        unless @trace[container_key][child_key].nil?
-          child_is_an_array = @trace[container_key][child_key].kind_of?(Array)
+        if @trace[container_key][child_key].nil?
+          @trace[container_key][child_key] = message
+        else
+          child_is_an_array = @trace[container_key][child_key].is_a?(Array)
 
           old_message = nil
           old_message = @trace[container_key][child_key] unless child_is_an_array
           @trace[container_key][child_key] = [] unless child_is_an_array
           @trace[container_key][child_key].push(old_message) unless old_message.nil?
           @trace[container_key][child_key].push(message)
-        else
-          @trace[container_key][child_key] = message
         end
       end
     end
@@ -54,16 +56,16 @@ module KPM
     def add_with_key(key, message)
       child_key = key.to_sym
 
-      unless @trace[child_key].nil?
-        child_is_an_array = @trace[child_key].kind_of?(Array)
+      if @trace[child_key].nil?
+        @trace[child_key] = message
+      else
+        child_is_an_array = @trace[child_key].is_a?(Array)
 
         old_message = nil
         old_message = @trace[child_key] unless child_is_an_array
         @trace[child_key] = [] unless child_is_an_array
         @trace[child_key].push(old_message) unless old_message.nil?
         @trace[child_key].push(message)
-      else
-        @trace[child_key] = message
       end
     end
   end

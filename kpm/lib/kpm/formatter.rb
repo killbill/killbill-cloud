@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 # Extend String to be able to instantiate a object based on its classname
 class String
   def to_class
-    self.split('::').inject(Kernel) do |mod, class_name|
+    split('::').inject(Kernel) do |mod, class_name|
       mod.const_get(class_name)
     end
   end
@@ -9,8 +11,7 @@ end
 
 module KPM
   class Formatter
-    def initialize
-    end
+    def initialize; end
 
     # Used for normal types where to_s is enough
     class DefaultFormatter
@@ -44,7 +45,7 @@ module KPM
       end
 
       def to_s
-        @versions.map { |q| sha1 = format_sha(q[:sha1]); disabled = ""; disabled = "(x)" if q[:is_disabled]; default = ""; default = "(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
+        @versions.map { |q| sha1 = format_sha(q[:sha1]); disabled = ''; disabled = '(x)' if q[:is_disabled]; default = ''; default = '(*)' if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(', ')
       end
 
       def label
@@ -52,27 +53,25 @@ module KPM
       end
 
       def format_sha(sha)
-        return "[???]" if sha.nil?
+        return '[???]' if sha.nil?
 
         "[#{sha[0..5]}..]"
       end
     end
 
     def format(data, labels = nil)
-      if data.nil? || data.size == 0
-        return
-      end
+      return if data.nil? || data.empty?
 
       if labels.nil?
 
         # What we want to output
-        labels = [{ :label => :plugin_name },
-                  { :label => :plugin_key },
-                  { :label => :type },
-                  { :label => :group_id },
-                  { :label => :artifact_id },
-                  { :label => :packaging },
-                  { :label => :versions, :formatter => VersionFormatter.name }]
+        labels = [{ label: :plugin_name },
+                  { label: :plugin_key },
+                  { label: :type },
+                  { label: :group_id },
+                  { label: :artifact_id },
+                  { label: :packaging },
+                  { label: :versions, formatter: VersionFormatter.name }]
       end
 
       # Compute label to print along with max size for each label
@@ -81,7 +80,7 @@ module KPM
         v = data[key]
         labels.each do |e|
           # sanitize entry at the same time
-          v[e[:label]] = v[e[:label]] || "???"
+          v[e[:label]] = v[e[:label]] || '???'
 
           formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
           prev_size = e.key?(:size) ? e[:size] : formatter.label.size
@@ -91,10 +90,10 @@ module KPM
         end
       end
 
-      border = "_"
+      border = '_'
       border = (0...labels.size).inject(border) { |res, i| res = "#{res}_"; res }
       border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res = "#{res}_" }; res }
-      format = "|"
+      format = '|'
       format = labels.inject(format) { |res, lbl| res = "#{res} %#{lbl[:size]}s |"; res }
 
       puts "\n#{border}\n"

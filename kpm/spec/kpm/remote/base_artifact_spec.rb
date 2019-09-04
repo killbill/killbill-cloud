@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::BaseArtifact do
@@ -25,7 +27,7 @@ describe KPM::BaseArtifact do
   end
 
   it 'should be able to handle download errors' do
-    nexus_down = { :url => 'https://does.not.exist' }
+    nexus_down = { url: 'https://does.not.exist' }
     Dir.mktmpdir do |dir|
       sha1_file = "#{dir}/sha1.yml"
       test_download dir, 'foo-oss.pom.xml', false, false, sha1_file
@@ -87,8 +89,6 @@ describe KPM::BaseArtifact do
     info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, sha1_file, force_download, true, overrides, true)
     info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
     info[:skipped].should == verify_is_skipped
-    if !info[:skipped]
-      info[:size].should == File.size(info[:file_path])
-    end
+    info[:size].should == File.size(info[:file_path]) unless info[:skipped]
   end
 end

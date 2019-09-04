@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   module SystemProxy
     module OsInformation
@@ -16,8 +18,8 @@ module KPM
         end
 
         def get_labels
-          labels = [{ :label => :os_detail },
-                    { :label => :value }]
+          labels = [{ label: :os_detail },
+                    { label: :value }]
           labels
         end
 
@@ -48,13 +50,11 @@ module KPM
         end
 
         def get_hash(data)
-          os = Hash.new
+          os = {}
 
-          unless data.nil?
-            data.split("\n").each do |info|
-              infos = info.split(':')
-              os[infos[0].to_s.strip] = { :os_detail => infos[0].to_s.strip, :value => infos[1].to_s.strip }
-            end
+          data&.split("\n")&.each do |info|
+            infos = info.split(':')
+            os[infos[0].to_s.strip] = { os_detail: infos[0].to_s.strip, value: infos[1].to_s.strip }
           end
 
           os

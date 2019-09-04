@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 require 'pathname'
 require 'yaml'
@@ -5,12 +7,12 @@ require 'yaml'
 module KPM
   class Installer < BaseInstaller
     def self.from_file(config_path = nil, logger = nil)
-      if config_path.nil?
-        # Install Kill Bill, Kaui and the KPM plugin by default
-        config = build_default_config
-      else
-        config = YAML::load_file(config_path)
-      end
+      config = if config_path.nil?
+                 # Install Kill Bill, Kaui and the KPM plugin by default
+                 build_default_config
+               else
+                 YAML.load_file(config_path)
+               end
       Installer.new(config, logger)
     end
 
@@ -41,7 +43,11 @@ module KPM
                                                           true).to_a
       latest_stable_version = Gem::Version.new('0.0.0')
       all_kb_versions.each do |kb_version|
-        version = Gem::Version.new(kb_version) rescue nil
+        version = begin
+                    Gem::Version.new(kb_version)
+                  rescue StandardError
+                    nil
+                  end
         next if version.nil?
 
         major, minor, patch, pre = version.segments
@@ -79,9 +85,7 @@ module KPM
         help = install_tomcat if @config['webapp_path'].nil?
         install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], bundles_dir, force_download, verify_sha1)
         install_plugins(bundles_dir, @config['version'], force_download, verify_sha1)
-        unless @config['default_bundles'] == false
-          install_default_bundles(bundles_dir, @config['default_bundles_version'], @config['version'], force_download, verify_sha1)
-        end
+        install_default_bundles(bundles_dir, @config['default_bundles_version'], @config['version'], force_download, verify_sha1) unless @config['default_bundles'] == false
         clean_up_descriptors(bundles_dir)
       end
 
@@ -108,9 +112,7 @@ module KPM
       # Update main config
       root_war_path = manager.setup
       @config['webapp_path'] = root_war_path
-      unless @kaui_config.nil?
-        @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s
-      end
+      @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s unless @kaui_config.nil?
 
       # Help message
       manager.help
@@ -122,7 +124,7 @@ module KPM
     end
 
     def install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      return if @config['plugins'].nil? or @config['plugins']['java'].nil?
+      return if @config['plugins'].nil? || @config['plugins']['java'].nil?
 
       infos = []
       @config['plugins']['java'].each do |plugin|
@@ -133,7 +135,7 @@ module KPM
     end
 
     def install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
+      return if @config['plugins'].nil? || @config['plugins']['ruby'].nil?
 
       verify_jruby_jar = true
       infos = []
@@ -160,11 +162,11 @@ module KPM
       plugin_identifiers = plugins_manager.read_plugin_identifiers
       removed_identifiers = []
       plugin_identifiers.each do |plugin_key, plugin|
-        if !installed_plugins.has_key?(plugin['plugin_name'])
-          _, plugin_entry = plugins_manager.get_identifier_key_and_entry(plugin_key)
-          plugins_manager.remove_plugin_identifier_key(plugin_key)
-          removed_identifiers << plugin_entry
-        end
+        next if installed_plugins.key?(plugin['plugin_name'])
+
+        _, plugin_entry = plugins_manager.get_identifier_key_and_entry(plugin_key)
+        plugins_manager.remove_plugin_identifier_key(plugin_key)
+        removed_identifiers << plugin_entry
       end
 
       removed_identifiers

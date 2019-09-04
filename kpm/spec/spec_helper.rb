@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tmpdir'
 require 'thor'
 require 'kpm'
@@ -11,7 +13,7 @@ RSpec.configure do |config|
   config.color_enabled = true
   config.tty           = true
   config.formatter     = 'documentation'
-  config.filter_run_excluding :skip_me_if_nil => true
+  config.filter_run_excluding skip_me_if_nil: true
 end
 
 shared_context 'connection_setup' do
@@ -20,7 +22,7 @@ shared_context 'connection_setup' do
     logger.level = Logger::FATAL
     logger
   end
-  let(:yml_file) { YAML::load_file(Dir["#{Dir.pwd}/**/account_spec.yml"][0]) }
+  let(:yml_file) { YAML.load_file(Dir["#{Dir.pwd}/**/account_spec.yml"][0]) }
   let(:dummy_data_file) { Dir.mktmpdir('dummy') + File::SEPARATOR + 'kbdump' }
   let(:url) { "http://#{yml_file['killbill']['host']}:#{yml_file['killbill']['port']}" }
   let(:killbill_api_key) { yml_file['killbill']['api_key'] }

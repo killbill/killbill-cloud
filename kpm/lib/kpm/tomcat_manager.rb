@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'uri'
 
@@ -18,7 +20,7 @@ module KPM
         file = Pathname.new(dir).join('tomcat.tar.gz')
 
         @logger.info "Starting download of #{DOWNLOAD_URL} to #{file}"
-        Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
           File.open(file, 'wb+') do |file|
             http.get(uri.path) do |body|
               file.write(body)
@@ -35,7 +37,7 @@ module KPM
 
     def setup
       # Remove default webapps
-      %w(ROOT docs examples host-manager manager).each do |webapp|
+      %w[ROOT docs examples host-manager manager].each do |webapp|
         FileUtils.rm_rf(@tomcat_dir.join('webapps').join(webapp))
       end
 

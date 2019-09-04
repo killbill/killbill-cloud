@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tmpdir'
 require 'json'
 require 'killbill_client'
@@ -19,12 +21,12 @@ module KPM
 
     # Temporary directory
     TMP_DIR_PEFIX = 'killbill'
-    TMP_DIR = Dir.mktmpdir(TMP_DIR_PEFIX);
+    TMP_DIR = Dir.mktmpdir(TMP_DIR_PEFIX)
 
     # Tenant key prefixes
-    KEY_PREFIXES = ['PLUGIN_CONFIG', 'PUSH_NOTIFICATION_CB', 'PER_TENANT_CONFIG',
-                    'PLUGIN_PAYMENT_STATE_MACHINE', 'CATALOG', 'OVERDUE_CONFIG',
-                    'INVOICE_TRANSLATION', 'CATALOG_TRANSLATION', 'INVOICE_TEMPLATE', 'INVOICE_MP_TEMPLATE']
+    KEY_PREFIXES = %w[PLUGIN_CONFIG PUSH_NOTIFICATION_CB PER_TENANT_CONFIG
+                      PLUGIN_PAYMENT_STATE_MACHINE CATALOG OVERDUE_CONFIG
+                      INVOICE_TRANSLATION CATALOG_TRANSLATION INVOICE_TEMPLATE INVOICE_MP_TEMPLATE].freeze
 
     def initialize(killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil, logger = nil)
       @killbill_api_key = KILLBILL_API_KEY
@@ -40,13 +42,11 @@ module KPM
     def export(key_prefix = nil)
       export_data = fetch_export_data(key_prefix)
 
-      if export_data.size == 0
-        raise Interrupt, 'key_prefix not found'
-      end
+      raise Interrupt, 'key_prefix not found' if export_data.empty?
 
       export_file = store_into_file(export_data)
 
-      if not File.exist?(export_file)
+      if !File.exist?(export_file)
         raise Interrupt, 'key_prefix not found'
       else
         @logger.info "\e[32mData exported under #{export_file}\e[0m"
@@ -64,7 +64,7 @@ module KPM
       pefixes.each do |prefix|
         config_data = call_client(prefix)
 
-        if config_data.size > 0
+        if !config_data.empty?
           config_data.each { |data| tenant_config << data }
           @logger.info "Data for key prefix \e[1m#{prefix.to_s}\e[0m was \e[1mfound and is ready to be exported\e[0m."
         else
@@ -78,10 +78,10 @@ module KPM
     def call_client(key_prefix)
       KillBillClient.url = @killbill_url
       options = {
-        :username => @killbill_user,
-        :password => @killbill_password,
-        :api_key => @killbill_api_key,
-        :api_secret => @killbill_api_secrets
+        username: @killbill_user,
+        password: @killbill_password,
+        api_key: @killbill_api_key,
+        api_secret: @killbill_api_secrets
       }
 
       tenant_config_data = KillBillClient::Model::Tenant.search_tenant_config(key_prefix, options)
@@ -98,25 +98,21 @@ module KPM
     end
 
     def set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)
-      if not killbill_api_credentials.nil?
+      unless killbill_api_credentials.nil?
 
         @killbill_api_key = killbill_api_credentials[0]
         @killbill_api_secrets = killbill_api_credentials[1]
 
       end
 
-      if not killbill_credentials.nil?
+      unless killbill_credentials.nil?
 
         @killbill_user = killbill_credentials[0]
         @killbill_password = killbill_credentials[1]
 
       end
 
-      if not killbill_url.nil?
-
-        @killbill_url = killbill_url
-
-      end
+      @killbill_url = killbill_url unless killbill_url.nil?
     end
   end
 end

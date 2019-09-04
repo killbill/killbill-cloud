@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'rubygems/package'
 require 'zlib'
@@ -20,17 +22,17 @@ module KPM
 
             if entry.directory?
               File.delete dest if File.file? dest
-              FileUtils.mkdir_p dest, :mode => entry.header.mode, :verbose => false
+              FileUtils.mkdir_p dest, mode: entry.header.mode, verbose: false
             elsif entry.file?
               FileUtils.rm_rf dest if File.directory? dest
-              FileUtils.mkdir_p File.dirname(dest), :verbose => false
-              File.open dest, "wb" do |f|
+              FileUtils.mkdir_p File.dirname(dest), verbose: false
+              File.open dest, 'wb' do |f|
                 f.print entry.read
               end
-              FileUtils.chmod entry.header.mode, dest, :verbose => false
+              FileUtils.chmod entry.header.mode, dest, verbose: false
               current_dir = File.dirname(dest)
               # In case there are two top dirs, keep the last one by convention
-              top_dir = current_dir if (top_dir.nil? || top_dir.size >= current_dir.size)
+              top_dir = current_dir if top_dir.nil? || top_dir.size >= current_dir.size
             elsif entry.header.typeflag == '2' # Symlink
               File.symlink entry.header.linkname, dest
             end
@@ -48,9 +50,7 @@ module KPM
         file_names = []
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           tar.each do |entry|
-            if entry.file?
-              file_names.push entry.full_name
-            end
+            file_names.push entry.full_name if entry.file?
           end
         end
 

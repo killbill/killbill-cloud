@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'json'
 
@@ -18,7 +20,7 @@ module KPM
         # Full path specified, with version
         link = Pathname.new(plugin_name_or_path).join('../SET_DEFAULT')
         FileUtils.rm_f(link)
-        FileUtils.ln_s(plugin_name_or_path, link, :force => true)
+        FileUtils.ln_s(plugin_name_or_path, link, force: true)
       else
         # Plugin name (fs directory) specified
         plugin_dir_glob = @plugins_dir.join('*').join(plugin_name_or_path)
@@ -27,7 +29,7 @@ module KPM
           plugin_dir = Pathname.new(plugin_dir_path)
           link = plugin_dir.join('SET_DEFAULT')
           FileUtils.rm_f(link)
-          FileUtils.ln_s(plugin_dir.join(plugin_version), link, :force => true)
+          FileUtils.ln_s(plugin_dir.join(plugin_version), link, force: true)
         end
       end
 
@@ -58,7 +60,7 @@ module KPM
       entry = identifiers[plugin_key]
       if entry
         coordinate_map.each_pair do |key, value|
-          return false if !validate_plugin_identifier_key_value(plugin_key, key, entry[key.to_s], value)
+          return false unless validate_plugin_identifier_key_value(plugin_key, key, entry[key.to_s], value)
         end
       end
       true
@@ -67,7 +69,7 @@ module KPM
     def add_plugin_identifier_key(plugin_key, plugin_name, language, coordinate_map)
       identifiers = read_plugin_identifiers
       # If key does not already exists or if the version in the json is not the one we are currently installing we update the entry, if not nothing to do
-      if !identifiers.has_key?(plugin_key) ||
+      if !identifiers.key?(plugin_key) ||
          (coordinate_map && identifiers[plugin_key]['version'] != coordinate_map[:version])
 
         entry = { 'plugin_name' => plugin_name }
@@ -89,7 +91,7 @@ module KPM
     def remove_plugin_identifier_key(plugin_key)
       identifiers = read_plugin_identifiers
       # If key does not already exists we update it, if not nothing to do.
-      if identifiers.has_key?(plugin_key)
+      if identifiers.key?(plugin_key)
         identifiers.delete(plugin_key)
         write_plugin_identifiers(identifiers)
       end
@@ -99,7 +101,7 @@ module KPM
 
     def get_plugin_key_and_name(plugin_name_or_key)
       identifiers = read_plugin_identifiers
-      if identifiers.has_key?(plugin_name_or_key)
+      if identifiers.key?(plugin_name_or_key)
         # It's a plugin key
         [plugin_name_or_key, identifiers[plugin_name_or_key]['plugin_name']]
       else
@@ -121,12 +123,12 @@ module KPM
       return nil if artifact_id.nil?
 
       captures = artifact_id.scan(/(.*)-plugin/)
-      if captures.empty? || captures.first.nil? || captures.first.first.nil?
-        short_name = artifact_id
-      else
-        # 'analytics-plugin' or 'stripe-plugin' passed
-        short_name = captures.first.first
-      end
+      short_name = if captures.empty? || captures.first.nil? || captures.first.first.nil?
+                     artifact_id
+                   else
+                     # 'analytics-plugin' or 'stripe-plugin' passed
+                     captures.first.first
+                   end
       Dir.glob(@plugins_dir.join('*').join('*')).each do |plugin_path|
         plugin_name = File.basename(plugin_path)
         if plugin_name == short_name ||

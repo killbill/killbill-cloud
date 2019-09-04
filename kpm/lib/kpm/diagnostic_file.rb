@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 require 'tmpdir'
 require 'zip'
@@ -31,10 +33,10 @@ module KPM
       @database_host = database_host
       @database_port = database_port
       @config_file = config_file
-      @kaui_web_path = kaui_web_path;
-      @killbill_web_path = killbill_web_path;
+      @kaui_web_path = kaui_web_path
+      @killbill_web_path = killbill_web_path
       @logger = logger
-      @original_logger_level = logger.level;
+      @original_logger_level = logger.level
       @catalina_base = nil
       @bundles_dir = bundles_dir
     end
@@ -155,15 +157,13 @@ module KPM
     # Utils
 
     def get_config(parent, child)
-      item = nil;
+      item = nil
 
-      if not @config.nil?
+      unless @config.nil?
 
         config_parent = @config[parent]
 
-        if not config_parent.nil?
-          item = config_parent[child]
-        end
+        item = config_parent[child] unless config_parent.nil?
 
       end
 
@@ -173,10 +173,8 @@ module KPM
     def set_config(config_file = nil)
       @config = nil
 
-      if not config_file.nil?
-        if not Dir[config_file][0].nil?
-          @config = YAML::load_file(config_file)
-        end
+      unless config_file.nil?
+        @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
       end
     end
   end

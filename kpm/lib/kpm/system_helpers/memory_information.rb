@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   module SystemProxy
     module MemoryInformation
@@ -16,8 +18,8 @@ module KPM
         end
 
         def get_labels
-          labels = [{ :label => :memory_detail },
-                    { :label => :value }]
+          labels = [{ label: :memory_detail },
+                    { label: :value }]
           labels
         end
 
@@ -30,7 +32,7 @@ module KPM
         end
 
         def fetch_mac
-          mem_data = `vm_stat 2>&1`.gsub(".", '')
+          mem_data = `vm_stat 2>&1`.gsub('.', '')
           mem = get_hash(mem_data)
 
           mem.each_key do |key|
@@ -53,13 +55,11 @@ module KPM
         end
 
         def get_hash(data)
-          mem = Hash.new
+          mem = {}
 
-          unless data.nil?
-            data.split("\n").each do |info|
-              infos = info.split(':')
-              mem[infos[0].to_s.strip] = { :memory_detail => infos[0].to_s.strip, :value => infos[1].to_s.strip }
-            end
+          data&.split("\n")&.each do |info|
+            infos = info.split(':')
+            mem[infos[0].to_s.strip] = { memory_detail: infos[0].to_s.strip, value: infos[1].to_s.strip }
           end
 
           mem

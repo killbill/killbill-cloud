@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
-$:.push File.expand_path("../../lib", __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path('../lib', __dir__)
 require 'kpm'
 
 begin
   KPM::Cli.start
-rescue => e
+rescue StandardError => e
   KPM.ui.say "#{e.message}\n#{e.backtrace.join("\n")}", :red
   exit 1
 end

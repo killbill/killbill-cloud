@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::KillbillServerArtifact do
@@ -29,7 +31,7 @@ describe KPM::KillbillServerArtifact do
   end
 
   it 'should get dependencies information' do
-    nexus_down = { :url => 'https://does.not.exist' }
+    nexus_down = { url: 'https://does.not.exist' }
 
     Dir.mktmpdir do |dir|
       sha1_file = "#{dir}/sha1.yml"

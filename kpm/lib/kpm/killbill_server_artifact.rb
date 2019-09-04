@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rexml/document'
 require 'set'
 
@@ -5,7 +7,7 @@ module KPM
   class KillbillServerArtifact < BaseArtifact
     class << self
       def versions(artifact_id, packaging = KPM::BaseArtifact::KILLBILL_PACKAGING, classifier = KPM::BaseArtifact::KILLBILL_CLASSIFIER, overrides = {}, ssl_verify = true)
-        coordinate_map = { :group_id => KPM::BaseArtifact::KILLBILL_GROUP_ID, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }
+        coordinate_map = { group_id: KPM::BaseArtifact::KILLBILL_GROUP_ID, artifact_id: artifact_id, packaging: packaging, classifier: classifier }
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
         versions    = SortedSet.new
@@ -61,11 +63,11 @@ module KPM
 
           pom = REXML::Document.new(File.new(oss_pom_info[:file_path]))
           properties_element = pom.root.elements['properties']
-          %w(killbill-api killbill-plugin-api killbill-commons killbill-platform).each do |property|
+          %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
             versions[property] = properties_element.elements["#{property}.version"].text
           end
 
-          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
+          sha1_checker&.cache_killbill_info(version, versions)
         end
         versions
       rescue StandardError => e

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'nexus_api_calls_v2'
 # require_relative 'nexus_api_calls_v3'
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tmpdir'
 
 module KPM
@@ -53,9 +55,7 @@ module KPM
       end
 
       def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)
-        unless record_id.nil?
-          query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}"
-        end
+        query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}" unless record_id.nil?
         query = "SET autocommit=0; #{query} COMMIT;"
 
         File.open(STATEMENT_TMP_FILE, 'w') do |s|
@@ -84,7 +84,7 @@ module KPM
           return true
         end
 
-        return true
+        true
       end
 
       def generate_insert_statement(tables)
@@ -93,29 +93,28 @@ module KPM
 
         tables.each_key do |table_name|
           table = tables[table_name]
-          if !table[:rows].nil? && table[:rows].size > 0
-            columns_names = table[:col_names].join(",").gsub(/'/, '')
+          next unless !table[:rows].nil? && !table[:rows].empty?
 
-            rows = []
-            table[:rows].each do |row|
-              rows << row.map do |value|
-                if value.is_a?(Symbol)
-                  value.to_s
-                else
-                  escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
-                                       .gsub('\N{LINE FEED}', "\n")
-                                       .gsub('\N{VERTICAL LINE}', "|")
-                  "'#{escaped_value}'"
-                end
-              end.join(",")
-            end
+          columns_names = table[:col_names].join(',').gsub(/'/, '')
 
-            value_data = rows.map { |row| "(#{row})" }.join(",")
-
-            statements << { :query => get_insert_statement(table_name, columns_names, value_data, rows.size),
-                            :qty_to_insert => rows.size, :table_name => table_name, :table_data => table }
-
+          rows = []
+          table[:rows].each do |row|
+            rows << row.map do |value|
+              if value.is_a?(Symbol)
+                value.to_s
+              else
+                escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
+                                     .gsub('\N{LINE FEED}', "\n")
+                                     .gsub('\N{VERTICAL LINE}', '|')
+                "'#{escaped_value}'"
+              end
+            end.join(',')
           end
+
+          value_data = rows.map { |row| "(#{row})" }.join(',')
+
+          statements << { query: get_insert_statement(table_name, columns_names, value_data, rows.size),
+                          qty_to_insert: rows.size, table_name: table_name, table_data: table }
         end
 
         statements
@@ -124,7 +123,7 @@ module KPM
       private
 
       def get_insert_statement(table_name, columns_names, values, rows_qty)
-        return "INSERT INTO #{table_name} ( #{columns_names} ) VALUES #{values}; #{rows_qty == 1 ? LAST_INSERTED_ID : ROWS_UPDATED}"
+        "INSERT INTO #{table_name} ( #{columns_names} ) VALUES #{values}; #{rows_qty == 1 ? LAST_INSERTED_ID : ROWS_UPDATED}"
       end
     end
   end

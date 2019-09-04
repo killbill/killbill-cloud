@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::BaseArtifact do
@@ -74,9 +76,9 @@ describe KPM::BaseArtifact do
 
   def check_fs_info(specified_destination_path, repository_path, is_tgz, version, expected_dir_name, expected_file_name, expected_file_path)
     info = {
-      :repository_path => repository_path,
-      :is_tgz => is_tgz,
-      :version => version
+      repository_path: repository_path,
+      is_tgz: is_tgz,
+      version: version
     }
 
     KPM::BaseArtifact.send('populate_fs_info', info, specified_destination_path)

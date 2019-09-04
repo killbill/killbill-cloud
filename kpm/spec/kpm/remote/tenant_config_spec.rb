@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::TenantConfig do
@@ -7,18 +9,18 @@ describe KPM::TenantConfig do
   let(:key) { 'CATALOG_RSPEC' }
 
   let(:user) { 'KPM Tenant Spec' }
-  let(:tenant_config_class) {
+  let(:tenant_config_class) do
     described_class.new([killbill_api_key, killbill_api_secrets],
                         [killbill_user, killbill_password], url, logger)
-  }
-  let(:options) {
+  end
+  let(:options) do
     {
-      :username => killbill_user,
-      :password => killbill_password,
-      :api_key => killbill_api_key,
-      :api_secret => killbill_api_secrets
+      username: killbill_user,
+      password: killbill_password,
+      api_key: killbill_api_key,
+      api_secret: killbill_api_secrets
     }
-  }
+  end
 
   describe '#initialize' do
     context 'when creating an instance of tenant config class' do

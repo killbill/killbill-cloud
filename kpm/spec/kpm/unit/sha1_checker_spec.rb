@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::Sha1Checker do
@@ -5,7 +7,7 @@ describe KPM::Sha1Checker do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
 
-    tmp_destination_dir = Dir.tmpdir()
+    tmp_destination_dir = Dir.tmpdir
     init_config = File.join(File.dirname(__FILE__), 'sha1_test.yml')
     FileUtils.copy(init_config, tmp_destination_dir)
     @tmp_config = File.join(tmp_destination_dir, 'sha1_test.yml')
@@ -85,7 +87,7 @@ describe KPM::Sha1Checker do
   end
 
   it 'should work with empty config' do
-    tmp_destination_dir = Dir.tmpdir()
+    tmp_destination_dir = Dir.tmpdir
     empty_config = File.join(tmp_destination_dir, 'sha1_test.yml')
     if File.exists?(empty_config)
       # Just to be sure

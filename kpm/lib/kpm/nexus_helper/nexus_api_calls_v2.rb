@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'uri'
 require 'rexml/document'
@@ -48,14 +50,14 @@ module KPM
 
       def search_for_artifacts(coordinates)
         logger.debug "Entered - Search for artifact, coordinates: #{coordinates}"
-        response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, [:g, :a])
+        response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, %i[g a])
 
         case response.code
         when '200'
           logger.debug "response body: #{response.body}"
           return response.body
         else
-          raise UnexpectedStatusCodeException.new(response.code)
+          raise UnexpectedStatusCodeException, response.code
         end
       end
 
@@ -68,18 +70,18 @@ module KPM
           logger.debug "response body: #{response.body}"
           return response.body
         when '404'
-          raise StandardError.new(ERROR_MESSAGE_404)
+          raise StandardError, ERROR_MESSAGE_404
         when '503'
-          raise StandardError.new(ERROR_MESSAGE_503)
+          raise StandardError, ERROR_MESSAGE_503
         else
-          raise UnexpectedStatusCodeException.new(response.code)
+          raise UnexpectedStatusCodeException, response.code
         end
       end
 
       def pull_artifact(coordinates, destination)
         logger.debug "Entered - Pull artifact, coordinates: #{coordinates}"
         file_name = get_file_name(coordinates)
-        destination = File.join(File.expand_path(destination || "."), file_name)
+        destination = File.join(File.expand_path(destination || '.'), file_name)
         logger.debug "destination: #{destination}"
         response = get_response(coordinates, PULL_ARTIFACT_ENDPOINT, nil)
 
@@ -89,53 +91,47 @@ module KPM
           logger.debug 'fetching artifact'
           file_response = get_response(nil, location, nil)
 
-          File.open(destination, "wb") do |io|
+          File.open(destination, 'wb') do |io|
             io.write(file_response.body)
           end
         when 404
-          raise StandardError.new(ERROR_MESSAGE_404)
+          raise StandardError, ERROR_MESSAGE_404
         else
-          raise UnexpectedStatusCodeException.new(response.code)
+          raise UnexpectedStatusCodeException, response.code
         end
         {
-          :file_name => file_name,
-          :file_path => File.expand_path(destination),
-          :version => version,
-          :size => File.size(File.expand_path(destination))
+          file_name: file_name,
+          file_path: File.expand_path(destination),
+          version: version,
+          size: File.size(File.expand_path(destination))
         }
       end
 
       private
 
       def parse_coordinates(coordinates)
-        if coordinates.nil?
-          raise ArtifactMalformedException
-        end
+        raise ArtifactMalformedException if coordinates.nil?
 
-        split_coordinates = coordinates.split(":")
-        if (split_coordinates.size == 0 or split_coordinates.size > 5)
-          raise ArtifactMalformedException
-        end
+        split_coordinates = coordinates.split(':')
+        raise ArtifactMalformedException if split_coordinates.empty? || (split_coordinates.size > 5)
 
-        artifact = Hash.new
+        artifact = {}
 
         artifact[:group_id] = split_coordinates[0]
         artifact[:artifact_id] = split_coordinates[1]
-        artifact[:extension] = split_coordinates.size > 3 ? split_coordinates[2] : "jar"
+        artifact[:extension] = split_coordinates.size > 3 ? split_coordinates[2] : 'jar'
         artifact[:classifier] = split_coordinates.size > 4 ? split_coordinates[3] : nil
         artifact[:version] = split_coordinates[-1]
 
-        artifact[:version].upcase! if version == "latest"
+        artifact[:version].upcase! if version == 'latest'
 
-        return artifact
+        artifact
       end
 
       def get_file_name(coordinates)
         artifact = parse_coordinates(coordinates)
 
-        if artifact[:version].casecmp("latest")
-          artifact[:version] = REXML::Document.new(get_artifact_info(coordinates)).elements["//version"].text
-        end
+        artifact[:version] = REXML::Document.new(get_artifact_info(coordinates)).elements['//version'].text if artifact[:version].casecmp('latest')
 
         if artifact[:classifier].nil?
           "#{artifact[:artifact_id]}-#{artifact[:version]}.#{artifact[:extension]}"
@@ -148,11 +144,11 @@ module KPM
         artifact = parse_coordinates(coordinates)
         @version = artifact[:version].to_s.upcase
 
-        query = { :g => artifact[:group_id], :a => artifact[:artifact_id], :e => artifact[:extension], :v => version, :r => configuration[:repository] }
-        query.merge!({ :c => artifact[:classifier] }) unless artifact[:classifier].nil?
+        query = { g: artifact[:group_id], a: artifact[:artifact_id], e: artifact[:extension], v: version, r: configuration[:repository] }
+        query.merge!(c: artifact[:classifier]) unless artifact[:classifier].nil?
 
-        params = what_parameters.nil? ? query : Hash.new
-        what_parameters.each { |key| params[key] = query[key] unless query[key].nil? } unless what_parameters.nil?
+        params = what_parameters.nil? ? query : {}
+        what_parameters&.each { |key| params[key] = query[key] unless query[key].nil? }
 
         params.map { |key, value| "#{key}=#{value}" }.join('&')
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   module SystemProxy
     module EntropyAvailable
@@ -16,8 +18,8 @@ module KPM
         end
 
         def get_labels
-          labels = [{ :label => :entropy },
-                    { :label => :value }]
+          labels = [{ label: :entropy },
+                    { label: :value }]
           labels
         end
 
@@ -40,8 +42,8 @@ module KPM
         end
 
         def get_hash(data)
-          entropy_available = Hash.new
-          entropy_available['entropy_available'] = { :entropy => 'available', :value => data }
+          entropy_available = {}
+          entropy_available['entropy_available'] = { entropy: 'available', value: data }
 
           entropy_available
         end

@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::Account do
   shared_context 'account' do
     include_context 'connection_setup'
 
-    let(:account_class) {
+    let(:account_class) do
       described_class.new(nil, [killbill_api_key, killbill_api_secrets],
                           [killbill_user, killbill_password], url,
                           db_name, [db_username, db_password], db_host, db_port, nil, logger)
-    }
+    end
     let(:dummy_account_id) { SecureRandom.uuid }
     let(:account_id_invalid) { SecureRandom.uuid }
-    let(:dummy_data) {
+    let(:dummy_data) do
       "-- accounts record_id|id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|is_payment_delegated_to_parent|payment_method_id|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|created_date|created_by|updated_date|updated_by|tenant_record_id\n"\
       "5|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||Company\\N{VERTICAL LINE}\\N{LINE FEED}Name||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
       "-- account_history record_id|id|target_record_id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|payment_method_id|is_payment_delegated_to_parent|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|change_type|created_by|created_date|updated_by|updated_date|tenant_record_id\n"\
       "3|#{SecureRandom.uuid}|5|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||Company\\N{VERTICAL LINE}\\N{LINE FEED}Name||||||||false|INSERT|demo|2017-04-03T15:50:14.000+0000|demo|2017-04-03T15:50:14.000+0000|2\n"
-    }
-    let(:cols_names) { dummy_data.split("\n")[0].split(" ")[2] }
+    end
+    let(:cols_names) { dummy_data.split("\n")[0].split(' ')[2] }
     let(:cols_data) { dummy_data.split("\n")[1] }
-    let(:table_name) { dummy_data.split("\n")[0].split(" ")[1] }
+    let(:table_name) { dummy_data.split("\n")[0].split(' ')[1] }
     let(:obfuscating_marker) { :email }
     let(:mysql_cli) { "mysql --user=#{db_username} --password=#{db_password} --host=#{db_host} --port=#{db_port} " }
     let(:test_ddl) { Dir["#{Dir.pwd}/**/account_test_ddl.sql"][0] }
@@ -67,20 +69,18 @@ describe KPM::Account do
 
     context 'when processing data to export' do
       it 'when column name qty eq column data qty' do
-        expect(account_class.send(:process_export_data, cols_data, table_name, cols_names.split("|")).split("|").size).to eq(cols_names.split("|").size)
+        expect(account_class.send(:process_export_data, cols_data, table_name, cols_names.split('|')).split('|').size).to eq(cols_names.split('|').size)
       end
 
       it 'when obfuscating data' do
         marker_index = 0
-        cols_names.split("|").each do |col_name|
-          if col_name.equal?(obfuscating_marker.to_s)
-            break
-          end
+        cols_names.split('|').each do |col_name|
+          break if col_name.equal?(obfuscating_marker.to_s)
 
           marker_index += 1
         end
 
-        obfuscating_marker_data = account_class.send(:process_export_data, cols_data, table_name, cols_names.split("|")).split("|")
+        obfuscating_marker_data = account_class.send(:process_export_data, cols_data, table_name, cols_names.split('|')).split('|')
         expect(obfuscating_marker_data[marker_index]).to be_nil
       end
     end
@@ -259,7 +259,7 @@ describe KPM::Account do
     context 'when processing data to import' do
       it 'when column name qty eq column data qty without record_id' do
         account_class.instance_variable_set(:@generate_record_id, true)
-        expect(account_class.send(:process_import_data, cols_data, table_name, cols_names.split('|'), false, []).size).to eq(cols_names.split("|").size - 1)
+        expect(account_class.send(:process_import_data, cols_data, table_name, cols_names.split('|'), false, []).size).to eq(cols_names.split('|').size - 1)
       end
     end
   end
@@ -354,10 +354,10 @@ describe KPM::Account do
       KillBillClient.url = url
 
       options = {
-        :username => killbill_user,
-        :password => killbill_password,
-        :api_key => killbill_api_key,
-        :api_secret => killbill_api_secrets
+        username: killbill_user,
+        password: killbill_password,
+        api_key: killbill_api_key,
+        api_secret: killbill_api_secrets
       }
 
       account = KillBillClient::Model::Account.new
@@ -379,7 +379,7 @@ describe KPM::Account do
     response_msg = response.split("\n")
     company_name = response_msg[response_msg.size - 1]
 
-    expect(company_name).to eq("Company|\\nName")
+    expect(company_name).to eq('Company|\\nName')
    end
 
   def delete_statement(table_name, column_name, account_id)
@@ -400,7 +400,7 @@ describe KPM::Account do
   end
 
   def drop_test_schema
-    response = `#{mysql_cli} -e "DROP DATABASE #{db_name};"`;
+    response = `#{mysql_cli} -e "DROP DATABASE #{db_name};"`
     response
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::Uninstaller do
@@ -16,9 +18,9 @@ describe KPM::Uninstaller do
     let(:installed_plugins) { {} }
 
     it 'raises a plugin not found error' do
-      expect {
+      expect do
         uninstaller.uninstall_plugin('adyen')
-      }.to raise_error(StandardError, "No plugin with key/name 'adyen' found installed. Try running 'kpm inspect' for more info")
+      end.to raise_error(StandardError, "No plugin with key/name 'adyen' found installed. Try running 'kpm inspect' for more info")
     end
   end
 
