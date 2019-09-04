@@ -21,7 +21,7 @@ module KPM
           labels
         end
 
-        private
+          private
           def fetch_linux
             cpu_data = `cat /proc/cpuinfo 2>&1`.gsub("\t",'')
             cpu = get_hash(cpu_data)

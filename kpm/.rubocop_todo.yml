@@ -21,14 +21,6 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - 'kpm.gemspec'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: outdent, indent
-Layout/AccessModifierIndentation:
-  Exclude:
-    - 'lib/kpm/system_helpers/cpu_information.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Layout/AlignArray:
