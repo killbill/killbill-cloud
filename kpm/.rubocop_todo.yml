@@ -46,6 +46,15 @@ Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'lib/kpm/tomcat_manager.rb'
 
+# Offense count: 7
+Lint/UselessAssignment:
+  Exclude:
+    - 'lib/kpm/account.rb'
+    - 'lib/kpm/base_artifact.rb'
+    - 'lib/kpm/installer.rb'
+    - 'spec/kpm/remote/base_installer_spec.rb'
+    - 'spec/kpm/unit_mysql/account_spec.rb'
+
 # Offense count: 149
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
 Lint/Void:

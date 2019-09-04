@@ -1,1 +1,7 @@
 inherit_from: .rubocop_todo.yml
+
+Layout/DefEndAlignment:
+  AutoCorrect: true
+
+Metrics/LineLength:
+  Max: 1498

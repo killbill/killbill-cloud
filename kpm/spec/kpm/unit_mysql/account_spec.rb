@@ -380,7 +380,7 @@ describe KPM::Account do
     company_name = response_msg[response_msg.size - 1]
 
     expect(company_name).to eq('Company|\\nName')
-   end
+  end
 
   def delete_statement(table_name, column_name, account_id)
     response = `#{mysql_cli} #{db_name} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
@@ -388,7 +388,7 @@ describe KPM::Account do
     row_count_inserted = response_msg[response_msg.size - 1]
 
     row_count_inserted
-   end
+  end
 
   def create_test_schema
     response = `#{mysql_cli} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
