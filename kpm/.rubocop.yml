@@ -5,3 +5,7 @@ Layout/DefEndAlignment:
 
 Metrics/LineLength:
   Max: 1498
+
+# Ruby 2.3+ only
+Style/SafeNavigation
+  Enabled: false

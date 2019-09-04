@@ -8,7 +8,7 @@ module KPM
   class TenantConfig
     # Killbill server
     KILLBILL_HOST = ENV['KILLBILL_HOST'] || '127.0.0.1'
-    KILLBILL_URL = 'http://'.concat(KILLBILL_HOST).concat(':8080')
+    KILLBILL_URL = "http://#{KILLBILL_HOST}:8080"
     KILLBILL_API_VERSION = '1.0'
 
     # USER/PWD

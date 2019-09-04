@@ -57,9 +57,11 @@ module KPM
         def get_hash(data)
           mem = {}
 
-          data&.split("\n")&.each do |info|
-            infos = info.split(':')
-            mem[infos[0].to_s.strip] = { memory_detail: infos[0].to_s.strip, value: infos[1].to_s.strip }
+          unless data.nil?
+            data.split("\n").each do |info|
+              infos = info.split(':')
+              mem[infos[0].to_s.strip] = {memory_detail: infos[0].to_s.strip, value: infos[1].to_s.strip}
+            end
           end
 
           mem

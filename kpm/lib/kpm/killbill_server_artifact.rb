@@ -67,7 +67,7 @@ module KPM
             versions[property] = properties_element.elements["#{property}.version"].text
           end
 
-          sha1_checker&.cache_killbill_info(version, versions)
+          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
         end
         versions
       rescue StandardError => e

@@ -57,10 +57,12 @@ module KPM
         def get_hash(data)
           cpu = {}
 
-          data&.split("\n")&.each do |info|
-            infos = info.split(':')
+          unless data.nil?
+            data.split("\n").each do |info|
+              infos = info.split(':')
 
-            cpu[infos[0].to_s.strip] = { cpu_detail: infos[0].to_s.strip, value: infos[1].to_s.strip } unless infos[0].to_s.strip.eql?('flags')
+              cpu[infos[0].to_s.strip] = {cpu_detail: infos[0].to_s.strip, value: infos[1].to_s.strip} unless infos[0].to_s.strip.eql?('flags')
+            end
           end
 
           cpu

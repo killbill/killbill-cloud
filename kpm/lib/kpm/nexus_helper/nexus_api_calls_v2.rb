@@ -148,7 +148,7 @@ module KPM
         query.merge!(c: artifact[:classifier]) unless artifact[:classifier].nil?
 
         params = what_parameters.nil? ? query : {}
-        what_parameters&.each { |key| params[key] = query[key] unless query[key].nil? }
+        what_parameters.each { |key| params[key] = query[key] unless query[key].nil? } unless what_parameters.nil?
 
         params.map { |key, value| "#{key}=#{value}" }.join('&')
       end

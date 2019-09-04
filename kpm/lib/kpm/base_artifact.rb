@@ -198,7 +198,7 @@ module KPM
         info[:repository_path] = xml.elements['//repositoryPath'].text unless xml.elements['//repositoryPath'].nil?
         info[:is_tgz] = info[:repository_path].end_with?('.tar.gz') || info[:repository_path].end_with?('.tgz')
 
-        sha1_checker&.cache_artifact_info(coordinates, info)
+        sha1_checker.cache_artifact_info(coordinates, info) if sha1_checker
 
         info
       end
