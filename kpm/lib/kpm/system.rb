@@ -132,7 +132,7 @@ module KPM
       `#{command}`.split("\n").each do |prop|
         break if prop.to_s.strip.empty?
 
-        if property_count > 0
+        if property_count.positive?
           props = prop.split('=')
 
           if !(props[1].nil? && props[1].to_s.strip.size > MAX_VALUE_COLUMN_WIDTH) && output_as_json == false

@@ -55,7 +55,7 @@ module KPM
           unless data.nil?
             data.split("\n").each do |info|
               infos = info.split(':')
-              os[infos[0].to_s.strip] = {os_detail: infos[0].to_s.strip, value: infos[1].to_s.strip}
+              os[infos[0].to_s.strip] = { os_detail: infos[0].to_s.strip, value: infos[1].to_s.strip }
             end
           end
 

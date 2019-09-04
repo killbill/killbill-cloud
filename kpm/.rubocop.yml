@@ -1,11 +1,18 @@
 inherit_from: .rubocop_todo.yml
 
+# Alternative?
+Gemspec/RubyVersionGlobalsUsage:
+  Enabled: false
+
 Layout/DefEndAlignment:
   AutoCorrect: true
 
 Metrics/LineLength:
-  Max: 1498
+  Max: 2000
+
+Security/YAMLLoad:
+  Enabled: false
 
 # Ruby 2.3+ only
-Style/SafeNavigation
+Style/SafeNavigation:
   Enabled: false

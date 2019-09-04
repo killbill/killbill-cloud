@@ -45,7 +45,14 @@ module KPM
       end
 
       def to_s
-        @versions.map { |q| sha1 = format_sha(q[:sha1]); disabled = ''; disabled = '(x)' if q[:is_disabled]; default = ''; default = '(*)' if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(', ')
+        @versions.map do |q|
+          sha1 = format_sha(q[:sha1])
+          disabled = ''
+          disabled = '(x)' if q[:is_disabled]
+          default = ''
+          default = '(*)' if q[:is_default]
+          "#{q[:version]}#{sha1}#{default}#{disabled}"
+        end.join(', ')
       end
 
       def label
@@ -91,13 +98,16 @@ module KPM
       end
 
       border = '_'
-      border = (0...labels.size).inject(border) { |res, _i| res = "#{res}_"; res }
-      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |_s| res = "#{res}_" }; res }
+      border = (0...labels.size).inject(border) { |res, _i| "#{res}_" }
+      border = labels.inject(border) do |res, lbl|
+        (0...lbl[:size] + 2).each { |_s| res = "#{res}_" }
+        res
+      end
       format = '|'
-      format = labels.inject(format) { |res, lbl| res = "#{res} %#{lbl[:size]}s |"; res }
+      format = labels.inject(format) { |res, lbl| "#{res} %#{lbl[:size]}s |" }
 
       puts "\n#{border}\n"
-      puts "#{format}\n" % labels_format_argument
+      puts format("#{format}\n", labels_format_argument)
       puts "#{border}\n"
 
       data.keys.each do |key|
@@ -108,7 +118,7 @@ module KPM
           formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
           res << formatter.to_s
         end
-        puts "#{format}\n" % arguments
+        puts format("#{format}\n", arguments)
       end
       puts "#{border}\n\n"
     end

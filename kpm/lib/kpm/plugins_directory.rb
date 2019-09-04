@@ -14,7 +14,7 @@ module KPM
           # Default to built-in version if GitHub isn't accessible
           return all(false)
         end
-        YAML.safe_load(source)
+        YAML.load(source)
       else
         source = File.join(__dir__, 'plugins_directory.yml')
         YAML.load_file(source)
