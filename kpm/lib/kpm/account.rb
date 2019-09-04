@@ -240,7 +240,7 @@ module KPM
       end
     end
 
-    def process_import_data(line, table_name, cols_names, skip_payment_methods, rows)
+    def process_import_data(line, table_name, cols_names, skip_payment_methods, _rows)
       # to make sure that the last column is not omitted if is empty
       cols = line.strip.split(@delimiter, line.count(@delimiter) + 1)
 
@@ -290,7 +290,7 @@ module KPM
       sanitized_value
     end
 
-    def replace_tenant_record_id(table_name, column_name, value)
+    def replace_tenant_record_id(_table_name, column_name, value)
       return @tenant_record_id if column_name == 'tenant_record_id' || column_name == 'search_key2'
 
       value

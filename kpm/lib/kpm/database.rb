@@ -54,7 +54,7 @@ module KPM
         @@mysql_command_line = "mysql #{@@database} --host=#{@@host} --port=#{@@port} --user=#{@@username} --password=#{@@password} "
       end
 
-      def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)
+      def execute_insert_statement(table_name, query, qty_to_insert, _table_data, record_id = nil)
         query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}" unless record_id.nil?
         query = "SET autocommit=0; #{query} COMMIT;"
 

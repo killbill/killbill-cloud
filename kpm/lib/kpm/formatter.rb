@@ -91,8 +91,8 @@ module KPM
       end
 
       border = '_'
-      border = (0...labels.size).inject(border) { |res, i| res = "#{res}_"; res }
-      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res = "#{res}_" }; res }
+      border = (0...labels.size).inject(border) { |res, _i| res = "#{res}_"; res }
+      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |_s| res = "#{res}_" }; res }
       format = '|'
       format = labels.inject(format) { |res, lbl| res = "#{res} %#{lbl[:size]}s |"; res }
 

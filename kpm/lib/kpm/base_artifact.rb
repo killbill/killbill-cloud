@@ -149,7 +149,7 @@ module KPM
         return false if artifact_info[:sha1].nil?
 
         # If there is no such sha1_file, we don't skip
-        return false if sha1_file.nil? || !File.exists?(sha1_file)
+        return false if sha1_file.nil? || !File.exist?(sha1_file)
 
         #
         # At this point we have a valid sha1_file and a remote sha1

@@ -6,14 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: TreatCommentsAsGroupSeparators, Include.
-# Include: **/*.gemspec
-Gemspec/OrderedDependencies:
-  Exclude:
-    - 'kpm.gemspec'
-
 # Offense count: 1
 # Configuration parameters: Include.
 # Include: **/*.gemspec, 
@@ -25,17 +17,6 @@ Gemspec/RequiredRubyVersion:
 Lint/AmbiguousRegexpLiteral:
   Exclude:
     - 'lib/kpm/account.rb'
-
-# Offense count: 13
-# Cop supports --auto-correct.
-Lint/DeprecatedClassMethods:
-  Exclude:
-    - 'lib/kpm/base_artifact.rb'
-    - 'lib/kpm/base_installer.rb'
-    - 'lib/kpm/inspector.rb'
-    - 'lib/kpm/sha1_checker.rb'
-    - 'spec/kpm/unit/plugins_manager_spec.rb'
-    - 'spec/kpm/unit/sha1_checker_spec.rb'
 
 # Offense count: 2
 # Configuration parameters: AllowComments.
@@ -61,54 +42,9 @@ Lint/RescueException:
     - 'lib/kpm/tasks.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Lint/ScriptPermission:
-  Exclude:
-    - 'Rakefile'
-
-# Offense count: 1
 Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'lib/kpm/tomcat_manager.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
-  Exclude:
-    - 'lib/kpm/tenant_config.rb'
-    - 'lib/kpm/tomcat_manager.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/ToJSON:
-  Exclude:
-    - 'lib/kpm/trace_logger.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'lib/kpm/formatter.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/base_installer.rb'
-    - 'lib/kpm/database.rb'
-    - 'lib/kpm/plugins_manager.rb'
-
-# Offense count: 7
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/base_artifact.rb'
-    - 'lib/kpm/installer.rb'
-    - 'spec/kpm/remote/base_installer_spec.rb'
-    - 'spec/kpm/unit_mysql/account_spec.rb'
 
 # Offense count: 149
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
@@ -276,10 +212,3 @@ Style/OptionalArguments:
   Exclude:
     - 'lib/kpm/account.rb'
     - 'lib/kpm/trace_logger.rb'
-
-# Offense count: 740
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Metrics/LineLength:
-  Max: 1498

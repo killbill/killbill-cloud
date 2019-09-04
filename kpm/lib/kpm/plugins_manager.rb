@@ -179,7 +179,7 @@ module KPM
     end
 
     # Note: the plugin name here is the directory name on the filesystem
-    def update_fs(plugin_name_or_path, plugin_version = nil, &block)
+    def update_fs(plugin_name_or_path, plugin_version = nil)
       if plugin_name_or_path.nil?
         @logger.warn('Unable to update the filesystem: no name or path specified')
         return

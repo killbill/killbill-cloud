@@ -82,7 +82,7 @@ module KPM
     end
 
     def init!
-      unless File.exists?(@sha1_file)
+      unless File.exist?(@sha1_file)
         create_sha1_directory_if_missing
         init_config = {}
         init_config['sha1'] = {}

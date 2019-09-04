@@ -63,7 +63,7 @@ module KPM
     end
 
     def build_plugins_for_type(plugins_path, type, res)
-      return [] unless File.exists?(plugins_path)
+      return [] unless File.exist?(plugins_path)
 
       get_entries(plugins_path).each_with_object(res) do |e, out|
         plugin_map = build_plugin_map(e, plugins_path.join(e), type)
@@ -80,7 +80,7 @@ module KPM
       versions = entries.reject do |e|
         e == 'SET_DEFAULT'
       end.each_with_object([]) do |e, out|
-        is_disabled = File.exists?(plugin_path.join(e).join('tmp').join('disabled.txt'))
+        is_disabled = File.exist?(plugin_path.join(e).join('tmp').join('disabled.txt'))
         out << { version: e, is_default: default_version == e, is_disabled: is_disabled, sha1: nil }
       end
 

@@ -42,9 +42,9 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--exclude' << '.'
 
   s.add_dependency 'highline', '~> 1.6.21'
-  s.add_dependency 'thor', '~> 0.19.1'
-  s.add_dependency 'rubyzip', '~>1.2.0'
   s.add_dependency 'killbill-client', '~> 2.5.0'
+  s.add_dependency 'rubyzip', '~>1.2.0'
+  s.add_dependency 'thor', '~> 0.19.1'
 
   s.add_development_dependency 'rake', '>= 10.0.0', '< 11.0.0'
   s.add_development_dependency 'rspec', '~> 2.12.0'

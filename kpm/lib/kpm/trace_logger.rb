@@ -9,7 +9,7 @@ module KPM
     end
 
     # Return JSON representation of the logs
-    def to_json
+    def to_json(*_args)
       @trace.to_json
     end
 

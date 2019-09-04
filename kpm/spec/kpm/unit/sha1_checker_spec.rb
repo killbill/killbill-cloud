@@ -89,7 +89,7 @@ describe KPM::Sha1Checker do
   it 'should work with empty config' do
     tmp_destination_dir = Dir.tmpdir
     empty_config = File.join(tmp_destination_dir, 'sha1_test.yml')
-    if File.exists?(empty_config)
+    if File.exist?(empty_config)
       # Just to be sure
       File.delete(empty_config)
     end

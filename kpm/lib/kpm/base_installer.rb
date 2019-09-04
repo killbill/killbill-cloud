@@ -268,7 +268,7 @@ module KPM
       plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, type, coordinate_map)
     end
 
-    def mark_as_active(plugins_dir, artifact_info, artifact_id = nil)
+    def mark_as_active(plugins_dir, artifact_info, _artifact_id = nil)
       # Mark this bundle as active
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       plugins_manager.set_active(artifact_info[:bundle_dir])
@@ -277,7 +277,7 @@ module KPM
     def warn_if_jruby_jar_missing(bundles_dir)
       platform_dir = bundles_dir.join('platform')
       jruby_jar = platform_dir.join('jruby.jar')
-      if !File.exists?(jruby_jar)
+      if !File.exist?(jruby_jar)
         @logger.warn("  Missing installation for jruby.jar under #{platform_dir}. This is required for ruby plugin installation")
       else
         version = extract_jruby_jar_version(jruby_jar)

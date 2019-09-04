@@ -56,9 +56,9 @@ module KPM
 
     def help
       "Tomcat installed at #{@tomcat_dir}
-Start script: #{@tomcat_dir.join('bin').join('startup.sh').to_s}
-Stop script: #{@tomcat_dir.join('bin').join('shutdown.sh').to_s}
-Logs: #{@tomcat_dir.join('logs').to_s}"
+Start script: #{@tomcat_dir.join('bin').join('startup.sh')}
+Stop script: #{@tomcat_dir.join('bin').join('shutdown.sh')}
+Logs: #{@tomcat_dir.join('logs')}"
     end
 
     private
