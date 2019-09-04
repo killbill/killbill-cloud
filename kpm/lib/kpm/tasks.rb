@@ -77,14 +77,14 @@ module KPM
                                         options[:overrides],
                                         options[:ssl_verify])
           response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                            KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
-                                            KillbillServerArtifact::KILLBILL_PACKAGING,
-                                            KillbillServerArtifact::KILLBILL_CLASSIFIER,
-                                            version,
-                                            options[:destination],
-                                            options[:bundles_dir],
-                                            options[:force_download],
-                                            options[:verify_sha1])
+                                                       KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
+                                                       KillbillServerArtifact::KILLBILL_PACKAGING,
+                                                       KillbillServerArtifact::KILLBILL_CLASSIFIER,
+                                                       version,
+                                                       options[:destination],
+                                                       options[:bundles_dir],
+                                                       options[:force_download],
+                                                       options[:verify_sha1])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
@@ -119,14 +119,14 @@ module KPM
                                         options[:overrides],
                                         options[:ssl_verify])
           response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                            KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
-                                            KillbillServerArtifact::KILLPAY_PACKAGING,
-                                            KillbillServerArtifact::KILLPAY_CLASSIFIER,
-                                            version,
-                                            options[:destination],
-                                            options[:bundles_dir],
-                                            options[:force_download],
-                                            options[:verify_sha1])
+                                                       KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
+                                                       KillbillServerArtifact::KILLPAY_PACKAGING,
+                                                       KillbillServerArtifact::KILLPAY_CLASSIFIER,
+                                                       version,
+                                                       options[:destination],
+                                                       options[:bundles_dir],
+                                                       options[:force_download],
+                                                       options[:verify_sha1])
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
 
@@ -253,8 +253,8 @@ module KPM
         desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_ruby_plugin(plugin_key, kb_version='LATEST')
           installer = BaseInstaller.new(logger,
-                            options[:overrides],
-                            options[:ssl_verify])
+                                        options[:overrides],
+                                        options[:ssl_verify])
 
           if options[:from_source_file].nil?
             response = installer.install_plugin(plugin_key,
@@ -433,7 +433,7 @@ module KPM
         def system
           system = KPM::System.new
           information = system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
-                             options[:killbill_web_path])
+                                           options[:killbill_web_path])
 
           if options[:as_json]
             puts information
@@ -591,7 +591,7 @@ module KPM
             end
 
             tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url], logger)
+                                                 options[:killbill_url], logger)
 
             tenantConfig.export(options[:key_prefix])
 
@@ -692,8 +692,8 @@ module KPM
             end
 
             diagnostic = KPM::DiagnosticFile.new(options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url],options[:database_name],options[:database_credentials],
-                                      options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
+                                                 options[:killbill_url],options[:database_name],options[:database_credentials],
+                                                 options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
             diagnostic.export_data(options[:account_export],  options[:log_dir])
 
           rescue Exception => e

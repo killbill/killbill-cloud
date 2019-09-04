@@ -29,17 +29,6 @@ Layout/AccessModifierIndentation:
   Exclude:
     - 'lib/kpm/system_helpers/cpu_information.rb'
 
-# Offense count: 51
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/AlignArguments:
-  Exclude:
-    - 'lib/kpm/base_installer.rb'
-    - 'lib/kpm/tasks.rb'
-    - 'spec/kpm/remote/tenant_config_spec.rb'
-    - 'spec/kpm/unit_mysql/account_spec.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Layout/AlignArray:

@@ -8,7 +8,7 @@ describe KPM::TenantConfig do
 
   let(:user) {'KPM Tenant Spec'}
   let(:tenant_config_class) { described_class.new([killbill_api_key,killbill_api_secrets],
-                                             [killbill_user, killbill_password],url,logger)}
+                                                  [killbill_user, killbill_password],url,logger)}
   let(:options){{
         :username => killbill_user,
         :password => killbill_password,

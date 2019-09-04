@@ -32,21 +32,21 @@ module KPM
 
       @logger.debug("Installing Kill Bill server: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       artifact_info = KPM::KillbillServerArtifact.pull(@logger,
-                                       group_id,
-                                       artifact_id,
-                                       packaging,
-                                       classifier,
-                                       version,
-                                       webapp_path,
-                                       sha1_file,
-                                       force_download,
-                                       verify_sha1,
-                                       @nexus_config,
-                                       @nexus_ssl_verify)
+                                                       group_id,
+                                                       artifact_id,
+                                                       packaging,
+                                                       classifier,
+                                                       version,
+                                                       webapp_path,
+                                                       sha1_file,
+                                                       force_download,
+                                                       verify_sha1,
+                                                       @nexus_config,
+                                                       @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('killbill',
-                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                         :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
     end
 
     def install_kaui(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
@@ -61,21 +61,21 @@ module KPM
 
       @logger.debug("Installing Kaui: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} webapp_path=#{webapp_path}")
       artifact_info = KPM::KauiArtifact.pull(@logger,
-                             group_id,
-                             artifact_id,
-                             packaging,
-                             classifier,
-                             version,
-                             webapp_path,
-                             sha1_file,
-                             force_download,
-                             verify_sha1,
-                             @nexus_config,
-                             @nexus_ssl_verify)
+                                             group_id,
+                                             artifact_id,
+                                             packaging,
+                                             classifier,
+                                             version,
+                                             webapp_path,
+                                             sha1_file,
+                                             force_download,
+                                             verify_sha1,
+                                             @nexus_config,
+                                             @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('kaui',
-                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                         :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
 
 
     end
@@ -156,8 +156,8 @@ module KPM
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                           artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                            :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        artifact_info.merge({'status'=> (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
+                         :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
 
       # Update with resolved version
       coordinate_map[:version] = artifact_info[:version]
@@ -194,7 +194,7 @@ module KPM
 
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                           artifact_info.merge({'status'=>'INSTALLED'}))
+                        artifact_info.merge({'status'=>'INSTALLED'}))
 
       artifact_info
     end
