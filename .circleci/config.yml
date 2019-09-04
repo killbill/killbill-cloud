@@ -265,6 +265,8 @@ jobs:
 
   test-rubocop:
     <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.5.0
     steps:
       - checkout
       - restore_cache:
