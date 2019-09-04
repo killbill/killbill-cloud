@@ -8,15 +8,12 @@ class String
 end
 
 module KPM
-
   class Formatter
-
     def initialize
     end
 
     # Used for normal types where to_s is enough
     class DefaultFormatter
-
       def initialize(label, input)
         @label = label
         @input = input
@@ -37,7 +34,6 @@ module KPM
 
     # Used for the version map
     class VersionFormatter
-
       def initialize(label, versions)
         @label = label
         @versions = versions
@@ -48,7 +44,7 @@ module KPM
       end
 
       def to_s
-        @versions.map { |q| sha1=format_sha(q[:sha1]); disabled=""; disabled="(x)" if q[:is_disabled]; default=""; default="(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
+        @versions.map { |q| sha1 = format_sha(q[:sha1]); disabled = ""; disabled = "(x)" if q[:is_disabled]; default = ""; default = "(*)" if q[:is_default]; "#{q[:version]}#{sha1}#{default}#{disabled}" }.join(", ")
       end
 
       def label
@@ -57,6 +53,7 @@ module KPM
 
       def format_sha(sha)
         return "[???]" if sha.nil?
+
         "[#{sha[0..5]}..]"
       end
     end
@@ -69,13 +66,13 @@ module KPM
       if labels.nil?
 
         # What we want to output
-        labels = [{:label => :plugin_name},
-                  {:label => :plugin_key},
-                  {:label => :type},
-                  {:label => :group_id},
-                  {:label => :artifact_id},
-                  {:label => :packaging},
-                  {:label => :versions, :formatter => VersionFormatter.name}]
+        labels = [{ :label => :plugin_name },
+                  { :label => :plugin_key },
+                  { :label => :type },
+                  { :label => :group_id },
+                  { :label => :artifact_id },
+                  { :label => :packaging },
+                  { :label => :versions, :formatter => VersionFormatter.name }]
       end
 
       # Compute label to print along with max size for each label
@@ -95,10 +92,10 @@ module KPM
       end
 
       border = "_"
-      border = (0...labels.size).inject(border) { |res, i| res="#{res}_"; res }
-      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res="#{res}_" }; res }
+      border = (0...labels.size).inject(border) { |res, i| res = "#{res}_"; res }
+      border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res = "#{res}_" }; res }
       format = "|"
-      format = labels.inject(format) { |res, lbl| res="#{res} %#{lbl[:size]}s |"; res }
+      format = labels.inject(format) { |res, lbl| res = "#{res} %#{lbl[:size]}s |"; res }
 
       puts "\n#{border}\n"
       puts "#{format}\n" % labels_format_argument
@@ -115,7 +112,6 @@ module KPM
         puts "#{format}\n" % arguments
       end
       puts "#{border}\n\n"
-
     end
   end
 end

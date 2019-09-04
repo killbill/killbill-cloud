@@ -7,7 +7,7 @@ module KPM
     class << self
       TAR_LONGLINK = '././@LongLink'
 
-      def unpack_tgz(tar_gz_archive, destination, skip_top_dir=false)
+      def unpack_tgz(tar_gz_archive, destination, skip_top_dir = false)
         top_dir = nil
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           dest = nil
@@ -62,17 +62,17 @@ module KPM
         ver = get_version_from_file_path(file_path)
         ext = File.extname(base)
 
-        name = base.gsub(ext,'')
+        name = base.gsub(ext, '')
         if ver.nil?
           # this will remove SNAPSHOT and any dash that appear before it (ex --SNAPSHOT).
-          name = name.gsub(/((-+){,1}SNAPSHOT){,1}/,'')
+          name = name.gsub(/((-+){,1}SNAPSHOT){,1}/, '')
           last_dash = name.rindex('-')
           name = name[0..last_dash] unless last_dash.nil?
         else
-          name = name.gsub(ver,'')
+          name = name.gsub(ver, '')
         end
 
-        name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
+        name = name[0..name.length - 2] if name[-1].match(/[a-zA-z]/).nil?
         name
       end
 
@@ -84,7 +84,6 @@ module KPM
 
         ver[0]
       end
-
     end
   end
 end

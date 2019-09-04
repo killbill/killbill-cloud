@@ -21,14 +21,14 @@ module KPM
       @trace
     end
 
-    def add(group=nil, key, message)
-      add_to_hash(group,key,message);
+    def add(group = nil, key, message)
+      add_to_hash(group, key, message);
     end
 
     private
-    # This procedures will store the logs into a hash to be later returned
-    def add_to_hash(group=nil, key, message)
 
+    # This procedures will store the logs into a hash to be later returned
+    def add_to_hash(group = nil, key, message)
       if group.nil? || key.nil?
         add_with_key(group || key, message)
       else

@@ -3,7 +3,6 @@ require 'zip'
 
 module KPM
   class BaseInstaller
-
     LATEST_VERSION = 'LATEST'
     SHA1_FILENAME = 'sha1.yml'
     DEFAULT_BUNDLES_DIR = Pathname.new('/var').join('tmp').join('bundles').to_s
@@ -15,7 +14,7 @@ module KPM
       @trace_logger = KPM::TraceLogger.new
     end
 
-    def install_killbill_server(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
+    def install_killbill_server(specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, specified_webapp_path = nil, bundles_dir = nil, force_download = false, verify_sha1 = true)
       group_id = specified_group_id || KPM::BaseArtifact::KILLBILL_GROUP_ID
       artifact_id = specified_artifact_id || KPM::BaseArtifact::KILLBILL_ARTIFACT_ID
       packaging = specified_packaging || KPM::BaseArtifact::KILLBILL_PACKAGING
@@ -45,11 +44,11 @@ module KPM
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('killbill',
-                        artifact_info.merge({'status' => (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
     end
 
-    def install_kaui(specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, specified_webapp_path=nil,  bundles_dir=nil, force_download=false, verify_sha1=true)
+    def install_kaui(specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, specified_webapp_path = nil, bundles_dir = nil, force_download = false, verify_sha1 = true)
       group_id = specified_group_id || KPM::BaseArtifact::KAUI_GROUP_ID
       artifact_id = specified_artifact_id || KPM::BaseArtifact::KAUI_ARTIFACT_ID
       packaging = specified_packaging || KPM::BaseArtifact::KAUI_PACKAGING
@@ -74,13 +73,11 @@ module KPM
                                              @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('kaui',
-                        artifact_info.merge({'status' => (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
-
+                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
     end
 
-    def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true, verify_jruby_jar=false)
-
+    def install_plugin(plugin_key, raw_kb_version = nil, specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, bundles_dir = nil, specified_type = nil, force_download = false, verify_sha1 = true, verify_jruby_jar = false)
       # plugin_key needs to exist
       if plugin_key.nil?
         raise ArgumentError.new 'Aborting installation: User needs to specify a pluginKey'
@@ -96,9 +93,9 @@ module KPM
 
       # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
       if looked_up_artifact_id.nil? &&
-          specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
-          specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
-          plugin_key.split(':').size == 1
+         specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
+         specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
+         plugin_key.split(':').size == 1
         raise ArgumentError.new "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end
 
@@ -133,7 +130,7 @@ module KPM
       _, plugin_name = plugins_manager.get_plugin_key_and_name(plugin_key)
 
       # Before we do the install we verify that the entry we have in the plugin_identifiers.json matches our current request
-      coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
+      coordinate_map = { :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }
       validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
 
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
@@ -152,8 +149,8 @@ module KPM
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                        artifact_info.merge({'status' => (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        artifact_info.merge({ 'status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
 
       # Update with resolved version
       coordinate_map[:version] = artifact_info[:version]
@@ -165,7 +162,7 @@ module KPM
       artifact_info
     end
 
-    def install_plugin_from_fs(plugin_key, file_path, name, version, bundles_dir=nil, type='java')
+    def install_plugin_from_fs(plugin_key, file_path, name, version, bundles_dir = nil, type = 'java')
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
@@ -189,12 +186,12 @@ module KPM
 
       # store trace info to be returned as JSON by the KPM::Installer.install method
       @trace_logger.add('plugins', plugin_key,
-                        artifact_info.merge({'status'=>'INSTALLED'}))
+                        artifact_info.merge({ 'status' => 'INSTALLED' }))
 
       artifact_info
     end
 
-    def uninstall_plugin(plugin_name_or_key, plugin_version=nil, bundles_dir=nil)
+    def uninstall_plugin(plugin_name_or_key, plugin_version = nil, bundles_dir = nil)
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
@@ -210,7 +207,7 @@ module KPM
       modified
     end
 
-    def install_default_bundles(bundles_dir, specified_version=nil, kb_version=nil, force_download=false, verify_sha1=true)
+    def install_default_bundles(bundles_dir, specified_version = nil, kb_version = nil, force_download = false, verify_sha1 = true)
       group_id = 'org.kill-bill.billing'
       artifact_id = 'killbill-platform-osgi-bundles-defaultbundles'
       packaging = 'tar.gz'
@@ -243,8 +240,8 @@ module KPM
                                     @nexus_ssl_verify)
 
       @trace_logger.add('default_bundles',
-                        info.merge({'status' => (info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
-                                    :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
+                        info.merge({ 'status' => (info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
+                                     :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }))
 
       # The special JRuby bundle needs to be called jruby.jar
       # TODO .first - code smell
@@ -258,7 +255,6 @@ module KPM
     private
 
     def validate_installation_arg!(plugin_key, arg_type, specified_arg, looked_up_arg)
-
       # If nothing was specified, or if we don't find anything from the lookup, nothing to validate against
       if specified_arg.nil? || looked_up_arg.nil?
         return
@@ -284,7 +280,7 @@ module KPM
       plugins_manager.add_plugin_identifier_key(plugin_key, plugin_name, type, coordinate_map)
     end
 
-    def mark_as_active(plugins_dir, artifact_info, artifact_id=nil)
+    def mark_as_active(plugins_dir, artifact_info, artifact_id = nil)
       # Mark this bundle as active
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       plugins_manager.set_active(artifact_info[:bundle_dir])
@@ -315,10 +311,9 @@ module KPM
       if selected_entries && selected_entries.size == 1
         zip_entry = selected_entries[0]
         content = zip_entry.get_input_stream.read
-        return content.split("\n").select { |e| e.start_with?("version")}[0].split("=")[1]
+        return content.split("\n").select { |e| e.start_with?("version") }[0].split("=")[1]
       end
       nil
     end
-
   end
 end

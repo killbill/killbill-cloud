@@ -116,7 +116,7 @@ end
 
 def download_runtime(target)
   sh 'mkdir -p packaging && cd packaging && curl -L -O --fail ' +
-         "https://d6r77u77i8pq3.cloudfront.net/releases/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz"
+     "https://d6r77u77i8pq3.cloudfront.net/releases/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz"
 end
 
 def gem_exists?

@@ -5,7 +5,6 @@ require_relative 'entropy_available'
 require_relative 'os_information'
 module KPM
   module SystemProxy
-
     module OS
       def OS.windows?
         (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RbConfig::CONFIG["host_os"]) != nil
@@ -23,6 +22,5 @@ module KPM
         OS.unix? and not OS.mac?
       end
     end
-
   end
 end

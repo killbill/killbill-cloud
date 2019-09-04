@@ -34,7 +34,7 @@ module KPM
                       :default => true,
                       :desc => 'Validate sha1 sum'
         desc 'install config_file', 'Install Kill Bill server and plugins according to the specified YAML configuration file.'
-        def install(config_file=nil)
+        def install(config_file = nil)
           help = Installer.from_file(config_file).install(options[:force_download], options[:verify_sha1])
           help = JSON(help)
           say help['help'], :green unless help['help'].nil?
@@ -70,7 +70,7 @@ module KPM
                       :default => true,
                       :desc => 'Validate sha1 sum'
         desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_kb_server_war(version='LATEST')
+        def pull_kb_server_war(version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
@@ -112,7 +112,7 @@ module KPM
                       :default => true,
                       :desc => 'Validates sha1 sum'
         desc 'pull_kp_server_war <version>', 'Pulls Kill Pay server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_kp_server_war(version='LATEST')
+        def pull_kp_server_war(version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
@@ -178,8 +178,7 @@ module KPM
                       :default => true,
                       :desc => 'Validates sha1 sum'
         desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
-        def install_java_plugin(plugin_key, kb_version='LATEST')
-
+        def install_java_plugin(plugin_key, kb_version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
@@ -245,7 +244,7 @@ module KPM
                       :default => true,
                       :desc => 'Validates sha1 sum'
         desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
-        def install_ruby_plugin(plugin_key, kb_version='LATEST')
+        def install_ruby_plugin(plugin_key, kb_version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
@@ -268,7 +267,6 @@ module KPM
           end
 
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
-
         end
 
         method_option :destination,
@@ -284,7 +282,7 @@ module KPM
                       :default => true,
                       :desc => 'Validates sha1 sum'
         desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles from Sonatype and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
-        def pull_defaultbundles(kb_version='LATEST')
+        def pull_defaultbundles(kb_version = 'LATEST')
           response = BaseInstaller.new(logger,
                                        options[:overrides],
                                        options[:ssl_verify])
@@ -328,7 +326,7 @@ module KPM
                       :default => true,
                       :desc => 'Validates sha1 sum'
         desc 'pull_kaui_war <version>', 'Pulls Kaui war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_kaui_war(version='LATEST')
+        def pull_kaui_war(version = 'LATEST')
           response = KauiArtifact.pull(logger,
                                        KauiArtifact::KAUI_GROUP_ID,
                                        KauiArtifact::KAUI_ARTIFACT_ID,
@@ -355,7 +353,6 @@ module KPM
                       :desc => 'Kill Bill version'
         desc 'info', 'Describe information about a Kill Bill version'
         def info
-
           say "Fetching info for version #{options[:version]}...\n"
 
           versions_info = KillbillServerArtifact.info(options[:version],
@@ -364,15 +361,15 @@ module KPM
                                                       options[:verify_sha1],
                                                       options[:overrides],
                                                       options[:ssl_verify])
-          say "Dependencies for version #{options[:version]}\n  " + (versions_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
+          say "Dependencies for version #{options[:version]}\n  " + (versions_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
           say "\n\n"
 
           resolved_kb_version = versions_info['killbill']
-          kb_version = resolved_kb_version.split('.').slice(0,2).join(".")
+          kb_version = resolved_kb_version.split('.').slice(0, 2).join(".")
 
           plugins_info = KPM::PluginsDirectory.list_plugins(true, kb_version)
 
-          say "Known plugin for KB version #{options[:version]}\n  " + (plugins_info.map {|k,v| "#{k} #{v}"}).join("\n  "), :green
+          say "Known plugin for KB version #{options[:version]}\n  " + (plugins_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
         end
 
         method_option :destination,
@@ -399,7 +396,7 @@ module KPM
           inspector = KPM::Inspector.new
           puts options[:destination]
           all_plugins = inspector.inspect(options[:destination])
-          #puts all_plugins.to_json
+          # puts all_plugins.to_json
           inspector.format(all_plugins)
         end
 
@@ -432,7 +429,6 @@ module KPM
           if options[:as_json]
             puts information
           end
-
         end
 
         method_option :export,
@@ -496,23 +492,23 @@ module KPM
           begin
             config_file = nil
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
-              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+              raise Interrupt, '--killbill_url, required format -> http(s)://something'
             end
 
             if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
-              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+              raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>'
             end
 
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
-              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+              raise Interrupt, '--killbill_credentials, required format -> <user> <password>'
             end
 
             if options[:database_credentials] && options[:database_credentials].size != 2
-              raise Interrupt,'--database_credentials, required format -> <user> <password>'
+              raise Interrupt, '--database_credentials, required format -> <user> <password>'
             end
 
             if options[:database_name] && options[:database_name] == :database_name.to_s
-              raise Interrupt,'--database_credentials, please provide a valid database name'
+              raise Interrupt, '--database_credentials, please provide a valid database name'
             end
 
             if options[:config_file] && options[:config_file] == :config_file.to_s
@@ -520,11 +516,11 @@ module KPM
             end
 
             if options[:export].nil? && options[:import].nil?
-              raise Interrupt,'Need to specify an action'
+              raise Interrupt, 'Need to specify an action'
             end
 
-            account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                       options[:killbill_url],options[:database_name],options[:database_credentials],options[:database_host], options[:database_port],options[:data_delimiter], logger)
+            account = KPM::Account.new(config_file || options[:config_file], options[:killbill_api_credentials], options[:killbill_credentials],
+                                       options[:killbill_url], options[:database_name], options[:database_credentials], options[:database_host], options[:database_port], options[:data_delimiter], logger)
             export_file = nil
             round_trip_export_import = false
 
@@ -534,10 +530,9 @@ module KPM
             end
 
             if not options[:import].nil?
-              account.import_data(export_file || options[:import],options[:tenant_record_id], options[:skip_payment_methods],
+              account.import_data(export_file || options[:import], options[:tenant_record_id], options[:skip_payment_methods],
                                   round_trip_export_import, options[:generate_record_id])
             end
-
           rescue Exception => e
             logger.error "\e[91;1m#{e.message}\e[0m"
             if not e.is_a?(Interrupt)
@@ -566,28 +561,26 @@ module KPM
         desc 'tenant_config', 'export all tenant-level configs.'
         def tenant_config
           begin
-
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
-              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+              raise Interrupt, '--killbill_url, required format -> http(s)://something'
             end
 
             if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
-              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+              raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>'
             end
 
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
-              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+              raise Interrupt, '--killbill_credentials, required format -> <user> <password>'
             end
 
             if options[:key_prefix] === :key_prefix.to_s
               raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}"
             end
 
-            tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials],options[:killbill_credentials],
+            tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials], options[:killbill_credentials],
                                                  options[:killbill_url], logger)
 
             tenantConfig.export(options[:key_prefix])
-
           rescue Exception => e
             logger.error "\e[91;1m#{e.message}\e[0m"
             if not e.is_a?(Interrupt)
@@ -652,42 +645,41 @@ module KPM
         def diagnostic
           begin
             if options[:account_export] && options[:account_export] == 'account_export'
-              raise Interrupt,'--account_export,  please provide a valid account id'
+              raise Interrupt, '--account_export,  please provide a valid account id'
             end
 
             if options[:killbill_url] && /https?:\/\/[\S]+/.match(options[:killbill_url]).nil?
-              raise Interrupt,'--killbill_url, required format -> http(s)://something'
+              raise Interrupt, '--killbill_url, required format -> http(s)://something'
             end
 
             if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
-              raise Interrupt,'--killbill_api_credentials, required format -> <api_key> <api_secrets>'
+              raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>'
             end
 
             if options[:killbill_credentials] && options[:killbill_credentials].size != 2
-              raise Interrupt,'--killbill_credentials, required format -> <user> <password>'
+              raise Interrupt, '--killbill_credentials, required format -> <user> <password>'
             end
 
             if options[:database_credentials] && options[:database_credentials].size != 2
-              raise Interrupt,'--database_credentials, required format -> <user> <password>'
+              raise Interrupt, '--database_credentials, required format -> <user> <password>'
             end
 
             if options[:database_name] && options[:database_name] == :database_name.to_s
-              raise Interrupt,'--database_credentials, please provide a valid database name'
+              raise Interrupt, '--database_credentials, please provide a valid database name'
             end
 
             if options[:kaui_web_path] && options[:kaui_web_path] == :kaui_web_path.to_s
-              raise Interrupt,'--kaui_web_path, please provide a valid kaui web path '
+              raise Interrupt, '--kaui_web_path, please provide a valid kaui web path '
             end
 
             if options[:killbill_web_path] && options[:killbill_web_path] == :killbill_web_path.to_s
-              raise Interrupt,'--killbill_web_path, please provide a valid killbill web path'
+              raise Interrupt, '--killbill_web_path, please provide a valid killbill web path'
             end
 
-            diagnostic = KPM::DiagnosticFile.new(options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
-                                                 options[:killbill_url],options[:database_name],options[:database_credentials],
-                                                 options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir],logger)
-            diagnostic.export_data(options[:account_export],  options[:log_dir])
-
+            diagnostic = KPM::DiagnosticFile.new(options[:config_file], options[:killbill_api_credentials], options[:killbill_credentials],
+                                                 options[:killbill_url], options[:database_name], options[:database_credentials],
+                                                 options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir], logger)
+            diagnostic.export_data(options[:account_export], options[:log_dir])
           rescue Exception => e
             logger.error "\e[91;1m#{e.message}\e[0m"
             if not e.is_a?(Interrupt)

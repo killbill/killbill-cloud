@@ -25,14 +25,14 @@ describe KPM::Uninstaller do
   context 'when plugin is installed' do
     let(:installed_plugins) do
       {
-          plugin_name => {
-              plugin_key: plugin_key,
-              plugin_path: plugin_path,
-              versions: [{version: version}],
-              group_id: 'group',
-              artifact_id: 'artifact',
-              packaging: 'jar'
-          }
+        plugin_name => {
+          plugin_key: plugin_key,
+          plugin_path: plugin_path,
+          versions: [{ version: version }],
+          group_id: 'group',
+          artifact_id: 'artifact',
+          packaging: 'jar'
+        }
       }
     end
 
@@ -61,14 +61,14 @@ describe KPM::Uninstaller do
   context 'when plugin is installed' do
     let(:installed_plugins) do
       {
-          plugin_name => {
-              plugin_key: plugin_key,
-              plugin_path: plugin_path,
-              versions: [{version: version1},{version: version2}],
-              group_id: 'group',
-              artifact_id: 'artifact',
-              packaging: 'jar'
-          }
+        plugin_name => {
+          plugin_key: plugin_key,
+          plugin_path: plugin_path,
+          versions: [{ version: version1 }, { version: version2 }],
+          group_id: 'group',
+          artifact_id: 'artifact',
+          packaging: 'jar'
+        }
       }
     end
 

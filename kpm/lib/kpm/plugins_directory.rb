@@ -3,7 +3,7 @@ require 'yaml'
 
 module KPM
   class PluginsDirectory
-    def self.all(latest=false)
+    def self.all(latest = false)
       if latest
         # Look at GitHub (source of truth)
         begin
@@ -19,11 +19,11 @@ module KPM
       end
     end
 
-    def self.list_plugins(latest=false, kb_version)
-      all(latest).inject({}) { |out, (key, val)| out[key]=val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym) ; out}
+    def self.list_plugins(latest = false, kb_version)
+      all(latest).inject({}) { |out, (key, val)| out[key] = val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym); out }
     end
 
-    def self.lookup(raw_plugin_key, latest=false, raw_kb_version=nil)
+    def self.lookup(raw_plugin_key, latest = false, raw_kb_version = nil)
       plugin_key = raw_plugin_key.to_s.downcase
       plugin = all(latest)[plugin_key.to_sym]
       return nil if plugin.nil?

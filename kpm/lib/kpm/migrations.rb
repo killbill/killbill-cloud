@@ -6,7 +6,6 @@ require 'pathname'
 
 module KPM
   class Migrations
-
     KILLBILL_MIGRATION_PATH = /src\/main\/resources\/org\/killbill\/billing\/[a-z]+\/migration\/(V[0-9a-zA-Z_]+.sql)/
     JAVA_PLUGIN_MIGRATION_PATH = /src\/main\/resources\/migration\/(V[0-9a-zA-Z_]+.sql)/
     RUBY_PLUGIN_MIGRATION_PATH = /db\/migrate\/([0-9a-zA-Z_]+.rb)/
@@ -71,8 +70,8 @@ module KPM
         end
 
         migrations << {
-            :name => migration_name,
-            :sql => sql
+          :name => migration_name,
+          :sql => sql
         }
       end
 

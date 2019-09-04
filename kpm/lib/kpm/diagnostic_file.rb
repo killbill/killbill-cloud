@@ -7,7 +7,6 @@ require 'date'
 
 module KPM
   class DiagnosticFile
-
     # Temporary directory
     TMP_DIR_PREFIX  = 'killbill-diagnostics-'
     TMP_DIR         = Dir.mktmpdir(TMP_DIR_PREFIX)
@@ -76,9 +75,9 @@ module KPM
       # this suppress the message of where it put the account file, this is to avoid confusion
       @logger.level = Logger::WARN
 
-      @killbill_api_credentials ||= [get_config('killbill', 'api_key'), get_config('killbill','api_secret')] unless @config_file.nil?
-      @killbill_credentials ||= [get_config('killbill', 'user'), get_config('killbill','password')] unless @config_file.nil?
-      @killbill_url ||= 'http://' + get_config('killbill', 'host').to_s + ':' + get_config('killbill','port').to_s unless @config_file.nil?
+      @killbill_api_credentials ||= [get_config('killbill', 'api_key'), get_config('killbill', 'api_secret')] unless @config_file.nil?
+      @killbill_credentials ||= [get_config('killbill', 'user'), get_config('killbill', 'password')] unless @config_file.nil?
+      @killbill_url ||= 'http://' + get_config('killbill', 'host').to_s + ':' + get_config('killbill', 'port').to_s unless @config_file.nil?
 
       tenant_config = KPM::TenantConfig.new(@killbill_api_credentials,
                                             @killbill_credentials, @killbill_url, @logger)
@@ -110,7 +109,7 @@ module KPM
 
       account = KPM::Account.new(@config_file, @killbill_api_credentials, @killbill_credentials,
                                  @killbill_url, @database_name,
-                                 @database_credentials,@database_host, @database_port, nil, @logger)
+                                 @database_credentials, @database_host, @database_port, nil, @logger)
       export_file = account.export_data(account_id)
 
       final = TMP_DIR + File::Separator + ACCOUNT_FILE
@@ -180,6 +179,5 @@ module KPM
         end
       end
     end
-
   end
 end

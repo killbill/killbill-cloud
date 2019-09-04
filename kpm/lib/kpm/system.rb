@@ -3,7 +3,6 @@ require_relative 'system_helpers/system_proxy'
 
 module KPM
   class System
-
     MAX_VALUE_COLUMN_WIDTH = 60
     DEFAULT_BUNDLE_DIR = Dir['/var' + File::SEPARATOR + 'lib' + File::SEPARATOR + 'killbill' + File::SEPARATOR + 'bundles'][0] || Dir['/var' + File::SEPARATOR + 'tmp' + File::SEPARATOR + 'bundles'][0]
     DEFAULT_KAUI_SEARCH_BASE_DIR = '**' + File::SEPARATOR + 'kaui'
@@ -15,7 +14,7 @@ module KPM
 
     def information(bundles_dir = nil, output_as_json = false, config_file = nil, kaui_web_path = nil, killbill_web_path = nil)
       set_config(config_file)
-      killbill_information = show_killbill_information(kaui_web_path,killbill_web_path,output_as_json)
+      killbill_information = show_killbill_information(kaui_web_path, killbill_web_path, output_as_json)
 
       java_version = `java -version 2>&1`.split("\n")[0].split('"')[1]
 
@@ -28,7 +27,7 @@ module KPM
 
       if not java_version.nil?
         command = get_command
-        java_system_information = show_java_system_information(command,output_as_json)
+        java_system_information = show_java_system_information(command, output_as_json)
       end
 
       plugin_information = show_plugin_information(get_plugin_path || bundles_dir || DEFAULT_BUNDLE_DIR, output_as_json)
@@ -48,37 +47,35 @@ module KPM
     end
 
     def show_killbill_information(kaui_web_path, killbill_web_path, output_as_json)
-
       kpm_version = KPM::VERSION
       kaui_version = get_kaui_version(get_kaui_web_path || kaui_web_path)
       killbill_version = get_killbill_version(get_killbill_web_path || killbill_web_path)
       kaui_standalone_version = get_kaui_standalone_version(get_kaui_web_path || kaui_web_path)
 
-      environment = Hash[:kpm => {:system=>'KPM',:version => kpm_version},
-                         :kaui => {:system=>'Kaui',:version => kaui_version.nil? ? 'not found' : kaui_version},
-                         :kaui_standalone => {:system=>'Kaui standalone',:version => kaui_standalone_version.nil? ? 'not found' : kaui_standalone_version},
-                         :killbill => {:system=>'Killbill',:version => killbill_version.nil? ? 'not found' : killbill_version}]
+      environment = Hash[:kpm => { :system => 'KPM', :version => kpm_version },
+                         :kaui => { :system => 'Kaui', :version => kaui_version.nil? ? 'not found' : kaui_version },
+                         :kaui_standalone => { :system => 'Kaui standalone', :version => kaui_standalone_version.nil? ? 'not found' : kaui_standalone_version },
+                         :killbill => { :system => 'Killbill', :version => killbill_version.nil? ? 'not found' : killbill_version }]
 
-      labels = [{:label => :system},
-                {:label => :version}]
+      labels = [{ :label => :system },
+                { :label => :version }]
 
       if not output_as_json
-        @formatter.format(environment,labels)
+        @formatter.format(environment, labels)
       end
 
       environment
     end
 
     def show_environment_information(java_version, output_as_json)
+      environment = Hash[:ruby => { :environment => 'Ruby', :version => RUBY_VERSION },
+                         :java => { :environment => 'Java', :version => java_version.nil? ? 'no version found' : java_version }]
 
-      environment = Hash[:ruby => {:environment=>'Ruby',:version => RUBY_VERSION},
-                         :java => {:environment=>'Java',:version => java_version.nil? ? 'no version found' : java_version}]
-
-      labels = [{:label => :environment},
-                {:label => :version}]
+      labels = [{ :label => :environment },
+                { :label => :version }]
 
       if not output_as_json
-        @formatter.format(environment,labels)
+        @formatter.format(environment, labels)
       end
 
       environment
@@ -89,7 +86,7 @@ module KPM
       labels = KPM::SystemProxy::CpuInformation.get_labels
 
       unless output_as_json
-        @formatter.format(cpu_info,labels)
+        @formatter.format(cpu_info, labels)
       end
 
       cpu_info
@@ -100,7 +97,7 @@ module KPM
       labels = KPM::SystemProxy::MemoryInformation.get_labels
 
       unless output_as_json
-        @formatter.format(memory_info,labels)
+        @formatter.format(memory_info, labels)
       end
 
       memory_info
@@ -111,7 +108,7 @@ module KPM
       labels = KPM::SystemProxy::DiskSpaceInformation.get_labels
 
       unless output_as_json
-        @formatter.format(disk_space_info,labels)
+        @formatter.format(disk_space_info, labels)
       end
 
       disk_space_info
@@ -122,7 +119,7 @@ module KPM
       labels = KPM::SystemProxy::EntropyAvailable.get_labels
 
       unless output_as_json
-        @formatter.format(entropy_available,labels)
+        @formatter.format(entropy_available, labels)
       end
 
       entropy_available
@@ -133,7 +130,7 @@ module KPM
       labels = KPM::SystemProxy::OsInformation.get_labels
 
       unless output_as_json
-        @formatter.format(os_information,labels)
+        @formatter.format(os_information, labels)
       end
 
       os_information
@@ -156,7 +153,7 @@ module KPM
 
             chunks = ".{1,#{MAX_VALUE_COLUMN_WIDTH}}"
             props[1].to_s.scan(/#{chunks}/).each_with_index do |p, index|
-              java_system[property_count] = {:java_property => index.equal?(0) ? props[0] : '', :value => p}
+              java_system[property_count] = { :java_property => index.equal?(0) ? props[0] : '', :value => p }
               property_count += 1
             end
           elsif output_as_json
@@ -166,12 +163,12 @@ module KPM
             if java_system.has_key?(key)
               java_system[key][:value] = java_system[key][:value].to_s.concat(' ').concat(value)
             else
-              java_system[key] = {:java_property => key, :value => value}
+              java_system[key] = { :java_property => key, :value => value }
             end
 
           else
 
-            java_system[property_count] = {:java_property => props[1].nil? ? '' : props[0], :value => props[1].nil? ? props[0] : props[1]}
+            java_system[property_count] = { :java_property => props[1].nil? ? '' : props[0], :value => props[1].nil? ? props[0] : props[1] }
 
           end
 
@@ -180,19 +177,17 @@ module KPM
 
         property_count += 1
       end
-      labels = [{:label => :java_property},
-                  {:label => :value}]
+      labels = [{ :label => :java_property },
+                { :label => :value }]
 
       if not output_as_json
-        @formatter.format(java_system,labels)
+        @formatter.format(java_system, labels)
       end
 
       java_system
-
     end
 
     def show_plugin_information(bundles_dir, output_as_json)
-
       if bundles_dir.nil?
         all_plugins = nil
       else
@@ -217,7 +212,8 @@ module KPM
     def get_kaui_standalone_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
       return nil if kaui_search_default_dir.nil?
-      kaui_search_default_dir.gsub!('.war','')
+
+      kaui_search_default_dir.gsub!('.war', '')
       version = nil
 
       yaml_file = kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'version.yml'
@@ -233,7 +229,8 @@ module KPM
     def get_kaui_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
       return nil if kaui_search_default_dir.nil?
-      kaui_search_default_dir.gsub!('.war','')
+
+      kaui_search_default_dir.gsub!('.war', '')
       version = nil
 
       gemfile = Dir[kaui_search_default_dir + File::SEPARATOR + 'WEB-INF' + File::SEPARATOR + 'Gemfile']
@@ -243,11 +240,11 @@ module KPM
 
         version = open(absolute_gemfile_path) do |f|
           f.each_line.detect do |line|
-             if /kaui/.match(line)
+            if /kaui/.match(line)
               version = /(\d+)\.(\d+)\.(\d+)/.match(line)
 
               break unless version.nil?
-             end
+            end
           end
           version
         end
@@ -260,10 +257,11 @@ module KPM
     def get_killbill_version(killbill_web_path = nil)
       killbill_search_default_dir = killbill_web_path.nil? ? DEFAULT_KILLBILL_SEARCH_BASE_DIR : Dir[killbill_web_path][0]
       return nil if killbill_search_default_dir.nil?
-      killbill_search_default_dir.gsub!('.war','')
-      killbill_search_default_dir.gsub!('webapps','**')
 
-      file =  Dir[killbill_search_default_dir + File::SEPARATOR + 'META-INF' +  File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
+      killbill_search_default_dir.gsub!('.war', '')
+      killbill_search_default_dir.gsub!('webapps', '**')
+
+      file =  Dir[killbill_search_default_dir + File::SEPARATOR + 'META-INF' + File::SEPARATOR + '**' + File::SEPARATOR + 'pom.properties']
       version = nil
       unless file[0].nil?
         absolute_file_path = File.absolute_path(file[0])
@@ -304,11 +302,11 @@ module KPM
 
       return apache_tomcat_pid unless apache_tomcat_pid.nil?
 
-      jcmd = ( ENV['JAVA_HOME'] || '/**' ) + File::Separator + 'bin' + File::Separator + 'jcmd'
+      jcmd = (ENV['JAVA_HOME'] || '/**') + File::Separator + 'bin' + File::Separator + 'jcmd'
       jcmd = Dir[jcmd][0]
       return nil if jcmd.nil?
 
-      apache_tomcat_pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n",'')
+      apache_tomcat_pid = `#{jcmd} | awk '/org.apache.catalina/' | cut -d ' ' -f 1`.gsub("\n", '')
       return nil if apache_tomcat_pid.nil? || apache_tomcat_pid.empty?
 
       apache_tomcat_pid
@@ -322,7 +320,6 @@ module KPM
           @config = YAML::load_file(config_file)
         end
       end
-
     end
 
     def get_kaui_web_path
@@ -366,7 +363,5 @@ module KPM
 
       plugin_path
     end
-
   end
-
 end

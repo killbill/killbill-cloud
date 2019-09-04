@@ -1,10 +1,8 @@
 require 'tmpdir'
 
 module KPM
-
   class Database
     class << self
-
       # Mysql Information functions
       LAST_INSERTED_ID = 'SELECT LAST_INSERT_ID();'
       ROWS_UPDATED = 'SELECT ROW_COUNT();'
@@ -17,7 +15,7 @@ module KPM
       PORT = ENV['PORT'] || '3306'
 
       COLUMN_NAME_POS = 3
-      
+
       STATEMENT_TMP_FILE = Dir.mktmpdir('statement') + File::SEPARATOR + 'statement.sql'
 
       MYSQL_COMMAND_LINE = "mysql #{DATABASE} --user=#{USERNAME} --password=#{PASSWORD} "
@@ -55,13 +53,12 @@ module KPM
       end
 
       def execute_insert_statement(table_name, query, qty_to_insert, table_data, record_id = nil)
-
         unless record_id.nil?
           query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}"
         end
         query = "SET autocommit=0; #{query} COMMIT;"
-        
-        File.open(STATEMENT_TMP_FILE,'w') do |s|
+
+        File.open(STATEMENT_TMP_FILE, 'w') do |s|
           s.puts query
         end
 
@@ -82,7 +79,7 @@ module KPM
         if response.include? 'ROW_COUNT'
           response_msg = response.split("\n")
           row_count_inserted = response_msg[response_msg.size - 1]
-          @@logger.info "\e[32mImporting table #{table_name}...... Row #{ row_count_inserted || 1} of #{qty_to_insert} success\e[0m"
+          @@logger.info "\e[32mImporting table #{table_name}...... Row #{row_count_inserted || 1} of #{qty_to_insert} success\e[0m"
 
           return true
         end
@@ -91,14 +88,13 @@ module KPM
       end
 
       def generate_insert_statement(tables)
-
         statements = []
         @@logger.info "\e[32mGenerating statements\e[0m"
 
         tables.each_key do |table_name|
           table = tables[table_name]
           if !table[:rows].nil? && table[:rows].size > 0
-            columns_names = table[:col_names].join(",").gsub(/'/,'')
+            columns_names = table[:col_names].join(",").gsub(/'/, '')
 
             rows = []
             table[:rows].each do |row|
@@ -107,33 +103,29 @@ module KPM
                   value.to_s
                 else
                   escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
-                                            .gsub('\N{LINE FEED}', "\n")
-                                            .gsub('\N{VERTICAL LINE}', "|")
+                                       .gsub('\N{LINE FEED}', "\n")
+                                       .gsub('\N{VERTICAL LINE}', "|")
                   "'#{escaped_value}'"
                 end
               end.join(",")
             end
 
-            value_data = rows.map{|row| "(#{row})" }.join(",")
+            value_data = rows.map { |row| "(#{row})" }.join(",")
 
-            statements << {:query => get_insert_statement(table_name,columns_names,value_data, rows.size),
-                           :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
+            statements << { :query => get_insert_statement(table_name, columns_names, value_data, rows.size),
+                            :qty_to_insert => rows.size, :table_name => table_name, :table_data => table }
 
           end
         end
 
         statements
-
       end
 
       private
 
-        def get_insert_statement(table_name, columns_names, values, rows_qty)
-          return "INSERT INTO #{table_name} ( #{columns_names} ) VALUES #{values}; #{rows_qty == 1 ? LAST_INSERTED_ID : ROWS_UPDATED}"
-        end
-
+      def get_insert_statement(table_name, columns_names, values, rows_qty)
+        return "INSERT INTO #{table_name} ( #{columns_names} ) VALUES #{values}; #{rows_qty == 1 ? LAST_INSERTED_ID : ROWS_UPDATED}"
+      end
     end
-
   end
-
 end

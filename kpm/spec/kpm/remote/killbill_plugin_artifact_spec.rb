@@ -91,15 +91,14 @@ describe KPM::KillbillPluginArtifact do
   # (we can't check against actual version because as we keep releasing those increment,
   # so the best we can do it check this is *not* LATEST and greater than current version at the time the test was written )
   def check_yaml_for_resolved_latest_version(sha1_file, key_prefix, minimum_version)
-
     sha1_checker = KPM::Sha1Checker.from_file(sha1_file)
 
-    keys = sha1_checker.all_sha1.keys.select { |k| k.start_with? key_prefix}
+    keys = sha1_checker.all_sha1.keys.select { |k| k.start_with? key_prefix }
     keys.size.should == 1
 
     parts = keys[0].split(':')
     parts.size.should == 4
     parts[3].should_not == 'LATEST'
-    parts[3].should  >= minimum_version
+    parts[3].should >= minimum_version
   end
 end

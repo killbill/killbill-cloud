@@ -4,12 +4,11 @@ require 'pathname'
 
 module KPM
   class Sha1Checker
-
-    def self.from_file(sha1_file, logger=nil)
+    def self.from_file(sha1_file, logger = nil)
       Sha1Checker.new(sha1_file, logger)
     end
 
-    def initialize(sha1_file, logger=nil)
+    def initialize(sha1_file, logger = nil)
       @sha1_file = sha1_file
       init!
 
@@ -46,7 +45,7 @@ module KPM
     def cache_artifact_info(coordinates, artifact_info)
       # See BaseArtifact#artifact_info
       nexus_keys = [:sha1, :version, :repository_path, :is_tgz]
-      nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key,_| nexus_keys.include? key } : nil
+      nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key, _| nexus_keys.include? key } : nil
       save!
     end
 
@@ -94,7 +93,7 @@ module KPM
 
     def create_sha1_directory_if_missing
       sha1_dir = Pathname(@sha1_file).dirname
-      if ! File.directory?(sha1_dir)
+      if !File.directory?(sha1_dir)
         FileUtils.mkdir_p(sha1_dir)
       end
     end
@@ -102,6 +101,5 @@ module KPM
     def reload!
       @sha1_config = YAML::load_file(@sha1_file)
     end
-
   end
 end

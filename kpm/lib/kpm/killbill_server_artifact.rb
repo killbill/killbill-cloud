@@ -4,8 +4,8 @@ require 'set'
 module KPM
   class KillbillServerArtifact < BaseArtifact
     class << self
-      def versions(artifact_id, packaging=KPM::BaseArtifact::KILLBILL_PACKAGING, classifier=KPM::BaseArtifact::KILLBILL_CLASSIFIER, overrides={}, ssl_verify=true)
-        coordinate_map = {:group_id => KPM::BaseArtifact::KILLBILL_GROUP_ID, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
+      def versions(artifact_id, packaging = KPM::BaseArtifact::KILLBILL_PACKAGING, classifier = KPM::BaseArtifact::KILLBILL_CLASSIFIER, overrides = {}, ssl_verify = true)
+        coordinate_map = { :group_id => KPM::BaseArtifact::KILLBILL_GROUP_ID, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier }
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
         versions    = SortedSet.new
@@ -13,7 +13,7 @@ module KPM
         versions
       end
 
-      def info(version='LATEST', sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
+      def info(version = 'LATEST', sha1_file = nil, force_download = false, verify_sha1 = true, overrides = {}, ssl_verify = true)
         logger = Logger.new(STDOUT)
         logger.level = Logger::ERROR
 

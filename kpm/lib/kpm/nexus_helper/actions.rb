@@ -1,5 +1,5 @@
 require_relative 'nexus_api_calls_v2'
-#require_relative 'nexus_api_calls_v3'
+# require_relative 'nexus_api_calls_v3'
 
 module KPM
   module NexusFacade
@@ -11,13 +11,13 @@ module KPM
         overrides[:url] ||= 'https://oss.sonatype.org'
         overrides[:repository] ||= 'releases'
 
-        #this is where the version is verified
-        #example if
-        #@nexus_api_call = overrides['version'] == '3' ? NexusApiCallsV3.new(overrides, ssl_verify) : NexusApiCallsV2.new(overrides, ssl_verify)
+        # this is where the version is verified
+        # example if
+        # @nexus_api_call = overrides['version'] == '3' ? NexusApiCallsV3.new(overrides, ssl_verify) : NexusApiCallsV2.new(overrides, ssl_verify)
         @nexus_api_call = NexusApiCallsV2.new(overrides, ssl_verify, logger)
       end
 
-      def pull_artifact(coordinates, destination=nil)
+      def pull_artifact(coordinates, destination = nil)
         nexus_api_call.pull_artifact(coordinates, destination)
       end
 
@@ -28,7 +28,6 @@ module KPM
       def search_for_artifacts(coordinates)
         nexus_api_call.search_for_artifacts(coordinates)
       end
-
     end
   end
 end

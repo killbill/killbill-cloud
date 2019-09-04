@@ -1,15 +1,13 @@
 module KPM
-
   class Inspector
-
     def initialize
     end
 
     def inspect(bundles_dir)
       bundles_dir = Pathname.new(bundles_dir || KPM::BaseInstaller::DEFAULT_BUNDLES_DIR).expand_path
-      plugins= bundles_dir.join('plugins')
-      ruby_plugins_path=bundles_dir.join('plugins/ruby')
-      java_plugins_path=bundles_dir.join('plugins/java')
+      plugins = bundles_dir.join('plugins')
+      ruby_plugins_path = bundles_dir.join('plugins/ruby')
+      java_plugins_path = bundles_dir.join('plugins/java')
 
       all_plugins = {}
       build_plugins_for_type(ruby_plugins_path, 'ruby', all_plugins)
@@ -30,7 +28,6 @@ module KPM
     private
 
     def add_sha1_info(bundles_dir, all_plugins)
-
       sha1_filename = KPM::BaseInstaller::SHA1_FILENAME
       sha1_file = "#{bundles_dir}/#{sha1_filename}"
       sha1_checker = Sha1Checker.from_file(sha1_file)
@@ -43,8 +40,8 @@ module KPM
           coordinate_map = KPM::Coordinates.get_coordinate_map(coord)
 
           if coordinate_map[:group_id] == cur[:group_id] &&
-              coordinate_map[:artifact_id] == cur[:artifact_id] &&
-              coordinate_map[:packaging] == cur[:packaging]
+             coordinate_map[:artifact_id] == cur[:artifact_id] &&
+             coordinate_map[:packaging] == cur[:packaging]
 
             found_version = cur[:versions].select { |v| v[:version] == coordinate_map[:version] }[0]
             found_version[:sha1] = sha1 if found_version
@@ -69,6 +66,7 @@ module KPM
       if !File.exists?(plugins_path)
         return []
       end
+
       get_entries(plugins_path).inject(res) do |out, e|
         plugin_map = build_plugin_map(e, plugins_path.join(e), type)
         out[e] = plugin_map
@@ -77,8 +75,7 @@ module KPM
     end
 
     def build_plugin_map(plugin_name, plugin_path, type)
-
-      plugin_map = {:plugin_name => plugin_name, :plugin_path => plugin_path.to_s, :type => type}
+      plugin_map = { :plugin_name => plugin_name, :plugin_path => plugin_path.to_s, :type => type }
       entries = get_entries(plugin_path)
       set_default = entries.select { |e| e == "SET_DEFAULT" }[0]
       default_version = File.basename(File.readlink(plugin_path.join(set_default))) if set_default
@@ -87,7 +84,7 @@ module KPM
         e != "SET_DEFAULT"
       end.inject([]) do |out, e|
         is_disabled = File.exists?(plugin_path.join(e).join('tmp').join('disabled.txt'))
-        out << {:version => e, :is_default => default_version == e, :is_disabled => is_disabled, :sha1 => nil};
+        out << { :version => e, :is_default => default_version == e, :is_disabled => is_disabled, :sha1 => nil };
         out
       end
 
@@ -100,6 +97,5 @@ module KPM
     def get_entries(path)
       Dir.entries(path).select { |entry| entry != '.' && entry != '..' && File.directory?(File.join(path, entry)) }
     end
-
   end
 end

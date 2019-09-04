@@ -4,8 +4,7 @@ require 'yaml'
 
 module KPM
   class Installer < BaseInstaller
-
-    def self.from_file(config_path=nil, logger=nil)
+    def self.from_file(config_path = nil, logger = nil)
       if config_path.nil?
         # Install Kill Bill, Kaui and the KPM plugin by default
         config = build_default_config
@@ -15,26 +14,26 @@ module KPM
       Installer.new(config, logger)
     end
 
-    def self.build_default_config(all_kb_versions=nil)
+    def self.build_default_config(all_kb_versions = nil)
       latest_stable_version = get_kb_latest_stable_version(all_kb_versions)
 
       {
-          'killbill' => {
-              'version' => latest_stable_version.to_s,
-              'plugins' => {
-                  'ruby' => [
-                      {'name' => 'kpm'}
-                  ]
-              }
-          },
-          'kaui' => {
-              # Note: we assume no unstable version of Kaui is published today
-              'version' => 'LATEST'
+        'killbill' => {
+          'version' => latest_stable_version.to_s,
+          'plugins' => {
+            'ruby' => [
+              { 'name' => 'kpm' }
+            ]
           }
+        },
+        'kaui' => {
+          # Note: we assume no unstable version of Kaui is published today
+          'version' => 'LATEST'
+        }
       }
     end
 
-    def self.get_kb_latest_stable_version(all_kb_versions=nil)
+    def self.get_kb_latest_stable_version(all_kb_versions = nil)
       all_kb_versions ||= KillbillServerArtifact.versions(KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
                                                           KillbillServerArtifact::KILLBILL_PACKAGING,
                                                           KillbillServerArtifact::KILLBILL_CLASSIFIER,
@@ -54,7 +53,7 @@ module KPM
       latest_stable_version.to_s
     end
 
-    def initialize(raw_config, logger=nil)
+    def initialize(raw_config, logger = nil)
       @config = raw_config['killbill']
       @kaui_config = raw_config['kaui']
 
@@ -71,7 +70,7 @@ module KPM
       super(logger, nexus_config, nexus_ssl_verify)
     end
 
-    def install(force_download=false, verify_sha1=true)
+    def install(force_download = false, verify_sha1 = true)
       bundles_dir = !@config.nil? ? @config['plugins_dir'] : (!@kaui_config.nil? ? @kaui_config['plugins_dir'] : nil)
       bundles_dir ||= DEFAULT_BUNDLES_DIR
 
@@ -95,13 +94,13 @@ module KPM
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
-      @trace_logger.add('help',help)
+      @trace_logger.add('help', help)
       @trace_logger.to_json
     end
 
     private
 
-    def install_tomcat(dir=Dir.pwd)
+    def install_tomcat(dir = Dir.pwd)
       # Download and unpack Tomcat
       manager = KPM::TomcatManager.new(dir, @logger)
       manager.download
@@ -136,11 +135,11 @@ module KPM
     def install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
       return if @config['plugins'].nil? or @config['plugins']['ruby'].nil?
 
-      verify_jruby_jar=true
+      verify_jruby_jar = true
       infos = []
       @config['plugins']['ruby'].each do |plugin|
         infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'ruby', force_download, verify_sha1, verify_jruby_jar)
-        verify_jruby_jar=false
+        verify_jruby_jar = false
       end
 
       infos
@@ -182,6 +181,5 @@ module KPM
         sha1checker.remove_entry!(coordinates)
       end
     end
-
   end
 end

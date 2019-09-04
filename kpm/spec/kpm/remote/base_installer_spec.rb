@@ -53,14 +53,14 @@ describe KPM::BaseInstaller do
 
   it 'should extract plugin name from file path' do
     [
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-1.0.0.jar', :expected => 'xxx'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-bar-1.0.0.jar', :expected => 'xxx-foo-bar'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0-SNAPSHOT.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc-SNAPSHOT.jar', :expected => 'xxx-foo'},
-      {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc.jar', :expected => 'xxx-foo'}
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-1.0.0.jar', :expected => 'xxx' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-bar-1.0.0.jar', :expected => 'xxx-foo-bar' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0.jar', :expected => 'xxx-foo' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.0-SNAPSHOT.jar', :expected => 'xxx-foo' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.0.jar', :expected => 'xxx-foo' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-1.jar', :expected => 'xxx-foo' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc-SNAPSHOT.jar', :expected => 'xxx-foo' },
+      { :file_path => '/Somewhere/xxx-foo/target/xxx-foo-abc.jar', :expected => 'xxx-foo' }
     ].each do |test|
       KPM::Utils.get_plugin_name_from_file_path(test[:file_path]).should eq test[:expected]
     end
@@ -97,19 +97,19 @@ describe KPM::BaseInstaller do
 
   def common_checks(plugins_dir)
     [
-        plugins_dir,
-        plugins_dir + '/plugins',
-        plugins_dir + '/plugins/java',
-        plugins_dir + '/plugins/java/analytics-plugin',
-        plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
-        plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp',
+      plugins_dir,
+      plugins_dir + '/plugins',
+      plugins_dir + '/plugins/java',
+      plugins_dir + '/plugins/java/analytics-plugin',
+      plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
+      plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp',
     ].each do |dir|
       File.directory?(dir).should be_true
     end
 
     [
-        plugins_dir + '/plugins/plugin_identifiers.json',
-        plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar'
+      plugins_dir + '/plugins/plugin_identifiers.json',
+      plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar'
     ].each do |file|
       File.file?(file).should be_true
     end

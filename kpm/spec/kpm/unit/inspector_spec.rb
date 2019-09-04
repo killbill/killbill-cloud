@@ -62,11 +62,10 @@ describe KPM::Inspector do
   private
 
   def add_plugin(plugin_key, plugin_name, versions, language, group_id, artifact_id, packaging, classifier, sha1, active_version, disabled_versions)
-
     plugin_dir = language == 'ruby' ? @ruby_plugins_dir.join(plugin_name) : @java_plugins_dir.join(plugin_name)
 
     versions.each_with_index do |v, idx|
-      coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :version => v, :packaging => packaging, :classifier => classifier}
+      coordinate_map = { :group_id => group_id, :artifact_id => artifact_id, :version => v, :packaging => packaging, :classifier => classifier }
       coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
 
       @manager.add_plugin_identifier_key(plugin_key, plugin_name, language, coordinate_map)

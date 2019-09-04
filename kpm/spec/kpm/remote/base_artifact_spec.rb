@@ -25,7 +25,7 @@ describe KPM::BaseArtifact do
   end
 
   it 'should be able to handle download errors' do
-    nexus_down = {:url => 'https://does.not.exist'}
+    nexus_down = { :url => 'https://does.not.exist' }
     Dir.mktmpdir do |dir|
       sha1_file = "#{dir}/sha1.yml"
       test_download dir, 'foo-oss.pom.xml', false, false, sha1_file
@@ -81,7 +81,7 @@ describe KPM::BaseArtifact do
     end
   end
 
-  def test_download(dir, filename=nil, verify_is_skipped=false, force_download=false, sha1_file=nil, overrides={})
+  def test_download(dir, filename = nil, verify_is_skipped = false, force_download = false, sha1_file = nil, overrides = {})
     path = filename.nil? ? dir : dir + '/' + filename
 
     info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, sha1_file, force_download, true, overrides, true)

@@ -29,7 +29,7 @@ describe KPM::PluginsManager do
 
   it 'creates a plugin identifier entry with coordinates' do
     # Verifies file gets created if does not exist
-    coordinate_map = {:group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version'}
+    coordinate_map = { :group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version' }
     identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', coordinate_map)
     identifiers.size.should == 1
     identifiers['bar']['plugin_name'].should == 'bar_name'
@@ -95,16 +95,16 @@ describe KPM::PluginsManager do
 
   it 'creates plugin identifiers and validate entry' do
     # Verifies file gets created if does not exist
-    coordinate_map = {:group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version'}
+    coordinate_map = { :group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version' }
 
-    identifiers = @manager.add_plugin_identifier_key('yoyo', 'yoyo_name', 'type',  coordinate_map)
+    identifiers = @manager.add_plugin_identifier_key('yoyo', 'yoyo_name', 'type', coordinate_map)
     identifiers.size.should == 1
     identifiers['yoyo']['plugin_name'].should == 'yoyo_name'
 
     @manager.validate_plugin_identifier_key('yoyo', coordinate_map).should == true
 
     # Negative validation
-    invalid_coordinate_map = {:group_id => 'group1', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version'}
+    invalid_coordinate_map = { :group_id => 'group1', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version' }
 
     @manager.validate_plugin_identifier_key('yoyo', invalid_coordinate_map).should == false
   end
@@ -112,14 +112,14 @@ describe KPM::PluginsManager do
   it 'creates a plugin identifier entry with a new version' do
     # Verifies file gets created if does not exist
 
-    coordinate_map1 = {:group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version1'}
+    coordinate_map1 = { :group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version1' }
 
     identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', coordinate_map1)
     identifiers.size.should == 1
     identifiers['bar']['plugin_name'].should == 'bar_name'
     identifiers['bar']['version'].should == 'version1'
 
-    coordinate_map2 = {:group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version2'}
+    coordinate_map2 = { :group_id => 'group', :artifact_id => 'artifact', :packaging => 'packaging', :version => 'version2' }
 
     identifiers = @manager.add_plugin_identifier_key('bar', 'bar_name', 'type', coordinate_map2)
     identifiers.size.should == 1

@@ -3,7 +3,6 @@ require 'uri'
 
 module KPM
   class TomcatManager
-
     DOWNLOAD_URL = 'https://s3.amazonaws.com/kb-binaries/apache-tomcat-7.0.42.tar.gz'
 
     def initialize(tomcat_dir, logger)
