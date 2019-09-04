@@ -7,7 +7,6 @@ describe KPM::PluginsDirectory do
     directory.size.should > 0
   end
 
-
   it 'should lookup plugins' do
     group_id, artifact_id, packaging, classifier, version, type = KPM::PluginsDirectory.lookup('analytics', false, '0.14')
     group_id.should == 'org.kill-bill.billing.plugin.java'

@@ -187,7 +187,6 @@ module KPM
       labels = [{:label => :java_property},
                   {:label => :value}]
 
-
       if not output_as_json
         @formatter.format(java_system,labels)
       end

@@ -41,7 +41,6 @@ describe KPM::PluginsManager do
     identifiers['bar']['version'].should == 'version'
   end
 
-
   it 'creates plugin identifier with multiple entries' do
     # Verifies file gets created if does not exist
     identifiers = @manager.add_plugin_identifier_key('foo', 'foo_name', 'type', nil)
@@ -53,7 +52,6 @@ describe KPM::PluginsManager do
     identifiers.size.should == 2
     identifiers['foo']['plugin_name'].should == 'foo_name'
     identifiers['bar']['plugin_name'].should == 'bar_name'
-
 
     # Verify file was created from previous entry (prev value was read)
     identifiers = @manager.add_plugin_identifier_key('zoe', 'zoe_name', 'type', nil)
@@ -74,7 +72,6 @@ describe KPM::PluginsManager do
     identifiers.size.should == 1
     identifiers['kewl']['plugin_name'].should == 'kewl_name'
   end
-
 
   it 'creates plugin identifiers and remove entry' do
     # Verifies file gets created if does not exist
@@ -112,7 +109,6 @@ describe KPM::PluginsManager do
 
     @manager.validate_plugin_identifier_key('yoyo', invalid_coordinate_map).should == false
   end
-
 
   it 'creates a plugin identifier entry with a new version' do
     # Verifies file gets created if does not exist

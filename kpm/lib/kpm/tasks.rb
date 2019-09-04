@@ -11,7 +11,6 @@ module KPM
       base.send :include, ::Thor::Actions
       base.class_eval do
 
-
         desc 'KPM version', 'Return current KPM version.'
         def version
           say "KPM version #{KPM::VERSION}"
@@ -182,7 +181,6 @@ module KPM
         desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_java_plugin(plugin_key, kb_version='LATEST')
 
-
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
@@ -206,9 +204,6 @@ module KPM
 
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
-
-
-
 
         method_option :group_id,
                       :type => :string,
@@ -529,7 +524,6 @@ module KPM
               raise Interrupt,'Need to specify an action'
             end
 
-
             account = KPM::Account.new(config_file || options[:config_file],options[:killbill_api_credentials],options[:killbill_credentials],
                                        options[:killbill_url],options[:database_name],options[:database_credentials],options[:database_host], options[:database_port],options[:data_delimiter], logger)
             export_file = nil
@@ -602,7 +596,6 @@ module KPM
             end
           end
         end
-
 
         method_option :account_export,
                       :type => :string,

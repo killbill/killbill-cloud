@@ -48,7 +48,6 @@ describe KPM::Sha1Checker do
     existing.should_not be_nil
     existing.should == 'abc068c3fd5f95646ce0d09852f43ff67f06f111'
 
-
     existing = @sha1_checker.sha1('killbill-plugin-other-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should == 'bbb068c3fd5f95646ce0d09852f43ff67f06fccc'

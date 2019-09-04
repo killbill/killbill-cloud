@@ -61,7 +61,6 @@ module KPM
       end
     end
 
-
     def format(data, labels = nil)
       if data.nil? || data.size == 0
         return
@@ -95,15 +94,11 @@ module KPM
         end
       end
 
-
-
       border = "_"
       border = (0...labels.size).inject(border) { |res, i| res="#{res}_"; res }
       border = labels.inject(border) { |res, lbl| (0...lbl[:size] + 2).each { |s| res="#{res}_" }; res }
       format = "|"
       format = labels.inject(format) { |res, lbl| res="#{res} %#{lbl[:size]}s |"; res }
-
-
 
       puts "\n#{border}\n"
       puts "#{format}\n" % labels_format_argument

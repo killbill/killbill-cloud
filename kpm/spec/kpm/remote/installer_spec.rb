@@ -89,7 +89,6 @@ describe KPM::Installer do
       info = installer.install_plugin('payment-test-plugin', nil, 'org.kill-bill.billing.plugin.ruby', 'payment-test-plugin', nil, nil, '1.8.7', plugins_dir)
       info[:bundle_dir].should == plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
 
-
       info = installer.install_plugin('analytics', nil, nil, nil,  nil, nil, '0.7.1', plugins_dir)
       info[:bundle_dir].should == plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
     end

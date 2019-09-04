@@ -81,25 +81,6 @@ Layout/EmptyLineBetweenDefs:
     - 'lib/kpm/inspector.rb'
     - 'lib/kpm/plugins_directory.rb'
 
-# Offense count: 36
-# Cop supports --auto-correct.
-Layout/EmptyLines:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/base_artifact.rb'
-    - 'lib/kpm/base_installer.rb'
-    - 'lib/kpm/formatter.rb'
-    - 'lib/kpm/inspector.rb'
-    - 'lib/kpm/plugins_directory.rb'
-    - 'lib/kpm/system.rb'
-    - 'lib/kpm/tasks.rb'
-    - 'spec/kpm/remote/installer_spec.rb'
-    - 'spec/kpm/remote/killbill_plugin_artifact_spec.rb'
-    - 'spec/kpm/unit/inspector_spec.rb'
-    - 'spec/kpm/unit/plugins_directory_spec.rb'
-    - 'spec/kpm/unit/plugins_manager_spec.rb'
-    - 'spec/kpm/unit/sha1_checker_spec.rb'
-
 # Offense count: 9
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

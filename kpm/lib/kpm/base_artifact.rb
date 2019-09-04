@@ -264,7 +264,6 @@ module KPM
         res
       end
 
-
       # Magic methods...
 
       def path_looks_like_a_directory(path)

@@ -82,7 +82,6 @@ module KPM
       @logger = logger
       @tables_id = Hash.new
 
-
       set_killbill_options(killbill_api_credentials,killbill_credentials,killbill_url)
       set_database_options(database_host,database_port,database_name,database_credentials,logger)
 

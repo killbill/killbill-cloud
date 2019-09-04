@@ -25,7 +25,6 @@ describe KPM::Inspector do
 
   end
 
-
   it 'should parse a correctly setup env' do
 
     add_plugin('foo', 'plugin_foo', ['1.2.3', '2.0.0', '2.0.1'], 'ruby', 'com.foo', 'foo', 'tar.gz', nil, ['12345', '23456', '34567'], '2.0.1', ['1.2.3'])
@@ -64,7 +63,6 @@ describe KPM::Inspector do
 
   end
 
-
   private
 
   def add_plugin(plugin_key, plugin_name, versions, language, group_id, artifact_id, packaging, classifier, sha1, active_version, disabled_versions)
@@ -78,7 +76,6 @@ describe KPM::Inspector do
 
       @manager.add_plugin_identifier_key(plugin_key, plugin_name, language, coordinate_map)
       @sha1_checker.add_or_modify_entry!(coordinates, sha1[idx])
-
 
       plugin_dir_version = plugin_dir.join(v)
 

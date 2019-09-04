@@ -67,8 +67,6 @@ describe KPM::KillbillPluginArtifact do
       check_yaml_for_resolved_latest_version(sha1_file, 'org.kill-bill.billing.plugin.ruby:logging-plugin:tar.gz', '3.0.0')
     end
 
-
-
   end
 
   it 'should be able to list versions' do
@@ -106,6 +104,5 @@ describe KPM::KillbillPluginArtifact do
     parts[3].should_not == 'LATEST'
     parts[3].should  >= minimum_version
   end
-
 
 end

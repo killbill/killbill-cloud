@@ -27,7 +27,6 @@ module KPM
       formatter.format(all_plugins)
     end
 
-
     private
 
     def add_sha1_info(bundles_dir, all_plugins)
@@ -66,7 +65,6 @@ module KPM
         all_plugins[cur][:classifier] = entry ? entry['classifier'] : nil
       end
     end
-
 
     def build_plugins_for_type(plugins_path, type, res)
       if !File.exists?(plugins_path)

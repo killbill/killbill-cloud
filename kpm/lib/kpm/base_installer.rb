@@ -77,7 +77,6 @@ module KPM
                         artifact_info.merge({'status' => (artifact_info[:skipped] ? 'UP_TO_DATE': 'INSTALLED'),
                                              :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}))
 
-
     end
 
     def install_plugin(plugin_key, raw_kb_version=nil, specified_group_id=nil, specified_artifact_id=nil, specified_packaging=nil, specified_classifier=nil, specified_version=nil, bundles_dir=nil, specified_type=nil, force_download=false, verify_sha1=true, verify_jruby_jar=false)
@@ -95,7 +94,6 @@ module KPM
       validate_installation_arg!(plugin_key, 'type', specified_type, looked_up_type)
       validate_installation_arg!(plugin_key, 'classifier', specified_classifier, looked_up_classifier)
 
-
       # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
       if looked_up_artifact_id.nil? &&
           specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
@@ -103,7 +101,6 @@ module KPM
           plugin_key.split(':').size == 1
         raise ArgumentError.new "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end
-
 
       # Specified parameters have always precedence except for the artifact_id (to map stripe to stripe-plugin)
       artifact_id = looked_up_artifact_id || specified_artifact_id
@@ -139,7 +136,6 @@ module KPM
       coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier}
       validate_plugin_key!(plugins_dir, plugin_key, coordinate_map)
 
-
       @logger.debug("Installing plugin: group_id=#{group_id} artifact_id=#{artifact_id} packaging=#{packaging} classifier=#{classifier} version=#{version} destination=#{destination}")
       artifact_info = KPM::KillbillPluginArtifact.pull(@logger,
                                                        group_id,
@@ -168,7 +164,6 @@ module KPM
 
       artifact_info
     end
-
 
     def install_plugin_from_fs(plugin_key, file_path, name, version, bundles_dir=nil, type='java')
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
