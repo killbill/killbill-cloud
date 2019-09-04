@@ -22,14 +22,12 @@ describe KPM::Account do
     let(:obfuscating_marker) {:email}
     let(:mysql_cli) {"mysql --user=#{db_username} --password=#{db_password} --host=#{db_host} --port=#{db_port} "}
     let(:test_ddl) {Dir["#{Dir.pwd}/**/account_test_ddl.sql"][0]}
-
   end
 
   describe '#initialize' do
     include_context 'account'  
 
     context 'when creating an instance of account class' do
-
       it 'when initialized with defaults' do
         expect(described_class.new).to be_an_instance_of(KPM::Account)
       end
@@ -41,11 +39,8 @@ describe KPM::Account do
         expect(account_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(account_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(account_class.instance_variable_get(:@killbill_url)).to eq(url)
-
       end
-
     end
-
   end
 
   # export data tests
@@ -53,7 +48,6 @@ describe KPM::Account do
     include_context 'account'
 
     context 'when fetching account from api' do
-
       it 'when account id not found' do
         expect{ account_class.send(:fetch_export_data, account_id_invalid) }.to raise_error(Interrupt, 'Account id not found')
       end
@@ -64,16 +58,13 @@ describe KPM::Account do
         expect{ account_class.send(:fetch_export_data, account_id) }.not_to raise_error(Interrupt, 'Account id not found')
         expect(account_class.send(:fetch_export_data, account_id)).to match(account_id)
       end
-
     end
-
   end
 
   describe '#process_export_data' do
     include_context 'account'
 
     context 'when processing data to export' do
-
       it 'when column name qty eq column data qty' do
         expect(account_class.send(:process_export_data, cols_data, table_name, cols_names.split("|")).split("|").size).to eq(cols_names.split("|").size)
       end
@@ -90,9 +81,7 @@ describe KPM::Account do
         obfuscating_marker_data = account_class.send(:process_export_data, cols_data, table_name, cols_names.split("|")).split("|")
         expect(obfuscating_marker_data[marker_index]).to be_nil
       end
-
     end
-
   end
 
   describe '#remove_export_data' do
@@ -101,14 +90,12 @@ describe KPM::Account do
     it 'when obfuscating value' do
       expect(account_class.send(:remove_export_data, table_name, obfuscating_marker.to_s, 'willharnet@example.com')).to be_nil
     end
-
   end
 
   describe '#export' do
     include_context 'account'
 
     context 'when exporting data' do
-
       it 'when file created' do
         expect(File.exist?(account_class.send(:export, dummy_data))).to be_true
       end
@@ -117,16 +104,13 @@ describe KPM::Account do
         expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{table_name}/)).to be_true
         expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{cols_names}/)).to be_true
       end
-
     end
-
   end
 
   describe '#export_data' do
     include_context 'account'
 
     context 'when exporting data; main method' do
-
       it 'when no account id' do
         expect{ account_class.export_data }.to raise_error(Interrupt, 'Account id not found')
       end
@@ -143,9 +127,7 @@ describe KPM::Account do
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{table_name}/)).to be_true
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{cols_names}/)).to be_true
       end
-
     end
-
   end
 
   # import data tests
@@ -196,7 +178,6 @@ describe KPM::Account do
       it 'when false' do
         expect(account_class.send(:replace_boolean, false)).to eq(0)
       end
-
     end
   end
 
@@ -222,7 +203,6 @@ describe KPM::Account do
     it 'when field is search_key1 and table bus_events_history' do
       expect(account_class.send(:replace_account_record_id, 'bus_events_history', 'search_key1', '1')).to eq(:@account_record_id)
     end
-
   end
 
   describe '#replace_tenant_record_id' do
@@ -242,7 +222,6 @@ describe KPM::Account do
       account_class.instance_variable_set(:@tenant_record_id, 10)
       expect(account_class.send(:replace_tenant_record_id, 'bus_events_history', 'search_key2', '1')).to eq(10)
     end
-
   end
 
   describe '#replace_uuid' do
@@ -259,7 +238,6 @@ describe KPM::Account do
         expect(account_class.send(:replace_uuid, table_name, 'other_id', dummy_account_id)).to eq(dummy_account_id)
       end
     end
-
   end
 
   describe '#sanitize' do
@@ -271,7 +249,6 @@ describe KPM::Account do
     it 'when nothing to sanitize' do
       expect(account_class.send(:sanitize, table_name, 'id', dummy_account_id,false)).to eq(dummy_account_id)
     end
-
   end
 
   describe '#process_import_data' do
@@ -283,7 +260,6 @@ describe KPM::Account do
         expect(account_class.send(:process_import_data, cols_data, table_name, cols_names.split('|'), false, []).size).to eq(cols_names.split("|").size-1)
       end
     end
-
   end
 
   describe '#import_data' do
@@ -427,5 +403,4 @@ describe KPM::Account do
       response = `#{mysql_cli} -e "DROP DATABASE #{db_name};"`;
       response
     end
-
 end

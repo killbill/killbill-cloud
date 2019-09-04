@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::Migrations, :skip_me_if_nil => ENV['TOKEN'].nil? do
-
   context 'plugins' do
     it 'should be able to find migrations for a java plugin' do
       migrations = KPM::Migrations.new('analytics-plugin-3.0.2', nil, 'killbill/killbill-analytics-plugin', ENV['TOKEN']).migrations

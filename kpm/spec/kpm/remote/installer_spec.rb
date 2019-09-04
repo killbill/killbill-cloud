@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'json'
 
 describe KPM::Installer do
-
   before(:all) do
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::INFO

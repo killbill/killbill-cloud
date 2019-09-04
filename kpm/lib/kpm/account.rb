@@ -152,7 +152,6 @@ module KPM
         export_file = TMP_DIR + File::SEPARATOR + 'kbdump'
 
         open (export_file), 'w' do |io|
-
           table_name = nil
           cols_names = nil
           export_data.split("\n").each do |line|
@@ -165,9 +164,7 @@ module KPM
               clean_line = process_export_data(line,table_name,cols_names)
             end
             io.puts clean_line
-
           end
-
         end
 
         export_file
@@ -182,7 +179,6 @@ module KPM
           sanitized_value = remove_export_data(table_name,col_name,cols[index])
 
           row << sanitized_value
-
         }
 
         clean_line = row.join(@delimiter)
@@ -210,7 +206,6 @@ module KPM
         error_importing_data = false
 
         open (source_file), 'r' do |data|
-
           rows = nil;
           table_name = nil;
           cols_names = nil;

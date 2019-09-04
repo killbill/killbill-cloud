@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::PluginsManager do
-
   before(:each) do
     logger = Logger.new(STDOUT)
     logger.level = Logger::INFO
@@ -126,7 +125,6 @@ describe KPM::PluginsManager do
     identifiers.size.should == 1
     identifiers['bar']['plugin_name'].should == 'bar_name'
     identifiers['bar']['version'].should == 'version2'
-
   end
 
   it 'sets a path as active' do

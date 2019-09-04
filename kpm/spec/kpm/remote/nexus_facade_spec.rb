@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'rexml/document'
 
 describe KPM::NexusFacade do
-
   let(:coordinates_map){ {:version => '0.1.4',
                           :group_id => 'org.kill-bill.billing',
                           :artifact_id => 'killbill-platform-osgi-api',
@@ -56,5 +55,4 @@ describe KPM::NexusFacade do
     destination = File.join(File.expand_path(destination), response[:file_name])
     expect(File.exist?(destination)).to be_true
   end
-
 end

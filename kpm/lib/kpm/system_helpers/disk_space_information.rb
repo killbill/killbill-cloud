@@ -71,7 +71,6 @@ module KPM
                     disk_space[key][@@data_keys[idx].gsub(' ','_').to_sym] = value
                   end
                 end
-
               end
             end
 

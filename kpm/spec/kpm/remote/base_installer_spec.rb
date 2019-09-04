@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'json'
 
 describe KPM::BaseInstaller do
-
   before(:all) do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -53,7 +52,6 @@ describe KPM::BaseInstaller do
   end
 
   it 'should extract plugin name from file path' do
-
     [
       {:file_path => '/Somewhere/xxx-foo/target/xxx-1.0.0.jar', :expected => 'xxx'},
       {:file_path => '/Somewhere/xxx-foo/target/xxx-foo-bar-1.0.0.jar', :expected => 'xxx-foo-bar'},

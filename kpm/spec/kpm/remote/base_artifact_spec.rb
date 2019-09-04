@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::BaseArtifact do
-
   before(:all) do
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -79,7 +78,6 @@ describe KPM::BaseArtifact do
       second_take = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, second_bundle_version, dir)
       File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar').should be_false
       File.file?(second_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.10.jar').should be_true
-
     end
   end
 

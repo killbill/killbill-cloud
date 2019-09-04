@@ -18,7 +18,6 @@ describe KPM::TenantConfig do
                                              
   describe '#initialize' do
     context 'when creating an instance of tenant config class' do
-
       it 'when initialized with defaults' do
         expect(described_class.new).to be_an_instance_of(KPM::TenantConfig)
       end
@@ -30,11 +29,8 @@ describe KPM::TenantConfig do
         expect(tenant_config_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(tenant_config_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(tenant_config_class.instance_variable_get(:@killbill_url)).to eq(url)
-
       end
-
     end
-
   end                                           
   
   describe '#export' do

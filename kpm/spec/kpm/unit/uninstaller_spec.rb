@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::Uninstaller do
-
   let(:uninstaller) { KPM::Uninstaller.new(destination) }
   let(:destination) { 'somedir' }
 

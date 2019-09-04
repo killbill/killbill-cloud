@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::PluginsDirectory do
-
   it 'should parse the plugins directory' do
     directory = KPM::PluginsDirectory.all(false)
     directory.size.should > 0

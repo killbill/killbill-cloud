@@ -49,7 +49,6 @@ module KPM
             found_version = cur[:versions].select { |v| v[:version] == coordinate_map[:version] }[0]
             found_version[:sha1] = sha1 if found_version
           end
-
         end
       end
     end

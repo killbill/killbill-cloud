@@ -120,7 +120,6 @@ module KPM
                            :qty_to_insert => rows.size, :table_name => table_name, :table_data => table}
 
           end
-
         end
 
         statements

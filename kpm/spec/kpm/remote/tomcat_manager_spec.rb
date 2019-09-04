@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::TomcatManager do
-
   before(:all) do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO

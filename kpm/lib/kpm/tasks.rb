@@ -10,7 +10,6 @@ module KPM
     def self.included(base)
       base.send :include, ::Thor::Actions
       base.class_eval do
-
         desc 'KPM version', 'Return current KPM version.'
         def version
           say "KPM version #{KPM::VERSION}"

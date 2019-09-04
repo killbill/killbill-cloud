@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe KPM::Inspector do
-
   before(:each) do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -22,11 +21,9 @@ describe KPM::Inspector do
 
     @sha1_file = @bundles_dir.join("sha1.yml")
     @sha1_checker = KPM::Sha1Checker.from_file(@sha1_file)
-
   end
 
   it 'should parse a correctly setup env' do
-
     add_plugin('foo', 'plugin_foo', ['1.2.3', '2.0.0', '2.0.1'], 'ruby', 'com.foo', 'foo', 'tar.gz', nil, ['12345', '23456', '34567'], '2.0.1', ['1.2.3'])
     add_plugin('bar', 'plugin_bar', ['1.0.0'], 'java', 'com.bar', 'bar', 'jar', nil, ['98765'], nil, [])
 
@@ -60,7 +57,6 @@ describe KPM::Inspector do
     all_plugins['plugin_foo'][:versions][2][:is_default] == true
     all_plugins['plugin_foo'][:versions][2][:is_disabled] == false
     all_plugins['plugin_foo'][:versions][2][:sha1] == '34567'
-
   end
 
   private
@@ -70,7 +66,6 @@ describe KPM::Inspector do
     plugin_dir = language == 'ruby' ? @ruby_plugins_dir.join(plugin_name) : @java_plugins_dir.join(plugin_name)
 
     versions.each_with_index do |v, idx|
-
       coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :version => v, :packaging => packaging, :classifier => classifier}
       coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
 
@@ -92,5 +87,4 @@ describe KPM::Inspector do
       @manager.uninstall(plugin_dir, v)
     end
   end
-
 end

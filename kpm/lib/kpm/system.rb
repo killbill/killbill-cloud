@@ -145,7 +145,6 @@ module KPM
       last_key = ''
 
       `#{command}`.split("\n").each do |prop|
-
         if prop.to_s.strip.empty?
           break;
         end
@@ -157,10 +156,8 @@ module KPM
 
             chunks = ".{1,#{MAX_VALUE_COLUMN_WIDTH}}"
             props[1].to_s.scan(/#{chunks}/).each_with_index do |p, index|
-
               java_system[property_count] = {:java_property => index.equal?(0) ? props[0] : '', :value => p}
               property_count += 1
-
             end
           elsif output_as_json
             key = (props[1].nil? ? last_key : props[0]).to_s.strip
@@ -182,7 +179,6 @@ module KPM
         end
 
         property_count += 1
-
       end
       labels = [{:label => :java_property},
                   {:label => :value}]
@@ -300,12 +296,10 @@ module KPM
     def get_apache_tomcat_pid
       apache_tomcat_pid = nil;
       `jcmd -l 2>&1`.split("\n").each do |line|
-
         if /org.apache.catalina/.match(line)
           words = line.split(' ')
           apache_tomcat_pid = words[0]
         end
-
       end
 
       return apache_tomcat_pid unless apache_tomcat_pid.nil?

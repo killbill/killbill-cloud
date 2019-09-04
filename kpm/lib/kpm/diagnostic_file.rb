@@ -53,12 +53,10 @@ module KPM
         zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
 
         Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipFile|
-
           zipFile.add(TENANT_FILE,  tenant_export_file)
           zipFile.add(SYSTEM_FILE,  system_export_file)
           zipFile.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
           zipFile.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
-
         end
 
         @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
@@ -135,12 +133,10 @@ module KPM
       zip_file_name = TMP_DIR + File::Separator + ZIP_LOG_FILE
 
       Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipFile|
-
         log_items.each do |file|
           name = file.split('/').last
           zipFile.add(name, file)
         end
-
       end
 
       zip_file_name
