@@ -31,34 +31,34 @@ describe KPM::Inspector do
 
     inspector = KPM::Inspector.new
     all_plugins = inspector.inspect(@bundles_dir)
-    all_plugins.size == 2
+    all_plugins.size.should eq 2
 
-    all_plugins['plugin_bar']['plugin_key'] == 'bar'
-    all_plugins['plugin_bar']['plugin_path'] == @java_plugins_dir.join('plugin_bar').to_s
-    all_plugins['plugin_bar'][:versions].size == 1
-    all_plugins['plugin_bar'][:versions][0][:version] == '1.0.0'
-    all_plugins['plugin_bar'][:versions][0][:is_default] == true
-    all_plugins['plugin_bar'][:versions][0][:is_disabled] == false
-    all_plugins['plugin_bar'][:versions][0][:sha1] == '98765'
+    all_plugins['plugin_bar'][:plugin_key].should eq 'bar'
+    all_plugins['plugin_bar'][:plugin_path].should eq @java_plugins_dir.join('plugin_bar').to_s
+    all_plugins['plugin_bar'][:versions].size.should eq 1
+    all_plugins['plugin_bar'][:versions][0][:version].should eq '1.0.0'
+    all_plugins['plugin_bar'][:versions][0][:is_default].should eq false
+    all_plugins['plugin_bar'][:versions][0][:is_disabled].should eq false
+    all_plugins['plugin_bar'][:versions][0][:sha1].should eq '98765'
 
-    all_plugins['plugin_foo']['plugin_key'] == 'foo'
-    all_plugins['plugin_foo']['plugin_path'] == @ruby_plugins_dir.join('plugin_foo').to_s
-    all_plugins['plugin_foo'][:versions].size == 3
+    all_plugins['plugin_foo'][:plugin_key].should eq 'foo'
+    all_plugins['plugin_foo'][:plugin_path].should eq @ruby_plugins_dir.join('plugin_foo').to_s
+    all_plugins['plugin_foo'][:versions].size.should eq 3
 
-    all_plugins['plugin_foo'][:versions][0][:version] == '1.2.3'
-    all_plugins['plugin_foo'][:versions][0][:is_default] == false
-    all_plugins['plugin_foo'][:versions][0][:is_disabled] == true
-    all_plugins['plugin_foo'][:versions][0][:sha1] == '12345'
+    all_plugins['plugin_foo'][:versions][0][:version].should eq '1.2.3'
+    all_plugins['plugin_foo'][:versions][0][:is_default].should eq false
+    all_plugins['plugin_foo'][:versions][0][:is_disabled].should eq true
+    all_plugins['plugin_foo'][:versions][0][:sha1].should eq '12345'
 
-    all_plugins['plugin_foo'][:versions][1][:version] == '2.0.0'
-    all_plugins['plugin_foo'][:versions][1][:is_default] == false
-    all_plugins['plugin_foo'][:versions][1][:is_disabled] == false
-    all_plugins['plugin_foo'][:versions][1][:sha1] == '23456'
+    all_plugins['plugin_foo'][:versions][1][:version].should eq '2.0.0'
+    all_plugins['plugin_foo'][:versions][1][:is_default].should eq false
+    all_plugins['plugin_foo'][:versions][1][:is_disabled].should eq false
+    all_plugins['plugin_foo'][:versions][1][:sha1].should eq '23456'
 
-    all_plugins['plugin_foo'][:versions][2][:version] == '2.0.1'
-    all_plugins['plugin_foo'][:versions][2][:is_default] == true
-    all_plugins['plugin_foo'][:versions][2][:is_disabled] == false
-    all_plugins['plugin_foo'][:versions][2][:sha1] == '34567'
+    all_plugins['plugin_foo'][:versions][2][:version].should eq '2.0.1'
+    all_plugins['plugin_foo'][:versions][2][:is_default].should eq true
+    all_plugins['plugin_foo'][:versions][2][:is_disabled].should eq false
+    all_plugins['plugin_foo'][:versions][2][:sha1].should eq '34567'
   end
 
   private

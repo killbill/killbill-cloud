@@ -76,14 +76,14 @@ describe KPM::BaseInstaller do
 
     plugin_identifiers = read_plugin_identifiers(plugins_dir)
 
-    plugin_identifiers.size.should == 1
+    plugin_identifiers.size.should eq 1
 
-    plugin_identifiers['analytics']['plugin_name'].should == 'analytics-plugin'
-    plugin_identifiers['analytics']['group_id'].should == 'org.kill-bill.billing.plugin.java'
-    plugin_identifiers['analytics']['artifact_id'].should == 'analytics-plugin'
-    plugin_identifiers['analytics']['packaging'].should == 'jar'
-    plugin_identifiers['analytics']['version'].should == '0.7.1'
-    plugin_identifiers['analytics']['language'].should == 'java'
+    plugin_identifiers['analytics']['plugin_name'].should eq 'analytics-plugin'
+    plugin_identifiers['analytics']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
+    plugin_identifiers['analytics']['artifact_id'].should eq 'analytics-plugin'
+    plugin_identifiers['analytics']['packaging'].should eq 'jar'
+    plugin_identifiers['analytics']['version'].should eq '0.7.1'
+    plugin_identifiers['analytics']['language'].should eq 'java'
 
     File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt').should be_false
   end
@@ -93,7 +93,7 @@ describe KPM::BaseInstaller do
 
     plugin_identifiers = read_plugin_identifiers(plugins_dir)
 
-    plugin_identifiers.size.should == 0
+    plugin_identifiers.size.should eq 0
 
     File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt').should be_true
   end

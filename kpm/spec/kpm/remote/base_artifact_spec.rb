@@ -56,11 +56,11 @@ describe KPM::BaseArtifact do
       info[:file_name].should be_nil
 
       files_in_dir = Dir[info[:file_path] + '/*']
-      files_in_dir.size.should == 20
+      files_in_dir.size.should eq 20
 
       File.file?(info[:file_path] + '/killbill-osgi-bundles-jruby-0.11.3.jar').should be_true
 
-      info[:bundle_dir].should == info[:file_path]
+      info[:bundle_dir].should eq info[:file_path]
     end
   end
 
@@ -87,8 +87,8 @@ describe KPM::BaseArtifact do
     path = filename.nil? ? dir : dir + '/' + filename
 
     info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, sha1_file, force_download, true, overrides, true)
-    info[:file_name].should == (filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
-    info[:skipped].should == verify_is_skipped
-    info[:size].should == File.size(info[:file_path]) unless info[:skipped]
+    info[:file_name].should eq(filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
+    info[:skipped].should eq verify_is_skipped
+    info[:size].should eq File.size(info[:file_path]) unless info[:skipped]
   end
 end

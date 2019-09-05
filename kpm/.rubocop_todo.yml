@@ -6,31 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-# Configuration parameters: Include.
-# Include: **/*.gemspec, 
-Gemspec/RequiredRubyVersion:
-  Exclude:
-    - 'kpm.gemspec'
-
-# Offense count: 149
-# Configuration parameters: CheckForMethodsWithNoSideEffects.
-Lint/Void:
-  Exclude:
-    - 'spec/kpm/remote/base_artifact_spec.rb'
-    - 'spec/kpm/remote/base_installer_spec.rb'
-    - 'spec/kpm/remote/installer_spec.rb'
-    - 'spec/kpm/remote/kaui_artifact_spec.rb'
-    - 'spec/kpm/remote/killbill_plugin_artifact_spec.rb'
-    - 'spec/kpm/remote/killbill_server_artifact_spec.rb'
-    - 'spec/kpm/remote/migrations_spec.rb'
-    - 'spec/kpm/unit/base_artifact_spec.rb'
-    - 'spec/kpm/unit/inspector_spec.rb'
-    - 'spec/kpm/unit/installer_spec.rb'
-    - 'spec/kpm/unit/plugins_directory_spec.rb'
-    - 'spec/kpm/unit/plugins_manager_spec.rb'
-    - 'spec/kpm/unit/sha1_checker_spec.rb'
-
 # Offense count: 79
 Metrics/AbcSize:
   Max: 595
@@ -74,19 +49,6 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 58
 
-# Offense count: 9
-Security/Open:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/system.rb'
-    - 'spec/kpm/unit_mysql/account_spec.rb'
-
-# Offense count: 6
-Style/CaseEquality:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/tasks.rb'
-
 # Offense count: 14
 Style/ClassVars:
   Exclude:
@@ -118,8 +80,3 @@ Style/GuardClause:
     - 'lib/kpm/tenant_config.rb'
     - 'spec/kpm/remote/base_artifact_spec.rb'
     - 'tasks/package.rake'
-
-# Offense count: 1
-Style/MultilineBlockChain:
-  Exclude:
-    - 'lib/kpm/inspector.rb'

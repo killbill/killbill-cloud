@@ -548,7 +548,7 @@ module KPM
 
           raise Interrupt, '--killbill_credentials, required format -> <user> <password>' if options[:killbill_credentials] && options[:killbill_credentials].size != 2
 
-          raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}" if options[:key_prefix] === :key_prefix.to_s
+          raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}" if options[:key_prefix] == :key_prefix.to_s
 
           tenant_config = KPM::TenantConfig.new(options[:killbill_api_credentials], options[:killbill_credentials],
                                                 options[:killbill_url], logger)

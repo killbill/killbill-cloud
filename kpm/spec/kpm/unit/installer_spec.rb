@@ -9,10 +9,10 @@ describe KPM::Installer do
     it 'finds the right stable versions' do
       config = KPM::Installer.build_default_config(all_kb_versions)
       config['killbill'].should_not be_nil
-      config['killbill']['version'].should == '0.16.11'
+      config['killbill']['version'].should eq '0.16.11'
 
       config['kaui'].should_not be_nil
-      config['kaui']['version'].should == 'LATEST'
+      config['kaui']['version'].should eq 'LATEST'
     end
   end
 end

@@ -137,7 +137,7 @@ describe KPM::Account do
     include_context 'account'
 
     it 'when data delimiter is sniffed as "|"' do
-      open (dummy_data_file), 'w' do |io|
+      File.open(dummy_data_file, 'w') do |io|
         io.puts(dummy_data)
       end
 
@@ -284,7 +284,7 @@ describe KPM::Account do
       end
 
       it 'when importing data with new record_id' do
-        open (dummy_data_file), 'w' do |io|
+        File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
         expect { account_class.import_data(dummy_data_file, nil, true, false, true) }.not_to raise_error(Interrupt)
@@ -298,7 +298,7 @@ describe KPM::Account do
       end
 
       it 'when importing data reusing record_id' do
-        open (dummy_data_file), 'w' do |io|
+        File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
         expect { account_class.import_data(dummy_data_file, nil, true, false, false) }.not_to raise_error(Interrupt)
@@ -312,7 +312,7 @@ describe KPM::Account do
       end
 
       it 'when importing data with different tenant_record_id' do
-        open (dummy_data_file), 'w' do |io|
+        File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
         expect { account_class.import_data(dummy_data_file, 10, true, false, true) }.not_to raise_error(Interrupt)
@@ -326,7 +326,7 @@ describe KPM::Account do
       end
 
       it 'when round trip' do
-        open (dummy_data_file), 'w' do |io|
+        File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
         expect { account_class.import_data(dummy_data_file, 10, true, true, true) }.not_to raise_error(Interrupt)
@@ -385,22 +385,17 @@ describe KPM::Account do
   def delete_statement(table_name, column_name, account_id)
     response = `#{mysql_cli} #{db_name} -e "DELETE FROM #{table_name} WHERE #{column_name} = '#{account_id}'; SELECT ROW_COUNT();" 2>&1`
     response_msg = response.split("\n")
-    row_count_inserted = response_msg[response_msg.size - 1]
-
-    row_count_inserted
+    response_msg[response_msg.size - 1]
   end
 
   def create_test_schema
     `#{mysql_cli} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
     response = `#{mysql_cli} #{db_name} < "#{test_ddl}" 2>&1`
     response_msg = response.split("\n")
-    used_database = response_msg[response_msg.size - 1]
-
-    used_database
+    response_msg[response_msg.size - 1]
   end
 
   def drop_test_schema
-    response = `#{mysql_cli} -e "DROP DATABASE #{db_name};"`
-    response
+    `#{mysql_cli} -e "DROP DATABASE #{db_name};"`
   end
 end

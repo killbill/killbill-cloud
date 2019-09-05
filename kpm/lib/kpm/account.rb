@@ -88,7 +88,7 @@ module KPM
     end
 
     def export_data(account_id = nil)
-      raise Interrupt, 'Need to specify an account id' if account_id === :export.to_s
+      raise Interrupt, 'Need to specify an account id' if account_id == :export.to_s
 
       export_data = fetch_export_data(account_id)
       export_file = export(export_data)
@@ -109,7 +109,7 @@ module KPM
       @tenant_record_id = tenant_record_id
       @round_trip_export_import = round_trip_export_import
 
-      raise Interrupt, 'Need to specify a file' if source_file === :import.to_s
+      raise Interrupt, 'Need to specify a file' if source_file == :import.to_s
 
       raise Interrupt, "File #{source_file} does not exist" unless File.exist?(source_file)
 
@@ -142,7 +142,7 @@ module KPM
     def export(export_data)
       export_file = TMP_DIR + File::SEPARATOR + 'kbdump'
 
-      open (export_file), 'w' do |io|
+      File.open(export_file, 'w') do |io|
         table_name = nil
         cols_names = nil
         export_data.split("\n").each do |line|
@@ -172,9 +172,7 @@ module KPM
         row << sanitized_value
       end
 
-      clean_line = row.join(@delimiter)
-
-      clean_line
+      row.join(@delimiter)
     end
 
     def remove_export_data(table_name, col_name, value)
@@ -193,7 +191,7 @@ module KPM
       tables = {}
       error_importing_data = false
 
-      open (source_file), 'r' do |data|
+      File.open(source_file, 'r') do |data|
         rows = nil
         table_name = nil
         cols_names = nil
@@ -269,7 +267,7 @@ module KPM
 
         record_id = { variable: '@account_record_id', value: response } if statement[:table_name] == 'accounts' && response.is_a?(String)
 
-        break if response === false
+        break unless response
       end
     end
 
@@ -314,9 +312,9 @@ module KPM
     end
 
     def replace_boolean(value)
-      if value.to_s === 'true'
+      if value.to_s == 'true'
         1
-      elsif value.to_s === 'false'
+      elsif value.to_s == 'false'
         0
       else
         value

@@ -77,9 +77,10 @@ module KPM
       set_default = entries.select { |e| e == 'SET_DEFAULT' }[0]
       default_version = File.basename(File.readlink(plugin_path.join(set_default))) if set_default
 
-      versions = entries.reject do |e|
+      non_default = entries.reject do |e|
         e == 'SET_DEFAULT'
-      end.each_with_object([]) do |e, out|
+      end
+      versions = non_default.each_with_object([]) do |e, out|
         is_disabled = File.exist?(plugin_path.join(e).join('tmp').join('disabled.txt'))
         out << { version: e, is_default: default_version == e, is_disabled: is_disabled, sha1: nil }
       end

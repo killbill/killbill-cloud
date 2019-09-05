@@ -88,10 +88,10 @@ describe KPM::Installer do
 
       # Finally verify that for both (well behaved) ruby and java plugin, skipping the install will still correctly return the `:bundle_dir`
       info = installer.install_plugin('payment-test-plugin', nil, 'org.kill-bill.billing.plugin.ruby', 'payment-test-plugin', nil, nil, '1.8.7', plugins_dir)
-      info[:bundle_dir].should == plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
+      info[:bundle_dir].should eq plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
 
       info = installer.install_plugin('analytics', nil, nil, nil, nil, nil, '0.7.1', plugins_dir)
-      info[:bundle_dir].should == plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
+      info[:bundle_dir].should eq plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
     end
   end
 
@@ -128,27 +128,27 @@ describe KPM::Installer do
       JSON.parse(f.read)
     end
 
-    plugin_identifiers.size.should == 3
+    plugin_identifiers.size.should eq 3
 
-    plugin_identifiers['analytics']['plugin_name'].should == 'analytics-plugin'
-    plugin_identifiers['analytics']['group_id'].should == 'org.kill-bill.billing.plugin.java'
-    plugin_identifiers['analytics']['artifact_id'].should == 'analytics-plugin'
-    plugin_identifiers['analytics']['packaging'].should == 'jar'
-    plugin_identifiers['analytics']['version'].should == '0.7.1'
-    plugin_identifiers['analytics']['language'].should == 'java'
+    plugin_identifiers['analytics']['plugin_name'].should eq 'analytics-plugin'
+    plugin_identifiers['analytics']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
+    plugin_identifiers['analytics']['artifact_id'].should eq 'analytics-plugin'
+    plugin_identifiers['analytics']['packaging'].should eq 'jar'
+    plugin_identifiers['analytics']['version'].should eq '0.7.1'
+    plugin_identifiers['analytics']['language'].should eq 'java'
 
-    plugin_identifiers['payment-test-plugin']['plugin_name'].should == 'killbill-payment-test'
-    plugin_identifiers['payment-test-plugin']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
-    plugin_identifiers['payment-test-plugin']['artifact_id'].should == 'payment-test-plugin'
-    plugin_identifiers['payment-test-plugin']['packaging'].should == 'tar.gz'
-    plugin_identifiers['payment-test-plugin']['version'].should == '1.8.7'
-    plugin_identifiers['payment-test-plugin']['language'].should == 'ruby'
+    plugin_identifiers['payment-test-plugin']['plugin_name'].should eq 'killbill-payment-test'
+    plugin_identifiers['payment-test-plugin']['group_id'].should eq 'org.kill-bill.billing.plugin.ruby'
+    plugin_identifiers['payment-test-plugin']['artifact_id'].should eq 'payment-test-plugin'
+    plugin_identifiers['payment-test-plugin']['packaging'].should eq 'tar.gz'
+    plugin_identifiers['payment-test-plugin']['version'].should eq '1.8.7'
+    plugin_identifiers['payment-test-plugin']['language'].should eq 'ruby'
 
-    plugin_identifiers['stripe']['plugin_name'].should == 'killbill-stripe'
-    plugin_identifiers['stripe']['group_id'].should == 'org.kill-bill.billing.plugin.ruby'
-    plugin_identifiers['stripe']['artifact_id'].should == 'stripe-plugin'
-    plugin_identifiers['stripe']['packaging'].should == 'tar.gz'
-    plugin_identifiers['stripe']['version'].should == '3.0.3'
-    plugin_identifiers['stripe']['language'].should == 'ruby'
+    plugin_identifiers['stripe']['plugin_name'].should eq 'killbill-stripe'
+    plugin_identifiers['stripe']['group_id'].should eq 'org.kill-bill.billing.plugin.ruby'
+    plugin_identifiers['stripe']['artifact_id'].should eq 'stripe-plugin'
+    plugin_identifiers['stripe']['packaging'].should eq 'tar.gz'
+    plugin_identifiers['stripe']['version'].should eq '3.0.3'
+    plugin_identifiers['stripe']['language'].should eq 'ruby'
   end
 end

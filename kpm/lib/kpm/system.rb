@@ -222,7 +222,7 @@ module KPM
       unless gemfile[0].nil?
         absolute_gemfile_path = File.absolute_path(gemfile[0])
 
-        version = open(absolute_gemfile_path) do |f|
+        version = File.open(absolute_gemfile_path, 'r') do |f|
           f.each_line.detect do |line|
             next unless /kaui/.match(line)
 
@@ -250,7 +250,7 @@ module KPM
       unless file[0].nil?
         absolute_file_path = File.absolute_path(file[0])
 
-        version = open(absolute_file_path) do |f|
+        version = File.open(absolute_file_path, 'r') do |f|
           f.each_line.detect do |line|
             version = /(\d+)\.(\d+)\.(\d+)/.match(line)
 
