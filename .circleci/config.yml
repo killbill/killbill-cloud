@@ -263,6 +263,28 @@ jobs:
           path: /tmp/test-results
           destination: test-results
 
+  test-rubocop:
+    <<: *defaults
+    docker:
+      - image: killbill/kbbuild:0.5.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: v5-dependencies-ruby-2.4.2-{{ .Branch }}-{{ checksum "kpm/kpm.gemspec" }}
+      - run:
+          name: Run RuboCop
+          command: |
+            mkdir /tmp/test-results
+            cd kpm
+            source /usr/share/rvm/scripts/rvm
+            rvm use ruby-2.4.2
+            bundle exec rubocop --format tap | tee /tmp/test-results/rubocop.txt 2&1
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
   build-jruby-9.1.14.0:
     <<: *defaults
     docker:
@@ -378,6 +400,9 @@ workflows:
           requires:
             - build-ruby-2.4.2
             - test-mysql-jruby-1.7.26
+      - test-test-rubocop:
+          requires:
+            - build-ruby-2.4.2
       - test-mysql-jruby-9.1.14.0:
           requires:
             - build-jruby-9.1.14.0
