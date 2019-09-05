@@ -302,9 +302,9 @@ module KPM
     def config=(config_file = nil)
       @config = nil
 
-      unless config_file.nil?
-        @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
-      end
+      return if config_file.nil?
+
+      @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
     end
 
     def kaui_web_path

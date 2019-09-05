@@ -95,11 +95,9 @@ module KPM
       export_data = fetch_export_data(account_id)
       export_file = export(export_data)
 
-      if File.exist?(export_file)
-        @logger.info "\e[32mData exported under #{export_file}\e[0m"
-      else
-        raise Interrupt, 'Account id not found'
-      end
+      raise Interrupt, 'Account id not found' unless File.exist?(export_file)
+
+      @logger.info "\e[32mData exported under #{export_file}\e[0m"
 
       export_file
     end
@@ -233,11 +231,9 @@ module KPM
         error_importing_data = true if tables.empty?
       end
 
-      if error_importing_data
-        raise Interrupt, "Data on #{source_file} is invalid"
-      else
-        import(tables)
-      end
+      raise Interrupt, "Data on #{source_file} is invalid" if error_importing_data
+
+      import(tables)
     end
 
     def process_import_data(line, table_name, cols_names, skip_payment_methods, _rows)
@@ -391,27 +387,27 @@ module KPM
     def load_config_from_file(config_file)
       self.config = config_file
 
-      unless @config.nil?
-        config_killbill = @config['killbill']
+      return if @config.nil?
 
-        unless config_killbill.nil?
-          set_killbill_options([config_killbill['api_key'], config_killbill['api_secret']],
-                               [config_killbill['user'], config_killbill['password']],
-                               "http://#{config_killbill['host']}:#{config_killbill['port']}")
-        end
+      config_killbill = @config['killbill']
 
-        config_db = @config['database']
-
-        @database = Database.new(config_db['name'], config_db['host'], config_db['port'], config_db['username'], config_db['password'], @logger) unless config_db.nil?
+      unless config_killbill.nil?
+        set_killbill_options([config_killbill['api_key'], config_killbill['api_secret']],
+                             [config_killbill['user'], config_killbill['password']],
+                             "http://#{config_killbill['host']}:#{config_killbill['port']}")
       end
+
+      config_db = @config['database']
+
+      @database = Database.new(config_db['name'], config_db['host'], config_db['port'], config_db['username'], config_db['password'], @logger) unless config_db.nil?
     end
 
     def config=(config_file = nil)
       @config = nil
 
-      unless config_file.nil?
-        @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
-      end
+      return if config_file.nil?
+
+      @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
     end
 
     def set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)

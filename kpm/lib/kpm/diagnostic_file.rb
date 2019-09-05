@@ -49,23 +49,20 @@ module KPM
       account_export_file = retrieve_account_data(account_id) unless account_id.nil?
       log_files           = retrieve_log_files(log_dir)
 
-      if File.exist?(system_export_file) && File.exist?(tenant_export_file)
+      raise Interrupt, 'Account id or configuration file not found' unless File.exist?(system_export_file) && File.exist?(tenant_export_file)
 
-        zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
+      zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
 
-        Zip::File.open(zip_file_name, Zip::File::CREATE) do |zip_file|
-          zip_file.add(TENANT_FILE,  tenant_export_file)
-          zip_file.add(SYSTEM_FILE,  system_export_file)
-          zip_file.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
-          zip_file.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
-        end
-
-        @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
-
-        return zip_file_name
-      else
-        raise Interrupt, 'Account id or configuration file not found'
+      Zip::File.open(zip_file_name, Zip::File::CREATE) do |zip_file|
+        zip_file.add(TENANT_FILE,  tenant_export_file)
+        zip_file.add(SYSTEM_FILE,  system_export_file)
+        zip_file.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
+        zip_file.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
       end
+
+      @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
+
+      zip_file_name
     end
 
     # Private methods
@@ -173,9 +170,9 @@ module KPM
     def config=(config_file = nil)
       @config = nil
 
-      unless config_file.nil?
-        @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
-      end
+      return if config_file.nil?
+
+      @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
     end
   end
 end

@@ -46,11 +46,9 @@ module KPM
 
       export_file = store_into_file(export_data)
 
-      if !File.exist?(export_file)
-        raise Interrupt, 'key_prefix not found'
-      else
-        @logger.info "\e[32mData exported under #{export_file}\e[0m"
-      end
+      raise Interrupt, 'key_prefix not found' unless File.exist?(export_file)
+
+      @logger.info "\e[32mData exported under #{export_file}\e[0m"
 
       export_file
     end

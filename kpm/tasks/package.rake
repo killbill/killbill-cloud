@@ -108,10 +108,10 @@ def create_package(target)
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
 
-  unless ENV['DIR_ONLY']
-    sh "tar -czf #{package_dir}.tar.gz #{package_dir}"
-    sh "rm -rf #{package_dir}"
-  end
+  return if ENV['DIR_ONLY']
+
+  sh "tar -czf #{package_dir}.tar.gz #{package_dir}"
+  sh "rm -rf #{package_dir}"
 end
 
 def download_runtime(target)

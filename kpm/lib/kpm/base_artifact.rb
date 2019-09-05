@@ -184,12 +184,10 @@ module KPM
         rescue StandardError => e
           logger.warn("Unable to retrieve coordinates #{coordinate_map}: #{e}")
           cached_coordinates = sha1_checker ? sha1_checker.artifact_info(coordinates) : nil
-          if force_download || !cached_coordinates
-            raise e
-          else
-            # Use the cache
-            return cached_coordinates
-          end
+          raise e if force_download || !cached_coordinates
+
+          # Use the cache
+          return cached_coordinates
         end
 
         xml = REXML::Document.new(nexus_info)
