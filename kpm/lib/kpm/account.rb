@@ -82,7 +82,9 @@ module KPM
       @tables_id = {}
 
       set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)
-      set_database_options(database_host, database_port, database_name, database_credentials, logger)
+
+      database_credentials ||= [nil, nil]
+      @database = Database.new(database_name, database_host, database_port, database_credentials[0], database_credentials[1], logger)
 
       load_config_from_file(config_file)
     end
@@ -261,9 +263,9 @@ module KPM
 
     def import(tables)
       record_id = nil
-      statements = Database.generate_insert_statement(tables)
+      statements = @database.generate_insert_statement(tables)
       statements.each do |statement|
-        response = Database.execute_insert_statement(statement[:table_name], statement[:query], statement[:qty_to_insert], statement[:table_data], record_id)
+        response = @database.execute_insert_statement(statement[:table_name], statement[:query], statement[:qty_to_insert], statement[:table_data], record_id)
 
         record_id = { variable: '@account_record_id', value: response } if statement[:table_name] == 'accounts' && response.is_a?(String)
 
@@ -400,12 +402,7 @@ module KPM
 
         config_db = @config['database']
 
-        unless config_db.nil?
-          set_database_options(config_db['host'], config_db['name'],
-                               [config_db['username'], config_db['password']],
-                               @logger)
-
-        end
+        @database = Database.new(config_db['name'], config_db['host'], config_db['port'], config_db['username'], config_db['password'], @logger) unless config_db.nil?
       end
     end
 
@@ -415,17 +412,6 @@ module KPM
       unless config_file.nil?
         @config = YAML.load_file(config_file) unless Dir[config_file][0].nil?
       end
-    end
-
-    def set_database_options(database_host = nil, database_port = nil, database_name = nil, database_credentials = nil, logger = nil)
-      Database.logger = logger unless logger.nil?
-
-      Database.credentials(database_credentials[0], database_credentials[1]) unless database_credentials.nil?
-      Database.database_name = database_name unless database_name.nil?
-      Database.host = database_host unless database_host.nil?
-      Database.port = database_port unless database_port.nil?
-
-      Database.build_mysql_command_line
     end
 
     def set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)

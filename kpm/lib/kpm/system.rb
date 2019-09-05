@@ -80,8 +80,9 @@ module KPM
     end
 
     def show_cpu_information(output_as_json)
-      cpu_info = KPM::SystemProxy::CpuInformation.fetch
-      labels = KPM::SystemProxy::CpuInformation.labels
+      cpu_information = KPM::SystemProxy::CpuInformation.new
+      cpu_info = cpu_information.cpu_info
+      labels = cpu_information.labels
 
       @formatter.format(cpu_info, labels) unless output_as_json
 
@@ -89,8 +90,9 @@ module KPM
     end
 
     def show_memory_information(output_as_json)
-      memory_info = KPM::SystemProxy::MemoryInformation.fetch
-      labels = KPM::SystemProxy::MemoryInformation.labels
+      memory_information = KPM::SystemProxy::MemoryInformation.new
+      memory_info = memory_information.memory_info
+      labels = memory_information.labels
 
       @formatter.format(memory_info, labels) unless output_as_json
 
@@ -98,8 +100,9 @@ module KPM
     end
 
     def show_disk_space_information(output_as_json)
-      disk_space_info = KPM::SystemProxy::DiskSpaceInformation.fetch
-      labels = KPM::SystemProxy::DiskSpaceInformation.labels
+      disk_space_information = KPM::SystemProxy::DiskSpaceInformation.new
+      disk_space_info = disk_space_information.disk_space_info
+      labels = disk_space_information.labels
 
       @formatter.format(disk_space_info, labels) unless output_as_json
 
@@ -107,8 +110,9 @@ module KPM
     end
 
     def show_entropy_available(output_as_json)
-      entropy_available = KPM::SystemProxy::EntropyAvailable.fetch
-      labels = KPM::SystemProxy::EntropyAvailable.labels
+      entropy_information = KPM::SystemProxy::EntropyAvailable.new
+      entropy_available = entropy_information.entropy_available
+      labels = entropy_information.labels
 
       @formatter.format(entropy_available, labels) unless output_as_json
 
@@ -116,12 +120,13 @@ module KPM
     end
 
     def show_os_information(output_as_json)
-      os_information = KPM::SystemProxy::OsInformation.fetch
-      labels = KPM::SystemProxy::OsInformation.labels
+      os_information = KPM::SystemProxy::OsInformation.new
+      os_info = os_information.os_info
+      labels = os_information.labels
 
-      @formatter.format(os_information, labels) unless output_as_json
+      @formatter.format(os_info, labels) unless output_as_json
 
-      os_information
+      os_info
     end
 
     def show_java_system_information(command, output_as_json)

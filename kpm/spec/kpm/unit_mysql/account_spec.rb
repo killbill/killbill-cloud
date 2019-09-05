@@ -13,6 +13,7 @@ describe KPM::Account do
     end
     let(:dummy_account_id) { SecureRandom.uuid }
     let(:account_id_invalid) { SecureRandom.uuid }
+    let(:account_id) { creating_account_with_client }
     let(:dummy_data) do
       "-- accounts record_id|id|external_key|email|name|first_name_length|currency|billing_cycle_day_local|parent_account_id|is_payment_delegated_to_parent|payment_method_id|time_zone|locale|address1|address2|company_name|city|state_or_province|country|postal_code|phone|notes|migrated|is_notified_for_invoices|created_date|created_by|updated_date|updated_by|tenant_record_id\n"\
       "5|#{dummy_account_id}|#{dummy_account_id}|willharnet@example.com|Will Harnet||USD|0||||UTC||||Company\\N{VERTICAL LINE}\\N{LINE FEED}Name||||||||false|2017-04-03T15:50:14.000+0000|demo|2017-04-05T15:01:39.000+0000|Killbill::Stripe::PaymentPlugin|2\n"\
@@ -56,7 +57,6 @@ describe KPM::Account do
       end
 
       it 'when account id found' do
-        account_id = creating_account_with_client
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect { account_class.send(:fetch_export_data, account_id) }.not_to raise_error(Interrupt, 'Account id not found')
         expect(account_class.send(:fetch_export_data, account_id)).to match(account_id)
@@ -118,13 +118,11 @@ describe KPM::Account do
       end
 
       it 'when file created' do
-        account_id = creating_account_with_client
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect(File.exist?(account_class.export_data(account_id))).to be_true
       end
 
       it 'when file contains account record' do
-        account_id = creating_account_with_client
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{table_name}/)).to be_true
         expect(File.readlines(account_class.export_data(account_id)).grep(/#{cols_names}/)).to be_true
@@ -350,28 +348,23 @@ describe KPM::Account do
   private
 
   def creating_account_with_client
-    if $account_id.nil?
-      KillBillClient.url = url
+    KillBillClient.url = url
 
-      options = {
-        username: killbill_user,
-        password: killbill_password,
-        api_key: killbill_api_key,
-        api_secret: killbill_api_secrets
-      }
+    options = {
+      username: killbill_user,
+      password: killbill_password,
+      api_key: killbill_api_key,
+      api_secret: killbill_api_secrets
+    }
 
-      account = KillBillClient::Model::Account.new
-      account.name = 'KPM Account Test'
-      account.first_name_length = 3
-      account.external_key = SecureRandom.uuid
-      account.currency = 'USD'
-      account = account.create('kpm_account_test', 'kpm_account_test', 'kpm_account_test', options)
+    account = KillBillClient::Model::Account.new
+    account.name = 'KPM Account Test'
+    account.first_name_length = 3
+    account.external_key = SecureRandom.uuid
+    account.currency = 'USD'
+    account = account.create('kpm_account_test', 'kpm_account_test', 'kpm_account_test', options)
 
-      $account_id = account.account_id
-
-    end
-
-    $account_id
+    account.account_id
   end
 
   def verify_data(account_id)

@@ -6,65 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 79
-Metrics/AbcSize:
-  Max: 595
-
-# Offense count: 27
-# Configuration parameters: CountComments, ExcludedMethods.
-# ExcludedMethods: refine
-Metrics/BlockLength:
-  Max: 630
-
-# Offense count: 1
-# Configuration parameters: CountBlocks.
-Metrics/BlockNesting:
-  Max: 4
-
-# Offense count: 8
-# Configuration parameters: CountComments.
-Metrics/ClassLength:
-  Max: 360
-
-# Offense count: 31
-Metrics/CyclomaticComplexity:
-  Max: 56
-
-# Offense count: 87
-# Configuration parameters: CountComments, ExcludedMethods.
-Metrics/MethodLength:
-  Max: 633
-
-# Offense count: 1
-# Configuration parameters: CountComments.
-Metrics/ModuleLength:
-  Max: 635
-
-# Offense count: 15
-# Configuration parameters: CountKeywordArgs.
-Metrics/ParameterLists:
-  Max: 13
-
-# Offense count: 27
-Metrics/PerceivedComplexity:
-  Max: 58
-
-# Offense count: 14
-Style/ClassVars:
-  Exclude:
-    - 'lib/kpm/database.rb'
-    - 'lib/kpm/system_helpers/disk_space_information.rb'
-
-# Offense count: 37
-Style/Documentation:
-  Enabled: false
-
-# Offense count: 3
-# Configuration parameters: AllowedVariables.
-Style/GlobalVars:
-  Exclude:
-    - 'spec/kpm/unit_mysql/account_spec.rb'
-
 # Offense count: 19
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
