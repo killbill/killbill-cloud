@@ -70,14 +70,26 @@ module KPM
         logger.level = Logger::INFO
       end
 
-      nexus_config = !@config.nil? ? @config['nexus'] : (!@kaui_config.nil? ? @kaui_config['nexus'] : nil)
+      nexus_config = if !@config.nil?
+                       @config['nexus']
+                     elsif !@kaui_config.nil?
+                       @kaui_config['nexus']
+                     else
+                       nil
+                     end
       nexus_ssl_verify = !nexus_config.nil? ? nexus_config['ssl_verify'] : true
 
       super(logger, nexus_config, nexus_ssl_verify)
     end
 
     def install(force_download = false, verify_sha1 = true)
-      bundles_dir = !@config.nil? ? @config['plugins_dir'] : (!@kaui_config.nil? ? @kaui_config['plugins_dir'] : nil)
+      bundles_dir = if !@config.nil?
+                      @config['plugins_dir']
+                    elsif !@kaui_config.nil?
+                      @kaui_config['plugins_dir']
+                    else
+                      nil
+                    end
       bundles_dir ||= DEFAULT_BUNDLES_DIR
 
       help = nil
@@ -98,7 +110,7 @@ module KPM
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
-      @trace_logger.add('help', help)
+      @trace_logger.add('help', nil, help)
       @trace_logger.to_json
     end
 

@@ -123,20 +123,3 @@ Style/GuardClause:
 Style/MultilineBlockChain:
   Exclude:
     - 'lib/kpm/inspector.rb'
-
-# Offense count: 1
-Style/MultipleComparison:
-  Exclude:
-    - 'lib/kpm/account.rb'
-
-# Offense count: 3
-Style/NestedTernaryOperator:
-  Exclude:
-    - 'lib/kpm/installer.rb'
-    - 'lib/kpm/plugins_manager.rb'
-
-# Offense count: 6
-Style/OptionalArguments:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/trace_logger.rb'

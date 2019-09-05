@@ -45,7 +45,7 @@ module KPM
                                                        @nexus_config,
                                                        @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
-      @trace_logger.add('killbill',
+      @trace_logger.add('killbill', nil,
                         artifact_info.merge('status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
     end
@@ -74,7 +74,7 @@ module KPM
                                              @nexus_config,
                                              @nexus_ssl_verify)
       # store trace info to be returned as JSON by the KPM::Installer.install method
-      @trace_logger.add('kaui',
+      @trace_logger.add('kaui', nil,
                         artifact_info.merge('status' => (artifact_info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
     end
@@ -233,7 +233,7 @@ module KPM
                                     @nexus_config,
                                     @nexus_ssl_verify)
 
-      @trace_logger.add('default_bundles',
+      @trace_logger.add('default_bundles', nil,
                         info.merge('status' => (info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
                                    :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
 

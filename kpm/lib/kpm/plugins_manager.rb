@@ -186,7 +186,11 @@ module KPM
         return
       end
 
-      p = plugin_version.nil? ? plugin_name_or_path : @plugins_dir.join('*').join(plugin_name_or_path).join(plugin_version == :all ? '*' : plugin_version)
+      p = if plugin_version.nil?
+            plugin_name_or_path
+          else
+            @plugins_dir.join('*').join(plugin_name_or_path).join(plugin_version == :all ? '*' : plugin_version)
+          end
 
       modified = []
       Dir.glob(p).each do |plugin_dir_path|

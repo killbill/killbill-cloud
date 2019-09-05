@@ -16,6 +16,9 @@ Metrics/LineLength:
 Security/YAMLLoad:
   Enabled: false
 
+Style/EmptyElse:
+  EnforcedStyle: empty
+
 # Ruby 2.3+ only
 Style/SafeNavigation:
   Enabled: false

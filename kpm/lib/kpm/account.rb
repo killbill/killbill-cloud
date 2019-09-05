@@ -291,7 +291,7 @@ module KPM
     end
 
     def replace_tenant_record_id(_table_name, column_name, value)
-      return @tenant_record_id if column_name == 'tenant_record_id' || column_name == 'search_key2'
+      return @tenant_record_id if %w[tenant_record_id search_key2].include?(column_name)
 
       value
     end
@@ -419,8 +419,8 @@ module KPM
       end
     end
 
-    def set_database_options(database_host = nil, database_port = nil, database_name = nil, database_credentials = nil, logger)
-      Database.logger = logger
+    def set_database_options(database_host = nil, database_port = nil, database_name = nil, database_credentials = nil, logger = nil)
+      Database.logger = logger unless logger.nil?
 
       Database.credentials(database_credentials[0], database_credentials[1]) unless database_credentials.nil?
       Database.database_name = database_name unless database_name.nil?
