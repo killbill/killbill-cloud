@@ -14,7 +14,7 @@ describe KPM::BaseInstaller do
       bundles_dir = dir + '/bundles'
       installer = KPM::BaseInstaller.new(@logger)
 
-      info = installer.install_plugin('analytics', nil, nil, nil, nil, nil, '0.7.1', bundles_dir)
+      installer.install_plugin('analytics', nil, nil, nil, nil, nil, '0.7.1', bundles_dir)
 
       check_installation(bundles_dir)
 
@@ -48,7 +48,8 @@ describe KPM::BaseInstaller do
       begin
         installer.install_plugin('invalid', nil, nil, nil, nil, nil, '1.2.3', bundles_dir)
         raise 'Should not succeed to install invalid plugin'
-      rescue ArgumentError => e
+      rescue ArgumentError
+        # Expected
       end
     end
   end

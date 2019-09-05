@@ -48,7 +48,7 @@ module KPM
         # overrides typically comes from the kpm.yml where we expect keys as String
         overrides_sym = (overrides || {}).each_with_object({}) { |(k, v), h| h[k.to_sym] = v }
         nexus_config = nexus_defaults.merge(overrides_sym)
-        nexus_remote ||= KPM::NexusFacade::RemoteFactory.create(nexus_config, ssl_verify, logger)
+        KPM::NexusFacade::RemoteFactory.create(nexus_config, ssl_verify, logger)
       end
 
       def nexus_defaults

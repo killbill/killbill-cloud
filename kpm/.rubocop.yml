@@ -7,6 +7,9 @@ Gemspec/RubyVersionGlobalsUsage:
 Layout/DefEndAlignment:
   AutoCorrect: true
 
+Lint/HandleExceptions:
+  AllowComments: true
+
 Metrics/LineLength:
   Max: 2000
 

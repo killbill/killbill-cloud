@@ -21,9 +21,9 @@ module KPM
 
         @logger.info "Starting download of #{DOWNLOAD_URL} to #{file}"
         Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
-          File.open(file, 'wb+') do |file|
+          File.open(file, 'wb+') do |f|
             http.get(uri.path) do |body|
-              file.write(body)
+              f.write(body)
             end
           end
         end

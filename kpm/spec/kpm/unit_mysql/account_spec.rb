@@ -391,7 +391,7 @@ describe KPM::Account do
   end
 
   def create_test_schema
-    response = `#{mysql_cli} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
+    `#{mysql_cli} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"`
     response = `#{mysql_cli} #{db_name} < "#{test_ddl}" 2>&1`
     response_msg = response.split("\n")
     used_database = response_msg[response_msg.size - 1]

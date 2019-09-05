@@ -78,7 +78,7 @@ describe KPM::Inspector do
       FileUtils.mkdir_p(plugin_dir_version)
 
       # Create some entry to look real
-      some_file = 'ruby' ? 'ROOT' : '#{plugin_name}.jar'
+      some_file = language == 'ruby' ? 'ROOT' : "#{plugin_name}.jar"
       FileUtils.touch(plugin_dir_version.join(some_file))
     end
 

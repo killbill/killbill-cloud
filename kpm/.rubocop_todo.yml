@@ -13,48 +13,6 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - 'kpm.gemspec'
 
-# Offense count: 1
-Lint/AmbiguousRegexpLiteral:
-  Exclude:
-    - 'lib/kpm/account.rb'
-
-# Offense count: 2
-# Configuration parameters: AllowComments.
-Lint/HandleExceptions:
-  Exclude:
-    - 'lib/kpm/plugins_manager.rb'
-    - 'spec/kpm/remote/base_installer_spec.rb'
-
-# Offense count: 1
-Lint/InterpolationCheck:
-  Exclude:
-    - 'spec/kpm/unit/inspector_spec.rb'
-
-# Offense count: 1
-Lint/LiteralAsCondition:
-  Exclude:
-    - 'spec/kpm/unit/inspector_spec.rb'
-
-# Offense count: 4
-Lint/RescueException:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/tasks.rb'
-
-# Offense count: 1
-Lint/ShadowingOuterLocalVariable:
-  Exclude:
-    - 'lib/kpm/tomcat_manager.rb'
-
-# Offense count: 7
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/base_artifact.rb'
-    - 'lib/kpm/installer.rb'
-    - 'spec/kpm/remote/base_installer_spec.rb'
-    - 'spec/kpm/unit_mysql/account_spec.rb'
-
 # Offense count: 149
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
 Lint/Void:

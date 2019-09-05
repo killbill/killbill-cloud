@@ -518,7 +518,7 @@ module KPM
             account.import_data(export_file || options[:import], options[:tenant_record_id], options[:skip_payment_methods],
                                 round_trip_export_import, options[:generate_record_id])
           end
-        rescue Exception => e
+        rescue StandardError => e
           logger.error "\e[91;1m#{e.message}\e[0m"
           logger.error e.backtrace.join("\n") unless e.is_a?(Interrupt)
         end
@@ -554,7 +554,7 @@ module KPM
                                                options[:killbill_url], logger)
 
           tenantConfig.export(options[:key_prefix])
-        rescue Exception => e
+        rescue StandardError => e
           logger.error "\e[91;1m#{e.message}\e[0m"
           logger.error e.backtrace.join("\n") unless e.is_a?(Interrupt)
         end
@@ -633,7 +633,7 @@ module KPM
                                                options[:killbill_url], options[:database_name], options[:database_credentials],
                                                options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir], logger)
           diagnostic.export_data(options[:account_export], options[:log_dir])
-        rescue Exception => e
+        rescue StandardError => e
           logger.error "\e[91;1m#{e.message}\e[0m"
           logger.error e.backtrace.join("\n") unless e.is_a?(Interrupt)
         end

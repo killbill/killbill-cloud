@@ -132,7 +132,7 @@ module KPM
 
       begin
         account_data = KillBillClient::Model::Export.find_by_account_id(account_id, 'KPM', options)
-      rescue Exception => e
+      rescue StandardError
         raise Interrupt, 'Account id not found'
       end
 

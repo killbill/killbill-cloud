@@ -149,6 +149,7 @@ module KPM
           JSON.parse(f.read)
         end
       rescue Errno::ENOENT
+        # Ignore
       end
       identifiers
     end
