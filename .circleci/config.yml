@@ -278,7 +278,7 @@ jobs:
             cd kpm
             source /usr/share/rvm/scripts/rvm
             rvm use ruby-2.4.2
-            bundle exec rubocop --format tap | tee /tmp/test-results/rubocop.txt 2&1
+            bundle exec rubocop --format tap | tee /tmp/test-results/rubocop.txt 2>&1
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
