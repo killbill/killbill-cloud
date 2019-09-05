@@ -17,24 +17,21 @@ module KPM
           cpu_info
         end
 
-        def get_labels
-          labels = [{ label: :cpu_detail },
-                    { label: :value }]
-          labels
+        def labels
+          [{ label: :cpu_detail },
+           { label: :value }]
         end
 
-          private
+        private
 
         def fetch_linux
           cpu_data = `cat /proc/cpuinfo 2>&1`.gsub("\t", '')
-          cpu = get_hash(cpu_data)
-          cpu
+          build_hash(cpu_data)
         end
 
         def fetch_mac
           cpu_data = `system_profiler SPHardwareDataType | grep -e "Processor" -e "Cores" -e "Cache" 2>&1`
-          cpu = get_hash(cpu_data)
-          cpu
+          build_hash(cpu_data)
         end
 
         def fetch_windows
@@ -54,7 +51,7 @@ module KPM
           cpu
         end
 
-        def get_hash(data)
+        def build_hash(data)
           cpu = {}
 
           unless data.nil?
@@ -67,7 +64,7 @@ module KPM
 
           cpu
         end
-        end
+      end
     end
   end
 end

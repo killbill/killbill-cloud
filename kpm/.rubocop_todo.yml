@@ -74,45 +74,6 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 58
 
-# Offense count: 20
-Naming/AccessorMethodName:
-  Exclude:
-    - 'lib/kpm/account.rb'
-    - 'lib/kpm/database.rb'
-    - 'lib/kpm/diagnostic_file.rb'
-    - 'lib/kpm/nexus_helper/nexus_api_calls_v2.rb'
-    - 'lib/kpm/system.rb'
-    - 'lib/kpm/system_helpers/cpu_information.rb'
-    - 'lib/kpm/system_helpers/disk_space_information.rb'
-    - 'lib/kpm/system_helpers/entropy_available.rb'
-    - 'lib/kpm/system_helpers/memory_information.rb'
-    - 'lib/kpm/system_helpers/os_information.rb'
-
-# Offense count: 1
-# Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# NamePrefixBlacklist: is_, has_, have_
-# NameWhitelist: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/kpm/killbill_plugin_artifact.rb'
-
-# Offense count: 2
-# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
-Naming/UncommunicativeBlockParamName:
-  Exclude:
-    - 'lib/kpm/diagnostic_file.rb'
-
-# Offense count: 3
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: snake_case, camelCase
-Naming/VariableName:
-  Exclude:
-    - 'lib/kpm/diagnostic_file.rb'
-    - 'lib/kpm/tasks.rb'
-
 # Offense count: 9
 Security/Open:
   Exclude:

@@ -550,10 +550,10 @@ module KPM
 
           raise Interrupt, "--key_prefix, posible values #{KPM::TenantConfig::KEY_PREFIXES.join(', ')}" if options[:key_prefix] === :key_prefix.to_s
 
-          tenantConfig = KPM::TenantConfig.new(options[:killbill_api_credentials], options[:killbill_credentials],
-                                               options[:killbill_url], logger)
+          tenant_config = KPM::TenantConfig.new(options[:killbill_api_credentials], options[:killbill_credentials],
+                                                options[:killbill_url], logger)
 
-          tenantConfig.export(options[:key_prefix])
+          tenant_config.export(options[:key_prefix])
         rescue StandardError => e
           logger.error "\e[91;1m#{e.message}\e[0m"
           logger.error e.backtrace.join("\n") unless e.is_a?(Interrupt)

@@ -17,31 +17,27 @@ module KPM
           entropy_available
         end
 
-        def get_labels
-          labels = [{ label: :entropy },
-                    { label: :value }]
-          labels
+        def labels
+          [{ label: :entropy },
+           { label: :value }]
         end
 
         private
 
         def fetch_linux
           entropy_available_data = `cat /proc/sys/kernel/random/entropy_avail 2>&1`.gsub("\n", '')
-          entropy_available = get_hash(entropy_available_data)
-          entropy_available
+          build_hash(entropy_available_data)
         end
 
         def fetch_mac
-          entropy_available = get_hash('-')
-          entropy_available
+          build_hash('-')
         end
 
         def fetch_windows
-          entropy_available = get_hash('-')
-          entropy_available
+          build_hash('-')
         end
 
-        def get_hash(data)
+        def build_hash(data)
           entropy_available = {}
           entropy_available['entropy_available'] = { entropy: 'available', value: data }
 

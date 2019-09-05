@@ -17,7 +17,7 @@ module KPM
           disk_space_info
         end
 
-        def get_labels
+        def labels
           labels = []
           @@data_keys.each { |key| labels.push(label: key.gsub(' ', '_').to_sym) }
           labels
@@ -27,17 +27,15 @@ module KPM
 
         def fetch_linux_mac(cols_count)
           disk_space_info = `df 2>&1`
-          disk_space = get_hash(disk_space_info, cols_count, true)
-          disk_space
+          build_hash(disk_space_info, cols_count, true)
         end
 
         def fetch_windows
           disk_space_info = `wmic logicaldisk get size,freespace,caption 2>&1`
-          disk_space = get_hash(disk_space_info, 3, false)
-          disk_space
+          build_hash(disk_space_info, 3, false)
         end
 
-        def get_hash(data, cols_count, merge_last_two_columns)
+        def build_hash(data, cols_count, merge_last_two_columns)
           disk_space = {}
 
           unless data.nil?

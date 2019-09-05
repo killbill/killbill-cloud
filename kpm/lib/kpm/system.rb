@@ -15,7 +15,7 @@ module KPM
     end
 
     def information(bundles_dir = nil, output_as_json = false, config_file = nil, kaui_web_path = nil, killbill_web_path = nil)
-      set_config(config_file)
+      self.config = config_file
       killbill_information = show_killbill_information(kaui_web_path, killbill_web_path, output_as_json)
 
       java_version = `java -version 2>&1`.split("\n")[0].split('"')[1]
@@ -28,11 +28,11 @@ module KPM
       entropy_available = show_entropy_available(output_as_json)
 
       unless java_version.nil?
-        command = get_command
+        command = java_command
         java_system_information = show_java_system_information(command, output_as_json)
       end
 
-      plugin_information = show_plugin_information(get_plugin_path || bundles_dir || DEFAULT_BUNDLE_DIR, output_as_json)
+      plugin_information = show_plugin_information(plugin_path || bundles_dir || DEFAULT_BUNDLE_DIR, output_as_json)
 
       json_data = {}
       json_data[:killbill_information] = killbill_information
@@ -50,9 +50,9 @@ module KPM
 
     def show_killbill_information(kaui_web_path, killbill_web_path, output_as_json)
       kpm_version = KPM::VERSION
-      kaui_version = get_kaui_version(get_kaui_web_path || kaui_web_path)
-      killbill_version = get_killbill_version(get_killbill_web_path || killbill_web_path)
-      kaui_standalone_version = get_kaui_standalone_version(get_kaui_web_path || kaui_web_path)
+      kaui_version = kaui_version(kaui_web_path || kaui_web_path)
+      killbill_version = killbill_version(killbill_web_path || killbill_web_path)
+      kaui_standalone_version = kaui_standalone_version(kaui_web_path || kaui_web_path)
 
       environment = Hash[kpm: { system: 'KPM', version: kpm_version },
                          kaui: { system: 'Kaui', version: kaui_version.nil? ? 'not found' : kaui_version },
@@ -81,7 +81,7 @@ module KPM
 
     def show_cpu_information(output_as_json)
       cpu_info = KPM::SystemProxy::CpuInformation.fetch
-      labels = KPM::SystemProxy::CpuInformation.get_labels
+      labels = KPM::SystemProxy::CpuInformation.labels
 
       @formatter.format(cpu_info, labels) unless output_as_json
 
@@ -90,7 +90,7 @@ module KPM
 
     def show_memory_information(output_as_json)
       memory_info = KPM::SystemProxy::MemoryInformation.fetch
-      labels = KPM::SystemProxy::MemoryInformation.get_labels
+      labels = KPM::SystemProxy::MemoryInformation.labels
 
       @formatter.format(memory_info, labels) unless output_as_json
 
@@ -99,7 +99,7 @@ module KPM
 
     def show_disk_space_information(output_as_json)
       disk_space_info = KPM::SystemProxy::DiskSpaceInformation.fetch
-      labels = KPM::SystemProxy::DiskSpaceInformation.get_labels
+      labels = KPM::SystemProxy::DiskSpaceInformation.labels
 
       @formatter.format(disk_space_info, labels) unless output_as_json
 
@@ -108,7 +108,7 @@ module KPM
 
     def show_entropy_available(output_as_json)
       entropy_available = KPM::SystemProxy::EntropyAvailable.fetch
-      labels = KPM::SystemProxy::EntropyAvailable.get_labels
+      labels = KPM::SystemProxy::EntropyAvailable.labels
 
       @formatter.format(entropy_available, labels) unless output_as_json
 
@@ -117,7 +117,7 @@ module KPM
 
     def show_os_information(output_as_json)
       os_information = KPM::SystemProxy::OsInformation.fetch
-      labels = KPM::SystemProxy::OsInformation.get_labels
+      labels = KPM::SystemProxy::OsInformation.labels
 
       @formatter.format(os_information, labels) unless output_as_json
 
@@ -191,7 +191,9 @@ module KPM
       all_plugins
     end
 
-    def get_kaui_standalone_version(kaui_web_path = nil)
+    private
+
+    def kaui_standalone_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
       return nil if kaui_search_default_dir.nil?
 
@@ -208,7 +210,7 @@ module KPM
       version
     end
 
-    def get_kaui_version(kaui_web_path = nil)
+    def kaui_version(kaui_web_path = nil)
       kaui_search_default_dir = kaui_web_path.nil? ? DEFAULT_KAUI_SEARCH_BASE_DIR : Dir[kaui_web_path][0]
       return nil if kaui_search_default_dir.nil?
 
@@ -236,7 +238,7 @@ module KPM
       version
     end
 
-    def get_killbill_version(killbill_web_path = nil)
+    def killbill_version(killbill_web_path = nil)
       killbill_search_default_dir = killbill_web_path.nil? ? DEFAULT_KILLBILL_SEARCH_BASE_DIR : Dir[killbill_web_path][0]
       return nil if killbill_search_default_dir.nil?
 
@@ -262,16 +264,16 @@ module KPM
       version
     end
 
-    def get_command
+    def java_command
       command = 'java -XshowSettings:properties -version 2>&1'
-      apache_tomcat_pid = get_apache_tomcat_pid
+      apache_tomcat_pid = apache_tomcat_pid
 
       command = "jcmd #{apache_tomcat_pid} VM.system_properties" unless apache_tomcat_pid.nil?
 
       command
     end
 
-    def get_apache_tomcat_pid
+    def apache_tomcat_pid
       apache_tomcat_pid = nil
       `jcmd -l 2>&1`.split("\n").each do |line|
         if /org.apache.catalina/.match(line)
@@ -292,7 +294,7 @@ module KPM
       apache_tomcat_pid
     end
 
-    def set_config(config_file = nil)
+    def config=(config_file = nil)
       @config = nil
 
       unless config_file.nil?
@@ -300,7 +302,7 @@ module KPM
       end
     end
 
-    def get_kaui_web_path
+    def kaui_web_path
       kaui_web_path = nil
 
       unless @config.nil?
@@ -312,7 +314,7 @@ module KPM
       kaui_web_path
     end
 
-    def get_killbill_web_path
+    def killbill_web_path
       killbill_web_path = nil
 
       unless @config.nil?
@@ -324,7 +326,7 @@ module KPM
       killbill_web_path
     end
 
-    def get_plugin_path
+    def plugin_path
       plugin_path = nil
 
       unless @config.nil?

@@ -140,7 +140,7 @@ module KPM
         end
       end
 
-      def get_query_params(coordinates, what_parameters = nil)
+      def build_query_params(coordinates, what_parameters = nil)
         artifact = parse_coordinates(coordinates)
         @version = artifact[:version].to_s.upcase
 
@@ -154,9 +154,9 @@ module KPM
       end
 
       def get_response(coordinates, endpoint, what_parameters)
-        http = get_http
-        query_params = get_query_params(coordinates, what_parameters) unless coordinates.nil?
-        endpoint = get_endpoint_with_params(endpoint, query_params) unless coordinates.nil?
+        http = build_http
+        query_params = build_query_params(coordinates, what_parameters) unless coordinates.nil?
+        endpoint = endpoint_with_params(endpoint, query_params) unless coordinates.nil?
         request = Net::HTTP::Get.new(endpoint)
 
         logger.debug "request endpoint: #{endpoint}"
@@ -165,7 +165,7 @@ module KPM
         response
       end
 
-      def get_http
+      def build_http
         uri = URI.parse(configuration[:url])
         http = Net::HTTP.new(uri.host, uri.port)
         http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT # seconds
@@ -175,7 +175,7 @@ module KPM
         http
       end
 
-      def get_endpoint_with_params(endpoint, query_params)
+      def endpoint_with_params(endpoint, query_params)
         "#{endpoint}?#{URI::DEFAULT_PARSER.escape(query_params)}"
       end
     end

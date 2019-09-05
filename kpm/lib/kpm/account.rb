@@ -388,10 +388,8 @@ module KPM
       !sniff.empty? ? sniff[0][0] : nil
     end
 
-    # helper methods that set up killbill and database options: load_config_from_file; set_config; set_database_options;
-    # set_killbill_options;
     def load_config_from_file(config_file)
-      set_config(config_file)
+      self.config = config_file
 
       unless @config.nil?
         config_killbill = @config['killbill']
@@ -413,7 +411,7 @@ module KPM
       end
     end
 
-    def set_config(config_file = nil)
+    def config=(config_file = nil)
       @config = nil
 
       unless config_file.nil?
@@ -422,14 +420,14 @@ module KPM
     end
 
     def set_database_options(database_host = nil, database_port = nil, database_name = nil, database_credentials = nil, logger)
-      Database.set_logger(logger)
+      Database.logger = logger
 
-      Database.set_credentials(database_credentials[0], database_credentials[1]) unless database_credentials.nil?
-      Database.set_database_name(database_name) unless database_name.nil?
-      Database.set_host(database_host) unless database_host.nil?
-      Database.set_port(database_port) unless database_port.nil?
+      Database.credentials(database_credentials[0], database_credentials[1]) unless database_credentials.nil?
+      Database.database_name = database_name unless database_name.nil?
+      Database.host = database_host unless database_host.nil?
+      Database.port = database_port unless database_port.nil?
 
-      Database.set_mysql_command_line
+      Database.build_mysql_command_line
     end
 
     def set_killbill_options(killbill_api_credentials, killbill_credentials, killbill_url)

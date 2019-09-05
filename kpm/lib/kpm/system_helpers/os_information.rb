@@ -17,10 +17,9 @@ module KPM
           os_information
         end
 
-        def get_labels
-          labels = [{ label: :os_detail },
-                    { label: :value }]
-          labels
+        def labels
+          [{ label: :os_detail },
+           { label: :value }]
         end
 
         private
@@ -33,23 +32,20 @@ module KPM
             os_data = 'Description:' + os_data.gsub('\n \l', '')
           end
 
-          os = get_hash(os_data)
-          os
+          build_hash(os_data)
         end
 
         def fetch_mac
           os_data = `sw_vers`
-          os = get_hash(os_data)
-          os
+          build_hash(os_data)
         end
 
         def fetch_windows
           os_data = `systeminfo | findstr /C:"OS"`
-          os = get_hash(os_data)
-          os
+          build_hash(os_data)
         end
 
-        def get_hash(data)
+        def build_hash(data)
           os = {}
 
           unless data.nil?

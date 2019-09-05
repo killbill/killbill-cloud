@@ -29,28 +29,28 @@ module KPM
       @@host = HOST
       @@port = PORT
 
-      def set_logger(logger)
+      def logger=(logger)
         @@logger = logger
       end
 
-      def set_credentials(user = nil, password = nil)
+      def credentials(user = nil, password = nil)
         @@username = user
         @@password = password
       end
 
-      def set_host(host)
+      def host=(host)
         @@host = host
       end
 
-      def set_port(port)
+      def port=(port)
         @@port = port
       end
 
-      def set_database_name(database_name = nil)
+      def database_name=(database_name = nil)
         @@database = database_name
       end
 
-      def set_mysql_command_line
+      def build_mysql_command_line
         @@mysql_command_line = "mysql #{@@database} --host=#{@@host} --port=#{@@port} --user=#{@@username} --password=#{@@password} "
       end
 
@@ -113,7 +113,7 @@ module KPM
 
           value_data = rows.map { |row| "(#{row})" }.join(',')
 
-          statements << { query: get_insert_statement(table_name, columns_names, value_data, rows.size),
+          statements << { query: build_insert_statement(table_name, columns_names, value_data, rows.size),
                           qty_to_insert: rows.size, table_name: table_name, table_data: table }
         end
 
@@ -122,7 +122,7 @@ module KPM
 
       private
 
-      def get_insert_statement(table_name, columns_names, values, rows_qty)
+      def build_insert_statement(table_name, columns_names, values, rows_qty)
         "INSERT INTO #{table_name} ( #{columns_names} ) VALUES #{values}; #{rows_qty == 1 ? LAST_INSERTED_ID : ROWS_UPDATED}"
       end
     end

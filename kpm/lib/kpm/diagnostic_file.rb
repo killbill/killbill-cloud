@@ -42,22 +42,22 @@ module KPM
     end
 
     def export_data(account_id = nil, log_dir = nil)
-      set_config(@config_file)
+      self.config = @config_file
 
-      tenant_export_file  = get_tenant_config
-      system_export_file  = get_system_config
-      account_export_file = get_account_data(account_id) unless account_id.nil?
-      log_files           = get_log_files(log_dir)
+      tenant_export_file  = retrieve_tenant_config
+      system_export_file  = retrieve_system_config
+      account_export_file = retrieve_account_data(account_id) unless account_id.nil?
+      log_files           = retrieve_log_files(log_dir)
 
       if File.exist?(system_export_file) && File.exist?(tenant_export_file)
 
         zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
 
-        Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipFile|
-          zipFile.add(TENANT_FILE,  tenant_export_file)
-          zipFile.add(SYSTEM_FILE,  system_export_file)
-          zipFile.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
-          zipFile.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
+        Zip::File.open(zip_file_name, Zip::File::CREATE) do |zip_file|
+          zip_file.add(TENANT_FILE,  tenant_export_file)
+          zip_file.add(SYSTEM_FILE,  system_export_file)
+          zip_file.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
+          zip_file.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
         end
 
         @logger.info "\e[32mDiagnostic data exported under #{zip_file_name} \e[0m"
@@ -72,14 +72,14 @@ module KPM
 
     private
 
-    def get_tenant_config
+    def retrieve_tenant_config
       @logger.info 'Retrieving tenant configuration'
       # this suppress the message of where it put the account file, this is to avoid confusion
       @logger.level = Logger::WARN
 
-      @killbill_api_credentials ||= [get_config('killbill', 'api_key'), get_config('killbill', 'api_secret')] unless @config_file.nil?
-      @killbill_credentials ||= [get_config('killbill', 'user'), get_config('killbill', 'password')] unless @config_file.nil?
-      @killbill_url ||= 'http://' + get_config('killbill', 'host').to_s + ':' + get_config('killbill', 'port').to_s unless @config_file.nil?
+      @killbill_api_credentials ||= [retrieve_config('killbill', 'api_key'), retrieve_config('killbill', 'api_secret')] unless @config_file.nil?
+      @killbill_credentials ||= [retrieve_config('killbill', 'user'), retrieve_config('killbill', 'password')] unless @config_file.nil?
+      @killbill_url ||= 'http://' + retrieve_config('killbill', 'host').to_s + ':' + retrieve_config('killbill', 'port').to_s unless @config_file.nil?
 
       tenant_config = KPM::TenantConfig.new(@killbill_api_credentials,
                                             @killbill_credentials, @killbill_url, @logger)
@@ -92,19 +92,19 @@ module KPM
       final
     end
 
-    def get_system_config
+    def retrieve_system_config
       @logger.info 'Retrieving system configuration'
       system = KPM::System.new
       export_data = system.information(@bundles_dir, true, @config_file, @kaui_web_path, @killbill_web_path)
 
-      get_system_catalina_base(export_data)
+      system_catalina_base(export_data)
 
       export_file = TMP_DIR + File::SEPARATOR + SYSTEM_FILE
       File.open(export_file, 'w') { |io| io.puts export_data }
       export_file
     end
 
-    def get_account_data(account_id)
+    def retrieve_account_data(account_id)
       @logger.info 'Retrieving account data for id: ' + account_id
       # this suppress the message of where it put the account file, this is to avoid confusion
       @logger.level = Logger::WARN
@@ -120,7 +120,7 @@ module KPM
       final
     end
 
-    def get_log_files(log_dir)
+    def retrieve_log_files(log_dir)
       @logger.info 'Collecting log files'
 
       if @catalina_base.nil? && log_dir.nil?
@@ -133,10 +133,10 @@ module KPM
 
       zip_file_name = TMP_DIR + File::Separator + ZIP_LOG_FILE
 
-      Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipFile|
+      Zip::File.open(zip_file_name, Zip::File::CREATE) do |zip_file|
         log_items.each do |file|
           name = file.split('/').last
-          zipFile.add(name, file)
+          zip_file.add(name, file)
         end
       end
 
@@ -145,7 +145,7 @@ module KPM
 
     # Helpers
 
-    def get_system_catalina_base(export_data)
+    def system_catalina_base(export_data)
       @catalina_base = nil
       system_json = JSON.parse(export_data)
 
@@ -156,7 +156,7 @@ module KPM
 
     # Utils
 
-    def get_config(parent, child)
+    def retrieve_config(parent, child)
       item = nil
 
       unless @config.nil?
@@ -170,7 +170,7 @@ module KPM
       item
     end
 
-    def set_config(config_file = nil)
+    def config=(config_file = nil)
       @config = nil
 
       unless config_file.nil?

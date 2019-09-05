@@ -17,23 +17,21 @@ module KPM
           memory_info
         end
 
-        def get_labels
-          labels = [{ label: :memory_detail },
-                    { label: :value }]
-          labels
+        def labels
+          [{ label: :memory_detail },
+           { label: :value }]
         end
 
         private
 
         def fetch_linux
           mem_data = `cat /proc/meminfo 2>&1`.gsub("\t", '')
-          mem = get_hash(mem_data)
-          mem
+          build_hash(mem_data)
         end
 
         def fetch_mac
           mem_data = `vm_stat 2>&1`.gsub('.', '')
-          mem = get_hash(mem_data)
+          mem = build_hash(mem_data)
 
           mem.each_key do |key|
             mem[key][:value] = ((mem[key][:value].to_i * 4096) / 1024 / 1024).to_s + 'MB'
@@ -41,20 +39,17 @@ module KPM
           end
 
           mem_total_data = `system_profiler SPHardwareDataType | grep "  Memory:" 2>&1`
-          mem_total = get_hash(mem_total_data)
+          mem_total = build_hash(mem_total_data)
 
-          mem = mem_total.merge(mem)
-
-          mem
+          mem_total.merge(mem)
         end
 
         def fetch_windows
           mem_data = `systeminfo | findstr /C:"Total Physical Memory" /C:"Available Physical Memory"`
-          mem = get_hash(mem_data)
-          mem
+          build_hash(mem_data)
         end
 
-        def get_hash(data)
+        def build_hash(data)
           mem = {}
 
           unless data.nil?
