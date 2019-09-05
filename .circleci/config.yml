@@ -400,7 +400,7 @@ workflows:
           requires:
             - build-ruby-2.4.2
             - test-mysql-jruby-1.7.26
-      - test-test-rubocop:
+      - test-rubocop:
           requires:
             - build-ruby-2.4.2
       - test-mysql-jruby-9.1.14.0:
