@@ -2,7 +2,7 @@
 
 module KPM
   module SystemProxy
-    module DiskSpaceInformation
+    class DiskSpaceInformation
       attr_reader :disk_space_info, :labels
 
       def initialize
