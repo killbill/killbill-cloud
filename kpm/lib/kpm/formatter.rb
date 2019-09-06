@@ -67,6 +67,12 @@ module KPM
     end
 
     def format(data, labels = nil)
+      puts format_only(data, labels)
+    end
+
+    private
+
+    def format_only(data, labels = nil)
       return if data.nil? || data.empty?
 
       if labels.nil?
@@ -87,9 +93,9 @@ module KPM
 
       format_string = compute_format(labels)
 
-      puts "\n#{border}\n"
-      puts Kernel.format("#{format_string}\n", *labels_format_argument)
-      puts "#{border}\n"
+      formatted = "\n#{border}\n"
+      formatted += Kernel.format("#{format_string}\n", *labels_format_argument)
+      formatted += "#{border}\n"
 
       data.keys.each do |key|
         v = data[key]
@@ -99,12 +105,12 @@ module KPM
           formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
           res << formatter.to_s
         end
-        puts Kernel.format("#{format_string}\n", *arguments)
+        formatted += Kernel.format("#{format_string}\n", *arguments)
       end
-      puts "#{border}\n\n"
-    end
+      formatted += "#{border}\n\n"
 
-    private
+      formatted
+    end
 
     def compute_format(labels)
       format = '|'

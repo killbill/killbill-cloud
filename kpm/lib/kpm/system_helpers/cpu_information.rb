@@ -2,7 +2,7 @@
 
 module KPM
   module SystemProxy
-    module CpuInformation
+    class CpuInformation
       attr_reader :cpu_info, :labels
 
       def initialize
@@ -55,13 +55,15 @@ module KPM
 
       def build_hash(data)
         cpu = {}
+        return cpu if data.nil?
 
-        unless data.nil?
-          data.split("\n").each do |info|
-            infos = info.split(':')
+        data.split("\n").each do |info|
+          infos = info.split(':')
 
-            cpu[infos[0].to_s.strip] = { cpu_detail: infos[0].to_s.strip, value: infos[1].to_s.strip } unless infos[0].to_s.strip.eql?('flags')
-          end
+          key = infos[0].to_s.strip
+          next if key.empty? || key.eql?('flags')
+
+          cpu[key] = { cpu_detail: key, value: infos[1].to_s.strip }
         end
 
         cpu

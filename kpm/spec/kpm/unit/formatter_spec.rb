@@ -99,6 +99,65 @@ describe 'Formatter' do
         # labels have the size computed here already
         expect(subject.send(:compute_format, labels)).to eq('| %18s | %10s | %4s | %33s | %11s | %9s | %34s |')
       }
+
+      it {
+        expect(subject.send(:format_only, data, labels)).to eq("\n_____________________________________________________________________________________________________________________________________________
+|        PLUGIN NAME | PLUGIN KEY | TYPE |                          GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
+_____________________________________________________________________________________________________________________________________________
+|       killbill-kpm |        kpm | ruby | org.kill-bill.billing.plugin.ruby |  kpm-plugin |    tar.gz |                 1.3.0[b35001..](*) |
+| hello-world-plugin |  dev:hello | java |                               ??? |         ??? |       ??? |             1.0.1-SNAPSHOT[???](*) |
+|   analytics-plugin |  analytics | java |                               ??? |         ??? |       ??? |             7.0.3-SNAPSHOT[???](*) |
+_____________________________________________________________________________________________________________________________________________\n\n")
+      }
+    end
+
+    context 'when formatting CPU information' do
+      let(:data) do
+        { 'Processor Name' => { cpu_detail: 'Processor Name', value: 'Intel Core i5' },
+          'Processor Speed' => { cpu_detail: 'Processor Speed', value: '3.1 GHz' },
+          'Number of Processors' => { cpu_detail: 'Number of Processors', value: '1' },
+          'Total Number of Cores' => { cpu_detail: 'Total Number of Cores', value: '2' },
+          'L2 Cache (per Core)' => { cpu_detail: 'L2 Cache (per Core)', value: '256 KB' },
+          'L3 Cache' => { cpu_detail: 'L3 Cache', value: '4 MB' } }
+      end
+      let(:labels) do
+        [{ label: :cpu_detail },
+         { label: :value }]
+      end
+      let!(:labels_format_argument) { subject.send(:compute_labels, data, labels) }
+
+      it {
+        expect(labels_format_argument).to eq(['CPU DETAIL',
+                                              'VALUE'])
+      }
+
+      it {
+        expect(labels).to eq([{ label: :cpu_detail, size: 21 },
+                              { label: :value, size: 13 }])
+      }
+
+      it {
+        # labels have the size computed here already
+        expect(subject.send(:compute_border, labels)).to eq('_________________________________________')
+      }
+
+      it {
+        # labels have the size computed here already
+        expect(subject.send(:compute_format, labels)).to eq('| %21s | %13s |')
+      }
+
+      it {
+        expect(subject.send(:format_only, data, labels)).to eq("\n_________________________________________
+|            CPU DETAIL |         VALUE |
+_________________________________________
+|        Processor Name | Intel Core i5 |
+|       Processor Speed |       3.1 GHz |
+|  Number of Processors |             1 |
+| Total Number of Cores |             2 |
+|   L2 Cache (per Core) |        256 KB |
+|              L3 Cache |          4 MB |
+_________________________________________\n\n")
+      }
     end
   end
 end
