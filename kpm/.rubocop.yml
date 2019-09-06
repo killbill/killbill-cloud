@@ -57,6 +57,10 @@ Style/Documentation:
 Style/EmptyElse:
   EnforcedStyle: empty
 
+# We must support old Rubies
+Style/HashSyntax:
+  Enabled: false
+
 # Ruby 2.3+ only
 Style/SafeNavigation:
   Enabled: false
