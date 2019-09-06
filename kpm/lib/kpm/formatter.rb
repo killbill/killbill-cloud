@@ -11,8 +11,6 @@ end
 
 module KPM
   class Formatter
-    def initialize; end
-
     # Used for normal types where to_s is enough
     class DefaultFormatter
       def initialize(label, input)
@@ -59,6 +57,8 @@ module KPM
         "#{@label.to_s.upcase.gsub(/_/, ' ')} sha1=[], def=(*), del=(x)"
       end
 
+      private
+
       def format_sha(sha)
         return '[???]' if sha.nil?
 
@@ -70,7 +70,6 @@ module KPM
       return if data.nil? || data.empty?
 
       if labels.nil?
-
         # What we want to output
         labels = [{ label: :plugin_name },
                   { label: :plugin_key },
@@ -82,32 +81,14 @@ module KPM
       end
 
       # Compute label to print along with max size for each label
-      labels_format_argument = []
-      data.keys.each do |key|
-        v = data[key]
-        labels.each do |e|
-          # sanitize entry at the same time
-          v[e[:label]] = v[e[:label]] || '???'
+      labels_format_argument = compute_labels(data, labels)
 
-          formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
-          prev_size = e.key?(:size) ? e[:size] : formatter.label.size
-          cur_size = formatter.size
-          e[:size] = prev_size < cur_size ? cur_size : prev_size
-          labels_format_argument << formatter.label
-        end
-      end
+      border = compute_border(labels)
 
-      border = '_'
-      border = (0...labels.size).inject(border) { |res, _i| "#{res}_" }
-      border = labels.inject(border) do |res, lbl|
-        (0...lbl[:size] + 2).each { |_s| res = "#{res}_" }
-        res
-      end
-      format = '|'
-      format = labels.inject(format) { |res, lbl| "#{res} %#{lbl[:size]}s |" }
+      format_string = compute_format(labels)
 
       puts "\n#{border}\n"
-      puts format("#{format}\n", labels_format_argument)
+      puts Kernel.format("#{format_string}\n", *labels_format_argument)
       puts "#{border}\n"
 
       data.keys.each do |key|
@@ -118,9 +99,50 @@ module KPM
           formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
           res << formatter.to_s
         end
-        puts format("#{format}\n", arguments)
+        puts Kernel.format("#{format_string}\n", *arguments)
       end
       puts "#{border}\n\n"
+    end
+
+    private
+
+    def compute_format(labels)
+      format = '|'
+      labels.inject(format) { |res, lbl| "#{res} %#{lbl[:size]}s |" }
+    end
+
+    def compute_border(labels)
+      border = '_'
+      border = (0...labels.size).inject(border) { |res, _i| "#{res}_" }
+      labels.inject(border) do |res, lbl|
+        (0...lbl[:size] + 2).each { |_s| res = "#{res}_" }
+        res
+      end
+    end
+
+    # Return labels for each row and update the labels hash with the size of each column
+    def compute_labels(data, labels)
+      seen_labels = Set.new
+
+      labels_format_argument = []
+      data.keys.each do |key|
+        v = data[key]
+        labels.each do |e|
+          # sanitize entry at the same time
+          v[e[:label]] = v[e[:label]] || '???'
+
+          # Always recompute the size
+          formatter = e[:formatter].nil? ? DefaultFormatter.new(e[:label], v[e[:label]]) : e[:formatter].to_class.new(e[:label], v[e[:label]])
+          prev_size = e.key?(:size) ? e[:size] : formatter.label.size
+          cur_size = formatter.size
+          e[:size] = prev_size < cur_size ? cur_size : prev_size
+
+          # Labels should be unique though
+          labels_format_argument << formatter.label unless seen_labels.include?(e[:label])
+          seen_labels << e[:label]
+        end
+      end
+      labels_format_argument
     end
   end
 end
