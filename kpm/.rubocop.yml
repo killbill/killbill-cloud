@@ -47,6 +47,10 @@ Metrics/PerceivedComplexity:
 Security/YAMLLoad:
   Enabled: false
 
+# We must support old Rubies
+Style/BracesAroundHashParameters:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
