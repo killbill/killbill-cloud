@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::KillbillPluginArtifact do
-
   before(:all) do
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -22,12 +23,12 @@ describe KPM::KillbillPluginArtifact do
       info[:file_name].should be_nil
 
       files_in_dir = Dir[info[:file_path] + '/*']
-      files_in_dir.size.should == 1
-      files_in_dir[0].should == info[:file_path] + '/killbill-payment-test'
+      files_in_dir.size.should eq 1
+      files_in_dir[0].should eq info[:file_path] + '/killbill-payment-test'
 
-      File.read(info[:file_path] + '/killbill-payment-test/1.8.7/killbill.properties').should == "mainClass=PaymentTest::PaymentPlugin\nrequire=payment_test\npluginType=PAYMENT\n"
+      File.read(info[:file_path] + '/killbill-payment-test/1.8.7/killbill.properties').should eq "mainClass=PaymentTest::PaymentPlugin\nrequire=payment_test\npluginType=PAYMENT\n"
 
-      info[:bundle_dir].should == info[:file_path] + '/killbill-payment-test/1.8.7'
+      info[:bundle_dir].should eq info[:file_path] + '/killbill-payment-test/1.8.7'
     end
   end
 
@@ -43,8 +44,8 @@ describe KPM::KillbillPluginArtifact do
                                               'killbill-analytics',
                                               dir,
                                               sha1_file)
-      info[:file_name].should == "analytics-plugin-#{info[:version]}.jar"
-      info[:size].should == File.size(info[:file_path])
+      info[:file_name].should eq "analytics-plugin-#{info[:version]}.jar"
+      info[:size].should eq File.size(info[:file_path])
 
       check_yaml_for_resolved_latest_version(sha1_file, 'org.kill-bill.billing.plugin.java:analytics-plugin:jar', '3.0.0')
     end
@@ -66,9 +67,6 @@ describe KPM::KillbillPluginArtifact do
 
       check_yaml_for_resolved_latest_version(sha1_file, 'org.kill-bill.billing.plugin.ruby:logging-plugin:tar.gz', '3.0.0')
     end
-
-
-
   end
 
   it 'should be able to list versions' do
@@ -77,16 +75,16 @@ describe KPM::KillbillPluginArtifact do
     versions[:java].should_not be_nil
     versions[:java]['analytics-plugin'].should_not be_nil
     logging_plugin_versions = versions[:java]['analytics-plugin'].to_a
-    logging_plugin_versions.size.should >= 3
-    logging_plugin_versions[0].should == '0.6.0'
-    logging_plugin_versions[1].should == '0.7.0'
-    logging_plugin_versions[2].should == '0.7.1'
+    expect(logging_plugin_versions.size).to be >= 3
+    logging_plugin_versions[0].should eq '0.6.0'
+    logging_plugin_versions[1].should eq '0.7.0'
+    logging_plugin_versions[2].should eq '0.7.1'
 
     versions[:ruby].should_not be_nil
     versions[:ruby]['logging-plugin'].should_not be_nil
     logging_plugin_versions = versions[:ruby]['logging-plugin'].to_a
-    logging_plugin_versions.size.should >= 1
-    logging_plugin_versions[0].should == '1.7.0'
+    expect(logging_plugin_versions.size).to be >= 1
+    logging_plugin_versions[0].should eq '1.7.0'
   end
 
   private
@@ -95,17 +93,14 @@ describe KPM::KillbillPluginArtifact do
   # (we can't check against actual version because as we keep releasing those increment,
   # so the best we can do it check this is *not* LATEST and greater than current version at the time the test was written )
   def check_yaml_for_resolved_latest_version(sha1_file, key_prefix, minimum_version)
-
     sha1_checker = KPM::Sha1Checker.from_file(sha1_file)
 
-    keys = sha1_checker.all_sha1.keys.select { |k| k.start_with? key_prefix}
-    keys.size.should == 1
+    keys = sha1_checker.all_sha1.keys.select { |k| k.start_with? key_prefix }
+    keys.size.should eq 1
 
     parts = keys[0].split(':')
-    parts.size.should == 4
-    parts[3].should_not == 'LATEST'
-    parts[3].should  >= minimum_version
+    parts.size.should eq 4
+    parts[3].should_not eq 'LATEST'
+    expect(parts[3]).to be >= minimum_version
   end
-
-
 end

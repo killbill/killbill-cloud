@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::BaseArtifact do
-
   before(:all) do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -15,14 +16,14 @@ describe KPM::BaseArtifact do
 
       info[:skipped].should be_false
       info[:is_tgz].should be_false
-      info[:repository_path].should == file_path
-      info[:dir_name].should == dir
-      info[:bundle_dir].should == dir
-      info[:file_name].should == 'sha1_test.yml'
+      info[:repository_path].should eq file_path
+      info[:dir_name].should eq dir
+      info[:bundle_dir].should eq dir
+      info[:file_name].should eq 'sha1_test.yml'
 
       files_in_dir = Dir[dir + '/*']
-      files_in_dir.size.should == 1
-      files_in_dir[0].should == info[:file_path]
+      files_in_dir.size.should eq 1
+      files_in_dir[0].should eq info[:file_path]
     end
   end
 
@@ -75,18 +76,18 @@ describe KPM::BaseArtifact do
 
   def check_fs_info(specified_destination_path, repository_path, is_tgz, version, expected_dir_name, expected_file_name, expected_file_path)
     info = {
-        :repository_path => repository_path,
-        :is_tgz => is_tgz,
-        :version => version
+      repository_path: repository_path,
+      is_tgz: is_tgz,
+      version: version
     }
 
     KPM::BaseArtifact.send('populate_fs_info', info, specified_destination_path)
 
-    info[:repository_path].should == repository_path
-    info[:is_tgz].should == is_tgz
-    info[:version].should == version
-    info[:dir_name].should == expected_dir_name
-    info[:file_name].should == expected_file_name
-    info[:file_path].should == expected_file_path
+    info[:repository_path].should eq repository_path
+    info[:is_tgz].should eq is_tgz
+    info[:version].should eq version
+    info[:dir_name].should eq expected_dir_name
+    info[:file_name].should eq expected_file_name
+    info[:file_path].should eq expected_file_path
   end
 end

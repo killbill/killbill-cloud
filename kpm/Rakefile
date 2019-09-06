@@ -1,4 +1,5 @@
 #!/usr/bin/env rake
+# frozen_string_literal: true
 
 Dir.glob('tasks/*.rake').each { |r| import r }
 
@@ -33,4 +34,4 @@ namespace :test do
 end
 
 # Run tests by default
-task :default => 'test:spec'
+task default: 'test:spec'

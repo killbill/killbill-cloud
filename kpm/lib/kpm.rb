@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   autoload :Utils, 'kpm/utils'
   autoload :BaseArtifact, 'kpm/base_artifact'

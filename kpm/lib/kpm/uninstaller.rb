@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   class Uninstaller
     def initialize(destination, logger = nil)
@@ -44,7 +46,7 @@ module KPM
       versions = plugin_info[:versions].map { |artifact| artifact[:version] }
       KPM.ui.say "Removing the following versions of the #{plugin_info[:plugin_name]} plugin: #{versions.join(', ')}"
       if !force && versions.length > 1
-        return false unless 'y' == KPM.ui.ask('Are you sure you want to continue?', limited_to: %w(y n))
+        return false unless KPM.ui.ask('Are you sure you want to continue?', limited_to: %w[y n]) == 'y'
       end
 
       FileUtils.rmtree(plugin_info[:plugin_path])

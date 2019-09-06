@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe KPM::KillbillPluginArtifact do
-
   before(:all) do
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -16,15 +17,15 @@ describe KPM::KillbillPluginArtifact do
                                     KPM::BaseArtifact::KAUI_CLASSIFIER,
                                     'LATEST',
                                     dir)
-      info[:file_name].should == "kaui-standalone-#{info[:version]}.war"
-      info[:size].should == File.size(info[:file_path])
+      info[:file_name].should eq "kaui-standalone-#{info[:version]}.war"
+      info[:size].should eq File.size(info[:file_path])
     end
   end
 
   it 'should be able to list versions' do
     versions = KPM::KauiArtifact.versions.to_a
-    versions.size.should >= 2
-    versions[0].should == '0.0.1'
-    versions[1].should == '0.0.2'
+    expect(versions.size).to be >= 2
+    versions[0].should eq '0.0.1'
+    versions[1].should eq '0.0.2'
   end
 end

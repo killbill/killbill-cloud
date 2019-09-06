@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'uri'
 
 module KPM
   class TomcatManager
-
     DOWNLOAD_URL = 'https://s3.amazonaws.com/kb-binaries/apache-tomcat-7.0.42.tar.gz'
 
     def initialize(tomcat_dir, logger)
@@ -19,10 +20,10 @@ module KPM
         file = Pathname.new(dir).join('tomcat.tar.gz')
 
         @logger.info "Starting download of #{DOWNLOAD_URL} to #{file}"
-        Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
-          File.open(file, 'wb+') do |file|
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          File.open(file, 'wb+') do |f|
             http.get(uri.path) do |body|
-              file.write(body)
+              f.write(body)
             end
           end
         end
@@ -36,7 +37,7 @@ module KPM
 
     def setup
       # Remove default webapps
-      %w(ROOT docs examples host-manager manager).each do |webapp|
+      %w[ROOT docs examples host-manager manager].each do |webapp|
         FileUtils.rm_rf(@tomcat_dir.join('webapps').join(webapp))
       end
 
@@ -55,9 +56,9 @@ module KPM
 
     def help
       "Tomcat installed at #{@tomcat_dir}
-Start script: #{@tomcat_dir.join('bin').join('startup.sh').to_s}
-Stop script: #{@tomcat_dir.join('bin').join('shutdown.sh').to_s}
-Logs: #{@tomcat_dir.join('logs').to_s}"
+Start script: #{@tomcat_dir.join('bin').join('startup.sh')}
+Stop script: #{@tomcat_dir.join('bin').join('shutdown.sh')}
+Logs: #{@tomcat_dir.join('logs')}"
     end
 
     private

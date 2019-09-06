@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'base64'
 require 'json'
 require 'logger'
@@ -6,10 +8,9 @@ require 'pathname'
 
 module KPM
   class Migrations
-
-    KILLBILL_MIGRATION_PATH = /src\/main\/resources\/org\/killbill\/billing\/[a-z]+\/migration\/(V[0-9a-zA-Z_]+.sql)/
-    JAVA_PLUGIN_MIGRATION_PATH = /src\/main\/resources\/migration\/(V[0-9a-zA-Z_]+.sql)/
-    RUBY_PLUGIN_MIGRATION_PATH = /db\/migrate\/([0-9a-zA-Z_]+.rb)/
+    KILLBILL_MIGRATION_PATH = %r{src/main/resources/org/killbill/billing/[a-z]+/migration/(V[0-9a-zA-Z_]+.sql)}.freeze
+    JAVA_PLUGIN_MIGRATION_PATH = %r{src/main/resources/migration/(V[0-9a-zA-Z_]+.sql)}.freeze
+    RUBY_PLUGIN_MIGRATION_PATH = %r{db/migrate/([0-9a-zA-Z_]+.rb)}.freeze
 
     # Go to https://github.com/settings/tokens to generate a token
     def initialize(from_version, to_version = nil, repository = 'killbill/killbill', oauth_token = nil, logger = Logger.new(STDOUT))
@@ -34,7 +35,7 @@ module KPM
     end
 
     def save(dir = nil)
-      return nil if migrations.size == 0
+      return nil if migrations.empty?
 
       dir ||= Dir.mktmpdir
       @logger.debug("Storing migrations to #{dir}")
@@ -71,8 +72,8 @@ module KPM
         end
 
         migrations << {
-            :name => migration_name,
-            :sql => sql
+          name: migration_name,
+          sql: sql
         }
       end
 
