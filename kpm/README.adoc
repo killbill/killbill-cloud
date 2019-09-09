@@ -191,8 +191,6 @@ The command `kpm diagnostic` is a superset of the `system` command. It will conn
 
 You will need to instruct KPM how to connect to your Kill Bill instance (see `kpm help diagnostic`).
 
-
-
 [[internals]]
 ## Internals
 

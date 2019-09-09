@@ -393,13 +393,15 @@ module KPM
                       type: :string,
                       default: nil,
                       desc: 'A different folder other than the default bundles directory.'
+        method_option :as_json,
+                      type: :boolean,
+                      default: false,
+                      desc: 'Set the output format as JSON when true'
         desc 'inspect', 'Inspect current deployment'
         def inspect
           inspector = KPM::Inspector.new
-          puts options[:destination]
           all_plugins = inspector.inspect(options[:destination])
-          # puts all_plugins.to_json
-          inspector.format(all_plugins)
+          options[:as_json] ? puts(all_plugins.to_json) : inspector.format(all_plugins)
         end
 
         method_option :bundles_dir,
