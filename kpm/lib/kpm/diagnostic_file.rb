@@ -10,17 +10,17 @@ require 'date'
 module KPM
   class DiagnosticFile
     # Temporary directory
-    TMP_DIR_PREFIX  = 'killbill-diagnostics-'
-    TMP_DIR         = Dir.mktmpdir(TMP_DIR_PREFIX)
-    TMP_LOGS_DIR    = TMP_DIR + File::Separator + 'logs'
+    TMP_DIR_PREFIX = 'killbill-diagnostics-'
+    TMP_DIR = Dir.mktmpdir(TMP_DIR_PREFIX)
+    TMP_LOGS_DIR = TMP_DIR + File::Separator + 'logs'
 
-    TENANT_FILE     = 'tenant_config.data'
-    SYSTEM_FILE     = 'system_configuration.data'
-    ACCOUNT_FILE    = 'account.data'
+    TENANT_FILE = 'tenant_config.data'
+    SYSTEM_FILE = 'system_configuration.data'
+    ACCOUNT_FILE = 'account.data'
 
-    TODAY_DATE      = Date.today.strftime('%m-%d-%y')
-    ZIP_FILE        = 'killbill-diagnostics-' + TODAY_DATE + '.zip'
-    ZIP_LOG_FILE    = 'logs.zip'
+    TODAY_DATE = Date.today.strftime('%m-%d-%y')
+    ZIP_FILE = 'killbill-diagnostics-' + TODAY_DATE + '.zip'
+    ZIP_LOG_FILE = 'logs.zip'
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, kaui_web_path = nil,
@@ -44,18 +44,18 @@ module KPM
     def export_data(account_id = nil, log_dir = nil)
       self.config = @config_file
 
-      tenant_export_file  = retrieve_tenant_config
-      system_export_file  = retrieve_system_config
+      tenant_export_file = retrieve_tenant_config
+      system_export_file = retrieve_system_config
       account_export_file = retrieve_account_data(account_id) unless account_id.nil?
-      log_files           = retrieve_log_files(log_dir)
+      log_files = retrieve_log_files(log_dir)
 
       raise Interrupt, 'Account id or configuration file not found' unless File.exist?(system_export_file) && File.exist?(tenant_export_file)
 
       zip_file_name = TMP_DIR + File::Separator + ZIP_FILE
 
       Zip::File.open(zip_file_name, Zip::File::CREATE) do |zip_file|
-        zip_file.add(TENANT_FILE,  tenant_export_file)
-        zip_file.add(SYSTEM_FILE,  system_export_file)
+        zip_file.add(TENANT_FILE, tenant_export_file)
+        zip_file.add(SYSTEM_FILE, system_export_file)
         zip_file.add(ACCOUNT_FILE, account_export_file) unless account_id.nil?
         zip_file.add(ZIP_LOG_FILE, log_files) unless log_files.nil?
       end
@@ -79,7 +79,9 @@ module KPM
       @killbill_url ||= 'http://' + retrieve_config('killbill', 'host').to_s + ':' + retrieve_config('killbill', 'port').to_s unless @config_file.nil?
 
       tenant_config = KPM::TenantConfig.new(@killbill_api_credentials,
-                                            @killbill_credentials, @killbill_url, @logger)
+                                            @killbill_credentials,
+                                            @killbill_url,
+                                            @logger)
       export_file = tenant_config.export
 
       final = TMP_DIR + File::Separator + TENANT_FILE
@@ -91,7 +93,7 @@ module KPM
 
     def retrieve_system_config
       @logger.info 'Retrieving system configuration'
-      system = KPM::System.new
+      system = KPM::System.new(@logger)
       export_data = system.information(@bundles_dir, true, @config_file, @kaui_web_path, @killbill_web_path)
 
       system_catalina_base(export_data)
@@ -118,13 +120,12 @@ module KPM
     end
 
     def retrieve_log_files(log_dir)
-      @logger.info 'Collecting log files'
-
       if @catalina_base.nil? && log_dir.nil?
-        @logger.warn 'Unable to find Tomcat process, make sure to run kpm using the same user as the Tomcat process.'
+        @logger.warn "\e[91;1mUnable to find Tomcat process, logs won't be collected: make sure to run kpm using the same user as the Tomcat process or pass the option --log-dir\e[0m"
         return nil
       end
 
+      @logger.info 'Collecting log files'
       log_base = log_dir || (@catalina_base + File::Separator + 'logs')
       log_items = Dir.glob(log_base + File::Separator + '*')
 

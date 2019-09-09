@@ -10,7 +10,7 @@ describe KPM::TenantConfig do
 
   let(:user) { 'KPM Tenant Spec' }
   let(:tenant_config_class) do
-    described_class.new([killbill_api_key, killbill_api_secrets],
+    described_class.new([killbill_api_key, killbill_api_secret],
                         [killbill_user, killbill_password], url, logger)
   end
   let(:options) do
@@ -18,7 +18,7 @@ describe KPM::TenantConfig do
       username: killbill_user,
       password: killbill_password,
       api_key: killbill_api_key,
-      api_secret: killbill_api_secrets
+      api_secret: killbill_api_secret
     }
   end
 
@@ -31,7 +31,7 @@ describe KPM::TenantConfig do
       it 'when initialized with options' do
         tenant_config_class.should be_an_instance_of(KPM::TenantConfig)
         expect(tenant_config_class.instance_variable_get(:@killbill_api_key)).to eq(killbill_api_key)
-        expect(tenant_config_class.instance_variable_get(:@killbill_api_secrets)).to eq(killbill_api_secrets)
+        expect(tenant_config_class.instance_variable_get(:@killbill_api_secret)).to eq(killbill_api_secret)
         expect(tenant_config_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(tenant_config_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(tenant_config_class.instance_variable_get(:@killbill_url)).to eq(url)

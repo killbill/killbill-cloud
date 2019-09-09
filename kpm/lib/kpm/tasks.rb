@@ -424,7 +424,7 @@ module KPM
                       desc: 'Path for the killbill web app'
         desc 'system', 'Gather information about the system'
         def system
-          system = KPM::System.new
+          system = KPM::System.new(logger)
           information = system.information(options[:bundles_dir], options[:as_json], options[:config_file], options[:kaui_web_path],
                                            options[:killbill_web_path])
 

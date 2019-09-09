@@ -73,7 +73,7 @@ module KPM
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, data_delimiter = nil, logger = nil)
       @killbill_api_key = KILLBILL_API_KEY
-      @killbill_api_secrets = KILLBILL_API_SECRET
+      @killbill_api_secret = KILLBILL_API_SECRET
       @killbill_url = KILLBILL_URL
       @killbill_user = KILLBILL_USER
       @killbill_password = KILLBILL_PASSWORD
@@ -127,7 +127,7 @@ module KPM
         username: @killbill_user,
         password: @killbill_password,
         api_key: @killbill_api_key,
-        api_secret: @killbill_api_secrets
+        api_secret: @killbill_api_secret
       }
 
       begin
@@ -414,7 +414,7 @@ module KPM
       unless killbill_api_credentials.nil?
 
         @killbill_api_key = killbill_api_credentials[0]
-        @killbill_api_secrets = killbill_api_credentials[1]
+        @killbill_api_secret = killbill_api_credentials[1]
 
       end
 
