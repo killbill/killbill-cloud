@@ -154,33 +154,19 @@ Let’s assume now that you are modifying the code for the (Java) Adyen plugin. 
 kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
 ....
 
-The command `kpm inspect` can be used to see what has been installed. In the case of `dev` plugins, most of the infofrmation related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occured.
+[[diagnostics]]
+### Diagnostics
+
+[[kpm-inspect]]
+#### kpm inspect
+
+The command `kpm inspect` can be used to see which plugins have been installed.
+
+Note: in the case of `dev` plugins, most of the information related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occurred.
 
 Finally, when it is time to use a released version of a plugin, we first recommend to uninstall the `dev` version, by using the `kpm uninstall` command and using the `plugin_key`, and then installing the released version. For instance the following sequence could happen:
 
 ....
-> kpm inspect
-___________________________________________________________________________________________________________________________
-|          PLUGIN NAME |      PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
-___________________________________________________________________________________________________________________________
-| killbill-cybersource | dev:cybersource | ruby |      ??? |         ??? |       ??? |                      3.3.0[???](*) |
-|                adyen |       dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
-___________________________________________________________________________________________________________________________
-
-> kpm uninstall 'dev:cybersource'
-Removing the following versions of the killbill-cybersource plugin: 3.3.0
-Done!
-
-> kpm inspect
-
-_____________________________________________________________________________________________________________
-| PLUGIN NAME | PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
-_____________________________________________________________________________________________________________
-|       adyen |  dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
-_____________________________________________________________________________________________________________
-
-> kpm install_ruby_plugin cybersource
-[...]
 
 > kpm inspect
 _______________________________________________________________________________________________________________________________________________________
@@ -190,6 +176,22 @@ ________________________________________________________________________________
 |                adyen |   dev:adyen | java |                               ??? |                ??? |       ??? |                      0.3.2[???](*) |
 _______________________________________________________________________________________________________________________________________________________
 ....
+
+[[kpm-system]]
+#### kpm system
+
+The command `kpm system` is a superset of the `inspect` command. In addition to plugins information, the command will return details about the Kill Bill and Kaui installation, Java and Ruby environment, details about the OS, CPU, Memory and disks, entropy available, etc.
+
+Note: for non-standard deployments, you will need to tell KPM the location of the Kill Bill and Kaui webapp (see `kpm help system`).
+
+[[kpm-diagnostic]]
+#### kpm diagnostic
+
+The command `kpm diagnostic` is a superset of the `system` command. It will connect to your Kill Bill instance to gather tenant configuration information and account data (if a specific account is specified) and will gather all log files.
+
+You will need to instruct KPM how to connect to your Kill Bill instance (see `kpm help diagnostic`).
+
+
 
 [[internals]]
 ## Internals
