@@ -72,6 +72,8 @@ describe KPM::Uninstaller do
         uninstaller.send(:remove_plugin_version, plugin_info, '3.0')
       end.to raise_error(ArgumentError, "Path #{plugin_info[:plugin_path]}/3.0 is not a valid directory")
     end
+
+    it { expect(uninstaller.send(:categorize_plugins)).to eq({ to_be_deleted: [], to_keep: [] }) }
   end
 
   context 'when plugin is installed' do
@@ -113,6 +115,28 @@ describe KPM::Uninstaller do
       sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version2}")
 
       uninstaller.uninstall_plugin(plugin_name, true).should be_true
+    end
+
+    it 'categorizes plugins depending on default flag' do
+      expect(uninstaller.send(:categorize_plugins)).to eq({ to_be_deleted: [[plugin_info, version1]], to_keep: [[plugin_info, version2]] })
+    end
+
+    it 'does cleanup if dry-run is set' do
+      expect(uninstaller.uninstall_non_default_plugins(true)).to be_false
+    end
+
+    it 'does cleanup if dry-run isn\'t set' do
+      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+
+      plugin_info_copy = Marshal.load(Marshal.dump(plugin_info))
+      expect(KPM::Inspector.new.inspect(destination)).to eq({ plugin_name => plugin_info_copy })
+
+      expect(uninstaller.uninstall_non_default_plugins(false)).to be_true
+      plugin_info_copy[:versions].delete_at(0)
+      expect(KPM::Inspector.new.inspect(destination)).to eq({ plugin_name => plugin_info_copy })
+
+      # Second time is a no-op
+      expect(uninstaller.uninstall_non_default_plugins).to be_false
     end
   end
 end

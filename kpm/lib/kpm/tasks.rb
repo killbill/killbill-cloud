@@ -58,6 +58,19 @@ module KPM
         method_option :destination,
                       type: :string,
                       default: nil,
+                      desc: 'A different folder other than the default bundles directory.'
+        method_option :dry_run,
+                      type: :boolean,
+                      default: false,
+                      desc: 'Print the plugins which would be deleted'
+        desc 'cleanup', 'Delete old plugins'
+        def cleanup
+          Uninstaller.new(options[:destination]).uninstall_non_default_plugins(options[:dry_run])
+        end
+
+        method_option :destination,
+                      type: :string,
+                      default: nil,
                       desc: 'A different folder other than the current working directory.'
         method_option :bundles_dir,
                       type: :string,

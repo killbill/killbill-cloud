@@ -137,6 +137,8 @@ You can also download specific versions/artifacts directly with the following co
 
 For more details see `kpm help`.
 
+Note: previous plugin versions aren't cleaned up by default to facilitate rollbacks. If your deployment is stateful, unused, old plugin versions will slow the Kill Bill startup time. To cleanup these entries, use `kpm cleanup` which will delete all non-default plugin versions.
+
 [[dev-mode]]
 ### Dev Mode
 

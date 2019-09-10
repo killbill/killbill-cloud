@@ -28,6 +28,29 @@ module KPM
       remove_all_plugin_versions(plugin_info, force)
     end
 
+    def uninstall_non_default_plugins(dry_run = false)
+      plugins = categorize_plugins
+
+      if plugins[:to_be_deleted].empty?
+        KPM.ui.say 'Nothing to do'
+        return false
+      end
+
+      if dry_run
+        msg = "The following plugin versions would be removed:\n"
+        msg += plugins[:to_be_deleted].map { |p| "  #{p[0][:plugin_name]}: #{p[1]}" }.join("\n")
+        msg += "\nThe following plugin versions would be kept:\n"
+        msg += plugins[:to_keep].map { |p| "  #{p[0][:plugin_name]}: #{p[1]}" }.join("\n")
+        KPM.ui.say msg
+        false
+      else
+        plugins[:to_be_deleted].each do |p|
+          remove_plugin_version(p[0], p[1])
+        end
+        true
+      end
+    end
+
     private
 
     def find_plugin(plugin)
@@ -42,6 +65,16 @@ module KPM
       end
 
       plugin_info
+    end
+
+    def categorize_plugins
+      plugins = { to_be_deleted: [], to_keep: [] }
+      @installed_plugins.each do |_, info|
+        info[:versions].each do |artifact|
+          (artifact[:is_default] ? plugins[:to_keep] : plugins[:to_be_deleted]) << [info, artifact[:version]]
+        end
+      end
+      plugins
     end
 
     def remove_all_plugin_versions(plugin_info, force = false)
