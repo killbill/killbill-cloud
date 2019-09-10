@@ -2,7 +2,7 @@
 
 module KPM
   module SystemProxy
-    module EntropyAvailable
+    class EntropyAvailable
       attr_reader :entropy_available, :labels
 
       def initialize

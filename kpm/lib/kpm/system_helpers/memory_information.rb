@@ -2,7 +2,7 @@
 
 module KPM
   module SystemProxy
-    module MemoryInformation
+    class MemoryInformation
       attr_reader :memory_info, :labels
 
       def initialize
@@ -33,6 +33,11 @@ module KPM
 
       def fetch_mac
         mem_data = `vm_stat 2>&1`.gsub('.', '')
+        mem_total_data = `system_profiler SPHardwareDataType | grep "  Memory:" 2>&1`
+        build_hash_mac(mem_data, mem_total_data)
+      end
+
+      def build_hash_mac(mem_data, mem_total_data)
         mem = build_hash(mem_data)
 
         mem.each_key do |key|
@@ -40,7 +45,6 @@ module KPM
           mem[key][:memory_detail] = mem[key][:memory_detail].gsub('Pages', 'Memory')
         end
 
-        mem_total_data = `system_profiler SPHardwareDataType | grep "  Memory:" 2>&1`
         mem_total = build_hash(mem_total_data)
 
         mem_total.merge(mem)
@@ -53,12 +57,12 @@ module KPM
 
       def build_hash(data)
         mem = {}
+        return mem if data.nil?
 
-        unless data.nil?
-          data.split("\n").each do |info|
-            infos = info.split(':')
-            mem[infos[0].to_s.strip] = { memory_detail: infos[0].to_s.strip, value: infos[1].to_s.strip }
-          end
+        data.split("\n").each do |info|
+          infos = info.split(':')
+          key = infos[0].to_s.strip.gsub('"', '')
+          mem[key] = { memory_detail: key, value: infos[1].to_s.strip }
         end
 
         mem

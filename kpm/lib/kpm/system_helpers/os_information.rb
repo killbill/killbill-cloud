@@ -2,7 +2,7 @@
 
 module KPM
   module SystemProxy
-    module OsInformation
+    class OsInformation
       attr_reader :os_info, :labels
 
       def initialize
