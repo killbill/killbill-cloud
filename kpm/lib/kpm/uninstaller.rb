@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pathname'
+
 module KPM
   class Uninstaller
     def initialize(destination, logger = nil)
@@ -9,13 +11,13 @@ module KPM
         @logger.level = Logger::INFO
       end
 
-      destination ||= KPM::BaseInstaller::DEFAULT_BUNDLES_DIR
-      @installed_plugins = Inspector.new.inspect(destination)
+      @destination = (destination || KPM::BaseInstaller::DEFAULT_BUNDLES_DIR)
+      refresh_installed_plugins
 
-      plugins_installation_path = File.join(destination, 'plugins')
+      plugins_installation_path = File.join(@destination, 'plugins')
       @plugins_manager = PluginsManager.new(plugins_installation_path, @logger)
 
-      sha1_file_path = File.join(destination, KPM::BaseInstaller::SHA1_FILENAME)
+      sha1_file_path = File.join(@destination, KPM::BaseInstaller::SHA1_FILENAME)
       @sha1checker = KPM::Sha1Checker.from_file(sha1_file_path, @logger)
     end
 
@@ -49,14 +51,30 @@ module KPM
         return false unless KPM.ui.ask('Are you sure you want to continue?', limited_to: %w[y n]) == 'y'
       end
 
-      FileUtils.rmtree(plugin_info[:plugin_path])
-
-      @plugins_manager.remove_plugin_identifier_key(plugin_info[:plugin_key])
       versions.each do |version|
-        remove_sha1_entry(plugin_info, version)
+        remove_plugin_version(plugin_info, version)
+      end
+      true
+    end
+
+    def remove_plugin_version(plugin_info, version)
+      # Be safe
+      raise ArgumentError, 'plugin_path is empty' if plugin_info[:plugin_path].empty?
+      raise ArgumentError, "version is empty (plugin_path=#{plugin_info[:plugin_path]})" if version.empty?
+
+      plugin_version_path = File.expand_path(File.join(plugin_info[:plugin_path], version))
+      safe_rmrf(plugin_version_path)
+
+      remove_sha1_entry(plugin_info, version)
+
+      # Remove the identifier if this was the last version installed
+      refresh_installed_plugins
+      if @installed_plugins[plugin_info[:plugin_name]][:versions].empty?
+        safe_rmrf(plugin_info[:plugin_path])
+        @plugins_manager.remove_plugin_identifier_key(plugin_info[:plugin_key])
       end
 
-      true
+      refresh_installed_plugins
     end
 
     def remove_sha1_entry(plugin_info, version)
@@ -66,6 +84,20 @@ module KPM
                                                        classifier: plugin_info[:classifier],
                                                        version: version)
       @sha1checker.remove_entry!(coordinates)
+    end
+
+    def refresh_installed_plugins
+      @installed_plugins = Inspector.new.inspect(@destination)
+    end
+
+    def safe_rmrf(dir)
+      validate_dir_for_rmrf(dir)
+      FileUtils.rmtree(dir)
+    end
+
+    def validate_dir_for_rmrf(dir)
+      raise ArgumentError, "Path #{dir} is not a valid directory" unless File.directory?(dir)
+      raise ArgumentError, "Path #{dir} is not a subdirectory of #{@destination}" unless Pathname.new(dir).fnmatch?(File.join(@destination, '**'))
     end
   end
 end
