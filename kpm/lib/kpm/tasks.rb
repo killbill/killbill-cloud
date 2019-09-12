@@ -50,9 +50,13 @@ module KPM
                       type: :boolean,
                       default: nil,
                       desc: 'Don\'t ask for confirmation while deleting multiple versions of a plugin.'
+        method_option :version,
+                      type: :string,
+                      default: nil,
+                      desc: 'Specific plugin version to uninstall'
         desc 'uninstall plugin', 'Uninstall the specified plugin, identified by its name or key, from current deployment'
         def uninstall(plugin)
-          say 'Done!' if Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force])
+          say 'Done!' if Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force], options[:version])
         end
 
         method_option :destination,
