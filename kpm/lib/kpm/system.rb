@@ -10,7 +10,8 @@ module KPM
     DEFAULT_KAUI_SEARCH_BASE_DIR = '**' + File::SEPARATOR + 'kaui'
     DEFAULT_KILLBILL_SEARCH_BASE_DIR = '**' + File::SEPARATOR + 'ROOT'
 
-    def initialize
+    def initialize(logger)
+      @logger = logger
       @formatter = KPM::Formatter.new
     end
 
@@ -271,14 +272,15 @@ module KPM
 
     def java_command
       command = 'java -XshowSettings:properties -version 2>&1'
-      apache_tomcat_pid = apache_tomcat_pid
+      apache_tomcat_pid = find_apache_tomcat_pid
+      @logger.debug("Found Tomcat PID: #{apache_tomcat_pid}")
 
       command = "jcmd #{apache_tomcat_pid} VM.system_properties" unless apache_tomcat_pid.nil?
 
       command
     end
 
-    def apache_tomcat_pid
+    def find_apache_tomcat_pid
       apache_tomcat_pid = nil
       `jcmd -l 2>&1`.split("\n").each do |line|
         if /org.apache.catalina/.match(line)

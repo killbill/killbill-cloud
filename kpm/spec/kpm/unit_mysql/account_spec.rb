@@ -7,7 +7,7 @@ describe KPM::Account do
     include_context 'connection_setup'
 
     let(:account_class) do
-      described_class.new(nil, [killbill_api_key, killbill_api_secrets],
+      described_class.new(nil, [killbill_api_key, killbill_api_secret],
                           [killbill_user, killbill_password], url,
                           db_name, [db_username, db_password], db_host, db_port, nil, logger)
     end
@@ -39,7 +39,7 @@ describe KPM::Account do
       it 'when initialized with options' do
         account_class.should be_an_instance_of(KPM::Account)
         expect(account_class.instance_variable_get(:@killbill_api_key)).to eq(killbill_api_key)
-        expect(account_class.instance_variable_get(:@killbill_api_secrets)).to eq(killbill_api_secrets)
+        expect(account_class.instance_variable_get(:@killbill_api_secret)).to eq(killbill_api_secret)
         expect(account_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
         expect(account_class.instance_variable_get(:@killbill_password)).to eq(killbill_password)
         expect(account_class.instance_variable_get(:@killbill_url)).to eq(url)
@@ -354,7 +354,7 @@ describe KPM::Account do
       username: killbill_user,
       password: killbill_password,
       api_key: killbill_api_key,
-      api_secret: killbill_api_secrets
+      api_secret: killbill_api_secret
     }
 
     account = KillBillClient::Model::Account.new

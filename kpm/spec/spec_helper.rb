@@ -26,7 +26,7 @@ shared_context 'connection_setup' do
   let(:dummy_data_file) { Dir.mktmpdir('dummy') + File::SEPARATOR + 'kbdump' }
   let(:url) { "http://#{yml_file['killbill']['host']}:#{yml_file['killbill']['port']}" }
   let(:killbill_api_key) { yml_file['killbill']['api_key'] }
-  let(:killbill_api_secrets) { yml_file['killbill']['api_secret'] }
+  let(:killbill_api_secret) { yml_file['killbill']['api_secret'] }
   let(:killbill_user) { yml_file['killbill']['user'] }
   let(:killbill_password) { yml_file['killbill']['password'] }
   let(:db_name) { yml_file['database']['name'] }
