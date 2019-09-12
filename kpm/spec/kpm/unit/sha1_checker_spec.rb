@@ -3,15 +3,19 @@
 require 'spec_helper'
 
 describe KPM::Sha1Checker do
-  before(:all) do
-    @logger = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+  let(:tmp_dir) { Dir.mktmpdir('sha1_checker_spec') }
+  let(:sha1_file) { File.join(tmp_dir, 'sha1.yml') }
+  let(:sha1_checker) { KPM::Sha1Checker.from_file(sha1_file) }
+  let(:sha1_content) do
+    {
+      'sha1' => { 'killbill-plugin-match-1.0.0.tar.gz' => 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9',
+                  'killbill-plugin-nomatch-1.0.0.tar.gz' => 'ace068c3fd5f95646ce0d09852f43ff67f06f0b8',
+                  'killbill-plugin-other-1.0.0.tar.gz' => 'bbb068c3fd5f95646ce0d09852f43ff67f06fccc' }
+    }
+  end
 
-    tmp_destination_dir = Dir.tmpdir
-    init_config = File.join(File.dirname(__FILE__), 'sha1_test.yml')
-    FileUtils.copy(init_config, tmp_destination_dir)
-    @tmp_config = File.join(tmp_destination_dir, 'sha1_test.yml')
-    @sha1_checker = KPM::Sha1Checker.from_file(@tmp_config)
+  before do
+    File.open(sha1_file.to_s, 'a') { |l| l.puts(sha1_content.to_yaml) }
   end
 
   it 'should create intermediate directories' do
@@ -22,50 +26,50 @@ describe KPM::Sha1Checker do
   end
 
   it 'should find matching sha1' do
-    existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9'
   end
 
   it 'should NOT find sha1' do
-    existing = @sha1_checker.sha1('killbill-plugin-nomatch-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-nomatch-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should_not == 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9'
   end
 
   it 'should NOT find matching sha1' do
-    existing = @sha1_checker.sha1('killbill-plugin-foo-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-foo-1.0.0.tar.gz')
     existing.should be_nil
   end
 
   it 'should add an entry and find them all' do
-    @sha1_checker.add_or_modify_entry!('killbill-plugin-new-1.1.0.0.tar.gz', 'abc068c3fd5f95646ce0d09852f43ff67f06f111')
+    sha1_checker.add_or_modify_entry!('killbill-plugin-new-1.1.0.0.tar.gz', 'abc068c3fd5f95646ce0d09852f43ff67f06f111')
 
-    existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9'
 
-    existing = @sha1_checker.sha1('killbill-plugin-new-1.1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-new-1.1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'abc068c3fd5f95646ce0d09852f43ff67f06f111'
 
-    existing = @sha1_checker.sha1('killbill-plugin-other-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-other-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'bbb068c3fd5f95646ce0d09852f43ff67f06fccc'
   end
 
   it 'should add allow to modify an entry and find them all' do
-    existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'fce068c3fd5f95646ce0d09852f43ff67f06f0b9'
 
-    @sha1_checker.add_or_modify_entry!('killbill-plugin-match-1.0.0.tar.gz', 'dde068c3fd5f95646ce0d09852f43ff67f06f0aa')
+    sha1_checker.add_or_modify_entry!('killbill-plugin-match-1.0.0.tar.gz', 'dde068c3fd5f95646ce0d09852f43ff67f06f0aa')
 
-    existing = @sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-match-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'dde068c3fd5f95646ce0d09852f43ff67f06f0aa'
 
-    existing = @sha1_checker.sha1('killbill-plugin-other-1.0.0.tar.gz')
+    existing = sha1_checker.sha1('killbill-plugin-other-1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'bbb068c3fd5f95646ce0d09852f43ff67f06fccc'
   end
@@ -73,16 +77,15 @@ describe KPM::Sha1Checker do
   context 'when removing an entry' do
     let(:identifier) { 'killbill-plugin-match-1.0.0.tar.gz' }
     before do
-      @sha1_checker.remove_entry!(identifier)
+      sha1_checker.remove_entry!(identifier)
     end
 
     it 'does not find the entry' do
-      @sha1_checker.sha1(identifier).should be_nil
+      sha1_checker.sha1(identifier).should be_nil
     end
 
-    let(:reloaded_checker) { KPM::Sha1Checker.from_file(@tmp_config) }
     it 'does not find entry in file system' do
-      reloaded_checker.sha1(identifier).should be_nil
+      KPM::Sha1Checker.from_file(sha1_file).sha1(identifier).should be_nil
     end
   end
 
@@ -93,10 +96,10 @@ describe KPM::Sha1Checker do
       # Just to be sure
       File.delete(empty_config)
     end
-    @sha1_checker = KPM::Sha1Checker.from_file(empty_config)
+    sha1_checker = KPM::Sha1Checker.from_file(empty_config)
 
-    @sha1_checker.add_or_modify_entry!('killbill-plugin-new-1.1.0.0.tar.gz', 'abc068c3fd5f95646ce0d09852f43ff67f06f111')
-    existing = @sha1_checker.sha1('killbill-plugin-new-1.1.0.0.tar.gz')
+    sha1_checker.add_or_modify_entry!('killbill-plugin-new-1.1.0.0.tar.gz', 'abc068c3fd5f95646ce0d09852f43ff67f06f111')
+    existing = sha1_checker.sha1('killbill-plugin-new-1.1.0.0.tar.gz')
     existing.should_not be_nil
     existing.should eq 'abc068c3fd5f95646ce0d09852f43ff67f06f111'
   end

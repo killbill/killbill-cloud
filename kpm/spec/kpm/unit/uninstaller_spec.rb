@@ -121,7 +121,7 @@ describe KPM::Uninstaller do
       expect(uninstaller.send(:categorize_plugins)).to eq({ to_be_deleted: [[plugin_info, version1]], to_keep: [[plugin_info, version2]] })
     end
 
-    it 'does cleanup if dry-run is set' do
+    it 'does not cleanup if dry-run is set' do
       expect(uninstaller.uninstall_non_default_plugins(true)).to be_false
     end
 
