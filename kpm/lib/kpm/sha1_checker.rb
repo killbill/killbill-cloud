@@ -15,7 +15,7 @@ module KPM
       init!
 
       if logger.nil?
-        @logger       = Logger.new(STDOUT)
+        @logger = Logger.new(STDOUT)
         @logger.level = Logger::INFO
       else
         @logger = logger
@@ -23,20 +23,21 @@ module KPM
     end
 
     def sha1(coordinates)
-      @sha1_config['sha1'][coordinates]
+      sha1_cache[coordinates]
     end
 
     def all_sha1
-      @sha1_config['sha1']
+      sha1_cache
     end
 
     def add_or_modify_entry!(coordinates, remote_sha1)
-      @sha1_config['sha1'][coordinates] = remote_sha1
+      sha1_cache[coordinates] = remote_sha1
       save!
     end
 
     def remove_entry!(coordinates)
-      @sha1_config['sha1'].delete(coordinates)
+      sha1_cache.delete(coordinates)
+      nexus_cache.delete(coordinates)
       save!
     end
 
@@ -44,7 +45,15 @@ module KPM
       nexus_cache[coordinates]
     end
 
-    def cache_artifact_info(coordinates, artifact_info)
+    def cache_artifact_info(coordinates_with_maybe_latest, artifact_info)
+      if coordinates_with_maybe_latest.end_with?('LATEST')
+        return nil if artifact_info[:version].nil?
+
+        coordinates = coordinates_with_maybe_latest.gsub(/LATEST$/, artifact_info[:version])
+      else
+        coordinates = coordinates_with_maybe_latest
+      end
+
       # See BaseArtifact#artifact_info
       nexus_keys = %i[sha1 version repository_path is_tgz]
       nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key, _| nexus_keys.include? key } : nil
@@ -61,6 +70,10 @@ module KPM
     end
 
     private
+
+    def sha1_cache
+      @sha1_config['sha1'] ||= {}
+    end
 
     def nexus_cache
       @sha1_config['nexus'] ||= {}
