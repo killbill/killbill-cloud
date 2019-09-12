@@ -43,18 +43,18 @@ describe KPM::Sha1Checker do
   end
 
   it 'translates LATEST when caching nexus info' do
-    sha1_checker.cache_artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST', { 'sha1': '050594dd73a54d229ca3efcf69785345b8cd1681',
-                                                                                                        'version': '7.0.4',
-                                                                                                        'repository_path': '/org/kill-bill/billing/plugin/java/analytics-plugin/7.0.4/analytics-plugin-7.0.4.jar',
-                                                                                                        'is_tgz': false })
+    sha1_checker.cache_artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST', { :sha1 => '050594dd73a54d229ca3efcf69785345b8cd1681',
+                                                                                                        :version => '7.0.4',
+                                                                                                        :repository_path => '/org/kill-bill/billing/plugin/java/analytics-plugin/7.0.4/analytics-plugin-7.0.4.jar',
+                                                                                                        :is_tgz => false })
     expect(sha1_checker.artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST')).to be_nil
     expect(sha1_checker.artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:7.0.4')[:sha1]).to eq('050594dd73a54d229ca3efcf69785345b8cd1681')
   end
 
   it 'never caches nexus info without version info' do
-    sha1_checker.cache_artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST', { 'sha1': '050594dd73a54d229ca3efcf69785345b8cd1681',
-                                                                                                        'repository_path': '/org/kill-bill/billing/plugin/java/analytics-plugin/7.0.4/analytics-plugin-7.0.4.jar',
-                                                                                                        'is_tgz': false })
+    sha1_checker.cache_artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST', { :sha1 => '050594dd73a54d229ca3efcf69785345b8cd1681',
+                                                                                                        :repository_path => '/org/kill-bill/billing/plugin/java/analytics-plugin/7.0.4/analytics-plugin-7.0.4.jar',
+                                                                                                        :is_tgz => false })
     expect(sha1_checker.artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:LATEST')).to be_nil
     expect(sha1_checker.artifact_info('org.kill-bill.billing.plugin.java:analytics-plugin:jar:7.0.4')).to be_nil
   end
