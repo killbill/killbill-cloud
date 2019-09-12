@@ -46,6 +46,8 @@ module KPM
     end
 
     def cache_artifact_info(coordinates_with_maybe_latest, artifact_info)
+      return if artifact_info.nil?
+
       if coordinates_with_maybe_latest.end_with?('LATEST')
         return nil if artifact_info[:version].nil?
 
@@ -56,7 +58,7 @@ module KPM
 
       # See BaseArtifact#artifact_info
       nexus_keys = %i[sha1 version repository_path is_tgz]
-      nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key, _| nexus_keys.include? key } : nil
+      nexus_cache[coordinates] = artifact_info.select { |key, _| nexus_keys.include? key }
       save!
     end
 
