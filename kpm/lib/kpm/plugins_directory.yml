@@ -155,18 +155,6 @@
   - :signature
   - :login
   - :password
-:payu_latam:
-  :type: :ruby
-  :artifact_id: payu-latam-plugin
-  :versions:
-    :0.14: 0.1.0
-    :0.16: 0.2.0
-    :0.18: 0.3.0
-  :require:
-  - :api_login
-  - :api_key
-  - :country_account_id
-  - :merchant_id
 :payment-test:  
   :type: :ruby
   :artifact_id: payment-test-plugin
