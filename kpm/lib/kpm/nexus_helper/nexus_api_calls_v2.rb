@@ -35,7 +35,6 @@ module KPM
       OPEN_TIMEOUT_DEFAULT = 60
 
       ERROR_MESSAGE_404 = 'The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.'
-      ERROR_MESSAGE_503 = 'Could not connect to Nexus. Please ensure the url you are using is reachable.'
 
       attr_reader :version
       attr_reader :configuration
@@ -56,6 +55,8 @@ module KPM
         when '200'
           logger.debug "response body: #{response.body}"
           return response.body
+        when '404'
+          raise StandardError, ERROR_MESSAGE_404
         else
           raise UnexpectedStatusCodeException, response.code
         end
@@ -71,8 +72,6 @@ module KPM
           return response.body
         when '404'
           raise StandardError, ERROR_MESSAGE_404
-        when '503'
-          raise StandardError, ERROR_MESSAGE_503
         else
           raise UnexpectedStatusCodeException, response.code
         end
