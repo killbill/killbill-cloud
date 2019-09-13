@@ -126,20 +126,6 @@
     :0.18: 1.1.2
     :0.19: 1.2.4
     :0.20: 1.3.0
-:litle:
-  :type: :ruby
-  :versions:
-    :0.14: 2.0.0
-    :0.16: 3.0.0
-    :0.18: 4.0.0
-    :0.20: 5.0.0
-  :require:
-    - :account_id
-    - :merchant_id
-    - :username
-    - :password
-    - :secure_page_url
-    - :paypage_id
 :logging:
   :type: :ruby
   :versions:
