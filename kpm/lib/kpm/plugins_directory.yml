@@ -89,15 +89,6 @@
     :0.18: 0.3.1
     :0.19: 0.4.0
     :0.20: 0.5.1
-:firstdata_e4:
-  :type: :ruby
-  :artifact_id: firstdata-e4-plugin
-  :versions:
-    :0.16: 0.1.0
-    :0.18: 0.2.0
-  :require:
-  - :login
-  - :password
 :forte:
   :type: :java
   :versions:
