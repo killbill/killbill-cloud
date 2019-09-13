@@ -49,16 +49,6 @@
     - :org.killbill.billing.plugin.avatax.url
     - :org.killbill.billing.plugin.avatax.accountNumber
     - :org.killbill.billing.plugin.avatax.licenseKey
-:braintree_blue:
-  :type: :ruby
-  :versions:
-    :0.14: 0.0.1
-    :0.16: 0.2.1
-    :0.18: 0.3.1
-  :require:
-    - :merchant_id
-    - :public_key
-    - :private_key
 :cybersource:
   :type: :ruby
   :versions:
