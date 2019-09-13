@@ -59,12 +59,6 @@
     - :merchant_id
     - :public_key
     - :private_key
-:currency:
-  :type: :ruby
-  :artifact_id: killbill-currency-plugin
-  :versions:
-    :0.16: 2.0.0
-    :0.18: 3.0.0
 :cybersource:
   :type: :ruby
   :versions:
