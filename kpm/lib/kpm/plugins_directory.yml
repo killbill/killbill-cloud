@@ -172,13 +172,3 @@
     :0.20: 6.0.1
   :require:
   - :api_secret_key
-:zendesk:
-  :type: :ruby
-  :versions:
-    :0.14: 1.3.0
-    :0.16: 2.0.0
-    :0.18: 3.0.1
-  :require:
-  - :subdomain
-  - :username
-  - :password
