@@ -56,7 +56,7 @@ module KPM
                       desc: 'Specific plugin version to uninstall'
         desc 'uninstall plugin', 'Uninstall the specified plugin, identified by its name or key, from current deployment'
         def uninstall(plugin)
-          say 'Done!' if Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force], options[:version])
+          Uninstaller.new(options[:destination]).uninstall_plugin(plugin, options[:force], options[:version])
         end
 
         method_option :destination,
@@ -373,7 +373,7 @@ module KPM
         method_option :force_download,
                       type: :boolean,
                       default: false,
-                      desc: 'Force download of the artifact even if it exists'
+                      desc: 'Ignore local cache'
         method_option :sha1_file,
                       type: :string,
                       default: nil,
