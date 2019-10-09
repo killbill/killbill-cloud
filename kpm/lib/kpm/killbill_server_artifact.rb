@@ -19,9 +19,10 @@ module KPM
         logger = Logger.new(STDOUT)
         logger.level = Logger::ERROR
 
-        version = KPM::Installer.get_kb_latest_stable_version if version == 'LATEST'
-
+        # Initialize as early as possible (used in rescue block below)
         sha1_checker = sha1_file ? Sha1Checker.from_file(sha1_file) : nil
+
+        version = KPM::Installer.get_kb_latest_stable_version if version == 'LATEST'
 
         versions = {}
         Dir.mktmpdir do |dir|

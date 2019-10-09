@@ -370,25 +370,41 @@ module KPM
                       type: :string,
                       default: 'LATEST',
                       desc: 'Kill Bill version'
+        method_option :force_download,
+                      type: :boolean,
+                      default: false,
+                      desc: 'Force download of the artifact even if it exists'
+        method_option :sha1_file,
+                      type: :string,
+                      default: nil,
+                      desc: 'Location of the sha1 file'
+        method_option :verify_sha1,
+                      type: :boolean,
+                      default: true,
+                      desc: 'Validates sha1 sum'
+        method_option :as_json,
+                      type: :boolean,
+                      default: false,
+                      desc: 'Set the output format as JSON when true'
         desc 'info', 'Describe information about a Kill Bill version'
         def info
-          say "Fetching info for version #{options[:version]}...\n"
-
           versions_info = KillbillServerArtifact.info(options[:version],
                                                       options[:sha1_file],
                                                       options[:force_download],
                                                       options[:verify_sha1],
                                                       options[:overrides],
                                                       options[:ssl_verify])
-          say "Dependencies for version #{options[:version]}\n  " + (versions_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
-          say "\n\n"
-
           resolved_kb_version = versions_info['killbill']
           kb_version = resolved_kb_version.split('.').slice(0, 2).join('.')
 
           plugins_info = KPM::PluginsDirectory.list_plugins(true, kb_version)
 
-          say "Known plugin for KB version #{options[:version]}\n  " + (plugins_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
+          if options[:as_json]
+            puts({ 'killbill' => versions_info, 'plugins' => plugins_info }.to_json)
+          else
+            say "Dependencies for version #{options[:version]}\n  " + (versions_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
+            say "Known plugins for KB version #{options[:version]}\n  " + (plugins_info.map { |k, v| "#{k} #{v}" }).join("\n  "), :green
+          end
         end
 
         method_option :destination,
