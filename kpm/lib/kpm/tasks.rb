@@ -12,7 +12,7 @@ module KPM
     def self.included(base)
       base.send :include, ::Thor::Actions
       base.class_eval do
-        desc 'KPM version', 'Return current KPM version.'
+        desc 'version', 'Return current KPM version.'
         def version
           say "KPM version #{KPM::VERSION}"
         end
@@ -88,7 +88,7 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validate sha1 sum'
-        desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
+        desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kb_server_war(version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
@@ -110,48 +110,6 @@ module KPM
           say "Available versions: #{KillbillServerArtifact.versions(KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
                                                                      KillbillServerArtifact::KILLBILL_PACKAGING,
                                                                      KillbillServerArtifact::KILLBILL_CLASSIFIER,
-                                                                     options[:overrides],
-                                                                     options[:ssl_verify]).to_a.join(', ')}", :green
-        end
-
-        method_option :destination,
-                      type: :string,
-                      default: nil,
-                      desc: 'A different folder other than the current working directory.'
-        method_option :bundles_dir,
-                      type: :string,
-                      default: nil,
-                      desc: 'The location where bundles will be installed (along with sha1 file)'
-        method_option :force_download,
-                      type: :boolean,
-                      default: false,
-                      desc: 'Force download of the artifact even if it exists'
-        method_option :verify_sha1,
-                      type: :boolean,
-                      default: true,
-                      desc: 'Validates sha1 sum'
-        desc 'pull_kp_server_war <version>', 'Pulls Kill Pay server war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
-        def pull_kp_server_war(version = 'LATEST')
-          installer = BaseInstaller.new(logger,
-                                        options[:overrides],
-                                        options[:ssl_verify])
-          response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                                       KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
-                                                       KillbillServerArtifact::KILLPAY_PACKAGING,
-                                                       KillbillServerArtifact::KILLPAY_CLASSIFIER,
-                                                       version,
-                                                       options[:destination],
-                                                       options[:bundles_dir],
-                                                       options[:force_download],
-                                                       options[:verify_sha1])
-          say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
-        end
-
-        desc 'search_for_kp_server', 'Searches for all versions of Kill Pay server and prints them to the screen.'
-        def search_for_kp_server
-          say "Available versions: #{KillbillServerArtifact.versions(KillbillServerArtifact::KILLPAY_ARTIFACT_ID,
-                                                                     KillbillServerArtifact::KILLPAY_PACKAGING,
-                                                                     KillbillServerArtifact::KILLPAY_CLASSIFIER,
                                                                      options[:overrides],
                                                                      options[:ssl_verify]).to_a.join(', ')}", :green
         end
@@ -196,7 +154,7 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validates sha1 sum'
-        desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_java_plugin(plugin_key, kb_version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
@@ -262,7 +220,7 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validates sha1 sum'
-        desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin from Sonatype and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
+        desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_ruby_plugin(plugin_key, kb_version = 'LATEST')
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
@@ -300,7 +258,7 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validates sha1 sum'
-        desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles from Sonatype and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
+        desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
         def pull_defaultbundles(kb_version = 'LATEST')
           response = BaseInstaller.new(logger,
                                        options[:overrides],
@@ -344,7 +302,7 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validates sha1 sum'
-        desc 'pull_kaui_war <version>', 'Pulls Kaui war from Sonatype and places it on your machine. If version was not specified it uses the latest released version.'
+        desc 'pull_kaui_war <version>', 'Pulls Kaui war and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kaui_war(version = 'LATEST')
           response = KauiArtifact.pull(logger,
                                        KauiArtifact::KAUI_GROUP_ID,
