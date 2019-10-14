@@ -7,6 +7,12 @@ module KPM
       store_value(value)
     end
 
+    # On Macos systems, this will require defining a `secure_file_priv` config:
+    #
+    # e.g /usr/local/etc/my.cnf :
+    # [mysqld]
+    # ...
+    # secure_file_priv=""
     def value
       "LOAD_FILE(\"#{@blob_file}\")"
     end
