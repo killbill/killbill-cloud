@@ -165,13 +165,14 @@ module KPM
       file_paths = Dir.glob(raw_file_path)
       raise ArgumentError, "Cannot install plugin: no file found at #{raw_file_path}" if file_paths.empty?
       raise ArgumentError, "Cannot install plugin: multiple files found at #{raw_file_path}" if file_paths.size > 1
+
       file_path = file_paths[0]
 
       bundles_dir = Pathname.new(bundles_dir || DEFAULT_BUNDLES_DIR).expand_path
       plugins_dir = bundles_dir.join('plugins')
 
       version = Utils.get_version_from_file_path(file_path) if version.nil?
-      raise ArgumentError, "Cannot install plugin: missing version" if version.nil?
+      raise ArgumentError, 'Cannot install plugin: missing version' if version.nil?
 
       if type.to_s == 'java'
         plugin_name = name.nil? ? Utils.get_plugin_name_from_file_path(file_path) : name
