@@ -34,6 +34,7 @@ module KPM
       query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}" unless record_id.nil?
       query = "SET autocommit=0; #{query} COMMIT;"
 
+
       File.open(STATEMENT_TMP_FILE, 'w') do |s|
         s.puts query
       end
@@ -78,6 +79,8 @@ module KPM
           rows << row.map do |value|
             if value.is_a?(Symbol)
               value.to_s
+            elsif value.is_a?(Blob)
+              value.value
             else
               escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
                                    .gsub('\N{LINE FEED}', "\n")

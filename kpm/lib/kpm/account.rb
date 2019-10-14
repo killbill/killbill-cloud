@@ -5,6 +5,7 @@ require 'tmpdir'
 require 'yaml'
 require 'date'
 require 'securerandom'
+require 'base64'
 require 'killbill_client'
 
 module KPM
@@ -69,6 +70,8 @@ module KPM
     # delimeters to sniff
     DELIMITERS = [',', '|'].freeze
     DEFAULT_DELIMITER = '|'
+
+    B64_REGEX=/^([A-Za-z0-9+\/]{4})*([A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{2}==)?$/
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, data_delimiter = nil, logger = nil)
@@ -270,7 +273,10 @@ module KPM
     end
 
     def sanitize(table_name, column_name, value, skip_payment_methods)
+
+
       sanitized_value = replace_boolean(value)
+
       sanitized_value = fill_empty_column(sanitized_value)
 
       sanitized_value = SAFE_PAYMENT_METHOD if table_name == 'payment_methods' && skip_payment_methods && column_name == PLUGIN_NAME_COLUMN
@@ -282,6 +288,8 @@ module KPM
       sanitized_value = replace_account_record_id(table_name, column_name, sanitized_value) if @generate_record_id
 
       sanitized_value = replace_uuid(table_name, column_name, sanitized_value) if @round_trip_export_import
+
+      sanitized_value = b64_decode_if_needed(sanitized_value) if column_name == 'billing_events'
 
       sanitized_value
     end
@@ -366,6 +374,22 @@ module KPM
 
       value
     end
+
+    def b64_decode_if_needed(input)
+      # Exclude nil or non string
+      return input if input.nil? or !input.is_a?(String)
+      # Apply regex to check that string is built as a B64 string: the character set is [A-Z, a-z, 0-9, and + /]
+      # and if the rest length is less than 4, the string is padded with '=' characters.
+      return input if input.match(B64_REGEX).nil?
+
+      # Decode
+      result = Base64.decode64(input)
+      # Verify encoded of the decoded value == input prior return result
+      return input if  Base64.strict_encode64(result) != input
+
+      Blob.new(result, TMP_DIR)
+    end
+
 
     def sniff_delimiter(file)
       return nil if File.size?(file).nil?
