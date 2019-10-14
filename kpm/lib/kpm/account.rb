@@ -71,7 +71,7 @@ module KPM
     DELIMITERS = [',', '|'].freeze
     DEFAULT_DELIMITER = '|'
 
-    B64_REGEX=/^([A-Za-z0-9+\/]{4})*([A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{2}==)?$/
+    B64_REGEX = %r{^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$}.freeze
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
                    database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, data_delimiter = nil, logger = nil)
@@ -273,8 +273,6 @@ module KPM
     end
 
     def sanitize(table_name, column_name, value, skip_payment_methods)
-
-
       sanitized_value = replace_boolean(value)
 
       sanitized_value = fill_empty_column(sanitized_value)
@@ -377,7 +375,7 @@ module KPM
 
     def b64_decode_if_needed(input)
       # Exclude nil or non string
-      return input if input.nil? or !input.is_a?(String)
+      return input if input.nil? || !input.is_a?(String)
       # Apply regex to check that string is built as a B64 string: the character set is [A-Z, a-z, 0-9, and + /]
       # and if the rest length is less than 4, the string is padded with '=' characters.
       return input if input.match(B64_REGEX).nil?
@@ -389,7 +387,6 @@ module KPM
 
       Blob.new(result, TMP_DIR)
     end
-
 
     def sniff_delimiter(file)
       return nil if File.size?(file).nil?

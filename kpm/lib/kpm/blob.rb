@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module KPM
   class Blob
-
     def initialize(value, tmp_dir)
       @tmp_dir = tmp_dir
       @blob_file = @tmp_dir + File::SEPARATOR + rand.to_s
@@ -20,10 +21,9 @@ module KPM
     private
 
     def store_value(value)
-      File.open(@blob_file, "wb") do |file|
+      File.open(@blob_file, 'wb') do |file|
         file.write(value)
       end
     end
-
   end
 end

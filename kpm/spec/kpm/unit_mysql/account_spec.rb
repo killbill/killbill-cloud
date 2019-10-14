@@ -254,15 +254,15 @@ describe KPM::Account do
   describe '#sanitize_for_b64_date' do
     include_context 'account'
 
-    let(:non_encoded_b64) {
+    let(:non_encoded_b64) do
       # This is my test data
       'This is my test data'
-    }
+    end
 
-    let(:encoded_b64) {
+    let(:encoded_b64) do
       # This is my test data
       'VGhpcyBpcyBteSB0ZXN0IGRhdGE='
-    }
+    end
 
     it 'when b64 encoded data' do
       expect(account_class.send(:b64_decode_if_needed, encoded_b64).value).to start_with('LOAD_FILE("')
@@ -271,7 +271,6 @@ describe KPM::Account do
     it 'when b64 non encoded data' do
       expect(account_class.send(:b64_decode_if_needed, non_encoded_b64)).to eq(non_encoded_b64)
     end
-
   end
 
   describe '#process_import_data' do

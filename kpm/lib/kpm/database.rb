@@ -34,7 +34,6 @@ module KPM
       query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}" unless record_id.nil?
       query = "SET autocommit=0; #{query} COMMIT;"
 
-
       File.open(STATEMENT_TMP_FILE, 'w') do |s|
         s.puts query
       end
