@@ -39,7 +39,7 @@ module KPM
 
     DATE_COLUMNS_TO_FIX = %w[created_date updated_date processing_available_date effective_date
                              boot_date start_timestamp last_access_time payment_date original_created_date
-                             last_sys_update_date charged_through_date bundle_start_date start_date reference_time].freeze
+                             last_sys_update_date charged_through_date bundle_start_date start_date catalog_effective_date reference_time].freeze
 
     # round trip constants duplicate record
     ROUND_TRIP_EXPORT_IMPORT_MAP = { accounts: { id: :accounts_id, external_key: :accounts_id }, all: { account_id: :accounts_id },
