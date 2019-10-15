@@ -78,6 +78,8 @@ module KPM
           rows << row.map do |value|
             if value.is_a?(Symbol)
               value.to_s
+            elsif value.is_a?(Blob)
+              value.value
             else
               escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')
                                    .gsub('\N{LINE FEED}', "\n")
