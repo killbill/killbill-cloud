@@ -63,7 +63,7 @@ describe KPM::Uninstaller do
 
     it 'raises an internal error when uninstalling a plugin' do
       expect do
-        uninstaller.send(:remove_all_plugin_versions, plugin_info, true)
+        uninstaller.send(:remove_plugin_versions, plugin_info, true, [version1, version2])
       end.to raise_error(ArgumentError, "Path #{plugin_info[:plugin_path]}/#{version1} is not a valid directory")
     end
 
@@ -109,7 +109,7 @@ describe KPM::Uninstaller do
       uninstaller.uninstall_plugin(plugin_name).should be_false
     end
 
-    it 'uninstalls without confirmation if the force option is given' do
+    it 'uninstalls all plugins without confirmation if the force option is given' do
       plugins_manager_mock.should_receive(:remove_plugin_identifier_key).with(plugin_key)
       sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
       sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version2}")
@@ -117,11 +117,23 @@ describe KPM::Uninstaller do
       uninstaller.uninstall_plugin(plugin_name, true).should be_true
     end
 
+    it 'uninstalls one version without confirmation if the force option is given' do
+      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+
+      uninstaller.uninstall_plugin(plugin_name, true, version1).should be_true
+    end
+
+    it 'raises an error when uninstalling a version that does not exist' do
+      expect do
+        uninstaller.uninstall_plugin(plugin_name, true, '3.0')
+      end.to raise_error(ArgumentError)
+    end
+
     it 'categorizes plugins depending on default flag' do
       expect(uninstaller.send(:categorize_plugins)).to eq({ to_be_deleted: [[plugin_info, version1]], to_keep: [[plugin_info, version2]] })
     end
 
-    it 'does cleanup if dry-run is set' do
+    it 'does not cleanup if dry-run is set' do
       expect(uninstaller.uninstall_non_default_plugins(true)).to be_false
     end
 

@@ -36,10 +36,10 @@ describe KPM::BaseArtifact do
       # Verify the download is skipped gracefully when Nexus isn't reachable
       test_download dir, 'foo-oss.pom.xml', true, false, sha1_file, nexus_down
       # Verify the download fails when Nexus isn't reachable and force_download is set
-      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_error(SocketError)
+      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_error
       # Verify the download fails when Nexus isn't reachable and the Nexus cache is empty
-      KPM::Sha1Checker.from_file(sha1_file).cache_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:LATEST', nil)
-      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_error(SocketError)
+      KPM::Sha1Checker.from_file(sha1_file).cache_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33', nil)
+      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_error
     end
   end
 
@@ -86,7 +86,7 @@ describe KPM::BaseArtifact do
   def test_download(dir, filename = nil, verify_is_skipped = false, force_download = false, sha1_file = nil, overrides = {})
     path = filename.nil? ? dir : dir + '/' + filename
 
-    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, 'LATEST', path, sha1_file, force_download, true, overrides, true)
+    info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, '0.143.33', path, sha1_file, force_download, true, overrides, true)
     info[:file_name].should eq(filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
     info[:skipped].should eq verify_is_skipped
     info[:size].should eq File.size(info[:file_path]) unless info[:skipped]

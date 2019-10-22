@@ -21,11 +21,12 @@ module KPM
       @sha1checker = KPM::Sha1Checker.from_file(sha1_file_path, @logger)
     end
 
-    def uninstall_plugin(plugin, force = false)
+    def uninstall_plugin(plugin, force = false, version = nil)
       plugin_info = find_plugin(plugin)
       raise "No plugin with key/name '#{plugin}' found installed. Try running 'kpm inspect' for more info" unless plugin_info
 
-      remove_all_plugin_versions(plugin_info, force)
+      versions = version.nil? ? plugin_info[:versions].map { |artifact| artifact[:version] } : [version]
+      remove_plugin_versions(plugin_info, force, versions)
     end
 
     def uninstall_non_default_plugins(dry_run = false)
@@ -77,8 +78,7 @@ module KPM
       plugins
     end
 
-    def remove_all_plugin_versions(plugin_info, force = false)
-      versions = plugin_info[:versions].map { |artifact| artifact[:version] }
+    def remove_plugin_versions(plugin_info, force = false, versions = [])
       KPM.ui.say "Removing the following versions of the #{plugin_info[:plugin_name]} plugin: #{versions.join(', ')}"
       if !force && versions.length > 1
         return false unless KPM.ui.ask('Are you sure you want to continue?', limited_to: %w[y n]) == 'y'
