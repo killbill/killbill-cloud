@@ -84,7 +84,7 @@ The following environment variables will populate the default `killbill.properti
 * `KILLBILL_DAO_MAX_CONNECTION_AGE` (default `0m`)
 * `KILLBILL_DAO_MIN_IDLE` (default `5`)
 * `KILLBILL_DAO_MYSQL_SERVER_VERSION` (default `4.0`)
-* `KILLBILL_DAO_PASSWORD` (default `killkill`)
+* `KILLBILL_DAO_PASSWORD` (default `killbill`)
 * `KILLBILL_DAO_POOLING_TYPE` (default `HIKARICP`)
 * `KILLBILL_DAO_PREP_STMT_CACHE_SIZE` (default `500`)
 * `KILLBILL_DAO_PREP_STMT_CACHE_SQL_LIMIT` (default `2048`)

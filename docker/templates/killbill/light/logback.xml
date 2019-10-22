@@ -1,0 +1,23 @@
+<configuration scan="false">
+  <!-- <appender name="CLOUD" class="com.google.cloud.logging.logback.LoggingAppender">
+    <log>killbill.log</log>
+    <flushLevel>WARN</flushLevel>
+  </appender> -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Silence verbose loggers -->
+  <logger name="com.dmurph" level="OFF"/>
+  <logger name="jdbc" level="OFF"/>
+  <logger name="org.jooq.Constants" level="OFF"/>
+  <logger name="org.eclipse" level="WARN"/>
+  <logger name="org.killbill.commons.jdbi.guice.DBIProvider" level="OFF"/>
+
+  <root level="INFO">
+    <!-- <appender-ref ref="CLOUD" /> -->
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
