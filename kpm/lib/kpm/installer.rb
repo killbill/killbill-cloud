@@ -21,12 +21,7 @@ module KPM
 
       {
         'killbill' => {
-          'version' => latest_stable_version.to_s,
-          'plugins' => {
-            'ruby' => [
-              { 'name' => 'kpm' }
-            ]
-          }
+          'version' => latest_stable_version.to_s
         },
         'kaui' => {
           # Note: we assume no unstable version of Kaui is published today
