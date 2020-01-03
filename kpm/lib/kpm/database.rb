@@ -25,7 +25,7 @@ module KPM
       @port = port || PORT
       @username = username || USERNAME
       @password = password || PASSWORD
-      @mysql_command_line = "mysql #{@database_name} --host=#{@host} --port=#{@port} --user=#{@username} --password=#{@password} "
+      @mysql_command_line = "mysql --max_allowed_packet=128M #{@database_name} --host=#{@host} --port=#{@port} --user=#{@username} --password=#{@password} "
 
       @logger = logger
     end
@@ -41,8 +41,9 @@ module KPM
       response = `#{@mysql_command_line} < "#{STATEMENT_TMP_FILE}" 2>&1`
 
       if response.include? 'ERROR'
-        @logger.error "\e[91;1mTransaction that fails to be executed\e[0m"
-        @logger.error "\e[91m#{query}\e[0m"
+        @logger.error "\e[91;1mTransaction that fails to be executed (first 1,000 chars)\e[0m"
+        # Queries can be really big (bulk imports)
+        @logger.error "\e[91m#{query[0..1000]}\e[0m"
         raise Interrupt, "Importing table #{table_name}...... \e[91;1m#{response}\e[0m"
       end
 
@@ -89,10 +90,13 @@ module KPM
           end.join(',')
         end
 
-        value_data = rows.map { |row| "(#{row})" }.join(',')
+        # Break the insert statement into small chunks to avoid timeouts
+        rows.each_slice(1000).each do |subset_of_rows|
+          value_data = subset_of_rows.map { |row| "(#{row})" }.join(',')
 
-        statements << { query: build_insert_statement(table_name, columns_names, value_data, rows.size),
-                        qty_to_insert: rows.size, table_name: table_name, table_data: table }
+          statements << { query: build_insert_statement(table_name, columns_names, value_data, subset_of_rows.size),
+                          qty_to_insert: subset_of_rows.size, table_name: table_name, table_data: table }
+        end
       end
 
       statements
