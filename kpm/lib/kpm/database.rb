@@ -32,7 +32,7 @@ module KPM
 
     def execute_insert_statement(table_name, query, qty_to_insert, _table_data, record_id = nil)
       query = "set #{record_id[:variable]}=#{record_id[:value]}; #{query}" unless record_id.nil?
-      query = "SET autocommit=0; #{query} COMMIT;"
+      query = "SET sql_mode = ''; SET autocommit=0; #{query} COMMIT; SHOW WARNINGS;"
 
       File.open(STATEMENT_TMP_FILE, 'w') do |s|
         s.puts query
@@ -54,11 +54,16 @@ module KPM
       end
 
       if response.include? 'ROW_COUNT'
+        # Typically, something like: "mysql: [Warning] Using a password on the command line interface can be insecure.\nROW_COUNT()\n3\n"
+        # With warning: "mysql: [Warning] Using a password on the command line interface can be insecure.\nROW_COUNT()\n1743\nLevel\tCode\tMessage\nWarning\t1264\tOut of range value for column 'amount' at row 582\n"
         response_msg = response.split("\n")
-        row_count_inserted = response_msg[response_msg.size - 1]
+        idx_row_count_inserted = response_msg.index("ROW_COUNT()")+1
+        row_count_inserted = response_msg[idx_row_count_inserted]
         @logger.info "\e[32mImporting table #{table_name}...... Row #{row_count_inserted || 1} of #{qty_to_insert} success\e[0m"
-
-        return true
+        if idx_row_count_inserted < response_msg.size - 1
+          warning_msg = response_msg[response_msg.size - 1]
+          @logger.warn "\e[91m#{warning_msg}\e[0m"
+        end
       end
 
       true
