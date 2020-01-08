@@ -22,7 +22,7 @@
   :versions:
     :0.18: 4.2.5
     :0.20: 6.0.1
-    :0.21: 7.0.4
+    :0.22: 7.0.8
 :avatax:
   :type: :java
   :versions:
@@ -57,6 +57,7 @@
   :versions:
     :0.18: 0.3.1
     :0.20: 0.5.1
+    :0.22: 0.6.0
 :forte:
   :type: :java
   :versions:
