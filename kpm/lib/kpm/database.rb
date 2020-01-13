@@ -57,7 +57,7 @@ module KPM
         # Typically, something like: "mysql: [Warning] Using a password on the command line interface can be insecure.\nROW_COUNT()\n3\n"
         # With warning: "mysql: [Warning] Using a password on the command line interface can be insecure.\nROW_COUNT()\n1743\nLevel\tCode\tMessage\nWarning\t1264\tOut of range value for column 'amount' at row 582\n"
         response_msg = response.split("\n")
-        idx_row_count_inserted = response_msg.index("ROW_COUNT()")+1
+        idx_row_count_inserted = response_msg.index('ROW_COUNT()') + 1
         row_count_inserted = response_msg[idx_row_count_inserted]
         @logger.info "\e[32mImporting table #{table_name}...... Row #{row_count_inserted || 1} of #{qty_to_insert} success\e[0m"
         if idx_row_count_inserted < response_msg.size - 1
