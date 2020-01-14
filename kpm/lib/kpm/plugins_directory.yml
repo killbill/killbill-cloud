@@ -10,7 +10,7 @@
 :adyen:
   :type: :java
   :versions:
-    :0.18: 0.5.25
+    :0.18: 0.5.26
     :0.20: 0.7.0
   :require:
     - :org.killbill.billing.plugin.adyen.merchantAccount
@@ -96,7 +96,7 @@
   :type: :ruby
   :artifact_id: paypal-express-plugin
   :versions:
-    :0.18: 5.0.14
+    :0.18: 5.0.15
     :0.20: 6.0.0
   :require:
   - :signature

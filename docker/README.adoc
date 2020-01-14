@@ -205,6 +205,8 @@ The following environment variables will populate the default `killbill.properti
 * `KAUI_CONFIG_DAO_PASSWORD` (default `kaui`)
 * `KAUI_CONFIG_DEMO` (default `false`)
 
+For PostgreSQL support, you also need to specify `KAUI_CONFIG_DAO_ADAPTER=postgresql`.
+
 [[changes-since-0.18]]
 ## Changes since 0.18
 
