@@ -3,20 +3,11 @@
   :type: :java
   :versions:
     :0.18: 0.3.0
-  :require:
-    - :org.killbill.billing.plugin.accertify.url
-    - :org.killbill.billing.plugin.accertify.username
-    - :org.killbill.billing.plugin.accertify.password
 :adyen:
   :type: :java
   :versions:
     :0.18: 0.5.26
     :0.20: 0.7.0
-  :require:
-    - :org.killbill.billing.plugin.adyen.merchantAccount
-    - :org.killbill.billing.plugin.adyen.username
-    - :org.killbill.billing.plugin.adyen.password
-    - :org.killbill.billing.plugin.adyen.paymentUrl
 :analytics:
   :type: :java
   :versions:
@@ -29,28 +20,14 @@
     :0.18: 0.4.1
     :0.20: 0.6.1
     :0.21: 0.7.0
-  :require:
-    - :org.killbill.billing.plugin.avatax.url
-    - :org.killbill.billing.plugin.avatax.accountNumber
-    - :org.killbill.billing.plugin.avatax.licenseKey
 :cybersource:
   :type: :ruby
   :versions:
     :0.18: 5.2.7
-  :require:
-    - :login
-    - :password
 :dwolla:
   :type: :java
   :versions:
     :0.18: 0.1.0
-  :require:
-    - :org.killbill.billing.plugin.dwolla.baseUrl
-    - :org.killbill.billing.plugin.dwolla.baseOAuthUrl
-    - :org.killbill.billing.plugin.dwolla.scopes
-    - :org.killbill.billing.plugin.dwolla.clientId
-    - :org.killbill.billing.plugin.dwolla.clientSecret
-    - :org.killbill.billing.plugin.dwolla.accountId
 :email-notifications:
   :type: :java
   :artifact_id: killbill-email-notifications-plugin
@@ -62,13 +39,6 @@
   :type: :java
   :versions:
     :0.18: 0.3.0
-  :require:
-    - :org.killbill.billing.plugin.forte.merchantId
-    - :org.killbill.billing.plugin.forte.password
-    - :org.killbill.billing.plugin.forte.host
-    - :org.killbill.billing.plugin.forte.port
-    - :org.killbill.billing.plugin.forte.apiLoginId
-    - :org.killbill.billing.plugin.forte.secureTransactionKey
 :kpm:
   :type: :ruby
   :versions:
@@ -78,10 +48,6 @@
   :type: :ruby
   :versions:
     :0.18: 0.1.15
-  :require:
-    - :login
-    - :password
-    - :merchant_id
 :payment_bridge:
   :type: :java
   :artifact_id: bridge-plugin
@@ -98,10 +64,6 @@
   :versions:
     :0.18: 5.0.15
     :0.20: 6.0.0
-  :require:
-  - :signature
-  - :login
-  - :password
 :payment-test:  
   :type: :ruby
   :artifact_id: payment-test-plugin
@@ -112,13 +74,8 @@
   :type: :ruby
   :versions:
     :0.18: 0.2.0
-  :require:
-  - :login
-  - :password
 :stripe:
   :type: :ruby
   :versions:
     :0.18: 4.1.1
     :0.20: 6.0.1
-  :require:
-  - :api_secret_key
