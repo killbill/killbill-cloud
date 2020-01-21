@@ -41,7 +41,7 @@ module KPM
       if raw_kb_version == 'LATEST'
         version = 'LATEST'
       else
-        captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d)?/)
+        captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d+)?/)
         if captures.empty? || captures.first.nil? || captures.first.first.nil?
           version = 'LATEST'
         else
