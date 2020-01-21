@@ -9,7 +9,7 @@ jobs:
   build-jruby-1.7.26:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
+      - image: killbill/kbbuild:0.7.0
     steps:
       - checkout
       - restore_cache:
@@ -29,8 +29,8 @@ jobs:
   test-mysql-jruby-1.7.26:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
-      - image: killbill/killbill:0.21.4
+      - image: killbill/kbbuild:0.7.0
+      - image: killbill/killbill:0.21.9
       - image: killbill/mariadb:0.21
         environment:
         - MYSQL_ROOT_PASSWORD=root
@@ -92,7 +92,7 @@ jobs:
   build-ruby-2.2.2:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
+      - image: killbill/kbbuild:0.7.0
     steps:
       - checkout
       - restore_cache:
@@ -114,8 +114,8 @@ jobs:
   test-mysql-ruby-2.2.2:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
-      - image: killbill/killbill:0.21.4
+      - image: killbill/kbbuild:0.7.0
+      - image: killbill/killbill:0.21.9
       - image: killbill/mariadb:0.21
         environment:
         - MYSQL_ROOT_PASSWORD=root
@@ -179,7 +179,7 @@ jobs:
   build-ruby-2.4.2:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
+      - image: killbill/kbbuild:0.7.0
     steps:
       - checkout
       - restore_cache:
@@ -201,8 +201,8 @@ jobs:
   test-mysql-ruby-2.4.2:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
-      - image: killbill/killbill:0.20.5
+      - image: killbill/kbbuild:0.7.0
+      - image: killbill/killbill:0.21.9
       - image: killbill/mariadb:0.21
         environment:
         - MYSQL_ROOT_PASSWORD=root
@@ -266,7 +266,7 @@ jobs:
   test-rubocop:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
+      - image: killbill/kbbuild:0.7.0
     steps:
       - checkout
       - restore_cache:
@@ -288,7 +288,7 @@ jobs:
   build-jruby-9.1.14.0:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
+      - image: killbill/kbbuild:0.7.0
     steps:
       - checkout
       - restore_cache:
@@ -310,8 +310,8 @@ jobs:
   test-mysql-jruby-9.1.14.0:
     <<: *defaults
     docker:
-      - image: killbill/kbbuild:0.5.0
-      - image: killbill/killbill:0.21.4
+      - image: killbill/kbbuild:0.7.0
+      - image: killbill/killbill:0.21.9
       - image: killbill/mariadb:0.21
         environment:
         - MYSQL_ROOT_PASSWORD=root
