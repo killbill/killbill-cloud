@@ -1,4 +1,4 @@
-FROM killbill/killbill:latest-0.21.x
+FROM killbill/killbill
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 # VERSION will be expanded in Makefile
