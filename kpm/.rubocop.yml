@@ -62,5 +62,9 @@ Style/HashSyntax:
   Enabled: false
 
 # Ruby 2.3+ only
+Style/NumericPredicate:
+  Enabled: false
+
+# Ruby 2.3+ only
 Style/SafeNavigation:
   Enabled: false
