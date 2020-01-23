@@ -2,6 +2,7 @@
 # WANT_JSON
 
 require 'json'
+require 'logger'
 require 'pathname'
 require 'set'
 require 'yaml'
