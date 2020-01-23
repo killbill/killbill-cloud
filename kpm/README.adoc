@@ -3,65 +3,44 @@
 :toclevels: 9
 
 [[kpm-the-kill-bill-package-manager]]
-# KPM: the Kill Bill Package Manager
+= KPM: the Kill Bill Package Manager
 
-The goal of KPM is to facilitate the installation of Kill Bill, its plugins and Kaui.
-
-kpm can be used interactively to search and download individual artifacts (Kill Bill war, plugins, etc.) or to perform an automatic Kill Bill installation using a configuration file.
+KPM is a command line utility which facilitates the installation of Kill Bill, its plugins and Kaui. It also provides utility helpers useful for the day-to-day management of a production system.
 
 toc::[]
 
-[[installation]]
-## Installation
+[[kpm-installation]]
+== KPM Installation
 
-[[pre-built-binaries-recommended-linux-and-macos-only]]
-### Pre-built binaries (recommended, Linux and MacOS only)
+[[pre-built-binaries-recommended]]
+=== Pre-built binaries (recommended)
+
+KPM self-contained builds are available on http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.kill-bill.billing.installer%22%20AND%20a%3A%22kpm%22[Maven Central] with coordinates `org.kill-bill.billing.installer:kpm`.
+
+Download the `.tar.gz` package matching your architecture (Linux and MacOS only).
 
 Note that this installation method assumes `/bin/bash` to be available on your system.
 
-KPM builds are available on http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.kill-bill.billing.installer%22%20AND%20a%3A%22kpm%22[Maven Central] with coordinates `org.kill-bill.billing.installer:kpm`.
-
-Download the package matching your architecture.
-
 [[through-rubygems]]
-### Through Rubygems
+=== Through Rubygems
 
-Ruby is required to run KPM itself (it is not a dependency of Kill Bill).
+KPM is also available on https://rubygems.org/gems/kpm[RubyGems.org].
 
-Ruby 2.1+ or JRuby 1.7.20+ is recommended. If you don’t have a Ruby installation yet, use https://rvm.io/rvm/install[RVM]:
+[[kpm-commands]]
+== KPM Commands
 
-....
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-\curl -sSL https://get.rvm.io | bash -s stable --ruby
-....
+[[kill-bill-installation]]
+=== Kill Bill installation
 
-After following the post-installation instructions, you should have access to the `ruby` and `gem` executables.
+[[kpm-install]]
+==== kpm install
 
-You can then run:
+`kpm install` (with no argument) will setup https://github.com/killbill/killbill[Kill Bill] and https://github.com/killbill/killbill-admin-ui-standalone[Kaui] in your current directory, including:
 
-....
-gem install kpm
-....
-
-[[quick-start]]
-## Quick start
-
-The following commands
-
-....
-mkdir killbill
-cd killbill
-kpm install
-....
-
-will setup https://github.com/killbill/killbill[Kill Bill] and https://github.com/killbill/killbill-admin-ui-standalone[Kaui], i.e.:
-
-* http://tomcat.apache.org/[Tomcat] (open-source Java web server) is setup in the `killbill` directory
-* The Kill Bill application (war) is installed in the `killbill/webapps` directory
-* The Kill Bill UI (Kaui war) is installed in the `killbill/webapps` directory
-* Default plugins are installed in the `/var/tmp/bundles` directory, among them:
-* `jruby.jar`, required to run Ruby plugins
-* the https://github.com/killbill/killbill-kpm-plugin[KPM plugin], required to (un-)install plugins at runtime
+* http://tomcat.apache.org/[Tomcat] (open-source Java web server)
+* The Kill Bill application (war) is installed in the `./webapps` directory
+* The Kill Bill UI (Kaui war) is installed in the `./webapps` directory
+* Default OSGI bundles are installed in the `/var/tmp/bundles` directory
 
 To start Kill Bill, simply run
 
@@ -71,28 +50,23 @@ To start Kill Bill, simply run
 
 You can then verify Kill Bill is running by going to http://127.0.0.1:8080/kaui.
 
-[[using-kpm]]
-## Using KPM
+[[kpm-install-using-a-kpm.yml-file]]
+==== kpm install Using A `kpm.yml` File
 
-[[custom-installation-through-kpm.yml-file]]
-### Custom Installation Through `kpm.yml` File
-
-KPM allows you to specify a configuration file, `kpm.yml`, to describe what should be installed. The configuration file is a `yml`. The following shows the syntax of the `kpm.yml` file:
+KPM also lets you specify a configuration file, `kpm.yml`, to describe what should be installed. For example:
 
 ....
 killbill:
-  version: 0.18.0
+  version: 0.20.12
   plugins:
     java:
       - name: analytics
-    ruby:
-      - name: stripe
 ....
 
 This instructs kpm to:
 
-* Download Kill Bill version 0.18.0
-* Setup the https://github.com/killbill/killbill-analytics-plugin[Analytics] (Java) plugin and the https://github.com/killbill/killbill-stripe-plugin[Stripe] (Ruby) plugin
+* Download Kill Bill version 0.20.12
+* Setup the https://github.com/killbill/killbill-analytics-plugin[Analytics] (Java) plugin (you would still need to manually install the plugin https://github.com/killbill/killbill-analytics-plugin/blob/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql[DDL file])
 
 To start the installation:
 
@@ -100,14 +74,11 @@ To start the installation:
 kpm install kpm.yml
 ....
 
-Here is a more advanced example:
+Here is a more advanced example, specifying a custom Nexus repository and non-standard deployment directories:
 
 ....
 killbill:
-  group_id: org.kill-bill.billing
-  artifact_id: killbill-profiles-killbill
-  version: 0.18.10
-  default_bundles_version: 0.36.11
+  version: 0.20.12
   nexus:
     ssl_verify: false
     url: http://nexus.acme
@@ -118,76 +89,101 @@ killbill:
       - name: acme:custom
         artifact_id: custom-plugin
         version: 0.0.1-SNAPSHOT
-    ruby:
-      - name: kpm
   plugins_dir: /var/tmp/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war
 ....
 
-[[custom-downloads]]
-### Custom Downloads
+[[artifacts-downloads]]
+==== Artifacts Downloads
 
-You can also download specific versions/artifacts directly with the following commands – bypassing the kpm.yml file:
+You can download specific artifacts with the following commands:
 
-* `kpm pull_kaui_war <version>`
-* `kpm pull_kb_server_war <version>`
-* `kpm install_ruby_plugin plugin-key <kb-version>`
-* `kpm install_java_plugin plugin-key <kb-version>`
+* `kpm pull_kaui_war <version>`: downloads the Kaui war
+* `kpm pull_kb_server_war <version>`: downloads the Kill Bill war
+* `kpm install_java_plugin plugin-key <kb-version>`: downloads a Java plugin identified by `plugin-key`
+* `kpm install_ruby_plugin plugin-key <kb-version>`: downloads a Ruby plugin identified by `plugin-key`
+* `kpm pull_defaultbundles <kb-version>`: downloads the default Kill Bill OSGI bundles
 
-For more details see `kpm help`.
+This is especially useful when scripting deployments.
 
-[[dev-mode]]
-### Dev Mode
+Note: previous plugin versions aren't cleaned up by default to facilitate rollbacks. If your deployment is stateful, unused, old plugin versions will slow the Kill Bill startup time. To cleanup these entries, use `kpm cleanup` which will delete all non-default plugin versions, or `kpm uninstall`.
 
-If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin. Before going further, make sure you read the http://docs.killbill.io/latest/plugin_development.html[Plugin Development Documentation] first.
+[[kpm-uninstall]]
+==== kpm uninstall
 
-Let’s assume you are modifying the code for the (Ruby) CyberSource plugin. You would have to first build the plugin package, and then you could use KPM to install the plugin. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version.
+`kpm uninstall plugin-key` will uninstall a plugin identified by `plugin-key` (all versions are uninstalled by default).
+
+[[kpm-migrations]]
+==== kpm migrations
+
+`kpm migrations` is used to download database migration files when upgrading Kill Bill or plugins. See our http://docs.killbill.io/0.20/database_migrations.html[database migrations guief] for more details.
+
+[[operations]]
+=== Operations
+
+[[kpm-inspect]]
+==== kpm inspect
+
+The command `kpm inspect` can be used to see which plugins have been installed:
 
 ....
-kpm install_ruby_plugin 'dev:cybersource' --from-source-file="<PATH_TO>/killbill-cybersource-3.3.0.tar.gz"
-....
-
-Let’s assume now that you are modifying the code for the (Java) Adyen plugin. The plugin first needs to be built using the `maven-bundle-plugin` to produce the OSGI jar under the `target` directory. Then, this `jar` can be installed using KPM (you would also need to specify a version here since the archive does not embed any metadata, unlike Ruby plugins packages). The same applies with regard to the `plugin_key` where we suggest to specify a namespace `dev:`.
-
-....
-kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
-....
-
-The command `kpm inspect` can be used to see what has been installed. In the case of `dev` plugins, most of the infofrmation related to `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` will be missing because no real download occured.
-
-Finally, when it is time to use a released version of a plugin, we first recommend to uninstall the `dev` version, by using the `kpm uninstall` command and using the `plugin_key`, and then installing the released version. For instance the following sequence could happen:
-
-....
-> kpm inspect
-___________________________________________________________________________________________________________________________
-|          PLUGIN NAME |      PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
-___________________________________________________________________________________________________________________________
-| killbill-cybersource | dev:cybersource | ruby |      ??? |         ??? |       ??? |                      3.3.0[???](*) |
-|                adyen |       dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
-___________________________________________________________________________________________________________________________
-
-> kpm uninstall 'dev:cybersource'
-Removing the following versions of the killbill-cybersource plugin: 3.3.0
-Done!
-
-> kpm inspect
-
-_____________________________________________________________________________________________________________
-| PLUGIN NAME | PLUGIN KEY | TYPE | GROUP ID | ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
-_____________________________________________________________________________________________________________
-|       adyen |  dev:adyen | java |      ??? |         ??? |       ??? |                      0.3.2[???](*) |
-_____________________________________________________________________________________________________________
-
-> kpm install_ruby_plugin cybersource
-[...]
-
-> kpm inspect
+kpm inspect --destination=/var/tmp/bundles
 _______________________________________________________________________________________________________________________________________________________
 |          PLUGIN NAME |  PLUGIN KEY | TYPE |                          GROUP ID |        ARTIFACT ID | PACKAGING | VERSIONS sha1=[], def=(*), del=(x) |
 _______________________________________________________________________________________________________________________________________________________
 | killbill-cybersource | cybersource | ruby | org.kill-bill.billing.plugin.ruby | cybersource-plugin |    tar.gz |                 4.0.2[e0901f..](*) |
 |                adyen |   dev:adyen | java |                               ??? |                ??? |       ??? |                      0.3.2[???](*) |
 _______________________________________________________________________________________________________________________________________________________
+....
+
+Note: `GROUP ID`, `ARTIFACT ID`, `PACKAGING` and `SHA1` can be missing (`???`) when installing plugins which aren't hosted in a Nexus repository. This isn't an issue.
+
+[[kpm-system]]
+==== kpm system
+
+The command `kpm system` is a superset of the `inspect` command. In addition to plugins information, the command will return details about the Kill Bill and Kaui installation, Java and Ruby environment, details about the OS, CPU, Memory and disks, entropy available, etc.
+
+Note: for non-standard deployments, you will need to tell KPM the location of the Kill Bill and Kaui webapp (see `kpm help system`).
+
+[[kpm-diagnostic]]
+==== kpm diagnostic
+
+The command `kpm diagnostic` is a superset of the `system` command. It will connect to your Kill Bill instance to gather tenant configuration information and account data (if a specific account is specified) and will gather all log files.
+
+You will need to instruct KPM how to connect to your Kill Bill instance (see `kpm help diagnostic`).
+
+[[kpm-account]]
+==== kpm account
+
+`kpm account` exports all account data from a running system and re-imports it in another Kill Bill installation. This is an advanced command and is usually run as part of `kpm agnostic`.
+
+[[kpm-tenant_config]]
+==== kpm tenant_config
+
+`kpm tenant_config` exports tenant specific data from a running system. This is an advanced command and is usually run as part of `kpm agnostic`.
+
+[[kpm-cleanup]]
+==== kpm cleanup
+
+`kpm cleanup` which will delete all non-default plugin versions. The `--dry-run` option can be used to double check first what would be deleted.
+
+[[plugins-development]]
+=== Plugins development
+
+[[kpm-info]]
+==== kpm info
+
+`kpm info` lists the libraries to use when writing a plugin for a specific Kill Bill version. It also lists all of the official plugins for that specific version.
+
+[[installing-custom-plugins]]
+==== Installing Custom Plugins
+
+If you are a developer and either modifying an existing plugin or creating a new plugin, KPM can be used to install the code of your plugin. Before going further, make sure you read the http://docs.killbill.io/latest/plugin_development.html[Plugin Development Documentation] first.
+
+Let’s assume now that you are modifying the code for the (Java) Adyen plugin. The plugin first needs to be built using the `maven-bundle-plugin` to produce the OSGI jar under the `target` directory. Then, this `jar` can be installed using KPM. We suggest you specify a `plugin_key` with a namespace `dev:` to make it clear this is not a released version:
+
+....
+kpm install_java_plugin 'dev:adyen' --from-source-file="<PATH_TO>/adyen-plugin-0.3.2-SNAPSHOT.jar" --version="0.3.2"
 ....
 
 [[internals]]
@@ -225,14 +221,17 @@ Test suite that requires an instance of `mysql` running and verifies the followi
 [[plugin-keys]]
 ### Plugin Keys
 
-In the `kpm.yml` example provided above, the plugins are named using their `pluginKey` (the value for the `name` in the `kpm.yml`) . The `pluginKey` is the identifier for the plugin: * For plugins maintained by the Kill Bill team, this identifier matches the key in the https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml[file based repository] of well-known plugins * For other plugins, this key is either specified when installing the plugin through api call, or default to the `pluginName`. For more information, please refer to the Plugin Developer Guide.
+Plugins are named using their `pluginKey` (the value for the `name` entry in the `kpm.yml`) . The `pluginKey` is the identifier for the plugin:
+
+* For plugins maintained by the Kill Bill team, this identifier matches the key in the https://github.com/killbill/killbill-cloud/blob/master/kpm/lib/kpm/plugins_directory.yml[file based repository] of well-known plugins
+* For other plugins, this key is either specified when installing the plugin through api call, or default to the `pluginName`. For more information, please refer to the http://docs.killbill.io/latest/plugin_development.html[Plugin Development guide].
 
 [[caching]]
 ### Caching
 
 KPM relies on the `kpm.yml` file to know what to install, and as it installs the pieces, it keeps track of what was installed so that if it is invoked again, it does not download again the same binaries. The generic logic associated with that file is the following:
 
-1.  When installing a binary (`war`, `jar`, `tar.gz`..), KPM will download both the binary and the `sha1` from the server, compute the `sha1` for the binary and compare the two (verify that binary indeed matches its remote `sha1`). Then, binary is installed and `sha1.yml` file is updated. The `sha1` entry in that `sha1.yml` file will now represent the local `sha1` version (note that for `tar.gz` binaries which have been uncompressed, the local `sha1` is not anymore easily recomputable).
+1.  When installing a binary (`war`, `jar`, `tar.gz`, ...), KPM will download both the binary and the `sha1` from the server, compute the `sha1` for the binary and compare the two (verify that binary indeed matches its remote `sha1`). Then, the binary is installed and `sha1.yml` file is updated. The `sha1` entry in that `sha1.yml` file will now represent the local `sha1` version (note that for `tar.gz` binaries which have been uncompressed, the local `sha1` is not anymore easily recomputable).
 2.  When attempting to download again the same binary, KPM will compare the value in the `sha1.yml` and the one on the remote server and if those match, it will not download the binary again.
 
 There are some non standard scenario that could occur in case of users tampering with the data (or remove server unavailable):
@@ -242,4 +241,7 @@ There are some non standard scenario that could occur in case of users tampering
 * `sha1` entry in the `sha1.yml` exists but has the special value `SKIP` : Binary will _not_ be downloaded again
 * Binary does not exist on the file system (or has been replaced with something else): KPM will ignore. Note that correct way to remove plugins is to use the `KPM uninstall` command.
 
-Note that you can override that behavior with the `--force-download` switch.
+Notes:
+
+* You can override that behavior with the `--force-download` switch
+* When `--force-download` is specified (`false` by default), network access to a Nexus instance is required. Otherwise, downloads are idempotent even if no outbound networking is allowed (on initial download, the Nexus metadata is cached in the `sha1.yml` file which is re-used on subsequent installation if no outbound networking is allowed -- by default, KPM will try to get the latest metadata from Nexus though)

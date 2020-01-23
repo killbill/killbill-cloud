@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'uri'
 require 'rexml/document'
@@ -5,13 +7,12 @@ require 'openssl'
 
 module KPM
   module NexusFacade
-
     class UnexpectedStatusCodeException < StandardError
       def initialize(code)
         @code = code
       end
 
-      def  message
+      def message
         "The server responded with a #{@code} status code which is unexpected."
       end
     end
@@ -34,7 +35,6 @@ module KPM
       OPEN_TIMEOUT_DEFAULT = 60
 
       ERROR_MESSAGE_404 = 'The artifact you requested information for could not be found. Please ensure it exists inside the Nexus.'
-      ERROR_MESSAGE_503 = 'Could not connect to Nexus. Please ensure the url you are using is reachable.'
 
       attr_reader :version
       attr_reader :configuration
@@ -49,14 +49,16 @@ module KPM
 
       def search_for_artifacts(coordinates)
         logger.debug "Entered - Search for artifact, coordinates: #{coordinates}"
-        response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, [:g, :a])
+        response = get_response(coordinates, SEARCH_FOR_ARTIFACT_ENDPOINT, %i[g a])
 
         case response.code
-          when '200'
-            logger.debug "response body: #{response.body}"
-            return response.body
-          else
-            raise UnexpectedStatusCodeException.new(response.code)
+        when '200'
+          logger.debug "response body: #{response.body}"
+          return response.body
+        when '404'
+          raise StandardError, ERROR_MESSAGE_404
+        else
+          raise UnexpectedStatusCodeException, response.code
         end
       end
 
@@ -65,125 +67,116 @@ module KPM
         response = get_response(coordinates, GET_ARTIFACT_INFO_ENDPOINT, nil)
 
         case response.code
-          when '200'
-            logger.debug "response body: #{response.body}"
-            return response.body
-          when '404'
-            raise StandardError.new(ERROR_MESSAGE_404)
-          when '503'
-            raise StandardError.new(ERROR_MESSAGE_503)
-          else
-            raise UnexpectedStatusCodeException.new(response.code)
+        when '200'
+          logger.debug "response body: #{response.body}"
+          return response.body
+        when '404'
+          raise StandardError, ERROR_MESSAGE_404
+        else
+          raise UnexpectedStatusCodeException, response.code
         end
       end
 
-      def pull_artifact(coordinates ,destination)
+      def pull_artifact(coordinates, destination)
         logger.debug "Entered - Pull artifact, coordinates: #{coordinates}"
         file_name = get_file_name(coordinates)
-        destination = File.join(File.expand_path(destination || "."), file_name)
+        destination = File.join(File.expand_path(destination || '.'), file_name)
         logger.debug "destination: #{destination}"
         response = get_response(coordinates, PULL_ARTIFACT_ENDPOINT, nil)
 
         case response.code
-          when '301', '307'
-            location = response['Location'].gsub!(configuration[:url],'')
-            logger.debug 'fetching artifact'
-            file_response = get_response(nil,location, nil)
+        when '301', '307'
+          location = response['Location'].gsub!(configuration[:url], '')
+          logger.debug 'fetching artifact'
+          file_response = get_response(nil, location, nil)
 
-            File.open(destination, "wb") do |io|
-                io.write(file_response.body)
-            end
-          when 404
-            raise StandardError.new(ERROR_MESSAGE_404)
-          else
-            raise UnexpectedStatusCodeException.new(response.code)
+          File.open(destination, 'wb') do |io|
+            io.write(file_response.body)
+          end
+        when 404
+          raise StandardError, ERROR_MESSAGE_404
+        else
+          raise UnexpectedStatusCodeException, response.code
         end
         {
-            :file_name => file_name,
-            :file_path => File.expand_path(destination),
-            :version   => version,
-            :size      => File.size(File.expand_path(destination))
+          file_name: file_name,
+          file_path: File.expand_path(destination),
+          version: version,
+          size: File.size(File.expand_path(destination))
         }
       end
 
       private
-        def parse_coordinates(coordinates)
 
-          if coordinates.nil?
-            raise ArtifactMalformedException
-          end
+      def parse_coordinates(coordinates)
+        raise ArtifactMalformedException if coordinates.nil?
 
-          split_coordinates = coordinates.split(":")
-          if (split_coordinates.size == 0 or split_coordinates.size > 5)
-            raise ArtifactMalformedException
-          end
+        split_coordinates = coordinates.split(':')
+        raise ArtifactMalformedException if split_coordinates.empty? || (split_coordinates.size > 5)
 
-          artifact = Hash.new
+        artifact = {}
 
-          artifact[:group_id] = split_coordinates[0]
-          artifact[:artifact_id] = split_coordinates[1]
-          artifact[:extension] = split_coordinates.size > 3 ? split_coordinates[2] : "jar"
-          artifact[:classifier] = split_coordinates.size > 4 ? split_coordinates[3] : nil
-          artifact[:version] = split_coordinates[-1]
+        artifact[:group_id] = split_coordinates[0]
+        artifact[:artifact_id] = split_coordinates[1]
+        artifact[:extension] = split_coordinates.size > 3 ? split_coordinates[2] : 'jar'
+        artifact[:classifier] = split_coordinates.size > 4 ? split_coordinates[3] : nil
+        artifact[:version] = split_coordinates[-1]
 
-          artifact[:version].upcase! if version == "latest"
+        artifact[:version].upcase! if version == 'latest'
 
-          return artifact
+        artifact
+      end
+
+      def get_file_name(coordinates)
+        artifact = parse_coordinates(coordinates)
+
+        artifact[:version] = REXML::Document.new(get_artifact_info(coordinates)).elements['//version'].text if artifact[:version].casecmp('latest')
+
+        if artifact[:classifier].nil?
+          "#{artifact[:artifact_id]}-#{artifact[:version]}.#{artifact[:extension]}"
+        else
+          "#{artifact[:artifact_id]}-#{artifact[:version]}-#{artifact[:classifier]}.#{artifact[:extension]}"
         end
+      end
 
-        def get_file_name(coordinates)
-          artifact = parse_coordinates(coordinates)
+      def build_query_params(coordinates, what_parameters = nil)
+        artifact = parse_coordinates(coordinates)
+        @version = artifact[:version].to_s.upcase
 
-          if artifact[:version].casecmp("latest")
-             artifact[:version] = REXML::Document.new(get_artifact_info(coordinates)).elements["//version"].text
-          end
+        query = { g: artifact[:group_id], a: artifact[:artifact_id], e: artifact[:extension], v: version, r: configuration[:repository] }
+        query.merge!(c: artifact[:classifier]) unless artifact[:classifier].nil?
 
-          if artifact[:classifier].nil?
-            "#{artifact[:artifact_id]}-#{artifact[:version]}.#{artifact[:extension]}"
-          else
-            "#{artifact[:artifact_id]}-#{artifact[:version]}-#{artifact[:classifier]}.#{artifact[:extension]}"
-          end
-        end
+        params = what_parameters.nil? ? query : {}
+        what_parameters.each { |key| params[key] = query[key] unless query[key].nil? } unless what_parameters.nil?
 
-        def get_query_params(coordinates, what_parameters = nil)
-          artifact = parse_coordinates(coordinates)
-          @version = artifact[:version].to_s.upcase
+        params.map { |key, value| "#{key}=#{value}" }.join('&')
+      end
 
-          query = {:g => artifact[:group_id], :a => artifact[:artifact_id], :e => artifact[:extension], :v => version, :r => configuration[:repository]}
-          query.merge!({:c => artifact[:classifier]}) unless artifact[:classifier].nil?
+      def get_response(coordinates, endpoint, what_parameters)
+        http = build_http
+        query_params = build_query_params(coordinates, what_parameters) unless coordinates.nil?
+        endpoint = endpoint_with_params(endpoint, query_params) unless coordinates.nil?
+        request = Net::HTTP::Get.new(endpoint)
 
-          params = what_parameters.nil? ? query : Hash.new
-          what_parameters.each {|key| params[key] = query[key] unless query[key].nil? } unless what_parameters.nil?
+        logger.debug "request endpoint: #{endpoint}"
 
-          params.map{|key,value| "#{key}=#{value}"}.join('&')
-        end
+        response = http.request(request)
+        response
+      end
 
-        def get_response(coordinates, endpoint, what_parameters)
-          http = get_http
-          query_params = get_query_params(coordinates, what_parameters) unless coordinates.nil?
-          endpoint = get_endpoint_with_params(endpoint, query_params) unless coordinates.nil?
-          request = Net::HTTP::Get.new(endpoint)
+      def build_http
+        uri = URI.parse(configuration[:url])
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT # seconds
+        http.read_timeout = configuration[:read_timeout] || READ_TIMEOUT_DEFAULT # seconds
+        http.use_ssl = (ssl_verify != false)
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless ssl_verify
+        http
+      end
 
-          logger.debug "request endpoint: #{endpoint}"
-
-          response = http.request(request)
-          response
-        end
-
-        def get_http
-          uri = URI.parse(configuration[:url])
-          http = Net::HTTP.new(uri.host,uri.port)
-          http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT #seconds
-          http.read_timeout = configuration[:read_timeout] || READ_TIMEOUT_DEFAULT #seconds
-          http.use_ssl = (ssl_verify != false)
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless ssl_verify
-          http
-        end
-
-        def get_endpoint_with_params(endpoint,query_params)
-          "#{endpoint}?#{URI::DEFAULT_PARSER.escape(query_params)}"
-        end
-
+      def endpoint_with_params(endpoint, query_params)
+        "#{endpoint}?#{URI::DEFAULT_PARSER.escape(query_params)}"
+      end
     end
   end
 end

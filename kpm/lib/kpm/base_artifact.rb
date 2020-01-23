@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'digest/sha1'
 require 'rexml/document'
 
 module KPM
-
   class ArtifactCorruptedException < IOError
     def message
       'Downloaded artifact failed checksum verification'
@@ -34,32 +35,32 @@ module KPM
     KAUI_CLASSIFIER  = nil
 
     class << self
-      def pull(logger, group_id, artifact_id, packaging='jar', classifier=nil, version='LATEST', destination_path=nil, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
-        coordinate_map = {:group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier, :version => version}
+      def pull(logger, group_id, artifact_id, packaging = 'jar', classifier = nil, version = 'LATEST', destination_path = nil, sha1_file = nil, force_download = false, verify_sha1 = true, overrides = {}, ssl_verify = true)
+        coordinate_map = { group_id: group_id, artifact_id: artifact_id, packaging: packaging, classifier: classifier, version: version }
         pull_and_put_in_place(logger, coordinate_map, nil, destination_path, false, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
       end
 
-      def pull_from_fs(logger, file_path, destination_path=nil)
+      def pull_from_fs(logger, file_path, destination_path = nil)
         pull_from_fs_and_put_in_place(logger, file_path, destination_path)
       end
 
-      def nexus_remote(overrides={}, ssl_verify=true, logger=nil)
+      def nexus_remote(overrides = {}, ssl_verify = true, logger = nil)
         # overrides typically comes from the kpm.yml where we expect keys as String
-        overrides_sym = (overrides || {}).each_with_object({}) {|(k,v), h| h[k.to_sym] = v}
+        overrides_sym = (overrides || {}).each_with_object({}) { |(k, v), h| h[k.to_sym] = v }
         nexus_config = nexus_defaults.merge(overrides_sym)
-        nexus_remote ||= KPM::NexusFacade::RemoteFactory.create(nexus_config, ssl_verify, logger)
+        KPM::NexusFacade::RemoteFactory.create(nexus_config, ssl_verify, logger)
       end
 
       def nexus_defaults
         {
-            url:        'https://oss.sonatype.org',
-            repository: 'releases'
+          url: 'https://oss.sonatype.org',
+          repository: 'releases'
         }
       end
 
       protected
 
-      def pull_and_put_in_place(logger, coordinate_map, plugin_name, destination_path=nil, skip_top_dir=true, sha1_file=nil, force_download=false, verify_sha1=true, overrides={}, ssl_verify=true)
+      def pull_and_put_in_place(logger, coordinate_map, plugin_name, destination_path = nil, skip_top_dir = true, sha1_file = nil, force_download = false, verify_sha1 = true, overrides = {}, ssl_verify = true)
         # Build artifact info
         artifact_info = artifact_info(logger, coordinate_map, sha1_file, force_download, overrides, ssl_verify)
         artifact_info[:plugin_name] = plugin_name
@@ -104,7 +105,7 @@ module KPM
           logger.info "      Starting download of #{coordinates} to #{tmp_destination_dir}"
 
           downloaded_artifact_info = pull_and_verify(logger, artifact_info[:sha1], coordinates, tmp_destination_dir, sha1_file, verify_sha1, overrides, ssl_verify)
-          remove_old_default_bundles(coordinate_map,artifact_info,downloaded_artifact_info)
+          remove_old_default_bundles(coordinate_map, artifact_info, downloaded_artifact_info)
           if artifact_info[:is_tgz]
             artifact_info[:bundle_dir] = Utils.unpack_tgz(downloaded_artifact_info[:file_path], artifact_info[:dir_name], skip_top_dir)
             FileUtils.rm downloaded_artifact_info[:file_path]
@@ -119,11 +120,11 @@ module KPM
       end
 
       # Logic similar than pull_and_put_in_place above
-      def pull_from_fs_and_put_in_place(logger, file_path, destination_path=nil)
+      def pull_from_fs_and_put_in_place(logger, file_path, destination_path = nil)
         artifact_info = {
-            :skipped => false,
-            :repository_path => file_path,
-            :is_tgz => file_path.end_with?('.tar.gz') || file_path.end_with?('.tgz')
+          skipped: false,
+          repository_path: file_path,
+          is_tgz: file_path.end_with?('.tar.gz') || file_path.end_with?('.tgz')
         }
 
         populate_fs_info(artifact_info, destination_path)
@@ -148,7 +149,7 @@ module KPM
         return false if artifact_info[:sha1].nil?
 
         # If there is no such sha1_file, we don't skip
-        return false if sha1_file.nil? || !File.exists?(sha1_file)
+        return false if sha1_file.nil? || !File.exist?(sha1_file)
 
         #
         # At this point we have a valid sha1_file and a remote sha1
@@ -168,9 +169,9 @@ module KPM
         end
       end
 
-      def artifact_info(logger, coordinate_map, sha1_file=nil, force_download=false, overrides={}, ssl_verify=true)
+      def artifact_info(logger, coordinate_map, sha1_file = nil, force_download = false, overrides = {}, ssl_verify = true)
         info = {
-            :skipped => false
+          skipped: false
         }
 
         sha1_checker = sha1_file ? Sha1Checker.from_file(sha1_file) : nil
@@ -179,16 +180,14 @@ module KPM
         begin
           nexus_info = nexus_remote(overrides, ssl_verify, logger).get_artifact_info(coordinates)
         rescue KPM::NexusFacade::ArtifactMalformedException => e
-          raise StandardError.new("Invalid coordinates #{coordinate_map}: #{e}")
+          raise StandardError, "Invalid coordinates #{coordinate_map}: #{e}"
         rescue StandardError => e
           logger.warn("Unable to retrieve coordinates #{coordinate_map}: #{e}")
           cached_coordinates = sha1_checker ? sha1_checker.artifact_info(coordinates) : nil
-          if force_download || !cached_coordinates
-            raise e
-          else
-            # Use the cache
-            return cached_coordinates
-          end
+          raise e if force_download || !cached_coordinates
+
+          # Use the cache
+          return cached_coordinates
         end
 
         xml = REXML::Document.new(nexus_info)
@@ -204,7 +203,7 @@ module KPM
 
       def update_destination_path(info, destination_path)
         # In case LATEST was specified, use the actual version as the directory name
-        destination_path = KPM::root if destination_path.nil?
+        destination_path = KPM.root if destination_path.nil?
         plugin_dir, version_dir = File.split(destination_path)
         destination_path = Pathname.new(plugin_dir).join(info[:version]).to_s if version_dir == 'LATEST' && !info[:version].nil?
         destination_path
@@ -231,13 +230,14 @@ module KPM
         destination_path
       end
 
-      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides={}, ssl_verify=true)
+      def pull_and_verify(logger, remote_sha1, coordinates, destination_dir, sha1_file, verify_sha1, overrides = {}, ssl_verify = true)
         info = nexus_remote(overrides, ssl_verify, logger).pull_artifact(coordinates, destination_dir)
 
         # Always verify sha1 and if incorrect either throw or log when we are asked to bypass sha1 verification
         verified = verify(logger, coordinates, info[:file_path], remote_sha1)
-        if !verified
+        unless verified
           raise ArtifactCorruptedException if verify_sha1
+
           logger.warn("Skip sha1 verification for  #{coordinates}")
         end
 
@@ -258,12 +258,9 @@ module KPM
 
         local_sha1 = Digest::SHA1.file(file_path).hexdigest
         res = local_sha1 == remote_sha1
-        if !res
-          logger.warn("Sha1 verification failed for #{coordinates} : local_sha1 = #{local_sha1}, remote_sha1 = #{remote_sha1}")
-        end
+        logger.warn("Sha1 verification failed for #{coordinates} : local_sha1 = #{local_sha1}, remote_sha1 = #{remote_sha1}") unless res
         res
       end
-
 
       # Magic methods...
 
@@ -275,12 +272,12 @@ module KPM
 
         last_part = File.basename(path).downcase
 
-        %w(.pom .xml .war .jar .xsd .tar.gz .tgz .gz .zip).each do |classic_file_extension|
+        %w[.pom .xml .war .jar .xsd .tar.gz .tgz .gz .zip].each do |classic_file_extension|
           return false if last_part.end_with?(classic_file_extension)
         end
 
         # Known magic files
-        %w(root).each do |classic_filename|
+        %w[root].each do |classic_filename|
           return false if last_part == classic_filename
         end
 
@@ -296,12 +293,9 @@ module KPM
 
         existing_default_bundles.each do |bundle|
           bundle_name = Utils.get_plugin_name_from_file_path(bundle)
-          is_downloaded = downloaded_default_bundles.index {|file_name| file_name.include? bundle_name}
-          unless is_downloaded.nil?
-            FileUtils.remove(bundle)
-          end
+          is_downloaded = downloaded_default_bundles.index { |file_name| file_name.include? bundle_name }
+          FileUtils.remove(bundle) unless is_downloaded.nil?
         end
-
       end
     end
   end

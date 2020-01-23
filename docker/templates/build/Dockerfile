@@ -37,17 +37,19 @@ RUN mkdir -p /var/lib/jruby \
     | tar -z -x --strip-components=1 -C /var/lib/jruby
 ENV PATH /var/lib/jruby/bin:$PATH
 
-RUN jruby -S gem install bundler jbundler therubyrhino
+RUN jruby -S gem install bundler --version 1.16.1
+RUN jruby -S gem install jbundler --version 0.9.3
+RUN jruby -S gem install therubyrhino --version 2.0.4
 
 RUN ln -s /var/lib/jruby/bin/jruby /var/lib/jruby/bin/ruby
 
 ENV JRUBY_OPTS=-J-Xmx1024m
 
 # Add extra rubies
-RUN /bin/bash -l -c "rvm install ruby-1.8.7-p374 && rvm use ruby-1.8.7-p374 && gem install bundler && \
-                     rvm install ruby-2.2.2 && rvm use ruby-2.2.2 && gem install bundler && \
-                     rvm install ruby-2.4.2 && rvm use ruby-2.4.2 && gem install bundler && \
-                     rvm install jruby-9.1.14.0 && rvm use jruby-9.1.14.0 && gem install bundler"
+RUN /bin/bash -l -c "rvm install ruby-1.8.7-p374 && rvm use ruby-1.8.7-p374 && gem install bundler --version 1.16.1 && \
+                     rvm install ruby-2.2.2 && rvm use ruby-2.2.2 && gem install bundler --version 1.16.1 && \
+                     rvm install ruby-2.4.2 && rvm use ruby-2.4.2 && gem install bundler --version 1.16.1 && \
+                     rvm install jruby-9.1.14.0 && rvm use jruby-9.1.14.0 && gem install bundler --version 1.16.1"
 
 # Add killbill user into sudo group
 RUN adduser --disabled-password --gecos '' killbill && \

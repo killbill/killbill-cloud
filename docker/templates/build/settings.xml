@@ -9,7 +9,7 @@
         <repository>
           <id>central</id>
           <name>Central Repository</name>
-          <url>http://repo.maven.apache.org/maven2</url>
+          <url>https://repo.maven.apache.org/maven2</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -48,32 +48,6 @@
           <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
       </repositories>
-    </profile>
-    <profile>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <repositories>
-          <repository>
-              <snapshots>
-                  <enabled>false</enabled>
-              </snapshots>
-              <id>central</id>
-              <name>bintray</name>
-              <url>http://jcenter.bintray.com</url>
-          </repository>
-      </repositories>
-      <pluginRepositories>
-          <pluginRepository>
-              <snapshots>
-                  <enabled>false</enabled>
-              </snapshots>
-              <id>central</id>
-              <name>bintray-plugins</name>
-              <url>http://jcenter.bintray.com</url>
-          </pluginRepository>
-      </pluginRepositories>
-      <id>bintray</id>
     </profile>
   </profiles>
   <servers>

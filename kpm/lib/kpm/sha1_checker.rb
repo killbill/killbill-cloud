@@ -1,20 +1,21 @@
+# frozen_string_literal: true
+
 require 'logger'
 require 'yaml'
 require 'pathname'
 
 module KPM
   class Sha1Checker
-
-    def self.from_file(sha1_file, logger=nil)
+    def self.from_file(sha1_file, logger = nil)
       Sha1Checker.new(sha1_file, logger)
     end
 
-    def initialize(sha1_file, logger=nil)
+    def initialize(sha1_file, logger = nil)
       @sha1_file = sha1_file
       init!
 
       if logger.nil?
-        @logger       = Logger.new(STDOUT)
+        @logger = Logger.new(STDOUT)
         @logger.level = Logger::INFO
       else
         @logger = logger
@@ -22,20 +23,21 @@ module KPM
     end
 
     def sha1(coordinates)
-      @sha1_config['sha1'][coordinates]
+      sha1_cache[coordinates]
     end
 
-    def all_sha1()
-      @sha1_config['sha1']
+    def all_sha1
+      sha1_cache
     end
 
     def add_or_modify_entry!(coordinates, remote_sha1)
-      @sha1_config['sha1'][coordinates] = remote_sha1
+      sha1_cache[coordinates] = remote_sha1
       save!
     end
 
     def remove_entry!(coordinates)
-      @sha1_config['sha1'].delete(coordinates)
+      sha1_cache.delete(coordinates)
+      nexus_cache.delete(coordinates)
       save!
     end
 
@@ -43,10 +45,20 @@ module KPM
       nexus_cache[coordinates]
     end
 
-    def cache_artifact_info(coordinates, artifact_info)
+    def cache_artifact_info(coordinates_with_maybe_latest, artifact_info)
+      return if artifact_info.nil?
+
+      if coordinates_with_maybe_latest.end_with?('LATEST')
+        return nil if artifact_info[:version].nil?
+
+        coordinates = coordinates_with_maybe_latest.gsub(/LATEST$/, artifact_info[:version])
+      else
+        coordinates = coordinates_with_maybe_latest
+      end
+
       # See BaseArtifact#artifact_info
-      nexus_keys = [:sha1, :version, :repository_path, :is_tgz]
-      nexus_cache[coordinates] = artifact_info ? artifact_info.select { |key,_| nexus_keys.include? key } : nil
+      nexus_keys = %i[sha1 version repository_path is_tgz]
+      nexus_cache[coordinates] = artifact_info.select { |key, _| nexus_keys.include? key }
       save!
     end
 
@@ -60,6 +72,10 @@ module KPM
     end
 
     private
+
+    def sha1_cache
+      @sha1_config['sha1'] ||= {}
+    end
 
     def nexus_cache
       @sha1_config['nexus'] ||= {}
@@ -81,7 +97,7 @@ module KPM
     end
 
     def init!
-      if !File.exists?(@sha1_file)
+      unless File.exist?(@sha1_file)
         create_sha1_directory_if_missing
         init_config = {}
         init_config['sha1'] = {}
@@ -94,14 +110,11 @@ module KPM
 
     def create_sha1_directory_if_missing
       sha1_dir = Pathname(@sha1_file).dirname
-      if ! File.directory?(sha1_dir)
-        FileUtils.mkdir_p(sha1_dir)
-      end
+      FileUtils.mkdir_p(sha1_dir) unless File.directory?(sha1_dir)
     end
 
     def reload!
-      @sha1_config = YAML::load_file(@sha1_file)
+      @sha1_config = YAML.load_file(@sha1_file)
     end
-
   end
 end

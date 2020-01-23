@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'rubygems/package'
 require 'zlib'
@@ -7,7 +9,7 @@ module KPM
     class << self
       TAR_LONGLINK = '././@LongLink'
 
-      def unpack_tgz(tar_gz_archive, destination, skip_top_dir=false)
+      def unpack_tgz(tar_gz_archive, destination, skip_top_dir = false)
         top_dir = nil
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           dest = nil
@@ -20,17 +22,17 @@ module KPM
 
             if entry.directory?
               File.delete dest if File.file? dest
-              FileUtils.mkdir_p dest, :mode => entry.header.mode, :verbose => false
+              FileUtils.mkdir_p dest, mode: entry.header.mode, verbose: false
             elsif entry.file?
               FileUtils.rm_rf dest if File.directory? dest
-              FileUtils.mkdir_p File.dirname(dest), :verbose => false
-              File.open dest, "wb" do |f|
+              FileUtils.mkdir_p File.dirname(dest), verbose: false
+              File.open dest, 'wb' do |f|
                 f.print entry.read
               end
-              FileUtils.chmod entry.header.mode, dest, :verbose => false
+              FileUtils.chmod entry.header.mode, dest, verbose: false
               current_dir = File.dirname(dest)
               # In case there are two top dirs, keep the last one by convention
-              top_dir = current_dir if (top_dir.nil? || top_dir.size >= current_dir.size)
+              top_dir = current_dir if top_dir.nil? || top_dir.size >= current_dir.size
             elsif entry.header.typeflag == '2' # Symlink
               File.symlink entry.header.linkname, dest
             end
@@ -48,9 +50,7 @@ module KPM
         file_names = []
         Gem::Package::TarReader.new(Zlib::GzipReader.open(tar_gz_archive)) do |tar|
           tar.each do |entry|
-            if entry.file?
-              file_names.push entry.full_name
-            end
+            file_names.push entry.full_name if entry.file?
           end
         end
 
@@ -62,17 +62,17 @@ module KPM
         ver = get_version_from_file_path(file_path)
         ext = File.extname(base)
 
-        name = base.gsub(ext,'')
+        name = base.gsub(ext, '')
         if ver.nil?
           # this will remove SNAPSHOT and any dash that appear before it (ex --SNAPSHOT).
-          name = name.gsub(/((-+){,1}SNAPSHOT){,1}/,'')
+          name = name.gsub(/((-+){,1}SNAPSHOT){,1}/, '')
           last_dash = name.rindex('-')
           name = name[0..last_dash] unless last_dash.nil?
         else
-          name = name.gsub(ver,'')
+          name = name.gsub(ver, '')
         end
 
-        name = name[0..name.length-2] if name[-1].match(/[a-zA-z]/).nil?
+        name = name[0..name.length - 2] if name[-1].match(/[a-zA-z]/).nil?
         name
       end
 
@@ -84,7 +84,6 @@ module KPM
 
         ver[0]
       end
-
     end
   end
 end

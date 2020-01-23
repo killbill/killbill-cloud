@@ -26,7 +26,7 @@
   <groupId>org.kill-bill.billing.installer</groupId>
   <artifactId>kpm</artifactId>
   <packaging>pom</packaging>
-  <version>0.7.2</version>
+  <version>0.8.0</version>
   <name>KPM</name>
   <url>http://github.com/killbill/killbill-cloud</url>
   <description>KPM: the Kill Bill Package Manager</description>

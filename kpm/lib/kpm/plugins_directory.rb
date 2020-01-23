@@ -1,30 +1,31 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'yaml'
 
 module KPM
   class PluginsDirectory
-    def self.all(latest=false)
+    def self.all(latest = false)
       if latest
         # Look at GitHub (source of truth)
         begin
           source = URI.parse('https://raw.githubusercontent.com/killbill/killbill-cloud/master/kpm/lib/kpm/plugins_directory.yml').read
         rescue StandardError
           # Default to built-in version if GitHub isn't accessible
-          return self.all(false)
+          return all(false)
         end
         YAML.load(source)
       else
-        source = File.join(File.expand_path(File.dirname(__FILE__)), 'plugins_directory.yml')
+        source = File.join(__dir__, 'plugins_directory.yml')
         YAML.load_file(source)
       end
     end
 
-
-    def self.list_plugins(latest=false, kb_version)
-      all(latest).inject({}) { |out, (key, val)| out[key]=val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym) ; out}
+    def self.list_plugins(latest = false, kb_version)
+      all(latest).each_with_object({}) { |(key, val), out| out[key] = val[:versions][kb_version.to_sym] if val[:versions].key?(kb_version.to_sym); }
     end
 
-    def self.lookup(raw_plugin_key, latest=false, raw_kb_version=nil)
+    def self.lookup(raw_plugin_key, latest = false, raw_kb_version = nil)
       plugin_key = raw_plugin_key.to_s.downcase
       plugin = all(latest)[plugin_key.to_sym]
       return nil if plugin.nil?
@@ -40,7 +41,7 @@ module KPM
       if raw_kb_version == 'LATEST'
         version = 'LATEST'
       else
-        captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d)?/)
+        captures = raw_kb_version.nil? ? [] : raw_kb_version.scan(/(\d+\.\d+)(\.\d+)?/)
         if captures.empty? || captures.first.nil? || captures.first.first.nil?
           version = 'LATEST'
         else

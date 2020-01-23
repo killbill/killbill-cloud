@@ -2,241 +2,74 @@
 :accertify:
   :type: :java
   :versions:
-    :0.14: 0.1.0
-    :0.16: 0.2.0
     :0.18: 0.3.0
-  :require:
-    - :org.killbill.billing.plugin.accertify.url
-    - :org.killbill.billing.plugin.accertify.username
-    - :org.killbill.billing.plugin.accertify.password
 :adyen:
   :type: :java
   :versions:
-    :0.14: 0.1.0
-    :0.15: 0.2.1
-    :0.16: 0.3.2
-    :0.17: 0.4.10
     :0.18: 0.5.26
-    :0.19: 0.6.0
     :0.20: 0.7.0
-  :require:
-    - :org.killbill.billing.plugin.adyen.merchantAccount
-    - :org.killbill.billing.plugin.adyen.username
-    - :org.killbill.billing.plugin.adyen.password
-    - :org.killbill.billing.plugin.adyen.paymentUrl
 :analytics:
   :type: :java
   :versions:
-    :0.14: 1.0.3
-    :0.15: 2.0.1
-    :0.16: 3.0.2
-    :0.17: 4.0.5
     :0.18: 4.2.5
-    :0.19: 5.1.4
     :0.20: 6.0.1
-    :0.21: 7.0.7
+    :0.22: 7.0.8
 :avatax:
   :type: :java
   :versions:
-    :0.14: 0.1.0
-    :0.15: 0.2.0
-    :0.16: 0.3.0
     :0.18: 0.4.1
-    :0.19: 0.5.1
     :0.20: 0.6.1
-    :0.21: 0.7.0
-  :require:
-    - :org.killbill.billing.plugin.avatax.url
-    - :org.killbill.billing.plugin.avatax.accountNumber
-    - :org.killbill.billing.plugin.avatax.licenseKey
-:braintree_blue:
-  :type: :ruby
-  :versions:
-    :0.14: 0.0.1
-    :0.16: 0.2.1
-    :0.18: 0.3.1
-  :require:
-    - :merchant_id
-    - :public_key
-    - :private_key
-:currency:
-  :type: :ruby
-  :artifact_id: killbill-currency-plugin
-  :versions:
-    :0.16: 2.0.0
-    :0.18: 3.0.0
+    :0.22: 0.7.0
 :cybersource:
   :type: :ruby
   :versions:
-    :0.14: 1.0.0
-    :0.15: 3.3.0
-    :0.16: 4.0.12
     :0.18: 5.2.7
-  :require:
-    - :login
-    - :password
 :dwolla:
   :type: :java
   :versions:
     :0.18: 0.1.0
-  :require:
-    - :org.killbill.billing.plugin.dwolla.baseUrl
-    - :org.killbill.billing.plugin.dwolla.baseOAuthUrl
-    - :org.killbill.billing.plugin.dwolla.scopes
-    - :org.killbill.billing.plugin.dwolla.clientId
-    - :org.killbill.billing.plugin.dwolla.clientSecret
-    - :org.killbill.billing.plugin.dwolla.accountId
 :email-notifications:
   :type: :java
   :artifact_id: killbill-email-notifications-plugin
   :versions:
-    :0.14: 0.1.0
-    :0.16: 0.2.0
     :0.18: 0.3.1
-    :0.19: 0.4.0
     :0.20: 0.5.1
-:firstdata_e4:
-  :type: :ruby
-  :artifact_id: firstdata-e4-plugin
-  :versions:
-    :0.16: 0.1.0
-    :0.18: 0.2.0
-  :require:
-  - :login
-  - :password
+    :0.22: 0.6.0
 :forte:
   :type: :java
   :versions:
-    :0.14: 0.1.0
-    :0.16: 0.2.0
     :0.18: 0.3.0
-  :require:
-    - :org.killbill.billing.plugin.forte.merchantId
-    - :org.killbill.billing.plugin.forte.password
-    - :org.killbill.billing.plugin.forte.host
-    - :org.killbill.billing.plugin.forte.port
-    - :org.killbill.billing.plugin.forte.apiLoginId
-    - :org.killbill.billing.plugin.forte.secureTransactionKey
-:kpm:
-  :type: :ruby
-  :versions:
-    :0.15: 0.0.2
-    :0.16: 0.0.5
-    :0.17: 1.0.0
-    :0.18: 1.1.2
-    :0.19: 1.2.4
-    :0.20: 1.3.0
-:litle:
-  :type: :ruby
-  :versions:
-    :0.14: 2.0.0
-    :0.16: 3.0.0
-    :0.18: 4.0.0
-    :0.20: 5.0.0
-  :require:
-    - :account_id
-    - :merchant_id
-    - :username
-    - :password
-    - :secure_page_url
-    - :paypage_id
-:logging:
-  :type: :ruby
-  :versions:
-    :0.14: 1.7.0
-    :0.15: 2.0.0
-    :0.16: 3.0.0
-    :0.18: 4.0.0
 :orbital:
   :type: :ruby
   :versions:
-    :0.16: 0.0.2
     :0.18: 0.1.15
-  :require:
-    - :login
-    - :password
-    - :merchant_id
 :payment_bridge:
   :type: :java
   :artifact_id: bridge-plugin
   :versions:
-    :0.19: 0.0.12
     :0.20: 0.1.2
     :0.21: 0.2.1
-:payeezy:
-  :type: :java
-  :versions:
-    :0.17: 0.1.0
-  :require:
-    - :org.killbill.billing.plugin.payeezy.apiKey
-    - :org.killbill.billing.plugin.payeezy.token
-    - :org.killbill.billing.plugin.payeezy.secret
-    - :org.killbill.billing.plugin.payeezy.paymentUrl
 :payment-retries:
   :type: :java
   :versions:
-    :0.16: 0.0.1
-    :0.17: 0.1.0
     :0.18: 0.2.4
 :paypal:
   :type: :ruby
   :artifact_id: paypal-express-plugin
   :versions:
-    :0.14: 2.0.0
-    :0.15: 3.0.0
-    :0.16: 4.1.7
     :0.18: 5.0.15
     :0.20: 6.0.0
-  :require:
-  - :signature
-  - :login
-  - :password
-:payu_latam:
-  :type: :ruby
-  :artifact_id: payu-latam-plugin
-  :versions:
-    :0.14: 0.1.0
-    :0.16: 0.2.0
-    :0.18: 0.3.0
-  :require:
-  - :api_login
-  - :api_key
-  - :country_account_id
-  - :merchant_id
 :payment-test:  
   :type: :ruby
   :artifact_id: payment-test-plugin
   :versions:
     :0.18: 4.2.0
-    :0.19: 5.0.0
     :0.20: 6.0.0
 :securenet:
   :type: :ruby
   :versions:
-    :0.16: 0.1.0
     :0.18: 0.2.0
-  :require:
-  - :login
-  - :password
 :stripe:
-  :type: :ruby
+  :type: :java
   :versions:
-    :0.14: 1.0.0
-    :0.15: 2.0.0
-    :0.16: 3.0.3
-    :0.17: 4.0.0
-    :0.18: 4.1.1
-    :0.19: 5.0.0
-    :0.20: 6.0.1
-  :require:
-  - :api_secret_key
-:zendesk:
-  :type: :ruby
-  :versions:
-    :0.14: 1.3.0
-    :0.16: 2.0.0
-    :0.18: 3.0.1
-  :require:
-  - :subdomain
-  - :username
-  - :password
+    :0.22: 7.0.0

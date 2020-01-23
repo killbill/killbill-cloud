@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # For Bundler.with_clean_env
 require 'bundler/setup'
 require 'yaml'
@@ -12,40 +14,38 @@ TRAVELING_RUBY_VERSION = '20150715-2.2.2'
 
 # Remove unused files to reduce package size
 GEMS_PATH = 'packaging/vendor/ruby/*/gems/*/'
-REMOVE_FILES = %w(test tests spec README* CHANGE* Change* COPYING* LICENSE* MIT-LICENSE* doc docs examples ext/*/Makefile .gitignore .travis.yml)
-REMOVE_EXTENSIONS = %w(*.md *.c *.h *.rl extconf.rb *.java *.class *.so *.o)
+REMOVE_FILES = %w[test tests spec README* CHANGE* Change* COPYING* LICENSE* MIT-LICENSE* doc docs examples ext/*/Makefile .gitignore .travis.yml].freeze
+REMOVE_EXTENSIONS = %w[*.md *.c *.h *.rl extconf.rb *.java *.class *.so *.o].freeze
 
 desc 'Package your app'
-task :package => %w(package:linux:x86 package:linux:x86_64 package:osx)
+task package: %w[package:linux:x86 package:linux:x86_64 package:osx]
 
 namespace :package do
   namespace :linux do
     desc 'Package KPM for Linux x86'
-    task :x86 => [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86.tar.gz"] do
+    task x86: [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86.tar.gz"] do
       create_package('linux-x86')
     end
 
     desc 'Package KPM for Linux x86_64'
-    task :x86_64 => [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz"] do
+    task x86_64: [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz"] do
       create_package('linux-x86_64')
     end
   end
 
   desc 'Package KPM for OS X'
-  task :osx => [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx.tar.gz"] do
+  task osx: [:bundle_install, "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx.tar.gz"] do
     create_package('osx')
   end
 
   desc 'Install gems to local directory'
-  task :bundle_install => [:clean] do
+  task bundle_install: [:clean] do
     # abort if version packaging does not exist on repository
     abort "KPM #{VERSION} does not exists in the repository." unless gem_exists?
 
     # Note! Must match TRAVELING_RUBY_VERSION above
     expected_ruby_version = TRAVELING_RUBY_VERSION.split('-')[-1]
-    if RUBY_VERSION !~ /#{Regexp.quote(expected_ruby_version)}/
-      abort "You can only 'bundle install' using Ruby #{expected_ruby_version}, because that's what Traveling Ruby uses."
-    end
+    abort "You can only 'bundle install' using Ruby #{expected_ruby_version}, because that's what Traveling Ruby uses." if RUBY_VERSION !~ /#{Regexp.quote(expected_ruby_version)}/
     sh 'rm -rf packaging/tmp'
     sh 'mkdir -p packaging/tmp'
     sh 'cp packaging/Gemfile packaging/tmp/'
@@ -108,21 +108,21 @@ def create_package(target)
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
 
-  if !ENV['DIR_ONLY']
-    sh "tar -czf #{package_dir}.tar.gz #{package_dir}"
-    sh "rm -rf #{package_dir}"
-  end
+  return if ENV['DIR_ONLY']
+
+  sh "tar -czf #{package_dir}.tar.gz #{package_dir}"
+  sh "rm -rf #{package_dir}"
 end
 
 def download_runtime(target)
-  sh 'mkdir -p packaging && cd packaging && curl -L -O --fail ' +
-         "https://d6r77u77i8pq3.cloudfront.net/releases/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz"
+  sh 'mkdir -p packaging && cd packaging && curl -L -O --fail ' \
+     "https://d6r77u77i8pq3.cloudfront.net/releases/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz"
 end
 
 def gem_exists?
   response = `gem specification 'kpm' -r -v #{VERSION} 2>&1`
   return false if response.nil?
 
-  specification = YAML::load(response)
+  specification = YAML.load(response)
   specification.instance_of?(Gem::Specification)
 end

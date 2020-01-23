@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2014 The Billing Project, LLC
 #
@@ -14,7 +16,7 @@
 # under the License.
 #
 
-$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('lib', __dir__)
 require 'kpm/version'
 
 Gem::Specification.new do |s|
@@ -34,17 +36,17 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.bindir        = 'bin'
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+  s.require_paths = ['lib']
 
   s.rdoc_options << '--exclude' << '.'
 
   s.add_dependency 'highline', '~> 1.6.21'
-  s.add_dependency 'thor', '~> 0.19.1'
+  s.add_dependency 'killbill-client', '~> 3.2'
   s.add_dependency 'rubyzip', '~>1.2.0'
-  s.add_dependency 'killbill-client', '~> 2.5.0'
+  s.add_dependency 'thor', '~> 0.19.1'
 
   s.add_development_dependency 'rake', '>= 10.0.0', '< 11.0.0'
   s.add_development_dependency 'rspec', '~> 2.12.0'
+  s.add_development_dependency 'rubocop', '~> 0.74.0' if RUBY_VERSION >= '2.3'
 end
-

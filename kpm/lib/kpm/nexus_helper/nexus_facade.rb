@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'actions'
 module KPM
   module NexusFacade
@@ -11,8 +13,8 @@ module KPM
 
     class RemoteFactory
       class << self
-        def create(overrides, ssl_verify=true, logger=nil)
-          Actions.new(overrides, ssl_verify,logger || NexusFacade.logger)
+        def create(overrides, ssl_verify = true, logger = nil)
+          Actions.new(overrides, ssl_verify, logger || NexusFacade.logger)
         end
       end
     end

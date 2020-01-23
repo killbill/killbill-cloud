@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KPM
   autoload :Utils, 'kpm/utils'
   autoload :BaseArtifact, 'kpm/base_artifact'
@@ -19,6 +21,7 @@ module KPM
   autoload :Migrations, 'kpm/migrations'
   autoload :System, 'kpm/system'
   autoload :Account, 'kpm/account'
+  autoload :Blob, 'kpm/blob'
   autoload :Database, 'kpm/database'
   autoload :TenantConfig, 'kpm/tenant_config'
   autoload :DiagnosticFile, 'kpm/diagnostic_file'
