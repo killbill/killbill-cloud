@@ -10,7 +10,7 @@ TARGET?=killbill
 
 VERSION?=latest
 ifeq ($(VERSION),latest)
-IMAGE=killbill/$(TARGET):latest-0.21.x
+IMAGE=killbill/$(TARGET)
 TEMPLATE=templates/$(TARGET)/latest
 else
 IMAGE=killbill/$(TARGET):$(VERSION)
