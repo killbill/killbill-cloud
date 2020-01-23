@@ -19,9 +19,7 @@ RUN set -x \
         # Install the Kaui DDL (point to latest, rarely changes)
         && wget https://raw.githubusercontent.com/killbill/killbill-admin-ui/master/db/ddl.sql -O - >> /docker-entrypoint-initdb.d/020_kaui.sql \
         # Install the DDL of the most popular plugins (point to latest, rarely changes)
-        && wget https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/db/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
-        && wget https://raw.githubusercontent.com/killbill/killbill-paypal-express-plugin/master/db/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
-        && wget https://raw.githubusercontent.com/killbill/killbill-braintree-blue-plugin/master/db/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
+        && wget https://raw.githubusercontent.com/killbill/killbill-stripe-plugin/master/src/main/resources/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
         && wget https://raw.githubusercontent.com/killbill/killbill-analytics-plugin/master/src/main/resources/org/killbill/billing/plugin/analytics/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
         && wget https://raw.githubusercontent.com/killbill/killbill-adyen-plugin/master/src/main/resources/ddl.sql -O - >> /docker-entrypoint-initdb.d/010_killbill.sql \
         && apt-get purge -y --auto-remove ca-certificates wget

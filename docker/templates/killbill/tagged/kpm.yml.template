@@ -2,7 +2,5 @@
 killbill:
   version: __VERSION__
   plugins:
-    ruby:
-    - name: kpm
   plugins_dir: /var/lib/killbill/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war
