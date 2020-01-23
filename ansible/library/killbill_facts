@@ -18,11 +18,14 @@ end
 require 'kpm'
 require 'kpm/version'
 
-kpm_facts = KPM::System.new.information(data['bundles_dir'],
-                                        true,
-                                        data['config_file'],
-                                        data['kaui_web_path'],
-                                        data['killbill_web_path'])
+logger = Logger.new(STDOUT)
+logger.level = Logger::INFO
+
+kpm_facts = KPM::System.new(logger).information(data['bundles_dir'],
+                                                true,
+                                                data['config_file'],
+                                                data['kaui_web_path'],
+                                                data['killbill_web_path'])
 
 versions_info = KPM::KillbillServerArtifact.info(data['version'],
                                                  data['overrides'],
