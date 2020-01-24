@@ -14,8 +14,8 @@ RUN printf '\connect kaui;\n\n' >> /docker-entrypoint-initdb.d/020_kaui.sql
 
 RUN set -x \
         && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
-        # Install the Kill Bill PostgreSQL DDL bridge
-        && wget https://raw.githubusercontent.com/killbill/killbill/killbill-$KILLBILL_VERSION.0/util/src/main/resources/org/killbill/billing/util/ddl-postgresql.sql -O - > /var/tmp/postgres-bridge.sql \
+        # Install the latest Kill Bill PostgreSQL DDL bridge (see https://github.com/killbill/killbill-cloud/issues/163)
+        && wget https://raw.githubusercontent.com/killbill/killbill/master/util/src/main/resources/org/killbill/billing/util/ddl-postgresql.sql -O - > /var/tmp/postgres-bridge.sql \
         && cat /var/tmp/postgres-bridge.sql >> /docker-entrypoint-initdb.d/010_killbill.sql \
         && cat /var/tmp/postgres-bridge.sql >> /docker-entrypoint-initdb.d/020_kaui.sql \
         # Install the Kill Bill DDL
