@@ -522,3 +522,30 @@ org.killbill.template.name={{ lookup('env', 'KILLBILL_TEMPLATE_NAME') }}
 {% if lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') %}
 org.killbill.tenant.broadcast.rate={{ lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_KPM_USERNAME') %}
+org.killbill.billing.plugin.kpm.adminUsername={{ lookup('env', 'KILLBILL_KPM_USERNAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_PASSWORD') %}
+org.killbill.billing.plugin.kpm.adminPassword={{ lookup('env', 'KILLBILL_KPM_PASSWORD') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_PATH') %}
+org.killbill.billing.plugin.kpm.kpmPath={{ lookup('env', 'KILLBILL_KPM_PATH') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_BUNDLES_PATH') %}
+org.killbill.billing.plugin.kpm.bundlesPath={{ lookup('env', 'KILLBILL_KPM_BUNDLES_PATH') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_NEXUS_URL') %}
+org.killbill.billing.plugin.kpm.nexusUrl={{ lookup('env', 'KILLBILL_KPM_NEXUS_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_NEXUS_REPOSITORY') %}
+org.killbill.billing.plugin.kpm.nexusRepository={{ lookup('env', 'KILLBILL_KPM_NEXUS_REPOSITORY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_STRICT_SSL') %}
+org.killbill.billing.plugin.kpm.strictSSL={{ lookup('env', 'KILLBILL_KPM_STRICT_SSL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_READ_TIMEOUT_SEC') %}
+org.killbill.billing.plugin.kpm.readTimeoutSec={{ lookup('env', 'KILLBILL_KPM_READ_TIMEOUT_SEC') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_KPM_CONNECT_TIMEOUT_SEC') %}
+org.killbill.billing.plugin.kpm.connectTimeoutSec={{ lookup('env', 'KILLBILL_KPM_CONNECT_TIMEOUT_SEC') }}
+{% endif %}
