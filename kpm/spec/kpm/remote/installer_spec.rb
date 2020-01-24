@@ -60,17 +60,16 @@ describe KPM::Installer do
                                                   'java' => [{
                                                     'name' => 'analytics',
                                                     'version' => '0.7.1'
+                                                  }, {
+                                                    'name' => 'stripe',
+                                                    'version' => '7.0.0'
                                                   }],
                                                   'ruby' => [{
                                                     'name' => 'payment-test-plugin',
                                                     'artifact_id' => 'payment-test-plugin',
                                                     'group_id' => 'org.kill-bill.billing.plugin.ruby',
                                                     'version' => '1.8.7'
-                                                  },
-                                                             {
-                                                               'name' => 'stripe',
-                                                               'version' => '3.0.3'
-                                                             }]
+                                                  }]
                                                 }
                                               },
                                               'kaui' => {
@@ -105,10 +104,11 @@ describe KPM::Installer do
       plugins_dir + '/plugins/java',
       plugins_dir + '/plugins/java/analytics-plugin',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
+      plugins_dir + '/plugins/java/stripe-plugin',
+      plugins_dir + '/plugins/java/stripe-plugin/7.0.0',
       plugins_dir + '/plugins/ruby',
       plugins_dir + '/plugins/ruby/killbill-payment-test',
-      plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7',
-      plugins_dir + '/plugins/ruby/killbill-stripe'
+      plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
     ].each do |dir|
       File.directory?(dir).should be_true
     end
@@ -119,6 +119,7 @@ describe KPM::Installer do
       plugins_dir + '/platform/jruby.jar',
       plugins_dir + '/plugins/plugin_identifiers.json',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar',
+      plugins_dir + '/plugins/java/stripe-plugin/7.0.0/stripe-plugin-7.0.0.jar',
       plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7/killbill.properties'
     ].each do |file|
       File.file?(file).should be_true
@@ -137,18 +138,18 @@ describe KPM::Installer do
     plugin_identifiers['analytics']['version'].should eq '0.7.1'
     plugin_identifiers['analytics']['language'].should eq 'java'
 
+    plugin_identifiers['stripe']['plugin_name'].should eq 'stripe-plugin'
+    plugin_identifiers['stripe']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
+    plugin_identifiers['stripe']['artifact_id'].should eq 'stripe-plugin'
+    plugin_identifiers['stripe']['packaging'].should eq 'jar'
+    plugin_identifiers['stripe']['version'].should eq '7.0.0'
+    plugin_identifiers['stripe']['language'].should eq 'java'
+
     plugin_identifiers['payment-test-plugin']['plugin_name'].should eq 'killbill-payment-test'
     plugin_identifiers['payment-test-plugin']['group_id'].should eq 'org.kill-bill.billing.plugin.ruby'
     plugin_identifiers['payment-test-plugin']['artifact_id'].should eq 'payment-test-plugin'
     plugin_identifiers['payment-test-plugin']['packaging'].should eq 'tar.gz'
     plugin_identifiers['payment-test-plugin']['version'].should eq '1.8.7'
     plugin_identifiers['payment-test-plugin']['language'].should eq 'ruby'
-
-    plugin_identifiers['stripe']['plugin_name'].should eq 'killbill-stripe'
-    plugin_identifiers['stripe']['group_id'].should eq 'org.kill-bill.billing.plugin.ruby'
-    plugin_identifiers['stripe']['artifact_id'].should eq 'stripe-plugin'
-    plugin_identifiers['stripe']['packaging'].should eq 'tar.gz'
-    plugin_identifiers['stripe']['version'].should eq '3.0.3'
-    plugin_identifiers['stripe']['language'].should eq 'ruby'
   end
 end
