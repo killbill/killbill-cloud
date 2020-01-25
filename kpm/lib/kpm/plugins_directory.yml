@@ -60,11 +60,10 @@
     :0.18: 5.0.15
     :0.20: 6.0.0
 :payment-test:  
-  :type: :ruby
+  :type: :java
   :artifact_id: payment-test-plugin
   :versions:
-    :0.18: 4.2.0
-    :0.20: 6.0.0
+    :0.22: 7.0.0
 :securenet:
   :type: :ruby
   :versions:
