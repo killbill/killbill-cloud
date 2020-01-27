@@ -71,4 +71,4 @@
 :stripe:
   :type: :java
   :versions:
-    :0.22: 7.0.0
+    :0.22: 7.0.1
