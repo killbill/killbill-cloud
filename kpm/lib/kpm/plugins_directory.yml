@@ -66,6 +66,7 @@
     :0.20: 6.0.0
 :payment-test:  
   :type: :java
+  :group_id: org.killbill.billing.plugin.payment
   :artifact_id: payment-test-plugin
   :versions:
     :0.22: 7.0.0
