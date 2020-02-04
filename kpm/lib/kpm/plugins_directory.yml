@@ -68,7 +68,7 @@
   :type: :java
   :artifact_id: payment-test-plugin
   :versions:
-    :0.22: 7.0.0
+    :0.22: 7.0.2
 :securenet:
   :type: :ruby
   :versions:
