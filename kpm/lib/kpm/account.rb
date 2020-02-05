@@ -194,7 +194,7 @@ module KPM
       tables = {}
       error_importing_data = false
 
-      File.open(source_file, 'r') do |data|
+      File.open(source_file, 'r:UTF-8') do |data|
         rows = nil
         table_name = nil
         cols_names = nil
