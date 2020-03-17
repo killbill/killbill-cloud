@@ -7,7 +7,8 @@
     - conf
     - lib
     - logs
-    - webapps
+    - "{{ kb_webapps }}"
+    - "{{ kaui_webapps }}"
     - work
     - temp
   tags: tomcat

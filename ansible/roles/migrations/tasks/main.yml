@@ -3,8 +3,8 @@
   killbill_migrations:
     kpm_path: "{{ kpm_path }}"
     bundles_dir: "{{ kb_plugins_dir }}"
-    kaui_web_path: "{{ catalina_base }}/webapps/ROOT.war"
-    killbill_web_path: "{{ catalina_base }}/webapps/ROOT.war"
+    kaui_web_path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
+    killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     kpm_yml: "{{ kpm_yml }}"
     gh_token: "{{ gh_token|default('') }}"
   register: migrations
