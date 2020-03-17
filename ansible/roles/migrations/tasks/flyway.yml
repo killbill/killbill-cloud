@@ -16,8 +16,8 @@
       killbill_facts:
         kpm_path: "{{ kpm_path }}"
         bundles_dir: "{{ kb_plugins_dir }}"
-        kaui_web_path: "{{ catalina_base }}/webapps/ROOT.war"
-        killbill_web_path: "{{ catalina_base }}/webapps/ROOT.war"
+        kaui_web_path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
+        killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
         version: LATEST
       register: kb_facts
       when: flyway_version is undefined

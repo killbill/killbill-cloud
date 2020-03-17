@@ -11,6 +11,10 @@ catalina_base: /var/lib/tomcat
 tomcat_owner: tomcat
 tomcat_group: tomcat
 
+# Webapps directory : {{ catalina_base }}/{{ kb_webapps }}
+kb_webapps: webapps
+kaui_webapps: webapps
+
 tomcat_foreground: false
 
 # Base directory for namespacing

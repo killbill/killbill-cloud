@@ -10,7 +10,7 @@
       killbill_diagnostics:
         kpm_path: "{{ kpm_path }}"
         killbill_url: "{{ killbill_url|default('http://127.0.0.1:8080') }}"
-        killbill_web_path: "{{ catalina_base }}/webapps/ROOT.war"
+        killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
         killbill_user: "{{ killbill_user|default('admin') }}"
         killbill_password: "{{ killbill_password|default('password') }}"
         killbill_api_key: "{{ killbill_api_key|default('bob') }}"

@@ -48,15 +48,15 @@
   command: |
     "{{ java_home }}/bin/jar" -xf ROOT.war
   args:
-    chdir: "{{ catalina_base }}/webapps"
-    creates: "{{ catalina_base }}/webapps/WEB-INF"
-  tags: killbill-war-expand
+    chdir: "{{ catalina_base }}/{{ kb_webapps }}"
+    creates: "{{ catalina_base }}/{{ kb_webapps }}/WEB-INF"
+  tags: killbill-logback
 
 - name: Copy logback.xml
   become: true
   template:
     src: "killbill/{{ item.name }}.j2"
-    dest: "{{ catalina_base }}/webapps/WEB-INF/classes/logback.xml"
+    dest: "{{ catalina_base }}/{{ kb_webapps }}/WEB-INF/classes/logback.xml"
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
@@ -68,5 +68,6 @@
 - name: Remove root archive
   become: true
   file:
-    path: "{{ catalina_base }}/webapps/ROOT.war"
+    path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     state: absent
+  tags: killbill-logback
