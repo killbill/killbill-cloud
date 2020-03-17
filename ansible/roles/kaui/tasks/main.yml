@@ -21,20 +21,27 @@
     kpm_yml: "{{ kpm_yml }}"
   tags: kpm-install
 
+- name: Create ROOT directory to unarchive the WAR
+  become: true
+  file:
+    path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
+    state: directory
+    mode: '0755'
+
 - name: Expand WAR file if not already done
   become: true
   command: |
-    "{{ java_home }}/bin/jar" -xf ROOT.war
+    "{{ java_home }}/bin/jar" -xf ../ROOT.war
   args:
-    chdir: "{{ catalina_base }}/{{ kaui_webapps }}"
-    creates: "{{ catalina_base }}/{{ kaui_webapps }}/WEB-INF"
+    chdir: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
+    creates: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT/WEB-INF"
   tags: kaui-logback
 
 - name: Copy logback.xml
   become: true
   template:
     src: "kaui/{{ item.name }}.j2"
-    dest: "{{ catalina_base }}/{{ kaui_webapps }}/WEB-INF/classes/logback.xml"
+    dest: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT/WEB-INF/classes/logback.xml"
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
