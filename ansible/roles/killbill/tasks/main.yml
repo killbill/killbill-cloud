@@ -72,6 +72,17 @@
     - name: logback.xml
   tags: killbill-logback
 
+- name: Recursively change ownership for the expanded ROOT
+  become: true
+  file:
+    path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
+    state: directory
+    recurse: yes
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rwX,g=rX,o=rX
+  tags: killbill-logback
+
 - name: Remove root archive
   become: true
   file:
