@@ -50,6 +50,17 @@
     - name: logback.xml
   tags: kaui-logback
 
+- name: Recursively change ownership for the expanded ROOT
+  become: true
+  file:
+    path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
+    state: directory
+    recurse: yes
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rwX,g=rX,o=rX
+  tags: kaui-logback
+
 - name: Remove root archive
   become: true
   file:
