@@ -4,6 +4,7 @@
   register: tomcat_pid
   when:
     - catalina_home is defined
+  tags: stop
 
 - name: stop Tomcat (with PID file)
   become: true
@@ -16,6 +17,7 @@
   when:
     - catalina_home is defined
     - tomcat_pid is not defined or tomcat_pid.stat.exists == True
+  tags: stop
 
 - name: stop Tomcat (without PID file)
   become: true
@@ -27,6 +29,7 @@
   when:
     - catalina_home is defined
     - tomcat_pid is not defined or tomcat_pid.stat.exists == False
+  tags: stop
 
 - name: clean up Tomcat deployment files
   become: true
@@ -39,3 +42,4 @@
     - catalina_home is defined
   tags:
     - tomcat_cleanup
+  tags: stop

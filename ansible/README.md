@@ -1,5 +1,11 @@
 # Installation
 
+You can run the playbooks directly from this directory.
+
+Alternatively, if you would prefer embedding the roles in your own playbooks, you can do so via Ansible Galaxy.
+
+## Ansible Galaxy
+
 1. Update your `ansible.cfg` with:
 
 ```
@@ -18,17 +24,59 @@ then run `ansible-galaxy install -r requirements.yml`.
 
 The roles can now be referenced in your playbooks via `killbill-cloud/ansible/roles/XXX` (e.g. `killbill-cloud/ansible/roles/kpm`).
 
-See below for example playbooks.
-
-
 # Usage
+
+Requirements:
+
+* Java must be pre-installed on the target hosts (e.g. install the openjdk-8-jdk package on Ubuntu). In the rest of this documentation, we will assume `$TARGET_JAVA_HOME` points to the Java home installation on the *target* hosts (e.g. `/usr/lib/jvm/java-8-openjdk-amd64`).
+* Before installing Kill Bill and/or Kaui, KPM must be installed via the kpm.yml playbook.
+
+
+## kpm.yml playbook
+
+Playbook to install KPM as a self-contained utility (no Ruby dependency needed):
+
+```
+ansible-playbook -i <INVENTORY> kpm.yml
+```
+
+## tomcat.yml playbook
+
+If you don't need a custom Tomcat installation, you can use the `tomcat.yml` playbook to install a Kill Bill compatible Tomcat version:
+
+```
+ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME tomcat.yml
+```
+
+For performance reasons, we recommend installing the Apache Tomcat native libraries. To do so, you need to pass a few more options to the playbook:
+
+* `gnu_arch`: the target architecture (e.g. output of `dpkg-architecture --query DEB_BUILD_GNU_TYPE`).
+* `apr_config_path`: the path to `apr-1-config` (you must install the Apache Portable Runtime Library separately, i.e. `libapr1-dev`).
+* `tomcat_native_libdir`: output path where the libraries will be installed.
+
+
+You also need to install the OpenSSL library separately (e.g. `libssl-dev`).
+
+```
+ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME -e apr_config_path=/usr/bin/apr-1-config -e gnu_arch=x86_64-linux-gnu -e tomcat_native_libdir=/usr/share/tomcat/native-jni-lib tomcat.yml
+```
 
 ## killbill.yml playbook
 
-Playbook to install Kill Bill (KPM is a pre-requisite):
+Playbook to install Kill Bill:
 
 ```
-ansible-playbook -i <HOST_FILE> killbill.yml
+ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME killbill.yml
+```
+
+It is expected that the `/var/lib/killbill/kpm.yml` file already exists on the target machine, for example:
+
+```
+---
+killbill:
+  version: LATEST
+  plugins_dir: /var/lib/killbill/bundles
+  webapp_path: /var/lib/tomcat/webapps/ROOT.war
 ```
 
 The playbook has several roles:
@@ -42,22 +90,6 @@ Configuration:
 * [group_vars/all.yml](group_vars/all.yml) defines what to install (KPM version, Kill Bill version, plugins, etc.) and the main configuration options. This could be overridden in a child `group_vars` or even in `host_vars` (https://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 * [templates/killbill/killbill.properties.j2](templates/killbill/killbill.properties.j2) is the main Kill Bill configuration file
 * [templates/tomcat/conf/setenv.sh.j2](templates/tomcat/conf/setenv.sh.j2) defines JVM level system properties
-
-## kpm.yml playbook
-
-Example playbook on how to install KPM:
-
-```
-ansible-playbook -i <HOST_FILE> kpm.yml
-```
-
-## tomcat.yml playbook
-
-Example playbook on how to install Tomcat (Java is a pre-requisite):
-
-```
-ansible-playbook -i <HOST_FILE> tomcat.yml
-```
 
 ## migrations.yml playbook
 
@@ -137,19 +169,4 @@ In order to test, one can an inventory:
 ```
 > ansible-playbook -v -i localhost/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk1.8.0_171.jdk/Contents/Home  -u <user> the _playbook.yml
 ```
-
-## EC2
-
-```
-# File ec2/inventory
-[server]
-ec2-18-233-67-208.compute-1.amazonaws.com ansible_user=ubuntu
-```
- 
-```
-> ansible-playbook -v -i ec2/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk1.8.0_171.jdk/Contents/Home  -u ubuntu the _playbook.yml
-```
-
-
-
 
