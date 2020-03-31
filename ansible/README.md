@@ -91,6 +91,25 @@ Configuration:
 * [templates/killbill/killbill.properties.j2](templates/killbill/killbill.properties.j2) is the main Kill Bill configuration file
 * [templates/tomcat/conf/setenv.sh.j2](templates/tomcat/conf/setenv.sh.j2) defines JVM level system properties
 
+## kaui.yml playbook
+
+Playbook to install Kaui:
+
+```
+ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME kaui.yml
+```
+
+It is expected that the `/var/lib/kaui/kpm.yml` file already exists on the target machine, for example:
+
+```
+---
+kaui:
+  plugins_dir: /var/lib/kaui
+  webapp_path: /var/lib/tomcat/webapps/ROOT.war
+```
+
+If Kill Bill and Kaui are installed on the same Tomcat, you can override the webapps directory via `kaui_webapps` (e.g. `-e kaui_webapps=webapps2` -- make sure this matches the value from the Kaui `kpm.yml`). You will need to configure manually the Tomcat configuration files though, as the playbooks assume a single webapp is deployed per Tomcat instance.
+
 ## migrations.yml playbook
 
 Playbook to manage Kill Bill (and its plugins) database migrations.

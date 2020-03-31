@@ -31,6 +31,14 @@
     - tomcat_pid is not defined or tomcat_pid.stat.exists == False
   tags: stop
 
+- name: check if war file exists
+  stat:
+    path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
+  register: war
+  tags:
+    - tomcat_cleanup
+    - stop
+
 - name: clean up Tomcat deployment files
   become: true
   become_user: "{{ tomcat_owner }}"
@@ -40,6 +48,7 @@
     - work/
   when:
     - catalina_home is defined
+    - war.stat.exists
   tags:
     - tomcat_cleanup
-  tags: stop
+    - stop
