@@ -549,3 +549,12 @@ org.killbill.billing.plugin.kpm.readTimeoutSec={{ lookup('env', 'KILLBILL_KPM_RE
 {% if lookup('env', 'KILLBILL_KPM_CONNECT_TIMEOUT_SEC') %}
 org.killbill.billing.plugin.kpm.connectTimeoutSec={{ lookup('env', 'KILLBILL_KPM_CONNECT_TIMEOUT_SEC') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS') %}
+org.killbill.cache.config.redis={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_URL') %}
+org.killbill.cache.config.redis.url={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_URL') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE') %}
+org.killbill.cache.config.redis.connectionMinimumIdleSize={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE') }}
+{% endif %}
