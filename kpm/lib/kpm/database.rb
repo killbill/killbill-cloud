@@ -44,7 +44,11 @@ module KPM
         @logger.error "\e[91;1mTransaction that fails to be executed (first 1,000 chars)\e[0m"
         # Queries can be really big (bulk imports)
         @logger.error "\e[91m#{query[0..1000]}\e[0m"
-        raise Interrupt, "Importing table #{table_name}...... \e[91;1m#{response}\e[0m"
+        if response.include?('Table') && response.include?('doesn\'t exist')
+          @logger.warn "Skipping unknown table #{table_name}...."
+        else
+          raise Interrupt, "Importing table #{table_name}...... \e[91;1m#{response}\e[0m"
+        end
       end
 
       if response.include? 'LAST_INSERT_ID'
