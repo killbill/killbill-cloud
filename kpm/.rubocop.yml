@@ -68,3 +68,6 @@ Style/NumericPredicate:
 # Ruby 2.3+ only
 Style/SafeNavigation:
   Enabled: false
+
+Style/GuardClause:
+  Enabled: false
