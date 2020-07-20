@@ -195,6 +195,7 @@ The following environment variables will populate the default `killbill.properti
 * `KILLBILL_UTIL_BROADCAST_RATE` (default `5s`)
 * `KILLBILL_CACHE_CONFIG_REDIS` (default `false`)
 * `KILLBILL_CACHE_CONFIG_REDIS_URL` (default `redis://127.0.0.1:6379`)
+* `KILLBILL_CACHE_CONFIG_REDIS_PASSWORD` (default `null`)
 * `KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE` (default `1`)
 
 [[kaui-variables]]

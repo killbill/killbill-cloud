@@ -555,6 +555,9 @@ org.killbill.cache.config.redis={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS') 
 {% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_URL') %}
 org.killbill.cache.config.redis.url={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_URL') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_PASSWORD') %}
+org.killbill.cache.config.redis.password={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_PASSWORD') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE') %}
 org.killbill.cache.config.redis.connectionMinimumIdleSize={{ lookup('env', 'KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE') }}
 {% endif %}
