@@ -21,4 +21,7 @@ export CATALINA_OPTS="$CATALINA_OPTS
 {% if lookup('env', 'KAUI_CONFIG_DAO_USER') %}
                       -Dkaui.db.username={{ lookup('env', 'KAUI_CONFIG_DAO_USER') }}
 {% endif %}
+{% if lookup('env', 'KAUI_ROOT_USERNAME') %}
+                      -Dkaui.root_username={{ lookup('env', 'KAUI_ROOT_USERNAME') }}
+{% endif %}
                       {{ kaui_system_properties }}"
