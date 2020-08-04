@@ -245,3 +245,18 @@ Notes:
 
 * You can override that behavior with the `--force-download` switch
 * When `--force-download` is specified (`false` by default), network access to a Nexus instance is required. Otherwise, downloads are idempotent even if no outbound networking is allowed (on initial download, the Nexus metadata is cached in the `sha1.yml` file which is re-used on subsequent installation if no outbound networking is allowed -- by default, KPM will try to get the latest metadata from Nexus though)
+
+[[gh-packages]]
+### GitHub Packages
+
+KPM was initially designed to work against Sonatype. Starting with version 0.9.0, experimental support for GitHub packages has been added:
+
+....
+kpm install_java_plugin acme:plugin \
+        --overrides url:https://maven.pkg.github.com/acme/plugin token:<TOKEN> \
+        --group-id com.acme \
+        --artifact-id plugin \
+        --version 0.0.1
+....
+
+Replace `TOKEN` with a GitHub personal access token.
