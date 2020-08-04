@@ -29,7 +29,7 @@ describe KPM::TenantConfig do
       end
 
       it 'when initialized with options' do
-        tenant_config_class.should be_an_instance_of(KPM::TenantConfig)
+        expect(tenant_config_class).to be_an_instance_of(KPM::TenantConfig)
         expect(tenant_config_class.instance_variable_get(:@killbill_api_key)).to eq(killbill_api_key)
         expect(tenant_config_class.instance_variable_get(:@killbill_api_secret)).to eq(killbill_api_secret)
         expect(tenant_config_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
@@ -49,8 +49,8 @@ describe KPM::TenantConfig do
 
       # get created tenant config
       export_file = tenant_config_class.export(key)
-      expect(File.exist?(export_file)).to be_true
-      expect(File.readlines(export_file).grep(/#{key}/)).to be_true
+      expect(File.exist?(export_file)).to be_truthy
+      expect(File.readlines(export_file).grep(/#{key}/)).to be_truthy
 
       # remove created tenant config
       KillBillClient::Model::Tenant.delete_tenant_user_key_value(key, user, nil, nil, options)

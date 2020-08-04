@@ -33,7 +33,7 @@ module KPM
       sha1_file = "#{bundles_dir}/#{sha1_filename}"
       sha1_checker = Sha1Checker.from_file(sha1_file)
 
-      all_plugins.keys.each do |cur_plugin_name|
+      all_plugins.each_key do |cur_plugin_name|
         cur = all_plugins[cur_plugin_name]
 
         sha1_checker.all_sha1.each do |e|
@@ -52,7 +52,7 @@ module KPM
 
     def add_plugin_identifier_info(plugins, all_plugins)
       plugins_manager = PluginsManager.new(plugins, @logger)
-      all_plugins.keys.each do |cur|
+      all_plugins.each_key do |cur|
         plugin_key, entry = plugins_manager.get_identifier_key_and_entry(cur)
         all_plugins[cur][:plugin_key] = plugin_key
         all_plugins[cur][:group_id] = entry ? entry['group_id'] : nil

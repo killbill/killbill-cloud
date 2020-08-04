@@ -37,7 +37,7 @@ describe KPM::Account do
       end
 
       it 'when initialized with options' do
-        account_class.should be_an_instance_of(KPM::Account)
+        expect(account_class).to be_an_instance_of(KPM::Account)
         expect(account_class.instance_variable_get(:@killbill_api_key)).to eq(killbill_api_key)
         expect(account_class.instance_variable_get(:@killbill_api_secret)).to eq(killbill_api_secret)
         expect(account_class.instance_variable_get(:@killbill_user)).to eq(killbill_user)
@@ -58,7 +58,7 @@ describe KPM::Account do
 
       it 'when account id found' do
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
-        expect { account_class.send(:fetch_export_data, account_id) }.not_to raise_error(Interrupt, 'Account id not found')
+        expect { account_class.send(:fetch_export_data, account_id) }.not_to raise_error
         expect(account_class.send(:fetch_export_data, account_id)).to match(account_id)
       end
     end
@@ -99,12 +99,12 @@ describe KPM::Account do
 
     context 'when exporting data' do
       it 'when file created' do
-        expect(File.exist?(account_class.send(:export, dummy_data))).to be_true
+        expect(File.exist?(account_class.send(:export, dummy_data))).to be_truthy
       end
 
       it 'when file contains account record' do
-        expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{table_name}/)).to be_true
-        expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{cols_names}/)).to be_true
+        expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{table_name}/)).to be_truthy
+        expect(File.readlines(account_class.send(:export, dummy_data)).grep(/#{cols_names}/)).to be_truthy
       end
     end
   end
@@ -119,13 +119,13 @@ describe KPM::Account do
 
       it 'when file created' do
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
-        expect(File.exist?(account_class.export_data(account_id))).to be_true
+        expect(File.exist?(account_class.export_data(account_id))).to be_truthy
       end
 
       it 'when file contains account record' do
         expect(account_id).to match(/\w{8}(-\w{4}){3}-\w{12}?/)
-        expect(File.readlines(account_class.export_data(account_id)).grep(/#{table_name}/)).to be_true
-        expect(File.readlines(account_class.export_data(account_id)).grep(/#{cols_names}/)).to be_true
+        expect(File.readlines(account_class.export_data(account_id)).grep(/#{table_name}/)).to be_truthy
+        expect(File.readlines(account_class.export_data(account_id)).grep(/#{cols_names}/)).to be_truthy
       end
     end
   end
@@ -155,7 +155,7 @@ describe KPM::Account do
     include_context 'account'
 
     it 'when valid date value' do
-      expect { DateTime.parse(account_class.send(:fix_dates, '2017-04-05T15:01:39.000+0000')) }.not_to raise_error(ArgumentError)
+      expect { DateTime.parse(account_class.send(:fix_dates, '2017-04-05T15:01:39.000+0000')) }.not_to raise_error
     end
 
     it 'when valid date value match YYYY-MM-DD HH:MM:SS' do
@@ -307,7 +307,7 @@ describe KPM::Account do
         File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
-        expect { account_class.import_data(dummy_data_file, nil, true, false, true) }.not_to raise_error(Interrupt)
+        expect { account_class.import_data(dummy_data_file, nil, true, false, true) }.not_to raise_error
 
         verify_data(dummy_account_id)
 
@@ -321,7 +321,7 @@ describe KPM::Account do
         File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
-        expect { account_class.import_data(dummy_data_file, nil, true, false, false) }.not_to raise_error(Interrupt)
+        expect { account_class.import_data(dummy_data_file, nil, true, false, false) }.not_to raise_error
 
         verify_data(dummy_account_id)
 
@@ -335,7 +335,7 @@ describe KPM::Account do
         File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
-        expect { account_class.import_data(dummy_data_file, 10, true, false, true) }.not_to raise_error(Interrupt)
+        expect { account_class.import_data(dummy_data_file, 10, true, false, true) }.not_to raise_error
 
         verify_data(dummy_account_id)
 
@@ -349,7 +349,7 @@ describe KPM::Account do
         File.open(dummy_data_file, 'w') do |io|
           io.puts(dummy_data)
         end
-        expect { account_class.import_data(dummy_data_file, 10, true, true, true) }.not_to raise_error(Interrupt)
+        expect { account_class.import_data(dummy_data_file, 10, true, true, true) }.not_to raise_error
         new_account_id = account_class.instance_variable_get(:@tables_id)
 
         verify_data(new_account_id['accounts_id'])

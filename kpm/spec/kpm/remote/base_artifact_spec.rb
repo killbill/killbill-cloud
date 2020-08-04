@@ -36,10 +36,12 @@ describe KPM::BaseArtifact do
       # Verify the download is skipped gracefully when Nexus isn't reachable
       test_download dir, 'foo-oss.pom.xml', true, false, sha1_file, nexus_down
       # Verify the download fails when Nexus isn't reachable and force_download is set
-      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_error
+      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
       # Verify the download fails when Nexus isn't reachable and the Nexus cache is empty
-      KPM::Sha1Checker.from_file(sha1_file).cache_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33', nil)
-      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_error
+      expect(KPM::Sha1Checker.from_file(sha1_file).artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')).to_not be_nil
+      KPM::Sha1Checker.from_file(sha1_file).remove_entry!('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')
+      expect(KPM::Sha1Checker.from_file(sha1_file).artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')).to be_nil
+      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
     end
   end
 
@@ -53,14 +55,14 @@ describe KPM::BaseArtifact do
 
     Dir.mktmpdir do |dir|
       info = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, dir)
-      info[:file_name].should be_nil
+      expect(info[:file_name]).to be_nil
 
       files_in_dir = Dir[info[:file_path] + '/*']
-      files_in_dir.size.should eq 20
+      expect(files_in_dir.size).to eq 20
 
-      File.file?(info[:file_path] + '/killbill-osgi-bundles-jruby-0.11.3.jar').should be_true
+      expect(File.file?(info[:file_path] + '/killbill-osgi-bundles-jruby-0.11.3.jar')).to be_truthy
 
-      info[:bundle_dir].should eq info[:file_path]
+      expect(info[:bundle_dir]).to eq info[:file_path]
     end
   end
 
@@ -75,11 +77,11 @@ describe KPM::BaseArtifact do
 
     Dir.mktmpdir do |dir|
       first_take = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, version, dir)
-      File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar').should be_true
+      expect(File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar')).to be_truthy
 
       second_take = KPM::BaseArtifact.pull(@logger, group_id, artifact_id, packaging, classifier, second_bundle_version, dir)
-      File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar').should be_false
-      File.file?(second_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.10.jar').should be_true
+      expect(File.file?(first_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.2.jar')).to be_falsey
+      expect(File.file?(second_take[:file_path] + '/killbill-platform-osgi-bundles-jruby-0.36.10.jar')).to be_truthy
     end
   end
 
@@ -87,8 +89,8 @@ describe KPM::BaseArtifact do
     path = filename.nil? ? dir : dir + '/' + filename
 
     info = KPM::BaseArtifact.pull(@logger, 'org.kill-bill.billing', 'killbill-oss-parent', 'pom', nil, '0.143.33', path, sha1_file, force_download, true, overrides, true)
-    info[:file_name].should eq(filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
-    info[:skipped].should eq verify_is_skipped
-    info[:size].should eq File.size(info[:file_path]) unless info[:skipped]
+    expect(info[:file_name]).to eq(filename.nil? ? "killbill-oss-parent-#{info[:version]}.pom" : filename)
+    expect(info[:skipped]).to eq verify_is_skipped
+    expect(info[:size]).to eq File.size(info[:file_path]) unless info[:skipped]
   end
 end

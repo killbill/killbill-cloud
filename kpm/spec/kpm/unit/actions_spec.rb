@@ -8,7 +8,7 @@ describe KPM::NexusFacade::Actions do
   let(:nexus_mock) { double(KPM::NexusFacade::NexusApiCallsV2) }
 
   before do
-    KPM::NexusFacade::NexusApiCallsV2.stub(:new).and_return(nexus_mock)
+    allow(KPM::NexusFacade::NexusApiCallsV2).to receive(:new).and_return(nexus_mock)
   end
 
   context 'when Nexus throws a non-retryable exception' do
@@ -45,7 +45,7 @@ describe KPM::NexusFacade::Actions do
         raise OpenSSL::SSL::SSLErrorWaitReadable if calls < 2
 
         true
-      end).to be_true
+      end).to be_truthy
       expect(calls).to eq(2)
     end
   end

@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubyzip', '~>1.2.0'
   s.add_dependency 'thor', '~> 0.19.1'
 
-  s.add_development_dependency 'rake', '>= 10.0.0', '< 11.0.0'
-  s.add_development_dependency 'rspec', '~> 2.12.0'
-  s.add_development_dependency 'rubocop', '~> 0.74.0' if RUBY_VERSION >= '2.3'
+  s.add_development_dependency 'rake', '~> 13.0'
+  s.add_development_dependency 'rspec', '~> 3.9'
+  s.add_development_dependency 'rubocop', '~> 0.88.0' if RUBY_VERSION >= '2.4'
 end

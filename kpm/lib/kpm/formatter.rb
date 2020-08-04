@@ -97,7 +97,7 @@ module KPM
       formatted += Kernel.format("#{format_string}\n", *labels_format_argument)
       formatted += "#{border}\n"
 
-      data.keys.each do |key|
+      data.each_key do |key|
         v = data[key]
 
         arguments = []
@@ -131,7 +131,7 @@ module KPM
       seen_labels = Set.new
 
       labels_format_argument = []
-      data.keys.each do |key|
+      data.each_key do |key|
         v = data[key]
         labels.each do |e|
           # sanitize entry at the same time

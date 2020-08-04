@@ -23,8 +23,8 @@ describe KPM::Installer do
       response = nil
       expect { response = installer.install }.to_not raise_exception
       response = JSON[response]
-      response['help'].should be_nil
-      response['killbill']['status'].should eq 'INSTALLED'
+      expect(response['help']).to be_nil
+      expect(response['killbill']['status']).to eq 'INSTALLED'
     end
   end
 
@@ -42,8 +42,8 @@ describe KPM::Installer do
       response = nil
       expect { response = installer.install }.to_not raise_exception
       response = JSON[response]
-      response['help'].should be_nil
-      response['kaui']['status'].should eq 'INSTALLED'
+      expect(response['help']).to be_nil
+      expect(response['kaui']['status']).to eq 'INSTALLED'
     end
   end
 
@@ -87,10 +87,10 @@ describe KPM::Installer do
 
       # Finally verify that for both (well behaved) ruby and java plugin, skipping the install will still correctly return the `:bundle_dir`
       info = installer.install_plugin('payment-test-plugin', nil, 'org.kill-bill.billing.plugin.ruby', 'payment-test-plugin', nil, nil, '1.8.7', plugins_dir)
-      info[:bundle_dir].should eq plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
+      expect(info[:bundle_dir]).to eq plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
 
       info = installer.install_plugin('analytics', nil, nil, nil, nil, nil, '0.7.1', plugins_dir)
-      info[:bundle_dir].should eq plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
+      expect(info[:bundle_dir]).to eq plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
     end
   end
 
@@ -110,7 +110,7 @@ describe KPM::Installer do
       plugins_dir + '/plugins/ruby/killbill-payment-test',
       plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
     ].each do |dir|
-      File.directory?(dir).should be_true
+      expect(File.directory?(dir)).to be_truthy
     end
 
     [
@@ -122,34 +122,34 @@ describe KPM::Installer do
       plugins_dir + '/plugins/java/stripe-plugin/7.0.0/stripe-plugin-7.0.0.jar',
       plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7/killbill.properties'
     ].each do |file|
-      File.file?(file).should be_true
+      expect(File.file?(file)).to be_truthy
     end
 
     plugin_identifiers = File.open(plugins_dir + '/plugins/plugin_identifiers.json', 'r') do |f|
       JSON.parse(f.read)
     end
 
-    plugin_identifiers.size.should eq 3
+    expect(plugin_identifiers.size).to eq 3
 
-    plugin_identifiers['analytics']['plugin_name'].should eq 'analytics-plugin'
-    plugin_identifiers['analytics']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
-    plugin_identifiers['analytics']['artifact_id'].should eq 'analytics-plugin'
-    plugin_identifiers['analytics']['packaging'].should eq 'jar'
-    plugin_identifiers['analytics']['version'].should eq '0.7.1'
-    plugin_identifiers['analytics']['language'].should eq 'java'
+    expect(plugin_identifiers['analytics']['plugin_name']).to eq 'analytics-plugin'
+    expect(plugin_identifiers['analytics']['group_id']).to eq 'org.kill-bill.billing.plugin.java'
+    expect(plugin_identifiers['analytics']['artifact_id']).to eq 'analytics-plugin'
+    expect(plugin_identifiers['analytics']['packaging']).to eq 'jar'
+    expect(plugin_identifiers['analytics']['version']).to eq '0.7.1'
+    expect(plugin_identifiers['analytics']['language']).to eq 'java'
 
-    plugin_identifiers['stripe']['plugin_name'].should eq 'stripe-plugin'
-    plugin_identifiers['stripe']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
-    plugin_identifiers['stripe']['artifact_id'].should eq 'stripe-plugin'
-    plugin_identifiers['stripe']['packaging'].should eq 'jar'
-    plugin_identifiers['stripe']['version'].should eq '7.0.0'
-    plugin_identifiers['stripe']['language'].should eq 'java'
+    expect(plugin_identifiers['stripe']['plugin_name']).to eq 'stripe-plugin'
+    expect(plugin_identifiers['stripe']['group_id']).to eq 'org.kill-bill.billing.plugin.java'
+    expect(plugin_identifiers['stripe']['artifact_id']).to eq 'stripe-plugin'
+    expect(plugin_identifiers['stripe']['packaging']).to eq 'jar'
+    expect(plugin_identifiers['stripe']['version']).to eq '7.0.0'
+    expect(plugin_identifiers['stripe']['language']).to eq 'java'
 
-    plugin_identifiers['payment-test-plugin']['plugin_name'].should eq 'killbill-payment-test'
-    plugin_identifiers['payment-test-plugin']['group_id'].should eq 'org.kill-bill.billing.plugin.ruby'
-    plugin_identifiers['payment-test-plugin']['artifact_id'].should eq 'payment-test-plugin'
-    plugin_identifiers['payment-test-plugin']['packaging'].should eq 'tar.gz'
-    plugin_identifiers['payment-test-plugin']['version'].should eq '1.8.7'
-    plugin_identifiers['payment-test-plugin']['language'].should eq 'ruby'
+    expect(plugin_identifiers['payment-test-plugin']['plugin_name']).to eq 'killbill-payment-test'
+    expect(plugin_identifiers['payment-test-plugin']['group_id']).to eq 'org.kill-bill.billing.plugin.ruby'
+    expect(plugin_identifiers['payment-test-plugin']['artifact_id']).to eq 'payment-test-plugin'
+    expect(plugin_identifiers['payment-test-plugin']['packaging']).to eq 'tar.gz'
+    expect(plugin_identifiers['payment-test-plugin']['version']).to eq '1.8.7'
+    expect(plugin_identifiers['payment-test-plugin']['language']).to eq 'ruby'
   end
 end

@@ -13,10 +13,10 @@ describe KPM::TomcatManager do
       manager = KPM::TomcatManager.new(dir, @logger)
 
       tomcat_path = manager.download
-      tomcat_path.should_not be_nil
+      expect(tomcat_path).not_to be_nil
 
       root_war_path = manager.setup
-      root_war_path.should_not be_nil
+      expect(root_war_path).not_to be_nil
     end
   end
 end

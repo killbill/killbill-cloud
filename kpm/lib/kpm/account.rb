@@ -316,9 +316,10 @@ module KPM
     end
 
     def replace_boolean(value)
-      if value.to_s == 'true'
+      case value.to_s
+      when 'true'
         1
-      elsif value.to_s == 'false'
+      when 'false'
         0
       else
         value

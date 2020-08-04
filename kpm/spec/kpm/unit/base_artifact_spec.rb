@@ -14,16 +14,16 @@ describe KPM::BaseArtifact do
     Dir.mktmpdir do |dir|
       info = KPM::BaseArtifact.pull_from_fs(@logger, file_path, dir)
 
-      info[:skipped].should be_false
-      info[:is_tgz].should be_false
-      info[:repository_path].should eq file_path
-      info[:dir_name].should eq dir
-      info[:bundle_dir].should eq dir
-      info[:file_name].should eq 'sha1_test.yml'
+      expect(info[:skipped]).to be_falsey
+      expect(info[:is_tgz]).to be_falsey
+      expect(info[:repository_path]).to eq file_path
+      expect(info[:dir_name]).to eq dir
+      expect(info[:bundle_dir]).to eq dir
+      expect(info[:file_name]).to eq 'sha1_test.yml'
 
       files_in_dir = Dir[dir + '/*']
-      files_in_dir.size.should eq 1
-      files_in_dir[0].should eq info[:file_path]
+      expect(files_in_dir.size).to eq 1
+      expect(files_in_dir[0]).to eq info[:file_path]
     end
   end
 
@@ -83,11 +83,11 @@ describe KPM::BaseArtifact do
 
     KPM::BaseArtifact.send('populate_fs_info', info, specified_destination_path)
 
-    info[:repository_path].should eq repository_path
-    info[:is_tgz].should eq is_tgz
-    info[:version].should eq version
-    info[:dir_name].should eq expected_dir_name
-    info[:file_name].should eq expected_file_name
-    info[:file_path].should eq expected_file_path
+    expect(info[:repository_path]).to eq repository_path
+    expect(info[:is_tgz]).to eq is_tgz
+    expect(info[:version]).to eq version
+    expect(info[:dir_name]).to eq expected_dir_name
+    expect(info[:file_name]).to eq expected_file_name
+    expect(info[:file_path]).to eq expected_file_path
   end
 end

@@ -21,7 +21,7 @@ describe KPM::NexusFacade, skip_me_if_nil: ENV['TOKEN'].nil? do
 
   it {
     # Not implemented
-    expect { nexus_remote.search_for_artifacts(coordinates) }.to raise_exception
+    expect { nexus_remote.search_for_artifacts(coordinates) }.to raise_exception(NoMethodError, 'GitHub Packages has no search support')
   }
 
   it {

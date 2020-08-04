@@ -483,7 +483,7 @@ module KPM
         desc 'account', 'export/import accounts'
         def account
           config_file = nil
-          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://[\S]+}.match(options[:killbill_url]).nil?
+          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://\S+}.match(options[:killbill_url]).nil?
 
           raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>' if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
 
@@ -535,7 +535,7 @@ module KPM
                       desc: 'Killbill URL ex. http://127.0.0.1:8080'
         desc 'tenant_config', 'export all tenant-level configs.'
         def tenant_config
-          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://[\S]+}.match(options[:killbill_url]).nil?
+          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://\S+}.match(options[:killbill_url]).nil?
 
           raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>' if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
 
@@ -608,7 +608,7 @@ module KPM
         def diagnostic
           raise Interrupt, '--account_export,  please provide a valid account id' if options[:account_export] && options[:account_export] == 'account_export'
 
-          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://[\S]+}.match(options[:killbill_url]).nil?
+          raise Interrupt, '--killbill_url, required format -> http(s)://something' if options[:killbill_url] && %r{https?://\S+}.match(options[:killbill_url]).nil?
 
           raise Interrupt, '--killbill_api_credentials, required format -> <api_key> <api_secrets>' if options[:killbill_api_credentials] && options[:killbill_api_credentials].size != 2
 

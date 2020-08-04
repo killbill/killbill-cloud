@@ -81,7 +81,7 @@ module KPM
       }
 
       begin
-        return KillBillClient::Model::Tenant.search_tenant_config(key_prefix, options)
+        KillBillClient::Model::Tenant.search_tenant_config(key_prefix, options)
       rescue KillBillClient::API::Unauthorized
         raise ArgumentError, "Unable to export tenant details, wrong credentials? username=#{@killbill_user}, password=#{mask(@killbill_password)}, api_key=#{@killbill_api_key}, api_secret=#{mask(@killbill_api_secret)}"
       end

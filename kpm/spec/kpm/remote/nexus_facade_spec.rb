@@ -51,7 +51,7 @@ describe KPM::NexusFacade do
     destination = Dir.mktmpdir('artifact')
     expect { response = nexus_remote.pull_artifact(coordinates, destination) }.not_to raise_exception
     destination = File.join(File.expand_path(destination), response[:file_name])
-    expect(File.exist?(destination)).to be_true
+    expect(File.exist?(destination)).to be_truthy
   end
 
   it 'when pull artifact with classifier' do
@@ -59,6 +59,6 @@ describe KPM::NexusFacade do
     destination = Dir.mktmpdir('artifact')
     expect { response = nexus_remote.pull_artifact(coordinates_with_classifier, destination) }.not_to raise_exception
     destination = File.join(File.expand_path(destination), response[:file_name])
-    expect(File.exist?(destination)).to be_true
+    expect(File.exist?(destination)).to be_truthy
   end
 end
