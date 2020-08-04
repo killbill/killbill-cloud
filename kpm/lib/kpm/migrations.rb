@@ -67,7 +67,7 @@ module KPM
 
         sql = nil
         unless name_only
-          blob_metadata = get_as_json("#{entry['url']}")
+          blob_metadata = get_as_json((entry['url']).to_s)
           sql = decode(blob_metadata['content'], blob_metadata['encoding'])
         end
 

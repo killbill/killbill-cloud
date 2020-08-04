@@ -48,11 +48,11 @@ describe KPM::KillbillServerArtifact do
       KPM::KillbillServerArtifact.info('0.15.9', sha1_file, false, nil, nexus_down)
 
       # Verify the download fails when Nexus isn't reachable and force_download is set
-      expect { KPM::KillbillServerArtifact.info('0.15.9', sha1_file, true, nil, nexus_down) }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
+      expect { KPM::KillbillServerArtifact.info('0.15.9', sha1_file, true, nil, nexus_down) }.to raise_exception(SocketError, /(Failed to open TCP connection to does.not.exist:443|getaddrinfo)/)
 
       # Verify the download fails when Nexus isn't reachable and the Nexus cache is empty
       KPM::Sha1Checker.from_file(sha1_file).cache_killbill_info('0.15.9', nil)
-      expect { KPM::KillbillServerArtifact.info('0.15.9', sha1_file, false, nil, nexus_down) }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
+      expect { KPM::KillbillServerArtifact.info('0.15.9', sha1_file, false, nil, nexus_down) }.to raise_exception(SocketError, /(Failed to open TCP connection to does.not.exist:443|getaddrinfo)/)
     end
   end
 end

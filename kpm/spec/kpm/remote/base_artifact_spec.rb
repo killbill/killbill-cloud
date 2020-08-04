@@ -36,12 +36,12 @@ describe KPM::BaseArtifact do
       # Verify the download is skipped gracefully when Nexus isn't reachable
       test_download dir, 'foo-oss.pom.xml', true, false, sha1_file, nexus_down
       # Verify the download fails when Nexus isn't reachable and force_download is set
-      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
+      expect { test_download dir, 'foo-oss.pom.xml', nil, true, sha1_file, nexus_down }.to raise_exception(SocketError, /(Failed to open TCP connection to does.not.exist:443|getaddrinfo)/)
       # Verify the download fails when Nexus isn't reachable and the Nexus cache is empty
       expect(KPM::Sha1Checker.from_file(sha1_file).artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')).to_not be_nil
       KPM::Sha1Checker.from_file(sha1_file).remove_entry!('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')
       expect(KPM::Sha1Checker.from_file(sha1_file).artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:0.143.33')).to be_nil
-      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_exception(SocketError, /Failed to open TCP connection to does.not.exist:443/)
+      expect { test_download dir, 'foo-oss.pom.xml', nil, false, sha1_file, nexus_down }.to raise_exception(SocketError, /(Failed to open TCP connection to does.not.exist:443|getaddrinfo)/)
     end
   end
 
