@@ -13,6 +13,7 @@
     extra_opts: [--strip-components=1]
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    remote_src: yes
   tags: native
 
 - name: configure native libraries
