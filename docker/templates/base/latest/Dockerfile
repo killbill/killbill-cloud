@@ -4,6 +4,9 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 USER root
 
+ENV LC_CTYPE en_US.UTF-8
+ENV LANG en_US.UTF-8
+
 # Install Kill Bill dependencies and useful tools
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
