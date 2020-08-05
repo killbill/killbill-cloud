@@ -78,7 +78,7 @@ ENV ANSIBLE_OPTS -i localhost, \
 ENV NEXUS_URL https://oss.sonatype.org
 ENV NEXUS_REPOSITORY releases
 ENV KPM_INSTALL_DIR /opt
-ENV KPM_VERSION 0.8.1
+ENV KPM_VERSION 0.9.0
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
                      -e nexus_url=$NEXUS_URL \
