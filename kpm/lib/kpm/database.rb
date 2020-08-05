@@ -86,9 +86,10 @@ module KPM
         rows = []
         table[:rows].each do |row|
           rows << row.map do |value|
-            if value.is_a?(Symbol)
+            case value
+            when Symbol
               value.to_s
-            elsif value.is_a?(Blob)
+            when Blob
               value.value
             else
               escaped_value = value.to_s.gsub(/['"]/, "'" => "\\'", '"' => '\\"')

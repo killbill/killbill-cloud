@@ -65,7 +65,7 @@ describe KPM::BaseInstaller do
       { file_path: '/Somewhere/xxx-foo/target/xxx-foo-abc-SNAPSHOT.jar', expected: 'xxx-foo' },
       { file_path: '/Somewhere/xxx-foo/target/xxx-foo-abc.jar', expected: 'xxx-foo' }
     ].each do |test|
-      KPM::Utils.get_plugin_name_from_file_path(test[:file_path]).should eq test[:expected]
+      expect(KPM::Utils.get_plugin_name_from_file_path(test[:file_path])).to eq test[:expected]
     end
   end
 
@@ -76,16 +76,16 @@ describe KPM::BaseInstaller do
 
     plugin_identifiers = read_plugin_identifiers(plugins_dir)
 
-    plugin_identifiers.size.should eq 1
+    expect(plugin_identifiers.size).to eq 1
 
-    plugin_identifiers['analytics']['plugin_name'].should eq 'analytics-plugin'
-    plugin_identifiers['analytics']['group_id'].should eq 'org.kill-bill.billing.plugin.java'
-    plugin_identifiers['analytics']['artifact_id'].should eq 'analytics-plugin'
-    plugin_identifiers['analytics']['packaging'].should eq 'jar'
-    plugin_identifiers['analytics']['version'].should eq '0.7.1'
-    plugin_identifiers['analytics']['language'].should eq 'java'
+    expect(plugin_identifiers['analytics']['plugin_name']).to eq 'analytics-plugin'
+    expect(plugin_identifiers['analytics']['group_id']).to eq 'org.kill-bill.billing.plugin.java'
+    expect(plugin_identifiers['analytics']['artifact_id']).to eq 'analytics-plugin'
+    expect(plugin_identifiers['analytics']['packaging']).to eq 'jar'
+    expect(plugin_identifiers['analytics']['version']).to eq '0.7.1'
+    expect(plugin_identifiers['analytics']['language']).to eq 'java'
 
-    File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt').should be_false
+    expect(File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt')).to be_falsey
   end
 
   def check_uninstallation(plugins_dir)
@@ -93,9 +93,9 @@ describe KPM::BaseInstaller do
 
     plugin_identifiers = read_plugin_identifiers(plugins_dir)
 
-    plugin_identifiers.size.should eq 0
+    expect(plugin_identifiers.size).to eq 0
 
-    File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt').should be_true
+    expect(File.file?(plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp/disabled.txt')).to be_truthy
   end
 
   def common_checks(plugins_dir)
@@ -107,14 +107,14 @@ describe KPM::BaseInstaller do
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1/tmp'
     ].each do |dir|
-      File.directory?(dir).should be_true
+      expect(File.directory?(dir)).to be_truthy
     end
 
     [
       plugins_dir + '/plugins/plugin_identifiers.json',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar'
     ].each do |file|
-      File.file?(file).should be_true
+      expect(File.file?(file)).to be_truthy
     end
   end
 

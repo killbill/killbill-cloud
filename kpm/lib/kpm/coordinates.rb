@@ -24,11 +24,12 @@ module KPM
       def get_coordinate_map(entry)
         parts = entry.split(':')
         length = parts.size
-        if length == 3
+        case length
+        when 3
           { group_id: parts[0], artifact_id: parts[1], packaging: parts[2] }
-        elsif length == 4
+        when 4
           { group_id: parts[0], artifact_id: parts[1], packaging: parts[2], version: parts[3] }
-        elsif length == 5
+        when 5
           { group_id: parts[0], artifact_id: parts[1], packaging: parts[2], classifier: parts[3], version: parts[4] }
         end
       end

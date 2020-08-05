@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'nexus_api_calls_v2'
-# require_relative 'nexus_api_calls_v3'
+require_relative 'github_api_calls'
 
 module KPM
   module NexusFacade
@@ -29,10 +29,7 @@ module KPM
 
         @logger = logger
 
-        # this is where the version is verified
-        # example if
-        # @nexus_api_call = overrides['version'] == '3' ? NexusApiCallsV3.new(overrides, ssl_verify) : NexusApiCallsV2.new(overrides, ssl_verify)
-        @nexus_api_call = NexusApiCallsV2.new(overrides, ssl_verify, logger)
+        @nexus_api_call = overrides[:url].start_with?('https://maven.pkg.github.com') ? GithubApiCalls.new(overrides, ssl_verify, logger) : NexusApiCallsV2.new(overrides, ssl_verify, logger)
       end
 
       def pull_artifact(coordinates, destination = nil)

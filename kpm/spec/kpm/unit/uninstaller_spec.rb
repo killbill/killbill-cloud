@@ -29,16 +29,16 @@ describe KPM::Uninstaller do
   let(:version2) { '2.0' }
 
   before do
-    KPM::PluginsManager.stub(:new).and_return(plugins_manager_mock)
-    KPM::Sha1Checker.stub(:from_file).and_return(sha1_checker_mock)
+    allow(KPM::PluginsManager).to receive(:new).and_return(plugins_manager_mock)
+    allow(KPM::Sha1Checker).to receive(:from_file).and_return(sha1_checker_mock)
 
     # Calls by the Inspector
-    plugins_manager_mock.stub(:get_identifier_key_and_entry) do
+    allow(plugins_manager_mock).to receive(:get_identifier_key_and_entry) do
       [plugin_key, { 'group_id' => plugin_info[:group_id],
                      'artifact_id' => plugin_info[:artifact_id],
                      'packaging' => plugin_info[:packaging] }]
     end
-    sha1_checker_mock.stub(:all_sha1) { {} }
+    allow(sha1_checker_mock).to receive(:all_sha1) { {} }
   end
 
   context 'utility methods' do
@@ -94,33 +94,33 @@ describe KPM::Uninstaller do
     end
 
     it 'uninstalls if user confirms action' do
-      KPM.ui.should_receive(:ask).and_return('y')
+      expect(KPM.ui).to receive(:ask).and_return('y')
 
-      plugins_manager_mock.should_receive(:remove_plugin_identifier_key).with(plugin_key)
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version2}")
+      expect(plugins_manager_mock).to receive(:remove_plugin_identifier_key).with(plugin_key)
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version2}")
 
-      uninstaller.uninstall_plugin(plugin_name).should be_true
+      expect(uninstaller.uninstall_plugin(plugin_name)).to be_truthy
     end
 
     it 'does nothing if user cancels' do
-      KPM.ui.should_receive(:ask).and_return('n')
+      expect(KPM.ui).to receive(:ask).and_return('n')
 
-      uninstaller.uninstall_plugin(plugin_name).should be_false
+      expect(uninstaller.uninstall_plugin(plugin_name)).to be_falsey
     end
 
     it 'uninstalls all plugins without confirmation if the force option is given' do
-      plugins_manager_mock.should_receive(:remove_plugin_identifier_key).with(plugin_key)
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version2}")
+      expect(plugins_manager_mock).to receive(:remove_plugin_identifier_key).with(plugin_key)
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version2}")
 
-      uninstaller.uninstall_plugin(plugin_name, true).should be_true
+      expect(uninstaller.uninstall_plugin(plugin_name, true)).to be_truthy
     end
 
     it 'uninstalls one version without confirmation if the force option is given' do
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version1}")
 
-      uninstaller.uninstall_plugin(plugin_name, true, version1).should be_true
+      expect(uninstaller.uninstall_plugin(plugin_name, true, version1)).to be_truthy
     end
 
     it 'raises an error when uninstalling a version that does not exist' do
@@ -134,21 +134,21 @@ describe KPM::Uninstaller do
     end
 
     it 'does not cleanup if dry-run is set' do
-      expect(uninstaller.uninstall_non_default_plugins(true)).to be_false
+      expect(uninstaller.uninstall_non_default_plugins(true)).to be_falsey
     end
 
     it 'does cleanup if dry-run isn\'t set' do
-      sha1_checker_mock.should_receive(:remove_entry!).with("group:artifact:jar:#{version1}")
+      expect(sha1_checker_mock).to receive(:remove_entry!).with("group:artifact:jar:#{version1}")
 
       plugin_info_copy = Marshal.load(Marshal.dump(plugin_info))
       expect(KPM::Inspector.new.inspect(destination)).to eq({ plugin_name => plugin_info_copy })
 
-      expect(uninstaller.uninstall_non_default_plugins(false)).to be_true
+      expect(uninstaller.uninstall_non_default_plugins(false)).to be_truthy
       plugin_info_copy[:versions].delete_at(0)
       expect(KPM::Inspector.new.inspect(destination)).to eq({ plugin_name => plugin_info_copy })
 
       # Second time is a no-op
-      expect(uninstaller.uninstall_non_default_plugins).to be_false
+      expect(uninstaller.uninstall_non_default_plugins).to be_falsey
     end
   end
 end

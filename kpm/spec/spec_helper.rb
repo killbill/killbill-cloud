@@ -10,7 +10,7 @@ require 'yaml'
 require 'killbill_client'
 
 RSpec.configure do |config|
-  config.color_enabled = true
+  config.color_mode    = :on
   config.tty           = true
   config.formatter     = 'documentation'
   config.filter_run_excluding skip_me_if_nil: true

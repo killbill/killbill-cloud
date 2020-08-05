@@ -36,9 +36,9 @@ describe KPM::Sha1Checker do
   it 'should create intermediate directories' do
     Dir.mktmpdir do |dir|
       config = File.join(dir, 'foo', 'bar', 'baz', 'sha1.yml')
-      expect(File.exist?(config)).to be_false
+      expect(File.exist?(config)).to be_falsey
       KPM::Sha1Checker.from_file(config)
-      expect(File.exist?(config)).to be_true
+      expect(File.exist?(config)).to be_truthy
     end
   end
 

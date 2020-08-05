@@ -54,7 +54,7 @@ module KPM
 
     def for_version(version = @from_version, name_only = false, migrations_to_skip = Set.new)
       @logger.info("Looking for migrations repository=#{@repository}, version=#{version}")
-      metadata = get_as_json("https://api.github.com/repos/#{@repository}/git/trees/#{version}?recursive=1&access_token=#{@oauth_token}")
+      metadata = get_as_json("https://api.github.com/repos/#{@repository}/git/trees/#{version}?recursive=1")
 
       migrations = []
       metadata['tree'].each do |entry|
@@ -67,7 +67,7 @@ module KPM
 
         sql = nil
         unless name_only
-          blob_metadata = get_as_json("#{entry['url']}?access_token=#{@oauth_token}")
+          blob_metadata = get_as_json((entry['url']).to_s)
           sql = decode(blob_metadata['content'], blob_metadata['encoding'])
         end
 
@@ -81,8 +81,22 @@ module KPM
     end
 
     def get_as_json(url)
-      raw = URI.parse(url).read
-      JSON.parse(raw)
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == 'https'
+
+      path = uri.path || '/'
+      path = "#{path}?#{uri.query}" unless uri.query.nil?
+      request = Net::HTTP::Get.new(path)
+      request['Authorization'] = "token #{@oauth_token}" unless @oauth_token.nil?
+
+      response = http.request(request)
+      case response.code
+      when '200'
+        JSON.parse(response.body)
+      else
+        raise "Unable to download #{url}: #{response.code}"
+      end
     end
 
     def decode(content, encoding)

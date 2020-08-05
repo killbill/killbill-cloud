@@ -4,6 +4,15 @@
 Gemspec/RequiredRubyVersion:
   Enabled: false
 
+Layout/LineLength:
+  Enabled: false
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 # Alternative?
 Gemspec/RubyVersionGlobalsUsage:
   Enabled: false
@@ -11,7 +20,22 @@ Gemspec/RubyVersionGlobalsUsage:
 Layout/DefEndAlignment:
   AutoCorrect: true
 
-Lint/HandleExceptions:
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Lint/SuppressedException:
   AllowComments: true
 
 Metrics/AbcSize:
@@ -29,9 +53,6 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
-Metrics/LineLength:
-  Enabled: false
-
 Metrics/MethodLength:
   Enabled: false
 
@@ -45,10 +66,6 @@ Metrics/PerceivedComplexity:
   Enabled: false
 
 Security/YAMLLoad:
-  Enabled: false
-
-# We must support old Rubies
-Style/BracesAroundHashParameters:
   Enabled: false
 
 Style/Documentation:
@@ -71,3 +88,51 @@ Style/SafeNavigation:
 
 Style/GuardClause:
   Enabled: false
+
+Style/AccessorGrouping:
+  Enabled: true
+
+Style/ArrayCoercion:
+  Enabled: true
+
+Style/BisectedAttrAccessor:
+  Enabled: true
+
+Style/CaseLikeIf:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/HashAsLastArrayItem:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashLikeCase:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/RedundantAssignment:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+Style/RedundantFileExtensionInRequire:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
