@@ -5,7 +5,9 @@ MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 USER root
 
 ENV LC_CTYPE en_US.UTF-8
+ENV LC_ALL C
 ENV LANG en_US.UTF-8
+ENV PYTHONIOENCODING utf8
 
 # Install Kill Bill dependencies and useful tools
 ENV DEBIAN_FRONTEND noninteractive
@@ -38,9 +40,10 @@ ENV JAVA_HOME /usr/lib/jvm/default-java
 ENV JSSE_HOME $JAVA_HOME/jre/
 
 # Install latest Ansible version (deb package is too old)
+# Note: --no-clean is a workaround for utf-8 errors in posixpath.py (could be removed after upgrading python?)
 RUN python -m pip install --upgrade pip && \
     pip install setuptools --upgrade && \
-    pip install ansible
+    pip install --no-clean ansible
 
 # Add tomcat user
 ENV TOMCAT_OWNER tomcat
