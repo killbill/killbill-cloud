@@ -1,11 +1,26 @@
 - name: add Tomcat group
-  group: name="{{ tomcat_group }}"
+  group:
+    name: "{{ tomcat_group }}"
+    state: present
+  tags: install
 
 - name: add Tomcat user
-  user: name="{{ tomcat_owner }}" group="{{ tomcat_group }}" home="{{ tomcat_home }}" createhome=no
+  user:
+    name: "{{ tomcat_owner }}"
+    comment: Kill Bill Tomcat owner
+    group: "{{ tomcat_group }}"
+    create_home: yes
+    home: "{{ tomcat_home }}"
+    state: present
+  tags: install
 
-- name: ensure Tomcat install dir exists
-  file: path="{{ tomcat_install_dir }}" state=directory
+- name: ensure Tomcat install dirs exist and have the right permissions
+  become: true
+  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  with_items:
+    - "{{ catalina_base }}"
+    - "{{ tomcat_install_dir }}"
+  tags: install
 
 - name: install Tomcat
   unarchive:
@@ -14,6 +29,8 @@
     dest: "{{ tomcat_install_dir }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+  tags: install
 
 - name: symlink install directory
   file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
+  tags: install
