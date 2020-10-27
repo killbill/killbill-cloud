@@ -1,0 +1,42 @@
+---
+- name: download Logstash third-party dependencies
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  community.general.maven_artifact:
+    group_id: "{{ item.group_id }}"
+    artifact_id: "{{ item.artifact_id }}"
+    version: "{{ item.version }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - group_id: com.fasterxml.jackson.core
+      artifact_id: jackson-databind
+      version: '2.11.3'
+      dest: /opt/jackson-databind.jar
+    - group_id: com.fasterxml.jackson.core
+      artifact_id: jackson-core
+      version: '2.11.3'
+      dest: /opt/jackson-core.jar
+    - group_id: com.fasterxml.jackson.core
+      artifact_id: jackson-annotations
+      version: '2.11.3'
+      dest: /opt/jackson-annotations.jar
+  tags:
+    - kaui-logback
+    - logstash
+    - download
+
+- name: ensure Logstash third-party dependencies exist in the webapp
+  copy:
+    src: "/opt/{{ item.name }}"
+    dest: "{{ catalina_base }}/webapps/ROOT/WEB-INF/lib/{{ item.name }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: '0644'
+  with_items:
+    - name: jackson-databind.jar
+    - name: jackson-core.jar
+    - name: jackson-annotations.jar
+  tags:
+    - kaui-logback
+    - logstash
+    - tomcat

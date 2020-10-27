@@ -3,6 +3,16 @@
   <property name="LOGS_DIR" value="{{ catalina_base }}/logs" />
   <conversionRule conversionWord="maskedMsg" converterClass="org.killbill.billing.server.log.obfuscators.ObfuscatorConverter" />
 
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+{% if lookup('env', 'LOGSTASH_ENABLED') | bool %}
+      <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+{% else %}
+      <encoder>
+          <pattern>%date{"yyyy-MM-dd'T'HH:mm:ss,SSSZ", UTC} lvl='%level', log='%logger{0}', th='%thread', xff='%X{req.xForwardedFor}', rId='%X{req.requestId}', tok='%X{kb.userToken}', aRId='%X{kb.accountRecordId}', tRId='%X{kb.tenantRecordId}', %maskedMsg%n</pattern>
+      </encoder>
+{% endif %}
+  </appender>
+
   <appender name="MAIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOGS_DIR:-./logs}/killbill.out</file>
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -208,5 +218,6 @@
 
   <root level="INFO">
     <appender-ref ref="MAIN" />
+    <appender-ref ref="STDOUT" />
   </root>
 </configuration>

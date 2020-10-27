@@ -1,0 +1,25 @@
+---
+- name: download Logstash dependency
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  community.general.maven_artifact:
+    group_id: net.logstash.logback
+    artifact_id: logstash-logback-encoder
+    version: '6.4'
+    dest: /opt/logstash-logback-encoder.jar
+  tags:
+    - killbill-logback
+    - logstash
+    - download
+
+- name: ensure Logstash dependency exists in the webapp
+  copy:
+    src: /opt/logstash-logback-encoder.jar
+    dest: "{{ catalina_base }}/webapps/ROOT/WEB-INF/lib/logstash-logback-encoder.jar"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: '0644'
+  tags:
+    - killbill-logback
+    - logstash
+    - tomcat

@@ -13,6 +13,7 @@
     - temp
   tags: tomcat
 
+# Generate Tomcat configuration files based on environment variables
 - name: generate Tomcat files
   become: true
   template:
@@ -21,6 +22,7 @@
     mode: "{{ item.mode }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    # If the files already exist, don't clobber them
     force: no
   with_items:
     - src: tomcat/conf
