@@ -3,10 +3,10 @@ LABEL maintainer="killbilling-users@googlegroups.com"
 
 USER root
 
-ENV LC_CTYPE en_US.UTF-8
-ENV LC_ALL C
-ENV LANG en_US.UTF-8
-ENV PYTHONIOENCODING utf8
+ENV LC_CTYPE=en_US.UTF-8
+ENV LC_ALL=C
+ENV LANG=en_US.UTF-8
+ENV PYTHONIOENCODING=utf8
 
 # Install convenient utilities
 # https://github.com/moby/moby/issues/4032
@@ -33,13 +33,13 @@ RUN apt-get update && \
 
 # Configure default JAVA_HOME path
 RUN ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
-ENV JAVA_HOME /usr/lib/jvm/default-java
-ENV JSSE_HOME $JAVA_HOME/jre/
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV JSSE_HOME=$JAVA_HOME/jre/
 
 # Create tomcat user into sudo group and reinitialize the password
-ENV TOMCAT_OWNER tomcat
-ENV TOMCAT_GROUP tomcat
-ENV TOMCAT_HOME /var/lib/tomcat
+ENV TOMCAT_OWNER=tomcat
+ENV TOMCAT_GROUP=tomcat
+ENV TOMCAT_HOME=/var/lib/tomcat
 RUN adduser $TOMCAT_OWNER \
             --home $TOMCAT_HOME \
             --disabled-password \
@@ -57,18 +57,18 @@ ARG KILLBILL_CLOUD_VERSION
 RUN ansible-galaxy collection install community.general && \
     ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
-ENV ENV_HOST_IP localhost
-ENV ANSIBLE_OPTS -i localhost, \
-                 -e ansible_connection=local \
-                 -e ansible_python_interpreter=/usr/bin/python3 \
-                 -e java_home=$JAVA_HOME \
-                 -vv
+ENV ENV_HOST_IP=localhost
+ENV ANSIBLE_OPTS="-i localhost, \
+                  -e ansible_connection=local \
+                  -e ansible_python_interpreter=/usr/bin/python3 \
+                  -e java_home=$JAVA_HOME \
+                  -vv"
 
 # Install KPM
-ENV NEXUS_URL https://oss.sonatype.org
-ENV NEXUS_REPOSITORY releases
-ENV KPM_INSTALL_DIR /opt
-ENV KPM_VERSION 0.9.0
+ENV NEXUS_URL=https://oss.sonatype.org
+ENV NEXUS_REPOSITORY=releases
+ENV KPM_INSTALL_DIR=/opt
+ENV KPM_VERSION=0.9.0
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
                      -e nexus_url=$NEXUS_URL \
@@ -78,14 +78,14 @@ RUN ansible-playbook $ANSIBLE_OPTS \
 ENV PATH "/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
 
 # Install Tomcat (without native libraries)
-ENV CATALINA_BASE $TOMCAT_HOME
-ENV CATALINA_HOME /usr/share/tomcat
-ENV CATALINA_PID $CATALINA_BASE/tomcat.pid
-ENV CATALINA_TMPDIR /var/tmp
-ENV TOMCAT_INSTALL_DIR /opt
-ENV TOMCAT_VERSION 8.5.16
-ENV TOMCAT_NATIVE_LIBDIR $CATALINA_HOME/native-jni-lib
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
+ENV CATALINA_BASE=$TOMCAT_HOME
+ENV CATALINA_HOME=/usr/share/tomcat
+ENV CATALINA_PID=$CATALINA_BASE/tomcat.pid
+ENV CATALINA_TMPDIR=/var/tmp
+ENV TOMCAT_INSTALL_DIR=/opt
+ENV TOMCAT_VERSION=8.5.16
+ENV TOMCAT_NATIVE_LIBDIR=$CATALINA_HOME/native-jni-lib
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_version=$TOMCAT_VERSION \
                      -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \

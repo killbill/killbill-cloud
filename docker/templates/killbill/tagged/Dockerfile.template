@@ -2,7 +2,7 @@ FROM killbill/killbill
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 # VERSION will be expanded in Makefile
-ENV KILLBILL_VERSION __VERSION__
+ENV KILLBILL_VERSION=__VERSION__
 
 # Default kpm.yml, override as needed
 COPY ./kpm.yml $KILLBILL_INSTALL_DIR
