@@ -20,5 +20,10 @@ ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
                                      -e tomcat_group=$TOMCAT_GROUP \
                                      -e catalina_base=$CATALINA_BASE \
                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui.yml
+
+# Install Logtstash dependencies
+ENV LOGSTASH_ENABLED true
+RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui_json_logging.yml --tags download
+
 # Run kpm install and start Tomcat
 CMD ["/var/lib/kaui/kaui.sh"]

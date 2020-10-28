@@ -12,7 +12,7 @@ ENV PYTHONIOENCODING utf8
 # Install Kill Bill dependencies and useful tools
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install --no-install-recommends -y \
       apt-utils \
       curl \
       dpkg-dev \
@@ -27,6 +27,7 @@ RUN apt-get update && \
       net-tools \
       openjdk-8-jdk \
       python-pip \
+      python-lxml \
       sudo \
       telnet \
       unzip \
@@ -44,6 +45,7 @@ ENV JSSE_HOME $JAVA_HOME/jre/
 RUN python -m pip install --upgrade pip && \
     pip install setuptools --upgrade && \
     pip install --no-clean ansible
+RUN ansible-galaxy collection install community.general
 
 # Add tomcat user
 ENV TOMCAT_OWNER tomcat

@@ -55,5 +55,9 @@ ENV MIGRATIONS_CMD ansible-playbook $ANSIBLE_OPTS \
 # Install Flyway in the image
 RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/flyway.yml
 
+# Install Logtstash dependencies
+ENV LOGSTASH_ENABLED true
+RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml --tags download
+
 # Run kpm install and start Tomcat
 CMD ["/var/lib/killbill/killbill.sh"]
