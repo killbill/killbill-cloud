@@ -1,6 +1,12 @@
-= Kill Bill build image
+# Kill Bill build image
 
-To enable RVM:
+To build the image:
+
+```
+docker build -t killbill/build:<VERSION> .
+```
+
+To enable RVM in the image:
 
 ```
 source /usr/share/rvm/scripts/rvm

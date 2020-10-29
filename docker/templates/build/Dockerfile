@@ -1,73 +1,78 @@
-FROM ubuntu:16.04
-MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+FROM ubuntu:20.04
+LABEL maintainer="killbilling-users@googlegroups.com"
 
-ENV KILLBILL_HOME=/var/lib/killbill \
-    KILLBILL_CONFIG=/etc/killbill
+USER root
 
-# Install Kill Bill dependencies and useful tools
+ENV LC_CTYPE=en_US.UTF-8
+ENV LC_ALL=C
+ENV LANG=en_US.UTF-8
+ENV PYTHONIOENCODING=utf8
+
+# Install build dependencies and convenient utilities
+# https://github.com/moby/moby/issues/4032
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install --no-install-recommends -y \
+      # https://github.com/tianon/docker-brew-ubuntu-core/issues/59
+      apt-utils \
       build-essential \
       curl \
       git \
-      libcurl3 \
+      less \
+      libaio1 \
+      libapr1 \
+      libcurl4 \
       libcurl4-openssl-dev \
       libmysqlclient-dev \
+      libnuma1 \
       libpq-dev \
       maven \
       mysql-client \
-      openjdk-8-jdk \
+      net-tools \
+      openjdk-8-jdk-headless \
       postgresql-client \
+      python3-lxml \
       software-properties-common \
       sudo \
       telnet \
-      tomcat7 \
       unzip \
       zip \
-      vim \
-      less && \
+      vim && \
     apt-add-repository -y ppa:rael-gc/rvm && \
-    apt-get update && \
-    apt-get install -y rvm && \
     rm -rf /var/lib/apt/lists/*
 
-# Install JRuby as default (the Ubuntu JRuby package is 1.5.6!)
-RUN mkdir -p /var/lib/jruby \
-    && curl -SL http://jruby.org.s3.amazonaws.com/downloads/1.7.26/jruby-bin-1.7.26.tar.gz \
-    | tar -z -x --strip-components=1 -C /var/lib/jruby
-ENV PATH /var/lib/jruby/bin:$PATH
+# Configure default JAVA_HOME path
+RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
+RUN rm -f /usr/lib/jvm/default-java && ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV JSSE_HOME=$JAVA_HOME/jre/
 
-RUN jruby -S gem install bundler --version 1.16.1
-RUN jruby -S gem install jbundler --version 0.9.3
-RUN jruby -S gem install therubyrhino --version 2.0.4
-
-RUN ln -s /var/lib/jruby/bin/jruby /var/lib/jruby/bin/ruby
-
-ENV JRUBY_OPTS=-J-Xmx1024m
-
-# Add extra rubies
-RUN /bin/bash -l -c "rvm install ruby-1.8.7-p374 && rvm use ruby-1.8.7-p374 && gem install bundler --version 1.16.1 && \
-                     rvm install ruby-2.2.2 && rvm use ruby-2.2.2 && gem install bundler --version 1.16.1 && \
-                     rvm install ruby-2.4.2 && rvm use ruby-2.4.2 && gem install bundler --version 1.16.1 && \
-                     rvm install jruby-9.1.14.0 && rvm use jruby-9.1.14.0 && gem install bundler --version 1.16.1"
-
-# Add killbill user into sudo group
-RUN adduser --disabled-password --gecos '' killbill && \
+# Create killbill user into sudo group and reinitialize the password
+ENV KILLBILL_HOME=/var/lib/killbill
+RUN adduser killbill \
+            --home $KILLBILL_HOME \
+            --disabled-password \
+            --gecos '' && \
     usermod -aG sudo killbill && \
-    echo 'killbill:killbill' | chpasswd && \
+    echo "killbill:killbill" | chpasswd && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN mkdir -p $KILLBILL_HOME $KILLBILL_CONFIG && \
-    chown -R killbill:killbill $KILLBILL_CONFIG $KILLBILL_HOME /var/lib/jruby
-
+# Set tomcat as the default user
 USER killbill
 WORKDIR $KILLBILL_HOME
-
 ENV TERM=xterm
 
+# Install RVM
+RUN sudo apt-get update && \
+    sudo apt-get install --no-install-recommends -y rvm && \
+    sudo rm -rf /var/lib/apt/lists/*
+
+# Add extra rubies
+RUN /bin/bash -l -c "rvm install 2.2.2 && rvm install 2.4.2 && rvm install jruby-9.1.14.0"
+
 # Setup Maven
-RUN mkdir -p /home/killbill/.m2
-COPY ./settings.xml /home/killbill/.m2/settings.xml
+RUN mkdir -p $KILLBILL_HOME/.m2
+COPY ./settings.xml $KILLBILL_HOME/.m2/settings.xml
 
 # Setup git
 RUN git config --global user.name "Kill Bill core team" && \
