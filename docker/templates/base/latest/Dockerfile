@@ -56,7 +56,7 @@ WORKDIR $TOMCAT_HOME
 ARG KILLBILL_CLOUD_VERSION
 RUN ansible-galaxy collection install community.general && \
     ansible-galaxy install git+https://github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
-ENV KILLBILL_CLOUD_ANSIBLE_ROLES $TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
+ENV KILLBILL_CLOUD_ANSIBLE_ROLES=$TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
 ENV ENV_HOST_IP=localhost
 ENV ANSIBLE_OPTS="-i localhost, \
                   -e ansible_connection=local \
@@ -75,7 +75,7 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      -e nexus_repository=$NEXUS_REPOSITORY \
                      -e kpm_version=$KPM_VERSION \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
-ENV PATH "/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
+ENV PATH="/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
 
 # Install Tomcat (without native libraries)
 ENV CATALINA_BASE=$TOMCAT_HOME
