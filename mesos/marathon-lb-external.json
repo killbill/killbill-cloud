@@ -1,7 +1,0 @@
-{
-  "marathon-lb":{
-    "name":"marathon-lb-external",
-    "haproxy-group":"external",
-    "bind-http-https":false
-  }
-}
