@@ -12,7 +12,7 @@ help() {
     echo "-i : init (create the template file)"
     echo "-c : clean (create the tagged template file). To be executed after init"
     echo "-v : the version to build"
-    echo "-t : the target to build; either killbill, kaui, data and for data a version MUST be specified"
+    echo "-t : the target to build"
     exit 1
 }
 
@@ -40,10 +40,6 @@ while getopts "hict:v:" OPTION; do
 done
 
 TAGGED_PATH="templates/$TARGET/tagged"
-
-if [[ $TARGET == "data" ]] && [[ -z $VERSION ]]; then
-    help
-fi
 
 if [[ $ACTION == "INIT" ]]; then
   init
