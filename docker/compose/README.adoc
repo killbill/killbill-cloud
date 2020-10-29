@@ -48,6 +48,7 @@ index 40ca757..6ccbfb2 100644
 * Run `docker-compose up` to start the stack. This takes a while. You can verify the stack is up by going to http://127.0.0.1:9200/ (user: elastic, password: changeme)
 * Once the stack is up, redirect the Kill Bill container logs to Logstash using Logspout:
 ```
+# Note: host.docker.internal is when using Docker Desktop for Mac. Replace with the internal IP address used by the host on other platforms
 docker run --name="logspout" \
            --volume=/var/run/docker.sock:/var/run/docker.sock \
            gliderlabs/logspout \
@@ -65,28 +66,17 @@ Notes:
 [[monitoring]]
 ### Metrics
 
-The `docker-compose.gi.yml` file sets up Telegraf, InfluxDB, cAdvisor and Grafana.
+Refer to the InfluxDB and Grafana documentation for how to set up the TIG stack.
 
-The Grafana UI is available at `http://<IP_ADDRESS>:3000` (default credentials: `admin:admin`).
+Here's a quick tutorial to get you started:
 
-When running the full stack, Grafana uses the MariaDB container as the storage backend. To configure it (default database credentials `root:killbill`):
+* Run `docker-compose -f docker-compose.gi.yml -p gi up`
+* Go to http://127.0.0.1:3000/ (user: admin, password: admin)
+* Go to http://127.0.0.1:3000/datasources, click Add data source, select InfluxDB, enter:
+  ** http://influxdb:8086 as the URL
+  ** Enable Basic Auth (User: killbill, Password: killbill)
+  ** Database name: killbill
+* Click Save & Test
+* Update `docker-compose.kb.yml`, set `KILLBILL_METRICS_INFLUXDB=true`, and recreate the Kill Bill docker stack
 
-....
-CREATE DATABASE grafana;
-USE grafana;
-CREATE TABLE `session` (
-    `key`       CHAR(16) NOT NULL,
-    `data`      BLOB,
-    `expiry`    INT(11) UNSIGNED NOT NULL,
-    PRIMARY KEY (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-....
-
-You also need to add the InfluxDB datasources. Got to http://<IP_ADDRESS>:3000/datasources/new:
-
-* Name: influxdb
-* Type: InfluxDB
-* Url: http://influxdb:8086
-* Database: killbill
-* User: killbill
-* Password: killbill
+Note: you might also have to update `KILLBILL_METRICS_INFLUXDB_HOST` in `docker-compose.kb.yml`. The default value of `host.docker.internal` works when using Docker Desktop for Mac. Replace with the internal IP address used by the host on other platforms.
