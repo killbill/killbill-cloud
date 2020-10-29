@@ -9,44 +9,58 @@ toc::[]
 
 ## Quick start
 
-https://docs.docker.com/compose/[Docker Compose] is the easiest way to setup the Kill Bill stack:
+https://docs.docker.com/compose/[Docker Compose] is the easiest way to set up the Kill Bill stack:
 
 ```
 docker-compose -f docker-compose.kb.yml -p kb up
 ```
 
-Use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the IP address of the container.
+Note: if you are using Docker Machine, use `docker-machine env <name>` or the environment variable `$DOCKER_HOST` to get the IP address of the container.
 
 Then go to `http://<IP_ADDRESS>:9090/` and log-in via `admin/password`.
 
+In the rest of this documentation, we will assumed `IP_ADDRESS` is 127.0.0.1.
+
 ## Logging and Metrics infrastructure
-
-The `Makefile` generates a Docker Compose file which sets up the Kill Bill stack along with services for logging and recording metrics.
-
-To launch the full stack, run:
-
-....
-make
-....
-
-Notes:
-
-* the `Makefile` will look for the Docker container IP via `docker-machine ip default`. Adapt to your setup if necessary.
-* `docker-compose logs` won’t work, because all logs are forwarded to http://<IP_ADDRESS>:5601[Elasticsearch]. The easiest way to find logs for a specific container is to search for the container ID in Kibana.
-* You need at least 4GB of RAM to run the entire stack properly in the host. The killbill container needs about 2.5GB RAM after start: on Mac-OS, open Virtual Box and check the VM has enough RAM (you need to poweroff the VM first). If you are using Docker for Mac, set its memory limit in Preferences (Docker for Mac Preferences > Advanced > Memory).
 
 [[logging]]
 ### Logging
 
-The https://www.elastic.co/webinars/introduction-elk-stack:[Elastic Stack] setup (Elasticseach, Logstash, Kibana) is provided in the `docker-compose.elk.yml` file.
+Refer to the https://www.elastic.co/guide/index.html[Elastic Stack] documentation for how to set up the ELK stack.
 
-It will give you the ability to analyze any data set by using the searching/aggregation capabilities of Elasticseach and the visualization power of Kibana.
+Here's a quick tutorial to get you started:
 
-Logstash listens on 1514 (Syslog protocol). For debugging purposes, the stdout plugin is enabled:
+* Clone https://github.com/deviantony/docker-elk
+* Update `logstash/pipeline/logstash.conf` and enable the Logstash JSON codec:
+```
+diff --git a/logstash/pipeline/logstash.conf b/logstash/pipeline/logstash.conf
+index 40ca757..6ccbfb2 100644
+--- a/logstash/pipeline/logstash.conf
++++ b/logstash/pipeline/logstash.conf
+@@ -5,6 +5,7 @@ input {
 
-`docker logs -f elk_logstash_1`
+        tcp {
+                port => 5000
++               codec => json
+        }
+ }
+```
+* Run `docker-compose up` to start the stack. This takes a while. You can verify the stack is up by going to http://127.0.0.1:9200/ (user: elastic, password: changeme)
+* Once the stack is up, redirect the Kill Bill container logs to Logstash using Logspout:
+```
+docker run --name="logspout" \
+           --volume=/var/run/docker.sock:/var/run/docker.sock \
+           gliderlabs/logspout \
+           'tcp://host.docker.internal:5000?filter.name=kb_killbill_1'
+```
+* Go to Kibana at http://127.0.0.1:5601/ (user: elastic, password: changeme)
+* Create an index pattern by going to http://127.0.0.1:5601/app/management/kibana/indexPatterns/create: enter `logstash-*` in the first screen and select `@timestamp` as the time filter field
+* Go to `http://127.0.0.1:5601/app/discover` to visualize the Kill Bill logs
 
-The Kibana UI is available at `http://<IP_ADDRESS>:5601`. Port 9200 for Elasticsearch is open for available to the host for Sense.
+Notes:
+
+* You need Docker Engine version 17.05 or newer and Docker Compose version 1.20.0 or newer
+* You need at least 4GB of RAM allocated to Docker to run the entire stack
 
 [[monitoring]]
 ### Metrics

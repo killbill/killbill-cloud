@@ -1,6 +1,5 @@
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-ELK_FILE=$(ROOT_DIR)/docker-compose.elk.yml
 GI_FILE=$(ROOT_DIR)/docker-compose.gi.yml
 KB_FILE=$(ROOT_DIR)/docker-compose.kb.yml
 
@@ -14,13 +13,9 @@ export HOST_IP
 
 default: all
 
-elk:
-	@$(COMPOSE) -p elk -f $(ELK_FILE) up -d
-
 build-docker-compose:
 	@ruby build_docker-compose.rb > $(BUILD_FILE)
 
-# Logstash needs to be up first
-all: elk build-docker-compose
+all: build-docker-compose
 	@until echo > /dev/tcp/${HOST_IP}/1514; do sleep 1; done
 	@$(COMPOSE) -f $(BUILD_FILE) up -d

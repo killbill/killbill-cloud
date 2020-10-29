@@ -4,7 +4,7 @@ volumes:
   db:
 services:
   killbill:
-    image: killbill/killbill:0.22.0
+    image: killbill/killbill:latest
     ports:
       - "8080:8080"
       - "8000:8000"
