@@ -7,3 +7,6 @@ export CATALINA_OPTS="$CATALINA_OPTS
 {% endif %}
                       -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties
                       {{ kb_system_properties }}"
+
+# Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
+export CATALINA_OPTS="$(echo $CATALINA_OPTS)"

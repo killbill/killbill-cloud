@@ -25,3 +25,6 @@ export CATALINA_OPTS="$CATALINA_OPTS
                       -Dkaui.root_username={{ lookup('env', 'KAUI_ROOT_USERNAME') }}
 {% endif %}
                       {{ kaui_system_properties }}"
+
+# Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
+export CATALINA_OPTS="$(echo $CATALINA_OPTS)"

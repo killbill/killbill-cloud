@@ -2,7 +2,7 @@
 - name: Deploy Tomcat
   hosts: all
   vars:
-    tomcat_version: 8.5.16
+    tomcat_version: 8.5.59
     tomcat_install_dir: /opt
     tomcat_owner: tomcat
     tomcat_group: tomcat
