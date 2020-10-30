@@ -2,7 +2,7 @@
 - name: Configure Tomcat JSON logging for Kaui
   hosts: all
   tasks:
-    - name: down third-party dependencies
+    - name: download third-party dependencies
       import_tasks: roles/kaui/tasks/json_logging.yml
     - name: enable Tomcat JSON logging
       import_tasks: roles/tomcat/tasks/json_logging.yml
