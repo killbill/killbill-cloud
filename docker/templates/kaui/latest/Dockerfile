@@ -2,6 +2,11 @@
 FROM killbill/base
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
+# The base image has set up a fully functioning Tomcat with default config files.
+# Remove them, so they are regenerated on demand based on the environment variables
+# (Ansible sets `force: no` by default to avoid clobbering manually customized files).
+RUN ["/bin/bash", "-c", "rm -f $CATALINA_BASE/conf/{context.xml,server.xml,web.xml} $CATALINA_BASE/bin/setenv.sh"]
+
 ENV KAUI_INSTALL_DIR /var/lib/kaui
 
 RUN sudo mkdir -p $KAUI_INSTALL_DIR
