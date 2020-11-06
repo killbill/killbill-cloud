@@ -2,6 +2,11 @@
 FROM killbill/base
 LABEL maintainer="killbilling-users@googlegroups.com"
 
+# The base image has set up a fully functioning Tomcat with default config files.
+# Remove them, so they are regenerated on demand based on the environment variables
+# (Ansible sets `force: no` by default to avoid clobbering manually customized files).
+RUN ["/bin/bash", "-c", "rm -f $CATALINA_BASE/conf/{context.xml,server.xml,web.xml} $CATALINA_BASE/bin/setenv.sh"]
+
 ENV KILLBILL_INSTALL_DIR=/var/lib/killbill
 
 RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
