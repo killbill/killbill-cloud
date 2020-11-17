@@ -5,7 +5,23 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 {% if lookup('env', 'LOGSTASH_ENABLED') | bool %}
-      <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+          <providers>
+              <timestamp/>
+              <pattern>
+                  <pattern>
+                      {
+                      "message": "%maskedMsg"
+                      }
+                  </pattern>
+              </pattern>
+              <loggerName/>
+              <threadName/>
+              <logLevel/>
+              <mdc/>
+              <stackTrace/>
+          </providers>
+      </encoder>
 {% else %}
       <encoder>
           <pattern>%date{"yyyy-MM-dd'T'HH:mm:ss,SSSZ", UTC} lvl='%level', log='%logger{0}', th='%thread', xff='%X{req.xForwardedFor}', rId='%X{req.requestId}', tok='%X{kb.userToken}', aRId='%X{kb.accountRecordId}', tRId='%X{kb.tenantRecordId}', %maskedMsg%n</pattern>
