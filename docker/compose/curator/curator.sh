@@ -1,2 +1,0 @@
-#!/bin/bash
-/usr/local/bin/curator_cli --host elasticsearch delete_indices --filter_list '{"filtertype":"age","source":"name","timestring":"%Y.%m.%d","unit":"days","unit_count":3,"direction":"older"}' >>/var/log/curator.log 2>&1

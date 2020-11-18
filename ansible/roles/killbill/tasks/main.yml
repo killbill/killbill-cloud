@@ -7,6 +7,7 @@
     - "{{ kb_plugins_dir }}"
   tags: kpm-install
 
+# Generate Kill Bill configuration files based on environment variables
 - name: generate Kill Bill files
   become: true
   template:
@@ -15,11 +16,13 @@
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    # If the files already exist, don't clobber them
     force: no
   with_items:
     - name: killbill.properties
   tags: kpm-install
 
+# Generate Kill Bill-specific Tomcat configuration files based on environment variables
 - name: generate Tomcat files
   become: true
   template:
@@ -28,6 +31,7 @@
     mode: "{{ item.mode }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
+    # If the files already exist, don't clobber them
     force: no
   with_items:
     - src: killbill/conf
@@ -50,6 +54,7 @@
     state: directory
     mode: '0755'
 
+# Expand the WAR to speed up startup
 - name: Expand WAR file if not already done
   become: true
   command: |
@@ -59,10 +64,12 @@
     creates: "{{ catalina_base }}/{{ kb_webapps }}/ROOT/WEB-INF"
   tags: killbill-logback
 
+# Generate logback configuration files based on environment variables
 - name: Copy logback.xml
   become: true
   template:
     src: "killbill/{{ item.name }}.j2"
+    # Placing the logback.xml on the classpath of the webapp is the only way to support per-webapp configuration
     dest: "{{ catalina_base }}/{{ kb_webapps }}/ROOT/WEB-INF/classes/logback.xml"
     mode: u=rw,g=r,o=r
     owner: "{{ tomcat_owner }}"

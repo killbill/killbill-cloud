@@ -10,7 +10,7 @@ toc::[]
 [[available-images]]
 ## Available images
 
-* `killbill/base:latest`: shared base image with Tomcat and KPM inside Ubuntu 16.04 LTS.
+* `killbill/base:latest`: shared base image with Tomcat and KPM inside Ubuntu 20.04 LTS.
 * `killbill/killbill:latest`: empty base Kill Bill image. It runs `kpm install` on startup before running Kill Bill. If no custom `kpm.yml` file is specified, the latest version of Kill Bill and the KPM plugin are downloaded.
 * `killbill/killbill:0.X.Y`: image with a specific version of Kill Bill installed and the KPM plugin.
 * `killbill/kaui:latest`: empty base Kaui image. It runs `kpm install` on startup before running Kaui. If no custom `kpm.yml` file is specified, the latest version of Kaui is downloaded.
@@ -20,9 +20,10 @@ toc::[]
 [[tips-and-tricks]]
 ### Tips and tricks
 
-The container STDOUT isn't that useful: to access logs, look at the `killbill.out` log file instead:
+The container STDOUT output is JSON formatted for ease of integration with log aggregation systems. To access human-friendly logs, look at the log files inside the container instead:
 
 ```
+# logs/kaui.out for Kaui
 docker exec CONTAINER_ID tail -f logs/killbill.out
 ```
 
@@ -211,6 +212,14 @@ The following environment variables will populate the default `killbill.properti
 * `KAUI_ROOT_USERNAME` (default `admin`)
 
 For PostgreSQL support, you also need to specify `KAUI_CONFIG_DAO_ADAPTER=postgresql`.
+
+[[changes-since-0.22.17]]
+## Changes since 0.22.17
+
+* The base image has been upgraded from ubuntu:16.04 LTS to ubuntu:20.04 LTS
+* Python has been upgraded from 2 to 3
+* STDOUT logs are JSON-formatted by default. You can disable this behavior via `LOGSTASH_ENABLED=false`
+* Tomcat has been updated from 8.5.16 to 8.5.59. Any newlines present in CATALINA_OPTS and/or JAVA_OPTS will no longer removed (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
 
 [[changes-since-0.18]]
 ## Changes since 0.18

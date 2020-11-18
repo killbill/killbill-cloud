@@ -1,8 +1,8 @@
 FROM killbill/kaui
-MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+LABEL maintainer="killbilling-users@googlegroups.com"
 
 # VERSION will be expanded in Makefile
-ENV KAUI_VERSION __VERSION__
+ENV KAUI_VERSION=__VERSION__
 
 # Default kpm.yml, override as needed
 COPY ./kpm.yml $KAUI_INSTALL_DIR

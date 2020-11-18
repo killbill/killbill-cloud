@@ -3,24 +3,14 @@ version: '3.2'
 volumes:
   influxdb:
 services:
-  telegraf:
-    image: telegraf:latest
-    expose:
-      - "8094"
-    volumes:
-      - ./telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    restart: always
   influxdb:
-    image: influxdb:latest
+    image: influxdb:1.8.3-alpine
     volumes:
       - type: volume
         source: influxdb
         target: /var/lib/influxdb
-      - type: bind
-        source: ./influxdb/config/influxdb.conf
-        target: /etc/influxdb/influxdb.conf
-        read_only: true
     ports:
+      - "8083:8083"
       - "8086:8086"
     environment:
       - INFLUXDB_ADMIN_USER=killbill
@@ -28,27 +18,9 @@ services:
       - INFLUXDB_USER=killbill
       - INFLUXDB_USER_PASSWORD=killbill
       - INFLUXDB_DB=killbill
-    restart: always
   grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    image: grafana/grafana:7.2.0
     ports:
       - "3000:3000"
-    environment:
-      - GF_DASHBOARDS_JSON_ENABLED=true
-      - GF_DASHBOARDS_JSON_PATH=/var/lib/grafana/dashboards
-      - GF_ANALYTICS_ENABLED=false
-    restart: always
-  cadvisor:
-   image: google/cadvisor:latest
-   command: -storage_driver=influxdb -storage_driver_host=influxdb:8086 -storage_driver_db=killbill -storage_driver_user=killbill -storage_driver_password=killbill
-   volumes:
-     - /:/rootfs:ro
-     - /var/run:/var/run:rw
-     - /sys:/sys:ro
-     - /var/lib/docker/:/var/lib/docker:ro
-     - /dev/disk/:/dev/disk:ro
-   expose:
-     - "8080"
-   restart: always
+    depends_on:
+      - influxdb

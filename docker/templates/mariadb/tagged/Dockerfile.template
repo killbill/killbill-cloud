@@ -2,7 +2,7 @@ FROM mariadb
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 # VERSION will be expanded in Makefile
-ENV KILLBILL_VERSION __VERSION__
+ENV KILLBILL_VERSION=__VERSION__
 
 RUN echo "SET GLOBAL binlog_format = 'ROW';" > /docker-entrypoint-initdb.d/000_mysql_config.sql
 

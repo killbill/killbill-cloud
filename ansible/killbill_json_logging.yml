@@ -1,0 +1,6 @@
+---
+- name: Configure Tomcat JSON logging for Kill Bill
+  hosts: all
+  tasks:
+    - name: enable Tomcat JSON logging
+      import_tasks: roles/tomcat/tasks/json_logging.yml

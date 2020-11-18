@@ -2,7 +2,7 @@ FROM postgres
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 # VERSION will be expanded in Makefile
-ENV KILLBILL_VERSION __VERSION__
+ENV KILLBILL_VERSION=__VERSION__
 
 RUN echo 'CREATE DATABASE killbill;' > /docker-entrypoint-initdb.d/010_killbill.sql
 # New lines are important

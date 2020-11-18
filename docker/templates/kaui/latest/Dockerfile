@@ -1,13 +1,13 @@
 # Shell image that installs Kaui on startup
 FROM killbill/base
-MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+LABEL maintainer="killbilling-users@googlegroups.com"
 
 # The base image has set up a fully functioning Tomcat with default config files.
 # Remove them, so they are regenerated on demand based on the environment variables
 # (Ansible sets `force: no` by default to avoid clobbering manually customized files).
 RUN ["/bin/bash", "-c", "rm -f $CATALINA_BASE/conf/{context.xml,server.xml,web.xml} $CATALINA_BASE/bin/setenv.sh"]
 
-ENV KAUI_INSTALL_DIR /var/lib/kaui
+ENV KAUI_INSTALL_DIR=/var/lib/kaui
 
 RUN sudo mkdir -p $KAUI_INSTALL_DIR
 RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KAUI_INSTALL_DIR
@@ -17,13 +17,18 @@ COPY ./kpm.yml $KAUI_INSTALL_DIR
 
 COPY ./kaui.sh $KAUI_INSTALL_DIR
 
-ENV KPM_INSTALL_CMD ansible-playbook $ANSIBLE_OPTS  \
-                                     -e kpm_install_dir=$KPM_INSTALL_DIR \
-                                     -e kpm_version=$KPM_VERSION \
-                                     -e kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
-                                     -e tomcat_owner=$TOMCAT_OWNER \
-                                     -e tomcat_group=$TOMCAT_GROUP \
-                                     -e catalina_base=$CATALINA_BASE \
-                                     $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui.yml
+ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
+                                      -e kpm_install_dir=$KPM_INSTALL_DIR \
+                                      -e kpm_version=$KPM_VERSION \
+                                      -e kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
+                                      -e tomcat_owner=$TOMCAT_OWNER \
+                                      -e tomcat_group=$TOMCAT_GROUP \
+                                      -e catalina_base=$CATALINA_BASE \
+                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui.yml"
+
+# Install Logtstash dependencies
+ENV LOGSTASH_ENABLED=true
+RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui_json_logging.yml --tags download
+
 # Run kpm install and start Tomcat
 CMD ["/var/lib/kaui/kaui.sh"]
