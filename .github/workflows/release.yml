@@ -6,7 +6,7 @@ on:
       - release
 
 env:
-  KILLBILL_VERSION: 0.22.17
+  KILLBILL_VERSION: 0.22.18
   KAUI_VERSION: 2.0.5
   KILLBILL_CLOUD_VERSION: master
 
