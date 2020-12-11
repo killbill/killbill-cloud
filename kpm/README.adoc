@@ -16,7 +16,7 @@ toc::[]
 === Pre-built binaries (recommended)
 image:https://img.shields.io/maven-central/v/org.kill-bill.billing.installer/kpm?color=blue&label=kpm[kpm]
 
-KPM self-contained builds are available on http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.kill-bill.billing.installer%22%20AND%20a%3A%22kpm%22[Maven Central] with coordinates `org.kill-bill.billing.installer:kpm`.
+On Linux and MacOS, you can use the pre-built binaries. KPM self-contained builds are available on http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.kill-bill.billing.installer%22%20AND%20a%3A%22kpm%22[Maven Central] with coordinates `org.kill-bill.billing.installer:kpm`.
 
 Download the `.tar.gz` package matching your architecture (Linux and MacOS only).
 
@@ -26,7 +26,11 @@ Note that this installation method assumes `/bin/bash` to be available on your s
 === Through Rubygems
 image:https://img.shields.io/gem/v/kpm?color=blue&label=kpm[kpm]
 
-KPM is also available on https://rubygems.org/gems/kpm[RubyGems.org].
+On Windows, you can install KPM via https://rubygems.org/gems/kpm[RubyGems.org]. For this, you need to first install Ruby. Ruby can be installed via https://rubyinstaller.org/[RubyInstaller]. Once installed, you can run the following command to install KPM:
+[source,bash]
+gem install kpm 
+
+
 
 [[kpm-commands]]
 == KPM Commands
