@@ -1,14 +1,20 @@
 name: release
 
 on:
-  push:
-    branches:
-      - release
-
-env:
-  KILLBILL_VERSION: 0.22.19
-  KAUI_VERSION: 2.0.5
-  KILLBILL_CLOUD_VERSION: master
+  workflow_dispatch:
+    inputs:
+      killbill_version:
+        description: 'killbill version'
+        required: false
+        default: ''
+      kaui_version:
+        description: 'kaui version'
+        required: false
+        default: ''
+      cloud_version:
+        description: 'killbill-cloud version'
+        required: true
+        default: 'master'
 
 jobs:
   docker:
@@ -28,16 +34,24 @@ jobs:
         run: |
           TAG="killbill/base:latest"
           cd docker/templates/base/latest
-          DOCKER_BUILDKIT=1 docker build --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=$KILLBILL_CLOUD_VERSION .
+          DOCKER_BUILDKIT=1 docker build --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=${{ github.event.inputs.cloud_version }} .
           docker push $TAG
-      - name: Build and push common images
+      - name: Build and push latest images
         run: |
           cd docker
           make -e TARGET=kaui -e VERSION=latest rebuild
-          make -e TARGET=kaui -e VERSION=$KAUI_VERSION rebuild
           make -e TARGET=killbill VERSION=latest rebuild
-          make -e TARGET=killbill VERSION=$KILLBILL_VERSION rebuild
           docker push killbill/kaui:latest
-          docker push killbill/kaui:$KAUI_VERSION
           docker push killbill/killbill:latest
-          docker push killbill/killbill:$KILLBILL_VERSION
+      - name: Build and push killbill image
+        if: github.event.inputs.killbill_version != ''
+        run: |
+          cd docker
+          make -e TARGET=killbill VERSION=${{ github.event.inputs.killbill_version }} rebuild
+          docker push killbill/killbill:${{ github.event.inputs.killbill_version }}
+      - name: Build and push kaui image
+        if: github.event.inputs.kaui_version != ''
+        run: |
+          cd docker
+          make -e TARGET=kaui -e VERSION=${{ github.event.inputs.kaui_version }} rebuild
+          docker push killbill/kaui:${{ github.event.inputs.kaui_version }}
