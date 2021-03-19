@@ -255,7 +255,7 @@ Notes:
 [[gh-packages]]
 ### GitHub Packages
 
-KPM was initially designed to work against Sonatype. Starting with version 0.9.0, experimental support for GitHub packages has been added:
+Starting with version 0.9.0, experimental support for GitHub packages has been added:
 
 ....
 kpm install_java_plugin acme:plugin \
@@ -266,3 +266,17 @@ kpm install_java_plugin acme:plugin \
 ....
 
 Replace `TOKEN` with a GitHub personal access token.
+
+[[cloudsmith]]
+### Cloudsmith
+
+Starting with version 0.10.0, experimental support for Cloudsmith has been added:
+
+....
+kpm pull_kb_server_war 0.22.21-SNAPSHOT \
+        --overrides url:https://dl.cloudsmith.io/<TOKEN>/<ORG>/<REPO>/maven \
+        --group-id org.kill-bill.billing \
+        --artifact-id killbill-profiles-killbill
+....
+
+Replace `TOKEN` with a Cloudsmith entitlement token, and specify the right `ORG` and `REPO`.

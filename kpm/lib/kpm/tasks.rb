@@ -72,6 +72,22 @@ module KPM
           Uninstaller.new(options[:destination]).uninstall_non_default_plugins(options[:dry_run])
         end
 
+        method_option :group_id,
+                      type: :string,
+                      default: KillbillServerArtifact::KILLBILL_GROUP_ID,
+                      desc: 'The Kill Bill war artifact group-id'
+        method_option :artifact_id,
+                      type: :string,
+                      default: KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
+                      desc: 'The Kill Bill war artifact id'
+        method_option :packaging,
+                      type: :string,
+                      default: KillbillServerArtifact::KILLBILL_PACKAGING,
+                      desc: 'The Kill Bill war packaging'
+        method_option :classifier,
+                      type: :string,
+                      default: KillbillServerArtifact::KILLBILL_CLASSIFIER,
+                      desc: 'The Kill Bill war classifier'
         method_option :destination,
                       type: :string,
                       default: nil,
@@ -93,10 +109,10 @@ module KPM
           installer = BaseInstaller.new(logger,
                                         options[:overrides],
                                         options[:ssl_verify])
-          response = installer.install_killbill_server(KillbillServerArtifact::KILLBILL_GROUP_ID,
-                                                       KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
-                                                       KillbillServerArtifact::KILLBILL_PACKAGING,
-                                                       KillbillServerArtifact::KILLBILL_CLASSIFIER,
+          response = installer.install_killbill_server(options[:group_id],
+                                                       options[:artifact_id],
+                                                       options[:packaging],
+                                                       options[:classifier],
                                                        version,
                                                        options[:destination],
                                                        options[:bundles_dir],
