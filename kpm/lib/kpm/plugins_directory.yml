@@ -24,6 +24,10 @@
   :type: :ruby
   :versions:
     :0.18: 5.2.7
+:deposit:
+  :type: :java
+  :versions:
+    :0.22: 0.0.1
 :dwolla:
   :type: :java
   :versions:
