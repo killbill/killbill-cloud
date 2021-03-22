@@ -1,45 +1,216 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-~ Copyright 2014-2017 The Billing Project, LLC
-~
-~  The Billing Project licenses this file to you under the Apache License, version 2.0
-~  (the "License"); you may not use this file except in compliance with the
-~  License.  You may obtain a copy of the License at:
-~
-~     http://www.apache.org/licenses/LICENSE-2.0
-~
-~  Unless required by applicable law or agreed to in writing, software
-~  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-~  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
-~  License for the specific language governing permissions and limitations
-~  under the License.
--->
-
+  ~ Copyright 2010-2014 Ning, Inc.
+  ~ Copyright 2014-2020 Groupon, Inc
+  ~ Copyright 2020-2020 Equinix, Inc
+  ~ Copyright 2014-2020 The Billing Project, LLC
+  ~
+  ~ The Billing Project licenses this file to you under the Apache License, version 2.0
+  ~ (the "License"); you may not use this file except in compliance with the
+  ~ License.  You may obtain a copy of the License at:
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  ~ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  ~ License for the specific language governing permissions and limitations
+  ~ under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>5</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.kill-bill.billing.installer</groupId>
-  <artifactId>kpm</artifactId>
-  <packaging>pom</packaging>
-  <version>0.9.0</version>
-  <name>KPM</name>
-  <url>http://github.com/killbill/killbill-cloud</url>
-  <description>KPM: the Kill Bill Package Manager</description>
-  <licenses>
-    <license>
-      <name>Apache License 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <connection>scm:git:git://github.com/killbill/killbill-cloud.git</connection>
-    <url>https://github.com/killbill/killbill-cloud/</url>
-    <developerConnection>scm:git:git@github.com:killbill/killbill-cloud.git</developerConnection>
-  </scm>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.kill-bill.billing.installer</groupId>
+    <artifactId>kpm</artifactId>
+    <version>0.9.0</version>
+    <packaging>pom</packaging>
+    <name>KPM</name>
+    <description>KPM: the Kill Bill Package Manager</description>
+    <url>http://github.com/killbill/killbill-cloud</url>
+    <inceptionYear>2010</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>pierre</id>
+            <name>Pierre-Alexandre Meyer</name>
+            <email>pierre@mouraf.org</email>
+        </developer>
+        <developer>
+            <id>stephane</id>
+            <name>Stephane Brossier</name>
+        </developer>
+    </developers>
+    <mailingLists>
+        <mailingList>
+            <name>Kill Bill users</name>
+            <subscribe>killbilling-users+subscribe@googlegroups.com</subscribe>
+            <unsubscribe>killbilling-users+unsubscribe@googlegroups.com</unsubscribe>
+            <post>killbilling-users@googlegroups.com</post>
+            <archive>http://groups.google.com/group/killbilling-users</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:git:git://github.com/killbill/killbill-cloud.git</connection>
+        <url>https://github.com/killbill/killbill-cloud/</url>
+        <developerConnection>scm:git:git@github.com:killbill/killbill-cloud.git</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/killbill/killbill-cloud/issues</url>
+    </issueManagement>
+    <distributionManagement>
+        <repository>
+            <id>${repository.release.id}</id>
+            <name>${repository.release.name}</name>
+            <url>${repository.release.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${repository.snapshot.id}</id>
+            <name>${repository.snapshot.name}</name>
+            <url>${repository.snapshot.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <properties>
+        <repository.release.id>sonatype-nexus-staging</repository.release.id>
+        <repository.release.name>Nexus Release Repository</repository.release.name>
+        <repository.release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repository.release.url>
+        <repository.snapshot.id>sonatype-nexus-snapshots</repository.snapshot.id>
+        <repository.snapshot.name>Sonatype Nexus Snapshots</repository.snapshot.name>
+        <repository.snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</repository.snapshot.url>
+    </properties>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-install</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-resources</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>default-testResources</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>kpm-${project.version}-linux-x86.tar.gz</file>
+                                    <type>tar.gz</type>
+                                    <classifier>linux-x86</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>kpm-${project.version}-linux-x86_64.tar.gz</file>
+                                    <type>tar.gz</type>
+                                    <classifier>linux-x86_64</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>kpm-${project.version}-osx.tar.gz</file>
+                                    <type>tar.gz</type>
+                                    <classifier>osx</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Prevent `gpg` from using pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh-releases</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
+                            <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

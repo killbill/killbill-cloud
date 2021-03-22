@@ -8,3 +8,4 @@ kpm-*-osx.tar.gz
 traveling-ruby-*.tar.gz
 *.asc
 .rakeTasks
+pom.xml.versionsBackup

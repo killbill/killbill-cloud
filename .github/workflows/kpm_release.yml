@@ -1,0 +1,96 @@
+name: kpm_release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_version:
+        description: 'Target version: given version number [x.x.x]'
+        required: true
+        default: '0.x.0'
+
+env:
+  MAVEN_FLAGS: "-B --no-transfer-progress"
+  MAVEN_OPTS: "-Xmx2G -XX:+ExitOnOutOfMemoryError -Dmaven.wagon.rto=60000 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3"
+
+jobs:
+  kpm_release:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup git user
+        env:
+          BUILD_USER: ${{ secrets.BUILD_USER }}
+          BUILD_TOKEN: ${{ secrets.BUILD_TOKEN }}
+        run: |
+          git config --global user.email "contact@killbill.io"
+          git config --global user.name "Kill Bill core team"
+          git config --global url."https://${BUILD_USER}:${BUILD_TOKEN}@github.com/".insteadOf "git@github.com:"
+      - name: Configure settings.xml for release
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+          server-id: ossrh-releases
+          server-username: OSSRH_USER
+          server-password: OSSRH_PASS
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - name: Install packages
+        run: |
+          sudo apt-get -yq update
+          sudo apt-get -y install libgdbm5 libgdbm-dev libncurses5-dev libyaml-dev libssl1.0-dev
+      - name: Set up RVM
+        run: |
+          curl -sSL https://get.rvm.io | bash
+      - name: Set up Ruby
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          # See TRAVELING_RUBY_VERSION in tasks/package.rake
+          rvm install 2.2.2 --binary
+          rvm --default use 2.2.2
+      - name: Set up Bundler
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          gem install bundler -v 1.17.3 --no-document
+      - name: Download Ruby dependencies
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          cd kpm
+          bundle install
+      - name: Tag repository
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          cd kpm
+          mvn versions:set -DnewVersion=${{ github.event.inputs.target_version }}
+          git add pom.xml
+          git commit -m "kpm: update pom.xml for release"
+          bundle exec gem bump -c -p -t -v ${{ github.event.inputs.target_version }}
+      - name: Release Gem
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          mkdir -p ~/.gem
+          cat << EOF > ~/.gem/credentials
+          ---
+          :rubygems_api_key: ${RUBYGEMS_API_KEY}
+          EOF
+          chmod 0600 ~/.gem/credentials
+          cd kpm
+          bundle install
+          bundle exec gem release
+          rm -f ~/.gem/credentials
+      - name: Build self-contained packages
+        run: |
+          source $HOME/.rvm/scripts/rvm
+          cd kpm
+          $GITHUB_WORKSPACE/killbill-cloud/bin/retry bundle exec rake package
+      - name: Push to Maven Central
+        env:
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASS: ${{ secrets.OSSRH_PASS }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          VERSION: ${{ github.event.inputs.target_version }}
+        run: |
+          cd kpm
+          mvn ${MAVEN_FLAGS} -Psonatype-oss-release deploy
