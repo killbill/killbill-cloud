@@ -75,6 +75,7 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      -e nexus_repository=$NEXUS_REPOSITORY \
                      -e kpm_version=$KPM_VERSION \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
+RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP /opt/kpm-${KPM_VERSION}-linux-x86_64
 ENV PATH="/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
 
 # Install Tomcat (without native libraries)
