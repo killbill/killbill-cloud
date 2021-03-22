@@ -2,6 +2,7 @@
 
 require_relative 'nexus_api_calls_v2'
 require_relative 'github_api_calls'
+require_relative 'cloudsmith_api_calls'
 
 module KPM
   module NexusFacade
@@ -29,7 +30,13 @@ module KPM
 
         @logger = logger
 
-        @nexus_api_call = overrides[:url].start_with?('https://maven.pkg.github.com') ? GithubApiCalls.new(overrides, ssl_verify, logger) : NexusApiCallsV2.new(overrides, ssl_verify, logger)
+        @nexus_api_call = if overrides[:url].start_with?('https://maven.pkg.github.com')
+                            GithubApiCalls.new(overrides, ssl_verify, logger)
+                          elsif overrides[:url].start_with?('https://dl.cloudsmith.io')
+                            CloudsmithApiCalls.new(overrides, ssl_verify, logger)
+                          else
+                            NexusApiCallsV2.new(overrides, ssl_verify, logger)
+                          end
       end
 
       def pull_artifact(coordinates, destination = nil)
