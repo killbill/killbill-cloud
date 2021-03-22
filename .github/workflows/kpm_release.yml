@@ -5,8 +5,12 @@ on:
     inputs:
       target_version:
         description: 'Target version: given version number [x.x.x]'
-        required: true
-        default: '0.x.0'
+        required: false
+        default: ''
+      perform_version:
+        description: 'tag to (re-)perform (in case of deploy failure)'
+        required: false
+        default: ''
 
 env:
   MAVEN_FLAGS: "-B --no-transfer-progress"
@@ -17,7 +21,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout code
+        if: github.event.inputs.perform_version == ''
         uses: actions/checkout@v2
+      - name: Checkout full repository
+        if: github.event.inputs.perform_version != ''
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.perform_version }}
       - name: Setup git user
         env:
           BUILD_USER: ${{ secrets.BUILD_USER }}
@@ -58,6 +68,7 @@ jobs:
           cd kpm
           bundle install
       - name: Tag repository
+        if: github.event.inputs.perform_version == ''
         run: |
           source $HOME/.rvm/scripts/rvm
           cd kpm
@@ -66,6 +77,7 @@ jobs:
           git commit -m "kpm: update pom.xml for release"
           bundle exec gem bump -c -p -t -v ${{ github.event.inputs.target_version }}
       - name: Release Gem
+        if: github.event.inputs.perform_version == ''
         env:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: |
@@ -84,13 +96,12 @@ jobs:
         run: |
           source $HOME/.rvm/scripts/rvm
           cd kpm
-          $GITHUB_WORKSPACE/killbill-cloud/bin/retry bundle exec rake package
+          ../bin/retry bundle exec rake package
       - name: Push to Maven Central
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASS: ${{ secrets.OSSRH_PASS }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          VERSION: ${{ github.event.inputs.target_version }}
         run: |
           cd kpm
           mvn ${MAVEN_FLAGS} -Psonatype-oss-release deploy
