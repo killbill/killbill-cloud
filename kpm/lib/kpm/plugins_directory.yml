@@ -80,4 +80,4 @@
 :stripe:
   :type: :java
   :versions:
-    :0.22: 7.2.0
+    :0.22: 7.3.0
