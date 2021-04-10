@@ -24,6 +24,14 @@ describe KPM::NexusFacade, skip_me_if_nil: ENV['CLOUDSMITH_TOKEN'].nil? do
     expect { nexus_remote.search_for_artifacts(coordinates) }.to raise_exception(NoMethodError, 'Cloudsmith has no search support')
   }
 
+  # Upload as: cloudsmith push maven -v --group-id com.mycompany.app --artifact-id my-app --packaging pom --version 1.2.3 org/repo my-app-1.2.3.pom
+  # <project>
+  #   <modelVersion>4.0.0</modelVersion>
+  #   <groupId>com.mycompany.app</groupId>
+  #   <artifactId>my-app</artifactId>
+  #   <version>1.2.3</version>
+  #   <packaging>pom</packaging>
+  # </project>
   context 'when pulling release artifact' do
     let(:coordinates_map) do
       { version: '1.2.3',
@@ -55,6 +63,17 @@ describe KPM::NexusFacade, skip_me_if_nil: ENV['CLOUDSMITH_TOKEN'].nil? do
     }
   end
 
+  # File uploaded twice (the first doesn't have any <properties>)
+  # <project>
+  #   <modelVersion>4.0.0</modelVersion>
+  #   <groupId>com.mycompany.app</groupId>
+  #   <artifactId>my-app</artifactId>
+  #   <version>1.2.4-SNAPSHOT</version>
+  #   <packaging>pom</packaging>
+  #   <properties>
+  #     <for-kpm>true</for-kpm>
+  #   </properties>
+  # </project>
   context 'when pulling SNAPSHOT artifact' do
     let(:coordinates_map) do
       { version: '1.2.4-SNAPSHOT',
@@ -83,6 +102,8 @@ describe KPM::NexusFacade, skip_me_if_nil: ENV['CLOUDSMITH_TOKEN'].nil? do
       expect(parsed_pom.elements['//groupId'].text).to eq('com.mycompany.app')
       expect(parsed_pom.elements['//artifactId'].text).to eq('my-app')
       expect(parsed_pom.elements['//version'].text).to eq('1.2.4-SNAPSHOT')
+      # Verify that if multiple SNAPSHOTs are uploaded, the last one is downloaded (the first one doesn't have <properties>)
+      expect(parsed_pom.elements['//properties/for-kpm'].text).to eq('true')
     }
   end
 end
