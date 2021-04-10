@@ -9,7 +9,11 @@ module KPM
   module NexusFacade
     class CloudsmithApiCalls < NexusApiCallsV2
       def pull_artifact_endpoint(coordinates)
-        version_artifact_details = parent_get_artifact_info(coordinates) rescue ''
+        version_artifact_details = begin
+                                     parent_get_artifact_info(coordinates)
+                                   rescue StandardError
+                                     ''
+                                   end
 
         # For SNAPSHOTs, we need to figure out the version used as part of the filename
         filename_version = begin
