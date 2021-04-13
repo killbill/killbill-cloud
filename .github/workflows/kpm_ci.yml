@@ -1,0 +1,87 @@
+name: kpm_ci
+
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  JRUBY_OPTS: --2.0 -J-Xmx1024M
+  KB_ADDRESS: 0.0.0.0
+  KB_PORT: 8080
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # JRuby 9.1 has a bug with Bundler 2 (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 will trigger tgz errors
+        # ruby-version: ['2.4.2', 'jruby-9.1.17.0']
+        ruby-version: ['2.4.2']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: kpm
+      - name: Start stack
+        run: |
+          cd kpm/docker && docker-compose -p it -f docker-compose.ci.mysql.yml up -d
+      - name: Wait for stack
+        run: |
+          count=0
+          until $(curl --output /dev/null --silent --fail http://${KB_ADDRESS}:${KB_PORT}/1.0/healthcheck); do
+            if [[ "$count" == "180" ]]; then
+              exit 64
+            fi
+            count=$(( count + 1 ))
+            sleep 1
+          done
+          curl -v \
+               -X POST \
+               -u admin:password \
+               -H 'Content-Type: application/json' \
+               -H 'X-Killbill-CreatedBy: GitHub' \
+               -d '{"apiKey": "bob", "apiSecret": "lazar"}' \
+               "http://${KB_ADDRESS}:${KB_PORT}/1.0/kb/tenants?useGlobalDefault=true"
+          mysql -uroot -proot -h 0.0.0.0 -e "CREATE USER 'test_user'@'%' IDENTIFIED BY 'test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'%'; FLUSH PRIVILEGES;"
+      - name: Run unit tests
+        run: |
+          cd kpm
+          bundle exec rake test:spec
+      - name: Run remote tests
+        env:
+          CLOUDSMITH_ORG: ${{ secrets.CLOUDSMITH_ORG }}
+          CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
+          CLOUDSMITH_TOKEN: ${{ secrets.CLOUDSMITH_TOKEN }}
+          TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          cd kpm
+          bundle exec rake test:remote:spec
+      - name: Run MySQL tests
+        run: |
+          cd kpm
+          bundle exec rake test:mysql:spec
+      - name: Debugging after failure
+        if: failure()
+        run: |
+          echo "[DEBUG] killbill healthcheck"
+          curl -v http://${KB_ADDRESS}:${KB_PORT}/1.0/healthcheck || true
+          echo "[DEBUG] hostname"
+          hostname
+          echo "[DEBUG] netstat -tulpn"
+          sudo netstat -tulpn
+          echo "[DEBUG] docker network ls"
+          docker network ls
+          echo "[DEBUG] docker ps -a"
+          docker ps -a
+          echo "[DEBUG] killbill env"
+          docker exec it_killbill_1 env || true
+          echo "[DEBUG] db env"
+          docker exec it_db_1 env || true
+          echo "[DEBUG] killbill logs"
+          docker logs --details it_killbill_1 || true
+          echo "[DEBUG] killbill raw logs"
+          sudo cat /tmp/it/logs/killbill.out || true
+          echo "[DEBUG] db logs"
+          docker logs --details it_db_1 || true
