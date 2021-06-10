@@ -522,6 +522,15 @@ org.killbill.template.name={{ lookup('env', 'KILLBILL_TEMPLATE_NAME') }}
 {% if lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') %}
 org.killbill.tenant.broadcast.rate={{ lookup('env', 'KILLBILL_TENANT_BROADCAST_RATE') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_REFRESH_DELAY') %}
+org.killbill.billing.plugin.analytics.refreshDelay={{ lookup('env', 'KILLBILL_ANALYTICS_REFRESH_DELAY') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_BLACKLIST') %}
+org.killbill.billing.plugin.analytics.blacklist={{ lookup('env', 'KILLBILL_ANALYTICS_BLACKLIST') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_ANALYTICS_IGNORED_GROUP') %}
+org.killbill.billing.plugin.analytics.ignoredGroups={{ lookup('env', 'KILLBILL_ANALYTICS_IGNORED_GROUP') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_KPM_USERNAME') %}
 org.killbill.billing.plugin.kpm.adminUsername={{ lookup('env', 'KILLBILL_KPM_USERNAME') }}
 {% endif %}
