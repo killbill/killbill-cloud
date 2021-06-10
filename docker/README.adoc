@@ -198,7 +198,7 @@ The following environment variables will populate the default `killbill.properti
 * `KILLBILL_CACHE_CONFIG_REDIS_URL` (default `redis://127.0.0.1:6379`)
 * `KILLBILL_CACHE_CONFIG_REDIS_PASSWORD` (default `null`)
 * `KILLBILL_CACHE_CONFIG_REDIS_CONNECTION_MINIMUM_IDLE_SIZE` (default `1`)
-* `KILLBILL_ANALYTICS_REFRESH_DELAY` (default `` seconds)
+* `KILLBILL_ANALYTICS_REFRESH_DELAY` (default `10` seconds)
 * `KILLBILL_ANALYTICS_BLACKLIST` (default ``)
 * `KILLBILL_ANALYTICS_IGNORED_GROUP` (default ``)
 
