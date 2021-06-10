@@ -6,6 +6,15 @@ export CATALINA_OPTS="$CATALINA_OPTS
 {% if lookup('env', 'KAUI_KILLBILL_URL') %}
                       -Dkaui.url={{ lookup('env', 'KAUI_KILLBILL_URL') }}
 {% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_DISABLE_SSL_VERIFICATION') %}
+                      -Dkaui.disable_ssl_verification={{ lookup('env', 'KAUI_KILLBILL_DISABLE_SSL_VERIFICATION') }}
+{% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_READ_TIMEOUT') %}
+                      -Dkaui.read_timeout={{ lookup('env', 'KAUI_KILLBILL_READ_TIMEOUT') }}
+{% endif %}
+{% if lookup('env', 'KAUI_KILLBILL_CONNECTION_TIMEOUT') %}
+                      -Dkaui.connection_timeout={{ lookup('env', 'KAUI_KILLBILL_CONNECTION_TIMEOUT') }}
+{% endif %}
 {% if lookup('env', 'KAUI_KILLBILL_API_KEY') %}
                       -Dkaui.api_key={{ lookup('env', 'KAUI_KILLBILL_API_KEY') }}
 {% endif %}

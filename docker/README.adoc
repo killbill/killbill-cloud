@@ -206,6 +206,9 @@ The following environment variables will populate the default `killbill.properti
 #### Kaui specific variables
 
 * `KAUI_KILLBILL_URL` (default `http://127.0.0.1:8080`)
+* `KAUI_KILLBILL_DISABLE_SSL_VERIFICATION` (default `false`)
+* `KAUI_KILLBILL_READ_TIMEOUT` (default `60000`)
+* `KAUI_KILLBILL_CONNECTION_TIMEOUT` (default `60000`)
 * `KAUI_KILLBILL_API_KEY` (default `bob`)
 * `KAUI_KILLBILL_API_SECRET` (default `lazar`)
 * `KAUI_CONFIG_DAO_URL` (default `jdbc:mysql://localhost:3306/kaui`)
