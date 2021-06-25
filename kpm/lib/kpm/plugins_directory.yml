@@ -27,7 +27,7 @@
 :deposit:
   :type: :java
   :versions:
-    :0.22: 0.0.1
+    :0.22: 0.0.2
 :dwolla:
   :type: :java
   :versions:
