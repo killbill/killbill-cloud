@@ -16,6 +16,9 @@ on:
         required: true
         default: 'master'
 
+env:
+  CURRENT_LTS: '0.22'
+
 jobs:
   docker:
     name: Publish Docker images
@@ -41,8 +44,12 @@ jobs:
           cd docker
           make -e TARGET=kaui -e VERSION=latest rebuild
           make -e TARGET=killbill VERSION=latest rebuild
+          make -e TARGET=mariadb VERSION=$CURRENT_LTS rebuild
+          make -e TARGET=postgresql VERSION=$CURRENT_LTS rebuild
           docker push killbill/kaui:latest
           docker push killbill/killbill:latest
+          docker push killbill/mariadb:$CURRENT_LTS
+          docker push killbill/postgresql:$CURRENT_LTS
       - name: Build and push killbill image
         if: github.event.inputs.killbill_version != ''
         run: |
