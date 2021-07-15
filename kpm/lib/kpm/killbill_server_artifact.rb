@@ -66,10 +66,10 @@ module KPM
           properties_element = pom.root.elements['properties']
           %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
             versions[property] = properties_element.elements["#{property}.version"].text
+            file.close
           end
 
          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
-		 file.close
 		 FileUtils.rm_f(oss_pom_info[:file_path])
         end
         versions
