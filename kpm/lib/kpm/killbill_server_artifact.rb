@@ -61,14 +61,16 @@ module KPM
                               verify_sha1,
                               overrides,
                               ssl_verify)
-
-          pom = REXML::Document.new(File.new(oss_pom_info[:file_path]))
+          file = File.new(oss_pom_info[:file_path])
+          pom = REXML::Document.new(file)
           properties_element = pom.root.elements['properties']
           %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
             versions[property] = properties_element.elements["#{property}.version"].text
           end
 
-          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
+         sha1_checker.cache_killbill_info(version, versions) if sha1_checker
+		 file.close
+		 FileUtils.rm_f(oss_pom_info[:file_path])
         end
         versions
       rescue StandardError => e
