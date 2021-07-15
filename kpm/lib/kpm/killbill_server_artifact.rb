@@ -41,10 +41,15 @@ module KPM
                              ssl_verify)
 
           # Extract the killbill-oss-parent version
-          pom = REXML::Document.new(File.new(kb_pom_info[:file_path]))
-          oss_parent_version = pom.root.elements['parent/version'].text
-          kb_version = pom.root.elements['version'].text
-
+          file = File.new(kb_pom_info[:file_path])
+          begin
+            pom = REXML::Document.new(file)
+            oss_parent_version = pom.root.elements['parent/version'].text
+            kb_version = pom.root.elements['version'].text
+          ensure
+            file.close
+            FileUtils.rm_f(kb_pom_info[:file_path])
+          end
           versions['killbill'] = kb_version
           versions['killbill-oss-parent'] = oss_parent_version
 
@@ -62,15 +67,17 @@ module KPM
                               overrides,
                               ssl_verify)
           file = File.new(oss_pom_info[:file_path])
-          pom = REXML::Document.new(file)
-          properties_element = pom.root.elements['properties']
-          %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
-            versions[property] = properties_element.elements["#{property}.version"].text
+          begin
+            pom = REXML::Document.new(file)
+            properties_element = pom.root.elements['properties']
+            %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
+              versions[property] = properties_element.elements["#{property}.version"].text
+            end
+          ensure
             file.close
+            FileUtils.rm_f(oss_pom_info[:file_path])
           end
-
-         sha1_checker.cache_killbill_info(version, versions) if sha1_checker
-		 FileUtils.rm_f(oss_pom_info[:file_path])
+          sha1_checker.cache_killbill_info(version, versions) if sha1_checker
         end
         versions
       rescue StandardError => e
