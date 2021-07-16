@@ -10,6 +10,15 @@ module KPM
       @logger = logger
     end
 
+    def create_symbolic_link(path, link)
+      FileUtils.rm_f(link)
+      FileUtils.ln_s(path, link, force: true)
+    rescue Errno::EACCES
+      @logger.warn('Unable to create symbolic link LATEST, will copy the directory')
+      FileUtils.rm_rf(link)
+      FileUtils.cp_r(path, link)
+    end
+
     def set_active(plugin_name_or_path, plugin_version = nil)
       if plugin_name_or_path.nil?
         @logger.warn('Unable to mark a plugin as active: no name or path specified')
@@ -19,8 +28,7 @@ module KPM
       if plugin_version.nil?
         # Full path specified, with version
         link = Pathname.new(plugin_name_or_path).join('../SET_DEFAULT')
-        FileUtils.rm_f(link)
-        FileUtils.ln_s(plugin_name_or_path, link, force: true)
+        create_symbolic_link(plugin_name_or_path, link)
       else
         # Plugin name (fs directory) specified
         plugin_dir_glob = @plugins_dir.join('*').join(plugin_name_or_path)
@@ -28,8 +36,7 @@ module KPM
         Dir.glob(plugin_dir_glob).each do |plugin_dir_path|
           plugin_dir = Pathname.new(plugin_dir_path)
           link = plugin_dir.join('SET_DEFAULT')
-          FileUtils.rm_f(link)
-          FileUtils.ln_s(plugin_dir.join(plugin_version), link, force: true)
+          create_symbolic_link(plugin_dir.join(plugin_version), link)
         end
       end
 
@@ -179,7 +186,7 @@ module KPM
       end
     end
 
-    # Note: the plugin name here is the directory name on the filesystem
+    # NOTE: the plugin name here is the directory name on the filesystem
     def update_fs(plugin_name_or_path, plugin_version = nil)
       if plugin_name_or_path.nil?
         @logger.warn('Unable to update the filesystem: no name or path specified')
