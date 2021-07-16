@@ -5,7 +5,7 @@ on:
     inputs:
       target_version:
         description: 'Target version: given version number [x.x.x]'
-        required: false
+        required: true
         default: ''
       perform_version:
         description: 'tag to (re-)perform (in case of deploy failure)'

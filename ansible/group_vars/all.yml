@@ -3,7 +3,7 @@ nexus_url: https://oss.sonatype.org
 nexus_repository: releases
 
 kpm_install_dir: /opt
-kpm_version: 0.10.1
+kpm_version: 0.10.2
 kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
 
 catalina_home: /usr/share/tomcat
