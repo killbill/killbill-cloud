@@ -75,12 +75,12 @@ module KPM
       plugin_map = { plugin_name: plugin_name, plugin_path: plugin_path.to_s, type: type }
       entries = get_entries(plugin_path)
       set_default = entries.select { |e| e == 'SET_DEFAULT' }[0]
-      # On Windows, SET_DEFAULT is a directory, not a symbolic link
+      default_version = nil
       if set_default
         begin
           default_version = File.basename(File.readlink(plugin_path.join(set_default)))
         rescue StandardError
-          default_version = nil
+          # On Windows, SET_DEFAULT is a directory, not a symbolic link
         end
       end
 
