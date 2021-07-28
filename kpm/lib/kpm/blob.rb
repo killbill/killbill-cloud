@@ -2,7 +2,6 @@
 
 require 'fileutils'
 
-
 module KPM
   class Blob
     def initialize(value, tmp_dir)
