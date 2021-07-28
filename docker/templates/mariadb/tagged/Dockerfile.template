@@ -26,6 +26,4 @@ RUN set -x \
 
 RUN echo "INSERT INTO kaui.kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" > /docker-entrypoint-initdb.d/021_kaui_admin.sql
 
-RUN mkdir -p /tmp/replicate
-
 CMD ["mysqld", "--secure-file-priv=/tmp"]
