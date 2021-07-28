@@ -28,4 +28,4 @@ RUN echo "INSERT INTO kaui.kaui_allowed_users (kb_username, description, created
 
 RUN mkdir -p /tmp/replicate
 
-CMD ["mysqld", "--secure-file-priv=/tmp/replicate"]
+CMD ["mysqld", "--secure-file-priv=/tmp"]

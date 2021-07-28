@@ -26,7 +26,6 @@ module KPM
     # Temporary directory
     TMP_DIR_PEFIX = 'killbill'
     TMP_DIR = Dir.mktmpdir(TMP_DIR_PEFIX)
-    BLOB_TMP_DIR = '/tmp/replicate'
 
     # Created By
     WHO = 'kpm_export_import'
@@ -387,7 +386,7 @@ module KPM
       # Verify encoded of the decoded value == input prior return result
       return input if  Base64.strict_encode64(result) != input
 
-      Blob.new(result, BLOB_TMP_DIR)
+      Blob.new(result, TMP_DIR)
     end
 
     def sniff_delimiter(file)
