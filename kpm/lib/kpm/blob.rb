@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 module KPM
   class Blob
     def initialize(value, tmp_dir)
       @tmp_dir = tmp_dir
       @blob_file = @tmp_dir + File::SEPARATOR + rand.to_s
+      # Make sure directory is 'rx' for others to allow LOAD_FILE to work
+      FileUtils.chmod('a+rx', @tmp_dir)
       store_value(value)
     end
 

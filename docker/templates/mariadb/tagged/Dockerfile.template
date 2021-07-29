@@ -25,3 +25,5 @@ RUN set -x \
         && apt-get purge -y --auto-remove ca-certificates wget
 
 RUN echo "INSERT INTO kaui.kaui_allowed_users (kb_username, description, created_at, updated_at) values ('admin', 'super admin', NOW(), NOW());" > /docker-entrypoint-initdb.d/021_kaui_admin.sql
+
+CMD ["mysqld", "--secure-file-priv=/tmp"]
