@@ -19,7 +19,7 @@
   :versions:
     :0.18: 0.4.1
     :0.20: 0.6.1
-    :0.22: 0.8.2
+    :0.22: 0.8.3
 :cybersource:
   :type: :ruby
   :versions:
