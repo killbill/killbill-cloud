@@ -33,6 +33,9 @@ export CATALINA_OPTS="$CATALINA_OPTS
 {% if lookup('env', 'KAUI_ROOT_USERNAME') %}
                       -Dkaui.root_username={{ lookup('env', 'KAUI_ROOT_USERNAME') }}
 {% endif %}
+{% if lookup('env', 'KAUI_USERNAME_CLAIM') %}
+                      -Dkaui.jwt.username_claim={{ lookup('env', 'KAUI_USERNAME_CLAIM') }}
+{% endif %}
                       {{ kaui_system_properties }}"
 
 # Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
