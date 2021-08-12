@@ -189,6 +189,7 @@ The following environment variables will populate the default `killbill.properti
 * `KILLBILL_SECURITY_AUTH0_CLIENT_ID` (default ``)
 * `KILLBILL_SECURITY_AUTH0_CLIENT_SECRET` (default ``)
 * `KILLBILL_SECURITY_AUTH0_API_IDENTIFIER` (default ``)
+* `KILLBILL_SECURITY_AUTH0_ISSUER` (default ``)
 * `KILLBILL_SECURITY_AUTH0_AUDIENCE` (default ``)
 * `KILLBILL_SECURITY_AUTH0_USERNAME_CLAIM` (default `sub`)
 * `KILLBILL_SECURITY_AUTH0_DATABASE_CONNECTION_NAME` (default ``)
