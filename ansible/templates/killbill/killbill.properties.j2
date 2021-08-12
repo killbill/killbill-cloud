@@ -528,6 +528,9 @@ org.killbill.security.auth0.clientSecret={{ lookup('env', 'KILLBILL_SECURITY_AUT
 {% if lookup('env', 'KILLBILL_SECURITY_AUTH0_API_IDENTIFIER') %}
 org.killbill.security.auth0.apiIdentifier={{ lookup('env', 'KILLBILL_SECURITY_AUTH0_API_IDENTIFIER') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_SECURITY_AUTH0_ISSUER') %}
+org.killbill.security.auth0.issuer={{ lookup('env', 'KILLBILL_SECURITY_AUTH0_ISSUER') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_SECURITY_AUTH0_AUDIENCE') %}
 org.killbill.security.auth0.audience={{ lookup('env', 'KILLBILL_SECURITY_AUTH0_AUDIENCE') }}
 {% endif %}
