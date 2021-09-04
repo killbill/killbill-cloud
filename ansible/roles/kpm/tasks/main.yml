@@ -39,6 +39,7 @@
   tags: kpm
 
 - name: symlink install directory
+  become: true
   file: src="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" path="{{ kpm_path }}" state=link
   tags: kpm
 
