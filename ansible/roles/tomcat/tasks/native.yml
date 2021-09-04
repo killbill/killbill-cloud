@@ -50,13 +50,14 @@
   register: workspace
   tags: native
 
+# become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
 - name: expand native libraries archive
+  become: true
   unarchive:
     src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
     dest: "{{ workspace.path }}"
     extra_opts: [--strip-components=1]
-    owner: "{{ tomcat_owner }}"
-    group: "{{ tomcat_group }}"
+    owner: "{{ ansible_user_id }}"
     remote_src: yes
   tags: native
 
@@ -74,12 +75,21 @@
 
 - name: build native libraries
   command: >
-    make {{ item }}
+    make all
     chdir="{{ workspace.path }}/native"
-  with_items:
-    - all
-    - install
   tags: native
+
+- name: install native libraries
+  become: true
+  command: >
+    make install
+    chdir="{{ workspace.path }}/native"
+  tags: native
+
+- name: set correct permissions
+  become: true
+  file: path={{ tomcat_native_libdir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  tags: install
 
 - name: remove temporary directory
   file:
