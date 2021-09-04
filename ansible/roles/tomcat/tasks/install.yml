@@ -14,15 +14,8 @@
     state: present
   tags: install
 
-- name: ensure Tomcat install dirs exist and have the right permissions
-  become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
-  with_items:
-    - "{{ catalina_base }}"
-    - "{{ tomcat_install_dir }}"
-  tags: install
-
 - name: install Tomcat
+  become: true
   unarchive:
     src: "http://archive.apache.org/dist/tomcat/tomcat-8/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: True
@@ -33,4 +26,10 @@
 
 - name: symlink install directory
   file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
+  tags: install
+
+# The individual files have the correct permissions already, but not the top directory
+- name: set correct permissions
+  become: true
+  file: path={{ catalina_home }} owner={{ tomcat_owner }} group={{ tomcat_group }}
   tags: install
