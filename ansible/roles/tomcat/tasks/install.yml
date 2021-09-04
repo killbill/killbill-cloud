@@ -4,6 +4,7 @@
     state: present
   tags: install
 
+# Expect bash to be present -- we haven't tested the scripts with other shells
 - name: add Tomcat user
   user:
     name: "{{ tomcat_owner }}"
@@ -11,6 +12,7 @@
     group: "{{ tomcat_group }}"
     create_home: yes
     home: "{{ tomcat_home }}"
+    shell: /bin/bash
     state: present
   tags: install
 
