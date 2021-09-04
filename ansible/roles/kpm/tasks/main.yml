@@ -6,6 +6,21 @@
     state: directory
   tags: kpm
 
+- name: download kpm release metadata
+  uri:
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/maven-metadata.xml"
+    return_content: yes
+  register: kpm_metadata
+  when: kpm_version is undefined
+  tags: kpm
+
+# We don't use the xml module to avoid a dependency on lxml
+- name: set kpm_version
+  set_fact:
+    kpm_version: "{{ kpm_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+  when: kpm_version is undefined
+  tags: kpm
+
 - name: check if KPM is already installed
   stat:
     path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}/kpm"
