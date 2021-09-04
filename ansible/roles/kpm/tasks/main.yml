@@ -55,5 +55,5 @@
 # The individual files have the correct permissions already, but not the top directory
 - name: set correct permissions
   become: true
-  file: path={{ kpm_path }} owner={{ kpm_owner }} group={{ kpm_group }}
+  file: path="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" owner={{ kpm_owner }} group={{ kpm_group }} recurse=yes
   tags: kpm
