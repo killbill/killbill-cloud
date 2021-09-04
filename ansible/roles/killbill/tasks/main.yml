@@ -22,6 +22,18 @@
     - name: killbill.properties
   tags: kpm-install
 
+- name: generate kpm.yml file if needed
+  become: true
+  template:
+    src: "killbill/kpm.yml.j2"
+    dest: "{{ kb_install_dir }}/kpm.yml"
+    mode: u=rw,g=r,o=r
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    # If the file already exist, don't clobber it
+    force: no
+  tags: kpm-install
+
 # Generate Kill Bill-specific Tomcat configuration files based on environment variables
 - name: generate Tomcat files
   become: true
@@ -40,11 +52,29 @@
       dest: "{{ catalina_base }}/bin"
   tags: tomcat
 
+- name: check if a ROOT webapp is already installed
+  stat:
+    path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
+  register: existing_webapp
+  tags: tomcat
+
+# Only run kpm install if there is no exploded webapp already. Otherwise,
+# because we will delete the ROOT.war file below, kpm install won't be idempotent
+# and always download the war.
+# In practice, this means one cannot just update the version in the kpm.yml file
+# to update Kill Bill and re-run the role: one needs to first delete the ROOT directory.
 - name: run KPM install
   become: true
+  become_user: "{{ tomcat_owner }}"
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"
+  when: existing_webapp.stat.exists == False
+  tags: kpm-install
+
+- name: set correct permissions
+  become: true
+  file: path={{ kb_install_dir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR

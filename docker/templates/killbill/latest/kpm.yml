@@ -1,6 +1,0 @@
----
-killbill:
-  version: LATEST
-  plugins:
-  plugins_dir: /var/lib/killbill/bundles
-  webapp_path: /var/lib/tomcat/webapps/ROOT.war
