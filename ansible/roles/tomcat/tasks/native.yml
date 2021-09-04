@@ -1,98 +1,108 @@
 ---
-- name: install toolchain
-  become: true
-  package: >
-    name={{ item }}
-    state=latest
-  with_items:
-    - dpkg-dev
-    - gcc
-    - libapr1-dev
-    - libssl-dev
-    - make
-  when: apr_config_path is undefined
-  tags: native
-
-- name: find apr-1-config path
-  shell: which apr-1-config
-  register: apr_config_path_output
-  when: apr_config_path is undefined
-  tags: native
-
-- name: set apr_config_path
-  set_fact:
-    apr_config_path: "{{ apr_config_path_output.stdout }}"
-  when: apr_config_path is undefined
-  tags: native
-
-- name: find gnu_arch path
-  shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
-  register: gnu_arch_output
-  when: gnu_arch is undefined
-  tags: native
-
-- name: set gnu_arch
-  set_fact:
-    gnu_arch: "{{ gnu_arch_output.stdout }}"
-  when: gnu_arch is undefined
-  tags: native
-
 - name: set tomcat_native_libdir
   set_fact:
     tomcat_native_libdir: "{{ catalina_home }}/native-jni-lib"
   when: tomcat_native_libdir is undefined
   tags: native
 
-- name: create temporary build directory
-  tempfile:
-    state: directory
-    suffix: tomcat-native-build
-  register: workspace
+- name: check if native libaries are already built
+  stat:
+    path: "{{ tomcat_native_libdir }}/libtcnative-1.so"
+  register: libtcnative
   tags: native
 
-# become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
-- name: expand native libraries archive
-  become: true
-  unarchive:
-    src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
-    dest: "{{ workspace.path }}"
-    extra_opts: [--strip-components=1]
-    owner: "{{ ansible_user_id }}"
-    remote_src: yes
-  tags: native
+- block:
+  - block:
+    - name: install toolchain
+      become: true
+      package: >
+        name={{ item }}
+        state=latest
+      with_items:
+        - dpkg-dev
+        - gcc
+        - libapr1-dev
+        - libssl-dev
+        - make
+      tags: native
 
-- name: configure native libraries
-  command: >
-    ./configure
-      --build="{{ gnu_arch }}"
-      --libdir="{{ tomcat_native_libdir }}"
-      --prefix="{{ catalina_home }}"
-      --with-apr="{{ apr_config_path }}"
-      --with-java-home="{{ java_home }}"
-      --with-ssl=yes
-    chdir="{{ workspace.path }}/native"
-  tags: native
+    - name: find apr-1-config path
+      shell: which apr-1-config
+      register: apr_config_path_output
+      tags: native
 
-- name: build native libraries
-  command: >
-    make all
-    chdir="{{ workspace.path }}/native"
-  tags: native
+    - name: set apr_config_path
+      set_fact:
+        apr_config_path: "{{ apr_config_path_output.stdout }}"
+      tags: native
+    when: apr_config_path is undefined
+    tags: native
 
-- name: install native libraries
-  become: true
-  command: >
-    make install
-    chdir="{{ workspace.path }}/native"
-  tags: native
+  - block:
+    - name: find gnu_arch path
+      shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
+      register: gnu_arch_output
+      tags: native
 
-- name: set correct permissions
-  become: true
-  file: path={{ tomcat_native_libdir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
-  tags: install
+    - name: set gnu_arch
+      set_fact:
+        gnu_arch: "{{ gnu_arch_output.stdout }}"
+      tags: native
+    when: gnu_arch is undefined
+    tags: native
 
-- name: remove temporary directory
-  file:
-    path="{{ workspace.path }}"
-    state=absent
+  - name: create temporary build directory
+    tempfile:
+      state: directory
+      suffix: tomcat-native-build
+    register: workspace
+    tags: native
+
+  # become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
+  - name: expand native libraries archive
+    become: true
+    unarchive:
+      src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
+      dest: "{{ workspace.path }}"
+      extra_opts: [--strip-components=1]
+      owner: "{{ ansible_user_id }}"
+      remote_src: yes
+    tags: native
+
+  - name: configure native libraries
+    command: >
+      ./configure
+        --build="{{ gnu_arch }}"
+        --libdir="{{ tomcat_native_libdir }}"
+        --prefix="{{ catalina_home }}"
+        --with-apr="{{ apr_config_path }}"
+        --with-java-home="{{ java_home }}"
+        --with-ssl=yes
+      chdir="{{ workspace.path }}/native"
+    tags: native
+
+  - name: build native libraries
+    command: >
+      make all
+      chdir="{{ workspace.path }}/native"
+    tags: native
+
+  - name: install native libraries
+    become: true
+    command: >
+      make install
+      chdir="{{ workspace.path }}/native"
+    tags: native
+
+  - name: set correct permissions
+    become: true
+    file: path={{ tomcat_native_libdir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+    tags: install
+
+  - name: remove temporary directory
+    file:
+      path="{{ workspace.path }}"
+      state=absent
+    tags: native
+  when: libtcnative.stat.exists == False
   tags: native
