@@ -1,3 +1,11 @@
+---
+- name: ensure Tomcat install dir exists
+  become: true
+  file:
+    path: "{{ tomcat_install_dir }}"
+    state: directory
+  tags: install
+
 - name: add Tomcat group
   group:
     name: "{{ tomcat_group }}"
