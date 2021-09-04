@@ -1,7 +1,6 @@
 ---
 - name: download Logstash dependency
   become: true
-  become_user: "{{ tomcat_owner }}"
   community.general.maven_artifact:
     group_id: net.logstash.logback
     artifact_id: logstash-logback-encoder
@@ -11,6 +10,13 @@
     - killbill-logback
     - logstash
     - download
+
+- name: set correct permissions
+  become: true
+  file: path=/opt/logstash-logback-encoder.jar owner={{ tomcat_owner }} group={{ tomcat_group }}
+  tags:
+    - killbill-logback
+    - logstash
 
 - name: ensure Logstash dependency exists in the webapp
   copy:
