@@ -8,6 +8,8 @@ LABEL maintainer="killbilling-users@googlegroups.com"
 RUN ["/bin/bash", "-c", "rm -f $CATALINA_BASE/conf/{context.xml,server.xml,web.xml} $CATALINA_BASE/bin/setenv.sh"]
 
 ENV KILLBILL_INSTALL_DIR=/var/lib/killbill
+RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
+RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KILLBILL_INSTALL_DIR
 
 # Default configuration options
 ENV KILLBILL_BUNDLE_INSTALL_DIR=$KILLBILL_INSTALL_DIR/bundles
