@@ -10,6 +10,7 @@
   stat:
     path: "{{ kpm_path }}/kpm"
   register: kpm_bin
+  tags: kpm
 
 - name: install KPM
   become: true
@@ -18,4 +19,13 @@
     remote_src: True
     dest: "{{ kpm_install_dir }}"
   when: kpm_bin.stat.exists == False
+  tags: kpm
+
+# The first time KPM is run, a Gemfile.lock needs to written out
+- name: initialize KPM
+  become: true
+  command: |
+    "{{ kpm_path }}/kpm" version
+  args:
+    creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"
   tags: kpm
