@@ -33,6 +33,8 @@
     src: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     remote_src: True
     dest: "{{ kpm_install_dir }}"
+    owner: "{{ kpm_owner }}"
+    group: "{{ kpm_group }}"
   when: kpm_bin.stat.exists == False
   tags: kpm
 
@@ -47,4 +49,10 @@
     "{{ kpm_path }}/kpm" version
   args:
     creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"
+  tags: kpm
+
+# The individual files have the correct permissions already, but not the top directory
+- name: set correct permissions
+  become: true
+  file: path={{ kpm_path }} owner={{ kpm_owner }} group={{ kpm_group }}
   tags: kpm

@@ -4,6 +4,8 @@ nexus_repository: releases
 
 kpm_install_dir: /opt
 kpm_path: "{{ kpm_install_dir }}/kpm-latest"
+kpm_owner: root
+kpm_group: root
 
 catalina_home: /usr/share/tomcat
 catalina_base: /var/lib/tomcat
