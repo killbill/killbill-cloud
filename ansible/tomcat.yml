@@ -1,8 +1,6 @@
 ---
 - name: Deploy Tomcat
   hosts: all
-  vars:
-    tomcat_version: 8.5.59
   become: yes
   tasks:
     - name: install Tomcat

@@ -24,6 +24,21 @@
     state: present
   tags: install
 
+- name: download Tomcat release metadata
+  uri:
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
+    return_content: yes
+  register: tomcat_metadata
+  when: tomcat_version is undefined
+  tags: install
+
+# We don't use the xml module to avoid a dependency on lxml
+- name: set tomcat_version
+  set_fact:
+    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(8.5.*)</version>', '\\1') | last }}"
+  when: tomcat_version is undefined
+  tags: install
+
 - name: install Tomcat
   become: true
   unarchive:
