@@ -4,7 +4,7 @@ nexus_repository: releases
 
 kpm_install_dir: /opt
 kpm_version: 0.10.3
-kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+kpm_path: "{{ kpm_install_dir }}/kpm-latest"
 
 catalina_home: /usr/share/tomcat
 catalina_base: /var/lib/tomcat

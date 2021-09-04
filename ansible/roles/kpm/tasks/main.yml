@@ -8,7 +8,7 @@
 
 - name: check if KPM is already installed
   stat:
-    path: "{{ kpm_path }}/kpm"
+    path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}/kpm"
   register: kpm_bin
   tags: kpm
 
@@ -19,6 +19,10 @@
     remote_src: True
     dest: "{{ kpm_install_dir }}"
   when: kpm_bin.stat.exists == False
+  tags: kpm
+
+- name: symlink install directory
+  file: src="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" path="{{ kpm_path }}" state=link
   tags: kpm
 
 # The first time KPM is run, a Gemfile.lock needs to written out
