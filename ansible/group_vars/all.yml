@@ -7,6 +7,8 @@ kpm_path: "{{ kpm_install_dir }}/kpm-latest"
 
 catalina_home: /usr/share/tomcat
 catalina_base: /var/lib/tomcat
+tomcat_install_dir: /opt
+tomcat_home: "{{ catalina_base }}"
 tomcat_owner: tomcat
 tomcat_group: tomcat
 
