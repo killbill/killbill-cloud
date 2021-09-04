@@ -1,7 +1,7 @@
 ---
 - name: ensure Flyway install dir exists
   become: true
-  file: path={{ flyway_install_dir }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  file: path={{ flyway_install_dir }} state=directory
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
@@ -12,28 +12,32 @@
   tags: migrations
 
 - block:
-    - name: resolve LATEST version
-      killbill_facts:
-        kpm_path: "{{ kpm_path }}"
-        bundles_dir: "{{ kb_plugins_dir }}"
-        kaui_web_path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
-        killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
-        version: LATEST
-      register: kb_facts
+    - name: download killbill-flyway release metadata
+      uri:
+        url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
+        return_content: yes
+      register: flyway_metadata
       when: flyway_version is undefined
       tags: migrations
 
+    # We don't use the xml module to avoid a dependency on lxml
     - name: set flyway_version
       set_fact:
-        flyway_version: "{{ kb_facts['ansible_facts']['versions_info']['killbill'] }}"
+        flyway_version: "{{ flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
       when: flyway_version is undefined
       tags: migrations
 
     - name: install Flyway
+      become: true
       # maven_artifact module requires xml on the host
       get_url:
         url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
       tags: migrations
   when: flyway_bin.stat.exists == False
+  tags: migrations
+
+- name: set correct permissions
+  become: true
+  file: path="{{ flyway_install_dir }}/killbill-flyway.jar" owner={{ flyway_owner }} group={{ flyway_group }}
   tags: migrations

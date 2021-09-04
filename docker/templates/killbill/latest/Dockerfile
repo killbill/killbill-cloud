@@ -43,13 +43,15 @@ ENV MIGRATIONS_CMD="ansible-playbook $ANSIBLE_OPTS \
                                      -e kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
                                      -e kb_config_dir=$KILLBILL_INSTALL_DIR \
                                      -e kb_plugins_dir=$KILLBILL_INSTALL_DIR/bundles \
+                                     -e flyway_owner=$TOMCAT_OWNER \
+                                     -e flyway_group=$TOMCAT_GROUP \
                                      -e tomcat_owner=$TOMCAT_OWNER \
                                      -e tomcat_group=$TOMCAT_GROUP \
                                      -e catalina_base=$CATALINA_BASE \
                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/migrations.yml"
 
 # Install Flyway in the image
-RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/flyway.yml
+RUN ansible-playbook $ANSIBLE_OPTS -e flyway_owner=$TOMCAT_OWNER -e flyway_group=$TOMCAT_GROUP $KILLBILL_CLOUD_ANSIBLE_ROLES/flyway.yml
 
 # Install Logtstash dependencies
 ENV LOGSTASH_ENABLED=true
