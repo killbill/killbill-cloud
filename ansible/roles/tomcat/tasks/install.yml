@@ -62,3 +62,25 @@
   become: true
   file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
   tags: install
+
+- name: set required Tomcat environment variables
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  lineinfile:
+    line: "export {{ item.key }}={{ item.value }}"
+    regexp: "^export {{ item.key }}="
+    path: "{{ tomcat_home }}/.profile"
+    state: present
+  with_items:
+    - key: JAVA_HOME
+      value: "{{ java_home }}"
+    - key: CATALINA_HOME
+      value: "{{ catalina_home }}"
+    - key: CATALINA_BASE
+      value: "{{ catalina_base }}"
+    - key: CATALINA_PID
+      value: "{{ catalina_base }}/tomcat.pid"
+    - key: CATALINA_TMPDIR
+      value: "{{ catalina_base }}/temp"
+    - key: LD_LIBRARY_PATH
+      value: "{{ catalina_home }}/native-jni-lib"
