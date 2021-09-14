@@ -1,0 +1,10 @@
+---
+- name: Install Java
+  hosts: all
+  vars:
+    java_package: openjdk-8-jdk
+    default_java_home: /usr/lib/jvm/java-8-openjdk-amd64
+    java_home: /usr/lib/jvm/default-java
+  tasks:
+    - name: install Java
+      import_tasks: roles/tomcat/tasks/java.yml
