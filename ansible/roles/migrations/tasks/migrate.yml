@@ -4,12 +4,14 @@
   changed_when: java_dry_run_migrations.stdout_lines
   tags: migrations
 
-- debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
+- name: check if there's nothing to do
+  debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
   when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
   tags: migrations
 
 - block:
-    - debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
+    - name: print migrations
+      debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
       when: java_dry_run_migrations.stdout_lines
       tags: migrations
 

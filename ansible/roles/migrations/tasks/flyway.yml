@@ -1,7 +1,7 @@
 ---
 - name: ensure Flyway install dir exists
   become: true
-  file: path={{ flyway_install_dir }} state=directory
+  file: path={{ flyway_install_dir }} state=directory mode=u=rwx,g=rx,o=rx
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
@@ -34,7 +34,7 @@
         url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
       tags: migrations
-  when: flyway_bin.stat.exists == False
+  when: not flyway_bin.stat.exists
   tags: migrations
 
 - name: set correct permissions

@@ -104,5 +104,5 @@
       path="{{ workspace.path }}"
       state=absent
     tags: native
-  when: libtcnative.stat.exists == False
+  when: not libtcnative.stat.exists
   tags: native

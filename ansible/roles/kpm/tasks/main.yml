@@ -4,6 +4,7 @@
   file:
     path: "{{ kpm_install_dir }}"
     state: directory
+    mode: u=rwx,g=rx,o=rx
   tags: kpm
 
 - name: download kpm release metadata
@@ -35,7 +36,7 @@
     dest: "{{ kpm_install_dir }}"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
-  when: kpm_bin.stat.exists == False
+  when: not kpm_bin.stat.exists
   tags: kpm
 
 - name: symlink install directory

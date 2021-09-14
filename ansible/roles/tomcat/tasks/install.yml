@@ -4,6 +4,7 @@
   file:
     path: "{{ tomcat_install_dir }}"
     state: directory
+    mode: u=rwx,g=rx,o=rx
   tags: install
 
 - name: add Tomcat group

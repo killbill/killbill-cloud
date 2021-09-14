@@ -1,7 +1,7 @@
 ---
 - name: ensure Kill Bill dirs exist
   become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
   with_items:
     - "{{ kb_config_dir }}"
     - "{{ kb_plugins_dir }}"
@@ -69,7 +69,7 @@
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ kpm_yml }}"
-  when: existing_webapp.stat.exists == False
+  when: not existing_webapp.stat.exists
   tags: kpm-install
 
 - name: set correct permissions

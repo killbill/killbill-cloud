@@ -13,10 +13,9 @@
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
   command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
-  ignore_errors: True
   when:
     - catalina_home is defined
-    - tomcat_pid is not defined or tomcat_pid.stat.exists == True
+    - tomcat_pid is not defined or tomcat_pid.stat.exists
   tags: stop
 
 - name: stop Tomcat (without PID file)
@@ -25,10 +24,9 @@
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
   command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
-  ignore_errors: True
   when:
     - catalina_home is defined
-    - tomcat_pid is not defined or tomcat_pid.stat.exists == False
+    - tomcat_pid is not defined or not tomcat_pid.stat.exists
   tags: stop
 
 - name: check if war file exists
