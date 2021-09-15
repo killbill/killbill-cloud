@@ -1,28 +1,49 @@
+---
+- name: ensure Tomcat install dir exists
+  become: true
+  file:
+    path: "{{ tomcat_install_dir }}"
+    state: directory
+    mode: u=rwx,g=rx,o=rx
+  tags: install
+
 - name: add Tomcat group
+  become: true
   group:
     name: "{{ tomcat_group }}"
     state: present
   tags: install
 
+# Expect bash to be present -- we haven't tested the scripts with other shells
 - name: add Tomcat user
+  become: true
   user:
     name: "{{ tomcat_owner }}"
     comment: Kill Bill Tomcat owner
     group: "{{ tomcat_group }}"
     create_home: yes
     home: "{{ tomcat_home }}"
+    shell: /bin/bash
     state: present
   tags: install
 
-- name: ensure Tomcat install dirs exist and have the right permissions
-  become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
-  with_items:
-    - "{{ catalina_base }}"
-    - "{{ tomcat_install_dir }}"
+- name: download Tomcat release metadata
+  uri:
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
+    return_content: yes
+  register: tomcat_metadata
+  when: tomcat_version is undefined
+  tags: install
+
+# We don't use the xml module to avoid a dependency on lxml
+- name: set tomcat_version
+  set_fact:
+    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(8.5.*)</version>', '\\1') | last }}"
+  when: tomcat_version is undefined
   tags: install
 
 - name: install Tomcat
+  become: true
   unarchive:
     src: "http://archive.apache.org/dist/tomcat/tomcat-8/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: True
@@ -31,6 +52,35 @@
     group: "{{ tomcat_group }}"
   tags: install
 
+# The individual files have the correct permissions already, but not the top directory
+- name: set correct permissions
+  become: true
+  file: path="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  tags: install
+
 - name: symlink install directory
+  become: true
   file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
   tags: install
+
+- name: set required Tomcat environment variables
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  lineinfile:
+    line: "export {{ item.key }}={{ item.value }}"
+    regexp: "^export {{ item.key }}="
+    path: "{{ tomcat_home }}/.profile"
+    state: present
+  with_items:
+    - key: JAVA_HOME
+      value: "{{ java_home }}"
+    - key: CATALINA_HOME
+      value: "{{ catalina_home }}"
+    - key: CATALINA_BASE
+      value: "{{ catalina_base }}"
+    - key: CATALINA_PID
+      value: "{{ catalina_base }}/tomcat.pid"
+    - key: CATALINA_TMPDIR
+      value: "{{ catalina_base }}/temp"
+    - key: LD_LIBRARY_PATH
+      value: "{{ catalina_home }}/native-jni-lib"

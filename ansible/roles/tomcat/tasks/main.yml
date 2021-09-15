@@ -1,7 +1,7 @@
 ---
 - name: ensure Tomcat dirs exist
   become: true
-  file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }}
+  file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
   with_items:
     - bin
     - conf

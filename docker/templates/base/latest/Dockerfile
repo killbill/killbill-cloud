@@ -37,6 +37,7 @@ ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
 # Create tomcat user into sudo group and reinitialize the password
+# Note: the ansible role would take care of it, but that way, the ansible setup is done under the tomcat user
 ENV TOMCAT_OWNER=tomcat
 ENV TOMCAT_GROUP=tomcat
 ENV TOMCAT_HOME=/var/lib/tomcat
@@ -68,15 +69,14 @@ ENV ANSIBLE_OPTS="-i localhost, \
 ENV NEXUS_URL=https://oss.sonatype.org
 ENV NEXUS_REPOSITORY=releases
 ENV KPM_INSTALL_DIR=/opt
-ENV KPM_VERSION=0.10.3
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
+                     -e kpm_owner=$TOMCAT_OWNER \
+                     -e kpm_group=$TOMCAT_GROUP \
                      -e nexus_url=$NEXUS_URL \
                      -e nexus_repository=$NEXUS_REPOSITORY \
-                     -e kpm_version=$KPM_VERSION \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
-RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP /opt/kpm-${KPM_VERSION}-linux-x86_64
-ENV PATH="/opt/kpm-${KPM_VERSION}-linux-x86_64:${PATH}"
+ENV PATH="/opt/kpm-latest:${PATH}"
 
 # Install Tomcat (without native libraries)
 ENV CATALINA_BASE=$TOMCAT_HOME
@@ -84,11 +84,9 @@ ENV CATALINA_HOME=/usr/share/tomcat
 ENV CATALINA_PID=$CATALINA_BASE/tomcat.pid
 ENV CATALINA_TMPDIR=/var/tmp
 ENV TOMCAT_INSTALL_DIR=/opt
-ENV TOMCAT_VERSION=8.5.59
 ENV TOMCAT_NATIVE_LIBDIR=$CATALINA_HOME/native-jni-lib
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
 RUN ansible-playbook $ANSIBLE_OPTS \
-                     -e tomcat_version=$TOMCAT_VERSION \
                      -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
                      -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
                      -e tomcat_owner=$TOMCAT_OWNER \
@@ -96,24 +94,13 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_home=$TOMCAT_HOME \
                      -e catalina_home=$CATALINA_HOME \
                      -e catalina_base=$CATALINA_BASE \
+                     --skip-tags native \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
 
-# Install Tomcat (with native libraries)
+# Build Tomcat native libraries
 FROM builder-base as builder-tomcat
-USER root
-# https://github.com/moby/moby/issues/4032
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-      dpkg-dev \
-      gcc \
-      libapr1-dev \
-      libssl-dev \
-      make && \
-    rm -rf /var/lib/apt/lists/*
 USER $TOMCAT_OWNER
 RUN ansible-playbook $ANSIBLE_OPTS \
-                     -e tomcat_version=$TOMCAT_VERSION \
                      -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
                      -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
                      -e tomcat_owner=$TOMCAT_OWNER \
@@ -121,8 +108,7 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_home=$TOMCAT_HOME \
                      -e catalina_home=$CATALINA_HOME \
                      -e catalina_base=$CATALINA_BASE \
-                     -e apr_config_path="$(which apr-1-config)" \
-                     -e gnu_arch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+                     -t native \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
 
 # Final base image with Tomcat and KPM

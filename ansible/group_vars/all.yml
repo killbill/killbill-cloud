@@ -3,11 +3,14 @@ nexus_url: https://oss.sonatype.org
 nexus_repository: releases
 
 kpm_install_dir: /opt
-kpm_version: 0.10.3
-kpm_path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+kpm_path: "{{ kpm_install_dir }}/kpm-latest"
+kpm_owner: root
+kpm_group: root
 
 catalina_home: /usr/share/tomcat
 catalina_base: /var/lib/tomcat
+tomcat_install_dir: /opt
+tomcat_home: "{{ catalina_base }}"
 tomcat_owner: tomcat
 tomcat_group: tomcat
 
@@ -28,6 +31,8 @@ kpm_yml: "{{ kb_install_dir }}/kpm.yml"
 
 flyway_install_dir: /opt
 flyway: java -jar {{ flyway_install_dir }}/killbill-flyway.jar -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }}
+flyway_owner: root
+flyway_group: root
 
 # Extra JVM properties (e.g. -Dlogback.configurationFile={{ kb_config_dir }}/logback.xml)
 kaui_system_properties: ''

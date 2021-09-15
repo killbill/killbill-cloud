@@ -1,0 +1,23 @@
+---
+- name: install java
+  become: true
+  package: >
+    name={{ item }}
+    state=present
+  with_items:
+    - "{{ java_package }}"
+  tags: java
+
+- name: set default Java
+  become: true
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  with_items:
+    - src: "{{ default_java_home }}"
+      dest: "{{ java_home }}"
+    - src: "{{ java_home }}/bin/java"
+      dest: /usr/bin/java
+  tags:
+    - java

@@ -1,5 +1,3 @@
-export JAVA_HOME=${JAVA_HOME-"{{ java_home }}"}
-
 # JVM Options
 CATALINA_OPTS="-server
                -showversion
@@ -66,10 +64,10 @@ export CATALINA_OPTS="$CATALINA_OPTS
                       -Djruby.compile.invokedynamic=false
                       -Dlog4jdbc.sqltiming.error.threshold=1000"
 
-# Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
-export CATALINA_OPTS="$(echo $CATALINA_OPTS)"
-
 # Allow for further customization
 if [ -r "$CATALINA_BASE/bin/setenv2.sh" ]; then
   . "$CATALINA_BASE/bin/setenv2.sh"
 fi
+
+# Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
+export CATALINA_OPTS="$(echo $CATALINA_OPTS)"

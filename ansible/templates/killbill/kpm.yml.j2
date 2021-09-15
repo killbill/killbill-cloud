@@ -1,0 +1,6 @@
+---
+killbill:
+  version: {{ kb_version | default('LATEST') }}
+  plugins:
+  plugins_dir: {{ kb_plugins_dir }}
+  webapp_path: {{ catalina_base }}/{{ kb_webapps }}/ROOT.war

@@ -1,9 +1,6 @@
 ---
 - name: Deploy KPM
   hosts: all
-  become: yes
   tasks:
-    - name: setup
-      import_tasks: roles/common/tasks/main.yml
     - name: install KPM
       import_tasks: roles/kpm/tasks/main.yml
