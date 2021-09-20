@@ -49,4 +49,5 @@ jvm_max_new_size: 1024m
 jvm_survivor_ratio: 10
 jvm_jmx_port: 8000
 tomcat_port: 8080
+tomcat_shutdown_port: 8005
 tomcat_max_threads: 100
