@@ -303,6 +303,9 @@ org.killbill.notificationq.analytics.sleep={{ lookup('env', 'KILLBILL_NOTIFICATI
 {% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_TABLE_NAME') %}
 org.killbill.notificationq.analytics.tableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_TABLE_NAME') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_SHUTDOWN_TIMEOUT') %}
+org.killbill.notificationq.analytics.shutdownTimeout={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_ANALYTICS_SHUTDOWN_TIMEOUT') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') %}
 org.killbill.notificationq.main.claim.time={{ lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') }}
 {% endif %}
@@ -350,6 +353,9 @@ org.killbill.notificationq.main.sleep={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_M
 {% endif %}
 {% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_TABLE_NAME') %}
 org.killbill.notificationq.main.tableName={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_SHUTDOWN_TIMEOUT') %}
+org.killbill.notificationq.main.shutdownTimeout={{ lookup('env', 'KILLBILL_NOTIFICATIONQ_MAIN_SHUTDOWN_TIMEOUT') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_BUNDLE_CACHE_NAME') %}
 org.killbill.osgi.bundle.cache.name={{ lookup('env', 'KILLBILL_BUNDLE_CACHE_NAME') }}
@@ -459,6 +465,9 @@ org.killbill.persistent.bus.external.tableName={{ lookup('env', 'KILLBILL_BUS_EX
 {% if lookup('env', 'KILLBILL_BUS_EXTERNAL_USE_INFLIGHT_Q') %}
 org.killbill.persistent.bus.external.useInflightQ={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_USE_INFLIGHT_Q') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_BUS_EXTERNAL_SHUTDOWN_TIMEOUT') %}
+org.killbill.persistent.bus.external.shutdownTimeout={{ lookup('env', 'KILLBILL_BUS_EXTERNAL_SHUTDOWN_TIMEOUT') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') %}
 org.killbill.persistent.bus.main.claim.time={{ lookup('env', 'KILLBILL_MAIN_CLAIM_TIME') }}
 {% endif %}
@@ -506,6 +515,9 @@ org.killbill.persistent.bus.main.sleep={{ lookup('env', 'KILLBILL_BUS_MAIN_SLEEP
 {% endif %}
 {% if lookup('env', 'KILLBILL_BUS_MAIN_TABLE_NAME') %}
 org.killbill.persistent.bus.main.tableName={{ lookup('env', 'KILLBILL_BUS_MAIN_TABLE_NAME') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_BUS_MAIN_SHUTDOWN_TIMEOUT') %}
+org.killbill.persistent.bus.main.shutdownTimeout={{ lookup('env', 'KILLBILL_BUS_MAIN_SHUTDOWN_TIMEOUT') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_RBAC_GLOBAL_SESSION_TIMEOUT') %}
 org.killbill.rbac.globalSessionTimeout={{ lookup('env', 'KILLBILL_RBAC_GLOBAL_SESSION_TIMEOUT') }}
