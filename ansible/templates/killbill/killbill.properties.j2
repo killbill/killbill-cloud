@@ -11,6 +11,11 @@ org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_OSGI_
 {% elif lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') %}
 org.killbill.billing.osgi.dao.connectionTimeout={{ lookup('env', 'KILLBILL_DAO_CONNECTION_TIMEOUT') }}
 {% endif %}
+{% if lookup('env', 'KILLBILL_OSGI_DAO_LEAK_DETECTION_THRESHOLD') %}
+org.killbill.billing.osgi.dao.leakDetectionThreshold={{ lookup('env', 'KILLBILL_OSGI_DAO_LEAK_DETECTION_THRESHOLD') }}
+{% elif lookup('env', 'KILLBILL_DAO_LEAK_DETECTION_THRESHOLD') %}
+org.killbill.billing.osgi.dao.leakDetectionThreshold={{ lookup('env', 'KILLBILL_DAO_LEAK_DETECTION_THRESHOLD') }}
+{% endif %}
 {% if lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
 org.killbill.billing.osgi.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_OSGI_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
 {% elif lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
@@ -123,6 +128,9 @@ org.killbill.dao.healthCheckConnectionTimeout={{ lookup('env', 'KILLBILL_DAO_HEA
 {% endif %}
 {% if lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_EXPECTED99TH_PERCENTILE') %}
 org.killbill.dao.healthCheckExpected99thPercentile={{ lookup('env', 'KILLBILL_DAO_HEALTH_CHECK_EXPECTED99TH_PERCENTILE') }}
+{% endif %}
+{% if lookup('env', 'KILLBILL_DAO_LEAK_DETECTION_THRESHOLD') %}
+org.killbill.dao.leakDetectionThreshold={{ lookup('env', 'KILLBILL_DAO_LEAK_DETECTION_THRESHOLD') }}
 {% endif %}
 {% if lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') %}
 org.killbill.dao.idleConnectionTestPeriod={{ lookup('env', 'KILLBILL_DAO_IDLE_CONNECTION_TEST_PERIOD') }}
