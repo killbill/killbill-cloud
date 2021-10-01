@@ -25,5 +25,5 @@ ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
 ENV LOGSTASH_ENABLED=true
 RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/kaui_json_logging.yml --tags download
 
-# Start Tomcat
+# Run kpm install (latest only) and start Tomcat
 CMD ["/var/lib/kaui/kaui.sh"]

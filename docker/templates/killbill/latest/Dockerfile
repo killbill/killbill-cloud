@@ -61,5 +61,5 @@ RUN ansible-playbook $ANSIBLE_OPTS -e flyway_owner=$TOMCAT_OWNER -e flyway_group
 ENV LOGSTASH_ENABLED=true
 RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml --tags download
 
-# Run kpm install and start Tomcat
+# Run kpm install (latest only) and start Tomcat
 CMD ["/var/lib/killbill/killbill.sh"]
