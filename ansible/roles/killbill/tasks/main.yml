@@ -7,21 +7,6 @@
     - "{{ kb_plugins_dir }}"
   tags: kpm-install
 
-# Generate Kill Bill configuration files based on environment variables
-- name: generate Kill Bill files
-  become: true
-  template:
-    src: "killbill/{{ item.name }}.j2"
-    dest: "{{ kb_config_dir }}/{{ item.name }}"
-    mode: u=rw,g=r,o=r
-    owner: "{{ tomcat_owner }}"
-    group: "{{ tomcat_group }}"
-    # If the files already exist, don't clobber them
-    force: no
-  with_items:
-    - name: killbill.properties
-  tags: kpm-install
-
 - name: generate kpm.yml file if needed
   become: true
   template:

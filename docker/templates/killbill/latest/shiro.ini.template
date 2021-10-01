@@ -1,0 +1,5 @@
+[users]
+admin = $KB_ADMIN_PASSWORD, root
+
+[roles]
+root = *:*

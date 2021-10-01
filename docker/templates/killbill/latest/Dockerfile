@@ -2,23 +2,25 @@
 FROM killbill/base
 LABEL maintainer="killbilling-users@googlegroups.com"
 
-# The base image has set up a fully functioning Tomcat with default config files.
-# Remove them, so they are regenerated on demand based on the environment variables
-# (Ansible sets `force: no` by default to avoid clobbering manually customized files).
-RUN ["/bin/bash", "-c", "rm -f $CATALINA_BASE/conf/{context.xml,server.xml,web.xml} $CATALINA_BASE/bin/setenv.sh"]
-
 ENV KILLBILL_INSTALL_DIR=/var/lib/killbill
+
 RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
 RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KILLBILL_INSTALL_DIR
 
 # Default configuration options
-ENV KILLBILL_BUNDLE_INSTALL_DIR=$KILLBILL_INSTALL_DIR/bundles
-ENV KILLBILL_JRUBY_CONF_DIR=$KILLBILL_INSTALL_DIR/config
-ENV KILLBILL_SERVER_BASE_URL=http://$ENV_HOST_IP:8080
-ENV KILLBILL_KPM_PATH=$KPM_INSTALL_DIR/kpm-latest/kpm
-ENV KILLBILL_KPM_BUNDLES_PATH=$KILLBILL_BUNDLE_INSTALL_DIR
+ENV KB_org_killbill_osgi_bundle_install_dir=$KILLBILL_INSTALL_DIR/bundles
+ENV KB_org_killbill_billing_osgi_bundles_jruby_conf_dir=$KILLBILL_INSTALL_DIR/config
+ENV KB_org_killbill_server_baseUrl=http://$ENV_HOST_IP:8080
+ENV KB_org_killbill_billing_plugin_kpm_kpmPath=$KPM_INSTALL_DIR/kpm-latest/kpm
+ENV KB_org_killbill_billing_plugin_kpm_bundlesPath=$KILLBILL_INSTALL_DIR/bundles
+ENV KB_org_killbill_security_shiroResourcePath=$KILLBILL_INSTALL_DIR/config/shiro.ini
+ENV KB_ADMIN_PASSWORD=password
 
+# Default kpm.yml, override as needed
+COPY ./kpm.yml $KILLBILL_INSTALL_DIR
+COPY ./setenv2.sh $CATALINA_BASE/bin
 COPY ./killbill.sh $KILLBILL_INSTALL_DIR
+COPY ./shiro.ini.template $KILLBILL_INSTALL_DIR/config
 
 ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
                                       -e kpm_install_dir=$KPM_INSTALL_DIR \

@@ -2,5 +2,5 @@
 kaui:
   version: __VERSION__
   # Used for the sha1.yml
-  plugins_dir: /var/lib/kaui
+  plugins_dir: /var/lib/kaui/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war

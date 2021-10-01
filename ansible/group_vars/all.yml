@@ -29,6 +29,10 @@ kb_plugins_dir: "{{ kb_install_dir }}/bundles"
 # kpm.yml file
 kpm_yml: "{{ kb_install_dir }}/kpm.yml"
 
+kaui_install_dir: /var/lib/kaui
+# For consistency as to where the sha1.yml is located
+kaui_plugins_dir: "{{ kaui_install_dir }}/bundles"
+
 flyway_install_dir: /opt
 flyway: java -jar {{ flyway_install_dir }}/killbill-flyway.jar -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }}
 flyway_owner: root
@@ -51,3 +55,8 @@ jvm_jmx_port: 8000
 tomcat_port: 8080
 tomcat_shutdown_port: 8005
 tomcat_max_threads: 100
+tomcat_max_idle_time: 30000
+tomcat_min_spare_threads: 4
+tomcat_connection_timeout: 20000
+tomcat_unload_delay: 31000
+log4jdbc_sqltiming_error_threshold: 1000
