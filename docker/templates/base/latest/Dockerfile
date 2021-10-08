@@ -17,6 +17,8 @@ RUN apt-get update && \
       # https://github.com/tianon/docker-brew-ubuntu-core/issues/59
       apt-utils \
       curl \
+      # For envsubst
+      gettext-base \
       git \
       less \
       libapr1 \

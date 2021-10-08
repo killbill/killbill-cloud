@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Server port="{{ tomcat_shutdown_port }}" shutdown="SHUTDOWN">
+<Server port="${TOMCAT_SHUTDOWN_PORT:-{{ tomcat_shutdown_port }}}" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <!-- APR library loader. Documentation at /docs/apr.html -->
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
@@ -11,15 +11,15 @@
   <Service name="Catalina">
     <Executor name="tomcatThreadPool"
               namePrefix="catalina-exec-"
-              maxThreads="{{ tomcat_max_threads }}"
-              maxIdleTime="30000"
-              minSpareThreads="4"
+              maxThreads="${TOMCAT_MAX_THREADS:-{{ tomcat_max_threads }}}"
+              maxIdleTime="${TOMCAT_MAX_IDLE_TIME:-{{ tomcat_max_idle_time }}}"
+              minSpareThreads="${TOMCAT_MIN_SPARE_THREADS:-{{ tomcat_min_spare_threads }}}"
               prestartminSpareThreads="true" />
 
     <Connector executor="tomcatThreadPool"
-               port="{{ tomcat_port }}"
+               port="${TOMCAT_PORT:-{{ tomcat_port }}}"
                protocol="HTTP/1.1"
-               connectionTimeout="20000" />
+               connectionTimeout="${TOMCAT_CONNECTION_TIMEOUT:-{{ tomcat_connection_timeout }}}" />
 
     <Engine name="Catalina" defaultHost="localhost">
       <Host name="localhost"

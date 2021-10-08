@@ -1,6 +1,6 @@
 ---
-kaui:
+killbill:
   version: LATEST
-  # Used for the sha1.yml
-  plugins_dir: /var/lib/kaui/bundles
+  plugins:
+  plugins_dir: /var/lib/killbill/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war

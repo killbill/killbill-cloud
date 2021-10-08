@@ -5,17 +5,9 @@ CATALINA_OPTS="-server
                -XX:+HeapDumpOnOutOfMemoryError
                -XX:HeapDumpPath={{ catalina_base }}/logs/
                -XX:+UseCodeCacheFlushing
-{% if lookup('env', 'TOMCAT_JAVA_XMS') %}
-               -Xms{{ lookup('env', 'TOMCAT_JAVA_XMS') }}
-{% else %}
-               -Xms{{ jvm_initial_memory }}
-{% endif %}
-{% if lookup('env', 'TOMCAT_JAVA_XMX') %}
-               -Xmx{{ lookup('env', 'TOMCAT_JAVA_XMX') }}
-{% else %}
-               -Xmx{{ jvm_max_memory }}
-{% endif %}
-               -Xrunjdwp:transport=dt_socket,server={{ jvm_jdwp_server }},suspend=n,address={{ jvm_jdwp_port }}
+               -Xms${TOMCAT_JAVA_XMS:-{{ jvm_initial_memory }}}
+               -Xms${TOMCAT_JAVA_XMX:-{{ jvm_max_memory }}}
+               -Xrunjdwp:transport=dt_socket,server=${JVM_JDWP_SERVER:-{{ jvm_jdwp_server }}},suspend=n,address=${JVM_JDWP_PORT:-{{ jvm_jdwp_port }}}
                -XX:+CMSClassUnloadingEnabled
                -XX:-OmitStackTraceInFastThrow
                -XX:+UseParNewGC
@@ -25,44 +17,40 @@ CATALINA_OPTS="-server
                -XX:+CMSScavengeBeforeRemark
                -XX:+CMSParallelRemarkEnabled
                -XX:+UseCMSInitiatingOccupancyOnly
-               -XX:CMSInitiatingOccupancyFraction={{ jvm_cms_initiating_fraction_threshold }}
-{% if lookup('env', 'TOMCAT_JAVA_NEW_SIZE') %}
-               -XX:NewSize={{ lookup('env', 'TOMCAT_JAVA_NEW_SIZE') }}
-{% else %}
-               -XX:NewSize={{ jvm_new_size }}
-{% endif %}
-{% if lookup('env', 'TOMCAT_JAVA_MAX_NEW_SIZE') %}
-               -XX:MaxNewSize={{ lookup('env', 'TOMCAT_JAVA_MAX_NEW_SIZE') }}
-{% else %}
-               -XX:MaxNewSize={{ jvm_max_new_size }}
-{% endif %}
-               -XX:SurvivorRatio={{ jvm_survivor_ratio }}
+               -XX:CMSInitiatingOccupancyFraction=${JVM_CMS_INITIATING_FRACTION_THRESHOLD:-{{ jvm_cms_initiating_fraction_threshold }}}
+               -XX:NewSize=${TOMCAT_JAVA_NEW_SIZE:-{{ jvm_new_size }}}
+               -XX:MaxNewSize=${TOMCAT_JAVA_MAX_NEW_SIZE:-{{ jvm_max_new_size }}}
+               -XX:SurvivorRatio=${JVM_SURVIVOR_RATIO:-{{ jvm_survivor_ratio }}}
                -XX:+DisableExplicitGC
-{% if not lookup('env', 'TOMCAT_DISABLE_GC_LOGGING') %}
-               -Xloggc:{{ catalina_base }}/logs/gc.log
-               -XX:+PrintGCApplicationConcurrentTime
-               -XX:+PrintGCApplicationStoppedTime
-               -XX:+PrintGCDateStamps
-               -XX:+PrintGCDetails
-               -XX:+PrintTenuringDistribution
-               -XX:+UseGCLogFileRotation
-               -XX:NumberOfGCLogFiles=14
-               -XX:GCLogFileSize=100M
-{% endif %}
                "
+
+if [ -z ${TOMCAT_DISABLE_GC_LOGGING+x} ]; then
+  export CATALINA_OPTS="$CATALINA_OPTS
+                       -Xloggc:{{ catalina_base }}/logs/gc.log
+                       -XX:+PrintGCApplicationConcurrentTime
+                       -XX:+PrintGCApplicationStoppedTime
+                       -XX:+PrintGCDateStamps
+                       -XX:+PrintGCDetails
+                       -XX:+PrintTenuringDistribution
+                       -XX:+UseGCLogFileRotation
+                       -XX:NumberOfGCLogFiles=14
+                       -XX:GCLogFileSize=100M
+                       "
+fi
 
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
+                      -Dorg.apache.tomcat.util.digester.PROPERTY_SOURCE=org.apache.tomcat.util.digester.EnvironmentPropertySource
                       -Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true
                       -Dcom.sun.management.jmxremote=true
                       -Dcom.sun.management.jmxremote.authenticate=false
-                      -Dcom.sun.management.jmxremote.port={{ jvm_jmx_port }}
-                      -Dcom.sun.management.jmxremote.rmi.port={{ jvm_jmx_port }}
+                      -Dcom.sun.management.jmxremote.port=${JVM_JMX_PORT:-{{ jvm_jmx_port }}}
+                      -Dcom.sun.management.jmxremote.rmi.port=${JVM_JMX_PORT:-{{ jvm_jmx_port }}}
                       -Dcom.sun.management.jmxremote.ssl=false
-                      -Djava.rmi.server.hostname=$ENV_HOST_IP
+                      -Djava.rmi.server.hostname=${ENV_HOST_IP:-{{ inventory_hostname }}}
                       -Djava.security.egd=file:/dev/./urandom
                       -Djruby.compile.invokedynamic=false
-                      -Dlog4jdbc.sqltiming.error.threshold=1000"
+                      -Dlog4jdbc.sqltiming.error.threshold=${JVM_JMX_PORT:-{{ log4jdbc_sqltiming_error_threshold }}}"
 
 # Allow for further customization
 if [ -r "$CATALINA_BASE/bin/setenv2.sh" ]; then

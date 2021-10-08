@@ -1,12 +1,5 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
-{% if lookup('env', 'KILLBILL_QUEUE_CREATOR_NAME') %}
-                      -Dorg.killbill.queue.creator.name={{ lookup('env', 'KILLBILL_QUEUE_CREATOR_NAME') }}
-{% else %}
-                      -Dorg.killbill.queue.creator.name={{ inventory_hostname }}
-{% endif %}
+                      -Dorg.killbill.queue.creator.name=${KILLBILL_QUEUE_CREATOR_NAME:-{{ inventory_hostname }}}
                       -Dorg.killbill.server.properties=file://{{ kb_config_dir }}/killbill.properties
                       {{ kb_system_properties }}"
-
-# Strip newlines (https://bz.apache.org/bugzilla/show_bug.cgi?id=63815)
-export CATALINA_OPTS="$(echo $CATALINA_OPTS)"

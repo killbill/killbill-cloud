@@ -1,5 +1,5 @@
 FROM killbill/killbill
-MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
+LABEL maintainer="killbilling-users@googlegroups.com"
 
 # VERSION will be expanded in Makefile
 ENV KILLBILL_VERSION=__VERSION__
@@ -7,8 +7,8 @@ ENV KILLBILL_VERSION=__VERSION__
 # Default kpm.yml, override as needed
 COPY ./kpm.yml $KILLBILL_INSTALL_DIR
 
-# Install Kill Bill
-RUN kpm pull_kb_server_war --destination=/var/lib/tomcat/webapps/ROOT.war --bundles_dir=/var/lib/killbill/bundles $KILLBILL_VERSION
+# Run both the main playbook and the one enabling structured logging
+RUN $KPM_INSTALL_CMD $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml
 
-# Install default bundles
-RUN kpm pull_defaultbundles --destination=/var/lib/killbill/bundles $KILLBILL_VERSION
+# Override start script (no need for Ansible scripts to be run)
+COPY ./killbill.sh $KILLBILL_INSTALL_DIR
