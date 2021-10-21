@@ -6,7 +6,7 @@ CATALINA_OPTS="-server
                -XX:HeapDumpPath={{ catalina_base }}/logs/
                -XX:+UseCodeCacheFlushing
                -Xms${TOMCAT_JAVA_XMS:-{{ jvm_initial_memory }}}
-               -Xms${TOMCAT_JAVA_XMX:-{{ jvm_max_memory }}}
+               -Xmx${TOMCAT_JAVA_XMX:-{{ jvm_max_memory }}}
                -Xrunjdwp:transport=dt_socket,server=${JVM_JDWP_SERVER:-{{ jvm_jdwp_server }}},suspend=n,address=${JVM_JDWP_PORT:-{{ jvm_jdwp_port }}}
                -XX:+CMSClassUnloadingEnabled
                -XX:-OmitStackTraceInFastThrow
