@@ -31,3 +31,7 @@ jobs:
             ansible/tomcat_restart.yml
             ansible/tomcat_stop.yml
           args: "-x 204"
+          override-deps: |
+            ansible==2.10.7
+            ansible-base==2.10.5
+            ansible-lint==5.3.2
