@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Lint Ansible Playbook
-        uses: ansible/ansible-lint-action@master
+        # TODO There's work to upgrade to 6.x
+        uses: ansible/ansible-lint-action@2878af4748adf988a42b3ad88a94051dba635fba
         with:
           # FIXME
           # Globbing is broken at the moment:
