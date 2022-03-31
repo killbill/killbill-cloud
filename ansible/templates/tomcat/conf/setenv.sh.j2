@@ -8,33 +8,16 @@ CATALINA_OPTS="-server
                -Xms${TOMCAT_JAVA_XMS:-{{ jvm_initial_memory }}}
                -Xmx${TOMCAT_JAVA_XMX:-{{ jvm_max_memory }}}
                -Xrunjdwp:transport=dt_socket,server=${JVM_JDWP_SERVER:-{{ jvm_jdwp_server }}},suspend=n,address=${JVM_JDWP_PORT:-{{ jvm_jdwp_port }}}
-               -XX:+CMSClassUnloadingEnabled
                -XX:-OmitStackTraceInFastThrow
-               -XX:+UseParNewGC
-               -XX:+UseConcMarkSweepGC
-               -XX:+CMSConcurrentMTEnabled
+               -XX:+UseG1GC
                -XX:+ScavengeBeforeFullGC
-               -XX:+CMSScavengeBeforeRemark
-               -XX:+CMSParallelRemarkEnabled
-               -XX:+UseCMSInitiatingOccupancyOnly
-               -XX:CMSInitiatingOccupancyFraction=${JVM_CMS_INITIATING_FRACTION_THRESHOLD:-{{ jvm_cms_initiating_fraction_threshold }}}
-               -XX:NewSize=${TOMCAT_JAVA_NEW_SIZE:-{{ jvm_new_size }}}
-               -XX:MaxNewSize=${TOMCAT_JAVA_MAX_NEW_SIZE:-{{ jvm_max_new_size }}}
                -XX:SurvivorRatio=${JVM_SURVIVOR_RATIO:-{{ jvm_survivor_ratio }}}
                -XX:+DisableExplicitGC
                "
 
 if [ -z ${TOMCAT_DISABLE_GC_LOGGING+x} ]; then
   export CATALINA_OPTS="$CATALINA_OPTS
-                       -Xloggc:{{ catalina_base }}/logs/gc.log
-                       -XX:+PrintGCApplicationConcurrentTime
-                       -XX:+PrintGCApplicationStoppedTime
-                       -XX:+PrintGCDateStamps
-                       -XX:+PrintGCDetails
-                       -XX:+PrintTenuringDistribution
-                       -XX:+UseGCLogFileRotation
-                       -XX:NumberOfGCLogFiles=14
-                       -XX:GCLogFileSize=100M
+                       -Xlog:gc*=debug,safepoint*=debug,age*=debug:file={{ catalina_base }}/logs/gc.log
                        "
 fi
 
