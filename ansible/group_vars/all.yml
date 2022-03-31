@@ -47,9 +47,6 @@ jvm_initial_memory: 512m
 jvm_max_memory: 2G
 jvm_jdwp_port: 12345
 jvm_jdwp_server: y
-jvm_cms_initiating_fraction_threshold: 50
-jvm_new_size: 256m
-jvm_max_new_size: 1024m
 jvm_survivor_ratio: 10
 jvm_jmx_port: 8000
 tomcat_port: 8080

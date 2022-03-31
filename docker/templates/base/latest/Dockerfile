@@ -24,7 +24,7 @@ RUN apt-get update && \
       libapr1 \
       mysql-client \
       net-tools \
-      openjdk-8-jdk-headless \
+      openjdk-11-jdk-headless \
       python3-lxml \
       sudo \
       telnet \
@@ -34,7 +34,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
+RUN ln -s java-11-openjdk-amd64 /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
