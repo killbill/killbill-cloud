@@ -7,11 +7,6 @@ killbill:
     java:
       - name: analytics-plugin
         version: 0.6.0
-    ruby:
-      - name: logging-plugin
-        version: LATEST
-      - name: zendesk-plugin
-        version: 1.3.0
   nexus:
     ssl_verify: false
     url: https://oss.sonatype.org

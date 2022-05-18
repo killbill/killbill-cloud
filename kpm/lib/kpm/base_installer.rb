@@ -79,7 +79,7 @@ module KPM
                                             :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
     end
 
-    def install_plugin(plugin_key, raw_kb_version = nil, specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, bundles_dir = nil, specified_type = nil, force_download = false, verify_sha1 = true, verify_jruby_jar = false)
+    def install_plugin(plugin_key, raw_kb_version = nil, specified_group_id = nil, specified_artifact_id = nil, specified_packaging = nil, specified_classifier = nil, specified_version = nil, bundles_dir = nil, specified_type = nil, force_download = false, verify_sha1 = true)
       # plugin_key needs to exist
       raise ArgumentError, 'Aborting installation: User needs to specify a pluginKey' if plugin_key.nil?
 
@@ -94,7 +94,6 @@ module KPM
       # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
       if looked_up_artifact_id.nil? &&
          specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
-         specified_group_id != KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID &&
          plugin_key.split(':').size == 1
         raise ArgumentError, "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end
@@ -114,14 +113,7 @@ module KPM
         version = specified_version || looked_up_version || LATEST_VERSION
         destination = plugins_dir.join('java').join(artifact_id).join(version)
       else
-
-        warn_if_jruby_jar_missing(bundles_dir) if verify_jruby_jar
-
-        group_id = specified_group_id || looked_up_group_id || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID
-        packaging = specified_packaging || looked_up_packaging || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING
-        classifier = specified_classifier || looked_up_classifier || KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER
-        version = specified_version || looked_up_version || LATEST_VERSION
-        destination = plugins_dir.join('ruby')
+        raise ArgumentError, "Aborting installation: plugin type #{type} unsupported"
       end
       sha1_file = "#{bundles_dir}/#{SHA1_FILENAME}"
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
@@ -178,7 +170,7 @@ module KPM
         plugin_name = name.nil? ? Utils.get_plugin_name_from_file_path(file_path) : name
         destination = plugins_dir.join('java').join(plugin_name).join(version)
       else
-        destination = plugins_dir.join('ruby')
+        raise ArgumentError, "Aborting installation: plugin type #{type} unsupported"
       end
 
       artifact_info = KPM::KillbillPluginArtifact.pull_from_fs(@logger, file_path, destination)
@@ -245,10 +237,6 @@ module KPM
                         info.merge('status' => (info[:skipped] ? 'UP_TO_DATE' : 'INSTALLED'),
                                    :group_id => group_id, :artifact_id => artifact_id, :packaging => packaging, :classifier => classifier))
 
-      # The special JRuby bundle needs to be called jruby.jar
-      # TODO .first - code smell
-      File.rename Dir.glob("#{destination}/killbill-platform-osgi-bundles-jruby-*.jar").first, destination.join('jruby.jar') unless info[:skipped]
-
       info
     end
 
@@ -280,36 +268,6 @@ module KPM
       # Mark this bundle as active
       plugins_manager = PluginsManager.new(plugins_dir, @logger)
       plugins_manager.set_active(artifact_info[:bundle_dir])
-    end
-
-    def warn_if_jruby_jar_missing(bundles_dir)
-      platform_dir = bundles_dir.join('platform')
-      jruby_jar = platform_dir.join('jruby.jar')
-      if !File.exist?(jruby_jar)
-        @logger.warn("  Missing installation for jruby.jar under #{platform_dir}. This is required for ruby plugin installation")
-      else
-        version = extract_jruby_jar_version(jruby_jar)
-        if version
-          @logger.info("  Detected jruby.jar version #{version}")
-        else
-          @logger.warn("  Failed to detect jruby.jar version for #{jruby_jar}")
-        end
-      end
-    end
-
-    def extract_jruby_jar_version(jruby_jar)
-      selected_entries = Zip::File.open(jruby_jar) do |zip_file|
-        zip_file.select do |entry|
-          entry.name == 'META-INF/maven/org.kill-bill.billing/killbill-platform-osgi-bundles-jruby/pom.properties'
-        end
-      end
-
-      if selected_entries && selected_entries.size == 1
-        zip_entry = selected_entries[0]
-        content = zip_entry.get_input_stream.read
-        return content.split("\n").select { |e| e.start_with?('version') }[0].split('=')[1]
-      end
-      nil
     end
   end
 end
