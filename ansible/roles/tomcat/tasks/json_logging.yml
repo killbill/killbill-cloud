@@ -1,10 +1,8 @@
 ---
 - name: download Logstash dependency
   become: true
-  community.general.maven_artifact:
-    group_id: net.logstash.logback
-    artifact_id: logstash-logback-encoder
-    version: '6.4'
+  get_url:
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/net/logstash/logback/logstash-logback-encoder/6.4/logstash-logback-encoder-6.4.jar"
     dest: /opt/logstash-logback-encoder.jar
   tags:
     - killbill-logback
