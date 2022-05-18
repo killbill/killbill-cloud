@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kill-bill.billing.installer</groupId>
     <artifactId>kpm</artifactId>
-    <version>0.10.3</version>
+    <version>0.11.0</version>
     <packaging>pom</packaging>
     <name>KPM</name>
     <description>KPM: the Kill Bill Package Manager</description>
