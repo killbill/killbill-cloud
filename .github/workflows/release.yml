@@ -17,7 +17,7 @@ on:
         default: 'master'
 
 env:
-  CURRENT_LTS: '0.22'
+  CURRENT_LTS: '0.23'
 
 jobs:
   docker:
