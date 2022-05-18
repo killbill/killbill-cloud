@@ -92,7 +92,7 @@ module KPM
 
       def build_query_params(coordinates, what_parameters = nil)
         artifact = parse_coordinates(coordinates)
-        @version = artifact[:version].to_s.upcase
+        @version = artifact[:version].to_s
 
         query = { g: artifact[:group_id], a: artifact[:artifact_id], e: artifact[:extension], v: version, r: configuration[:repository] }
         query.merge!(c: artifact[:classifier]) unless artifact[:classifier].nil?
