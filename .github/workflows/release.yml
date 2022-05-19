@@ -38,7 +38,7 @@ jobs:
           TAG="killbill/base:latest"
           cd docker/templates/base/latest
           DOCKER_BUILDKIT=1 docker build --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=${{ github.event.inputs.cloud_version }} .
-          docker push $TAG
+          #docker push $TAG
       - name: Build and push latest images
         run: |
           cd docker
@@ -46,8 +46,8 @@ jobs:
           make -e TARGET=killbill VERSION=latest rebuild
           make -e TARGET=mariadb VERSION=$CURRENT_LTS rebuild
           make -e TARGET=postgresql VERSION=$CURRENT_LTS rebuild
-          docker push killbill/kaui:latest
-          docker push killbill/killbill:latest
+          #docker push killbill/kaui:latest
+          #docker push killbill/killbill:latest
           docker push killbill/mariadb:$CURRENT_LTS
           docker push killbill/postgresql:$CURRENT_LTS
       - name: Build and push killbill image
