@@ -127,7 +127,6 @@ module KPM
 
     def install_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
       install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
     end
 
     def install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
@@ -135,20 +134,7 @@ module KPM
 
       infos = []
       @config['plugins']['java'].each do |plugin|
-        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1, false)
-      end
-
-      infos
-    end
-
-    def install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      return if @config['plugins'].nil? || @config['plugins']['ruby'].nil?
-
-      verify_jruby_jar = true
-      infos = []
-      @config['plugins']['ruby'].each do |plugin|
-        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'ruby', force_download, verify_sha1, verify_jruby_jar)
-        verify_jruby_jar = false
+        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1)
       end
 
       infos
