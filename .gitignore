@@ -13,5 +13,8 @@ logs/
 ansible/*.retry
 ansible/hosts
 ansible-container/ansible-deployment
+docker/templates/kaui/latest/Dockerfile
+docker/templates/kaui/tagged/Dockerfile
+docker/templates/killbill/latest/Dockerfile
 docker/templates/killbill/tagged/Dockerfile
 docker/templates/killbill/tagged/kpm.yml
