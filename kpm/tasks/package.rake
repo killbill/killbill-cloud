@@ -111,7 +111,7 @@ file "packaging/portable-ruby-#{HOMEBREW_PORTABLE_RUBY_VERSION}.#{OSX_ARM_TARGET
 end
 
 def create_package(target, package_dir_suffix)
-  pom_version = /<version>(.*)<\/version>/.match(File.read("#{__dir__}/../pom.xml"))[1]
+  pom_version = %r{<version>(.*)</version>}.match(File.read("#{__dir__}/../pom.xml"))[1]
   package_dir = "#{PACKAGE_NAME}-#{pom_version}-#{package_dir_suffix}"
   sh "rm -rf #{package_dir}"
   sh "mkdir -p #{package_dir}/lib/ruby"
