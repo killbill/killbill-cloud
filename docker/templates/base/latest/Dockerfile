@@ -65,6 +65,7 @@ ENV ANSIBLE_OPTS="-i localhost, \
                   -e ansible_connection=local \
                   -e ansible_python_interpreter=/usr/bin/python3 \
                   -e java_home=$JAVA_HOME \
+                  -e kpm_version=0.10.4 \
                   -vv"
 
 # Install KPM
