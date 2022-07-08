@@ -126,11 +126,3 @@
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     state: absent
   tags: killbill-logback
-
-- name: Remove JRuby jar to fix KPM
-  # See https://github.com/killbill/killbill-cloud/pull/218
-  file:
-    state: absent
-    path: /var/lib/killbill/bundles/platform/killbill-platform-osgi-bundles-jruby-0.40.12.jar
-  tags:
-    - kpm
