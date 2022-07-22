@@ -49,5 +49,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'gem-release', '~> 2.2'
   s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'rspec', '~> 3.9'
-  s.add_development_dependency 'rubocop', '~> 0.88.0' if RUBY_VERSION >= '2.4'
+  s.add_development_dependency 'rubocop', '~> 1.32.0' if RUBY_VERSION >= '2.4'
 end
