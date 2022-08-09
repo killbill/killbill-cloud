@@ -12,7 +12,7 @@ help() {
     echo "-c : clean (create the tagged template file). To be executed after init"
     echo "-v : the version to build"
     echo "-t : the target to build"
-    echo "-p : the parent version to user"
+    echo "-p : the parent version to use"
     exit 1
 }
 
