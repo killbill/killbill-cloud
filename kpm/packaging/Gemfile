@@ -3,7 +3,4 @@
 source 'https://rubygems.org'
 
 gem 'kpm', '~> VERSION'
-
-group :development do
-  gem 'rake'
-end
+gem 'rake'

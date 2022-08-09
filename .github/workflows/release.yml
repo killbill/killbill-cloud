@@ -15,6 +15,15 @@ on:
         description: 'killbill-cloud version'
         required: true
         default: 'master'
+      nexus_repository:
+        description: 'Nexus repository for KPM'
+        required: true
+        default: 'releases'
+      snapshot_only:
+        description: 'whether to push snapshots'
+        required: true
+        default: false
+        type: boolean
 
 env:
   CURRENT_LTS: '0.22'
@@ -26,8 +35,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -35,30 +46,40 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push killbill/base:latest
         run: |
-          TAG="killbill/base:latest"
+          if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
+            TAG="killbill/base:latest-$(git rev-parse --short "$GITHUB_SHA")"
+          else
+            TAG="killbill/base:latest"
+          fi
           cd docker/templates/base/latest
-          DOCKER_BUILDKIT=1 docker build --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=${{ github.event.inputs.cloud_version }} .
-          docker push $TAG
+          docker buildx build --push --platform=linux/arm64,linux/amd64 --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=${{ github.event.inputs.cloud_version }} --build-arg NEXUS_REPOSITORY=${{ github.event.inputs.nexus_repository }} .
       - name: Build and push latest images
         run: |
           cd docker
-          make -e TARGET=kaui -e VERSION=latest rebuild
-          make -e TARGET=killbill VERSION=latest rebuild
-          make -e TARGET=mariadb VERSION=$CURRENT_LTS rebuild
-          make -e TARGET=postgresql VERSION=$CURRENT_LTS rebuild
-          docker push killbill/kaui:latest
-          docker push killbill/killbill:latest
-          docker push killbill/mariadb:$CURRENT_LTS
-          docker push killbill/postgresql:$CURRENT_LTS
+          if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
+            make -e TARGET=kaui -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=latest -e IMAGE=killbill/kaui:latest-$(git rev-parse --short "$GITHUB_SHA") multi-arch
+            make -e TARGET=killbill -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=latest -e IMAGE=killbill/killbill:latest-$(git rev-parse --short "$GITHUB_SHA") multi-arch
+          else
+            make -e TARGET=kaui -e VERSION=latest multi-arch
+            make -e TARGET=killbill -e VERSION=latest multi-arch
+            make -e TARGET=mariadb VERSION=$CURRENT_LTS multi-arch
+            make -e TARGET=postgresql VERSION=$CURRENT_LTS multi-arch
+          fi
       - name: Build and push killbill image
         if: github.event.inputs.killbill_version != ''
         run: |
           cd docker
-          make -e TARGET=killbill VERSION=${{ github.event.inputs.killbill_version }} rebuild
-          docker push killbill/killbill:${{ github.event.inputs.killbill_version }}
+          if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
+            make -e TARGET=killbill -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=${{ github.event.inputs.killbill_version }} -e IMAGE=killbill/killbill:${{ github.event.inputs.killbill_version }}-$(git rev-parse --short "$GITHUB_SHA") multi-arch
+          else
+            make -e TARGET=killbill -e VERSION=${{ github.event.inputs.killbill_version }} multi-arch
+          fi
       - name: Build and push kaui image
         if: github.event.inputs.kaui_version != ''
         run: |
           cd docker
-          make -e TARGET=kaui -e VERSION=${{ github.event.inputs.kaui_version }} rebuild
-          docker push killbill/kaui:${{ github.event.inputs.kaui_version }}
+          if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
+            make -e TARGET=kaui -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=${{ github.event.inputs.kaui_version }} -e IMAGE=killbill/kaui:${{ github.event.inputs.kaui_version }}-$(git rev-parse --short "$GITHUB_SHA") multi-arch
+          else
+            make -e TARGET=kaui -e VERSION=${{ github.event.inputs.kaui_version }} multi-arch
+          fi
