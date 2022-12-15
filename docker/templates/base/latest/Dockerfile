@@ -34,7 +34,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN ln -s java-11-openjdk-amd64 /usr/lib/jvm/default-java
+RUN ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
@@ -69,7 +69,8 @@ ENV ANSIBLE_OPTS="-i localhost, \
 
 # Install KPM
 ENV NEXUS_URL=https://oss.sonatype.org
-ENV NEXUS_REPOSITORY=releases
+ARG NEXUS_REPOSITORY
+ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-releases}
 ENV KPM_INSTALL_DIR=/opt
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \

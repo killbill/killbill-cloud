@@ -4,7 +4,5 @@
   tasks:
     - name: setup Ruby
       import_tasks: roles/common/tasks/main.yml
-    - name: setup KPM
-      import_tasks: roles/kpm/tasks/main.yml
     - name: install Flyway
       import_tasks: roles/migrations/tasks/flyway.yml

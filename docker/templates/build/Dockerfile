@@ -42,8 +42,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN update-java-alternatives -s java-1.11.0-openjdk-amd64
-RUN rm -f /usr/lib/jvm/default-java && ln -s java-11-openjdk-amd64 /usr/lib/jvm/default-java
+RUN update-java-alternatives -s java-1.11.0-openjdk-$(dpkg --print-architecture)
+RUN rm -f /usr/lib/jvm/default-java && ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 

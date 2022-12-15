@@ -1,6 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: bundler
+  - package-ecosystem: "bundler"
     directory: "/kpm"
     schedule:
-      interval: weekly
+      interval: "daily"
+    target-branch: "work-for-release-0.23.x"

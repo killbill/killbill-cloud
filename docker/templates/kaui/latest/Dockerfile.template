@@ -1,5 +1,5 @@
 # Shell image that installs Kaui on startup
-FROM killbill/base
+FROM killbill/base:__PARENT_VERSION__
 LABEL maintainer="killbilling-users@googlegroups.com"
 
 ENV KAUI_INSTALL_DIR=/var/lib/kaui
@@ -14,7 +14,6 @@ COPY ./kaui.sh $KAUI_INSTALL_DIR
 
 ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
                                       -e kpm_install_dir=$KPM_INSTALL_DIR \
-                                      -e kpm_version=$KPM_VERSION \
                                       -e kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
                                       -e tomcat_owner=$TOMCAT_OWNER \
                                       -e tomcat_group=$TOMCAT_GROUP \

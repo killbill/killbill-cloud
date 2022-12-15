@@ -11,4 +11,4 @@ unset BUNDLE_IGNORE_CONFIG
 
 # Run the actual app using the bundled Ruby interpreter, with Bundler activated.
 # See https://github.com/phusion/traveling-ruby/issues/58
-exec "$SELFDIR/lib/ruby/bin/ruby" -rbundler/setup -rreadline $SELFDIR/lib/vendor/ruby/2.*/bin/kpm $@
+exec "$SELFDIR/lib/ruby/bin/ruby" -rbundler/setup -rreadline $SELFDIR/lib/vendor/*ruby/2.*/bin/kpm $@

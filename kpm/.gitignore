@@ -2,10 +2,12 @@ Gemfile.lock
 pkg
 packaging/tmp
 packaging/vendor
-kpm-*-linux-x86.tar.gz
 kpm-*-linux-x86_64.tar.gz
+kpm-*-osx-arm64.tar.gz
 kpm-*-osx.tar.gz
-traveling-ruby-*.tar.gz
+kpm-*-noarch.tar.gz
+portable-ruby-*.tar.gz
+jruby-dist-*-bin.tar.gz
 *.asc
 .rakeTasks
 pom.xml.versionsBackup

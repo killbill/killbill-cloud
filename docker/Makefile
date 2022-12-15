@@ -7,6 +7,7 @@ DOCKER=docker
 DOCKER_TEMPLATE="./dockerTemplate.sh"
 
 TARGET?=killbill
+PARENT_VERSION?=latest
 
 VERSION?=latest
 ifeq ($(VERSION),latest)
@@ -20,16 +21,22 @@ endif
 all: build
 
 build:
-	@echo "Building image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -i
+	@echo "Building image $(IMAGE) for version $(VERSION) from template $(TEMPLATE) with parent $(PARENT_VERSION)"
+	$(DOCKER_TEMPLATE) -p $(PARENT_VERSION) -v $(VERSION) -t $(TARGET) -i
 	$(DOCKER) build -t $(IMAGE) $(TEMPLATE)
-	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -c
+	$(DOCKER_TEMPLATE) -t $(TARGET) -c
 
 rebuild:
-	@echo "Rebuilding image $(IMAGE) from template $(TEMPLATE)"
-	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -i
+	@echo "Rebuilding image $(IMAGE) for version $(VERSION) from template $(TEMPLATE) with parent $(PARENT_VERSION)"
+	$(DOCKER_TEMPLATE) -p $(PARENT_VERSION) -v $(VERSION) -t $(TARGET) -i
 	$(DOCKER) build --no-cache -t $(IMAGE) $(TEMPLATE)
-	$(DOCKER_TEMPLATE) -v $(VERSION) -t $(TARGET) -c
+	$(DOCKER_TEMPLATE) -t $(TARGET) -c
+
+multi-arch:
+	@echo "Rebuilding and pushing multi-arch images $(IMAGE) for version $(VERSION) from template $(TEMPLATE) with parent $(PARENT_VERSION)"
+	$(DOCKER_TEMPLATE) -p $(PARENT_VERSION) -v $(VERSION) -t $(TARGET) -i
+	$(DOCKER) buildx build --push --platform=linux/arm64,linux/amd64 --no-cache -t $(IMAGE) $(TEMPLATE)
+	$(DOCKER_TEMPLATE) -t $(TARGET) -c
 
 run:
 	@echo "Running image $(IMAGE)"
@@ -43,6 +50,5 @@ clean:
 	$(DOCKER) rm `$(DOCKER) ps -a -q` || true
 	#$(DOCKER) images | grep none | awk '{print $3}' | xargs $(DOCKER) rmi
 	#$(DOCKER) images -a --no-trunc | grep $(IMAGE) | awk '{print $$3}' | xargs $(DOCKER) rmi
-
 
 .PHONY: build rebuild run run-container clean

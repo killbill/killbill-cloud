@@ -12,7 +12,10 @@ File.open(ARGV[0]) do |fh|
 end
 
 unless data['kpm_path'].nil?
-  ENV['GEM_PATH']="#{data['kpm_path']}/lib/vendor/ruby/2.2.0"
+  ruby_dir = RUBY_PLATFORM == 'java' ? 'jruby' : 'ruby'
+  gem_path_parent = "#{data['kpm_path']}/lib/vendor/#{ruby_dir}"
+  ruby_version = Dir.entries(gem_path_parent).select { |f| f =~ /\d+/ }.first
+  ENV['GEM_PATH']="#{gem_path_parent}/#{ruby_version}"
   Gem.clear_paths
 end
 require 'kpm'
