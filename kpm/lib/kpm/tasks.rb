@@ -187,76 +187,9 @@ module KPM
                                                 options[:destination],
                                                 'java',
                                                 options[:force_download],
-                                                options[:verify_sha1],
-                                                false)
+                                                options[:verify_sha1])
                      else
                        installer.install_plugin_from_fs(plugin_key, options[:from_source_file], nil, options[:version], options[:destination], 'java')
-                     end
-
-          say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
-        end
-
-        method_option :group_id,
-                      type: :string,
-                      default: KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID,
-                      desc: 'The plugin artifact group-id'
-        method_option :artifact_id,
-                      type: :string,
-                      default: nil,
-                      desc: 'The plugin artifact id'
-        method_option :version,
-                      type: :string,
-                      default: nil,
-                      desc: 'The plugin artifact version'
-        method_option :packaging,
-                      type: :string,
-                      default: KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING,
-                      desc: 'The plugin artifact packaging'
-        method_option :classifier,
-                      type: :string,
-                      default: KillbillPluginArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER,
-                      desc: 'The plugin artifact classifier'
-        method_option :from_source_file,
-                      type: :string,
-                      default: nil,
-                      desc: 'Specify the ruby plugin archive that should be used for the installation.'
-        method_option :destination,
-                      type: :string,
-                      default: nil,
-                      desc: 'A different folder other than the current working directory.'
-        method_option :force_download,
-                      type: :boolean,
-                      default: false,
-                      desc: 'Force download of the artifact even if it exists'
-        method_option :sha1_file,
-                      type: :string,
-                      default: nil,
-                      desc: 'Location of the sha1 file'
-        method_option :verify_sha1,
-                      type: :boolean,
-                      default: true,
-                      desc: 'Validates sha1 sum'
-        desc 'install_ruby_plugin plugin-key <kb-version>', 'Pulls a ruby plugin and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
-        def install_ruby_plugin(plugin_key, kb_version = 'LATEST')
-          installer = BaseInstaller.new(logger,
-                                        options[:overrides],
-                                        options[:ssl_verify])
-
-          response = if options[:from_source_file].nil?
-                       installer.install_plugin(plugin_key,
-                                                kb_version,
-                                                options[:group_id],
-                                                options[:artifact_id],
-                                                options[:packaging],
-                                                options[:classifier],
-                                                options[:version],
-                                                options[:destination],
-                                                'ruby',
-                                                options[:force_download],
-                                                options[:verify_sha1],
-                                                true)
-                     else
-                       installer.install_plugin_from_fs(plugin_key, options[:from_source_file], nil, nil, options[:destination], 'ruby')
                      end
 
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
@@ -647,8 +580,7 @@ module KPM
           logger.error e.backtrace.join("\n") unless e.is_a?(Interrupt)
         end
 
-        map pull_ruby_plugin: :install_ruby_plugin,
-            pull_java_plugin: :install_java_plugin
+        map pull_java_plugin: :install_java_plugin
 
         private
 

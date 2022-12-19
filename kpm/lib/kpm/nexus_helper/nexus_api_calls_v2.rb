@@ -147,7 +147,7 @@ module KPM
         case response.code
         when '200'
           response.body
-        when '301', '307'
+        when '301', '302', '307'
           location = response['Location']
           logger.debug { "Following redirect to #{location}" }
 

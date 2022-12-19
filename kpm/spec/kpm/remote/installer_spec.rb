@@ -63,12 +63,6 @@ describe KPM::Installer do
                                                   }, {
                                                     'name' => 'stripe',
                                                     'version' => '7.0.0'
-                                                  }],
-                                                  'ruby' => [{
-                                                    'name' => 'payment-test-plugin',
-                                                    'artifact_id' => 'payment-test-plugin',
-                                                    'group_id' => 'org.kill-bill.billing.plugin.ruby',
-                                                    'version' => '1.8.7'
                                                   }]
                                                 }
                                               },
@@ -85,10 +79,7 @@ describe KPM::Installer do
       installer.install
       check_installation(plugins_dir, kb_webapp_path, kaui_webapp_path)
 
-      # Finally verify that for both (well behaved) ruby and java plugin, skipping the install will still correctly return the `:bundle_dir`
-      info = installer.install_plugin('payment-test-plugin', nil, 'org.kill-bill.billing.plugin.ruby', 'payment-test-plugin', nil, nil, '1.8.7', plugins_dir)
-      expect(info[:bundle_dir]).to eq plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
-
+      # Finally verify that for (well behaved) java plugins, skipping the install will still correctly return the `:bundle_dir`
       info = installer.install_plugin('analytics', nil, nil, nil, nil, nil, '0.7.1', plugins_dir)
       expect(info[:bundle_dir]).to eq plugins_dir + '/plugins/java/analytics-plugin/0.7.1'
     end
@@ -105,10 +96,7 @@ describe KPM::Installer do
       plugins_dir + '/plugins/java/analytics-plugin',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1',
       plugins_dir + '/plugins/java/stripe-plugin',
-      plugins_dir + '/plugins/java/stripe-plugin/7.0.0',
-      plugins_dir + '/plugins/ruby',
-      plugins_dir + '/plugins/ruby/killbill-payment-test',
-      plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7'
+      plugins_dir + '/plugins/java/stripe-plugin/7.0.0'
     ].each do |dir|
       expect(File.directory?(dir)).to be_truthy
     end
@@ -116,11 +104,9 @@ describe KPM::Installer do
     [
       kb_webapp_path,
       kaui_webapp_path,
-      plugins_dir + '/platform/jruby.jar',
       plugins_dir + '/plugins/plugin_identifiers.json',
       plugins_dir + '/plugins/java/analytics-plugin/0.7.1/analytics-plugin-0.7.1.jar',
-      plugins_dir + '/plugins/java/stripe-plugin/7.0.0/stripe-plugin-7.0.0.jar',
-      plugins_dir + '/plugins/ruby/killbill-payment-test/1.8.7/killbill.properties'
+      plugins_dir + '/plugins/java/stripe-plugin/7.0.0/stripe-plugin-7.0.0.jar'
     ].each do |file|
       expect(File.file?(file)).to be_truthy
     end
@@ -129,7 +115,7 @@ describe KPM::Installer do
       JSON.parse(f.read)
     end
 
-    expect(plugin_identifiers.size).to eq 3
+    expect(plugin_identifiers.size).to eq 2
 
     expect(plugin_identifiers['analytics']['plugin_name']).to eq 'analytics-plugin'
     expect(plugin_identifiers['analytics']['group_id']).to eq 'org.kill-bill.billing.plugin.java'
@@ -144,12 +130,5 @@ describe KPM::Installer do
     expect(plugin_identifiers['stripe']['packaging']).to eq 'jar'
     expect(plugin_identifiers['stripe']['version']).to eq '7.0.0'
     expect(plugin_identifiers['stripe']['language']).to eq 'java'
-
-    expect(plugin_identifiers['payment-test-plugin']['plugin_name']).to eq 'killbill-payment-test'
-    expect(plugin_identifiers['payment-test-plugin']['group_id']).to eq 'org.kill-bill.billing.plugin.ruby'
-    expect(plugin_identifiers['payment-test-plugin']['artifact_id']).to eq 'payment-test-plugin'
-    expect(plugin_identifiers['payment-test-plugin']['packaging']).to eq 'tar.gz'
-    expect(plugin_identifiers['payment-test-plugin']['version']).to eq '1.8.7'
-    expect(plugin_identifiers['payment-test-plugin']['language']).to eq 'ruby'
   end
 end

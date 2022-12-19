@@ -26,7 +26,7 @@ on:
         type: boolean
 
 env:
-  CURRENT_LTS: '0.22'
+  CURRENT_LTS: '0.24'
 
 jobs:
   docker:

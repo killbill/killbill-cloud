@@ -1,6 +1,8 @@
 ---
 killbill:
   version: __VERSION__
+  nexus:
+    repository: snapshots
   plugins:
   plugins_dir: /var/lib/killbill/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war
