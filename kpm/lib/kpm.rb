@@ -7,7 +7,6 @@ module KPM
   autoload :Formatter, 'kpm/formatter'
   autoload :Inspector, 'kpm/inspector'
   autoload :Sha1Checker, 'kpm/sha1_checker'
-  autoload :TomcatManager, 'kpm/tomcat_manager'
   autoload :KillbillServerArtifact, 'kpm/killbill_server_artifact'
   autoload :KillbillPluginArtifact, 'kpm/killbill_plugin_artifact'
   autoload :KauiArtifact, 'kpm/kaui_artifact'
