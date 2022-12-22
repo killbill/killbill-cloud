@@ -25,10 +25,6 @@ module KPM
     KILLBILL_JAVA_PLUGIN_PACKAGING  = 'jar'
     KILLBILL_JAVA_PLUGIN_CLASSIFIER = nil
 
-    KILLBILL_RUBY_PLUGIN_GROUP_ID   = 'org.kill-bill.billing.plugin.ruby'
-    KILLBILL_RUBY_PLUGIN_PACKAGING  = 'tar.gz'
-    KILLBILL_RUBY_PLUGIN_CLASSIFIER = nil
-
     KAUI_GROUP_ID    = 'org.kill-bill.billing.kaui'
     KAUI_ARTIFACT_ID = 'kaui-standalone'
     KAUI_PACKAGING   = 'war'

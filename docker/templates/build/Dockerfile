@@ -29,7 +29,7 @@ RUN apt-get update && \
       maven \
       mysql-client \
       net-tools \
-      openjdk-8-jdk-headless \
+      openjdk-11-jdk-headless \
       postgresql-client \
       python3-lxml \
       software-properties-common \
@@ -42,8 +42,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
-RUN rm -f /usr/lib/jvm/default-java && ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
+RUN update-java-alternatives -s java-1.11.0-openjdk-$(dpkg --print-architecture)
+RUN rm -f /usr/lib/jvm/default-java && ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
@@ -57,18 +57,18 @@ RUN adduser killbill \
     echo "killbill:killbill" | chpasswd && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# Set tomcat as the default user
-USER killbill
-WORKDIR $KILLBILL_HOME
-ENV TERM=xterm
-
 # Install RVM
-RUN sudo apt-get update && \
-    sudo apt-get install --no-install-recommends -y rvm && \
-    sudo rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y rvm && \
+    rm -rf /var/lib/apt/lists/*
 
 # Add extra rubies
 RUN /bin/bash -l -c "rvm install 2.2.2 && rvm install 2.4.2 && rvm install jruby-9.1.14.0"
+
+# Set killbill as the default user
+USER killbill
+WORKDIR $KILLBILL_HOME
+ENV TERM=xterm
 
 # Setup Maven
 RUN mkdir -p $KILLBILL_HOME/.m2

@@ -31,12 +31,11 @@ module KPM
       return nil if plugin.nil?
 
       type = plugin[:type]
-      is_ruby = type == :ruby
 
-      group_id    = plugin[:group_id] || (is_ruby ? KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_GROUP_ID : KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID)
+      group_id    = plugin[:group_id] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID
       artifact_id = plugin[:artifact_id] || "#{plugin_key}-plugin"
-      packaging   = plugin[:packaging] || (is_ruby ? KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_PACKAGING : KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING)
-      classifier  = plugin[:classifier] || (is_ruby ? KPM::BaseArtifact::KILLBILL_RUBY_PLUGIN_CLASSIFIER : KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER)
+      packaging   = plugin[:packaging] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_PACKAGING
+      classifier  = plugin[:classifier] || KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_CLASSIFIER
 
       if raw_kb_version == 'LATEST'
         version = 'LATEST'

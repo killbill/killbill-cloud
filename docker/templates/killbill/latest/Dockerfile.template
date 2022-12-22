@@ -1,5 +1,5 @@
 # Shell image that installs Kill Bill on startup
-FROM killbill/base
+FROM killbill/base:__PARENT_VERSION__
 LABEL maintainer="killbilling-users@googlegroups.com"
 
 ENV KILLBILL_INSTALL_DIR=/var/lib/killbill

@@ -87,9 +87,9 @@ module KPM
                     end
       bundles_dir ||= DEFAULT_BUNDLES_DIR
 
-      help = nil
       unless @config.nil?
-        help = install_tomcat if @config['webapp_path'].nil?
+        raise ArgumentError, "Aborting installation, no webapp_path specified in config: #{@config}" if @config['webapp_path'].nil?
+
         install_killbill_server(@config['group_id'], @config['artifact_id'], @config['packaging'], @config['classifier'], @config['version'], @config['webapp_path'], bundles_dir, force_download, verify_sha1)
         install_plugins(bundles_dir, @config['version'], force_download, verify_sha1)
         install_default_bundles(bundles_dir, @config['default_bundles_version'], @config['version'], force_download, verify_sha1) unless @config['default_bundles'] == false
@@ -105,29 +105,13 @@ module KPM
         install_kaui(@kaui_config['group_id'], @kaui_config['artifact_id'], @kaui_config['packaging'], @kaui_config['classifier'], @kaui_config['version'], @kaui_config['webapp_path'], bundles_dir, force_download, verify_sha1)
       end
 
-      @trace_logger.add('help', nil, help)
       @trace_logger.to_json
     end
 
     private
 
-    def install_tomcat(dir = Dir.pwd)
-      # Download and unpack Tomcat
-      manager = KPM::TomcatManager.new(dir, @logger)
-      manager.download
-
-      # Update main config
-      root_war_path = manager.setup
-      @config['webapp_path'] = root_war_path
-      @kaui_config['webapp_path'] = Pathname.new(File.dirname(root_war_path)).join('kaui.war').to_s unless @kaui_config.nil?
-
-      # Help message
-      manager.help
-    end
-
     def install_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
       install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
     end
 
     def install_java_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
@@ -135,20 +119,7 @@ module KPM
 
       infos = []
       @config['plugins']['java'].each do |plugin|
-        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1, false)
-      end
-
-      infos
-    end
-
-    def install_ruby_plugins(bundles_dir, raw_kb_version, force_download, verify_sha1)
-      return if @config['plugins'].nil? || @config['plugins']['ruby'].nil?
-
-      verify_jruby_jar = true
-      infos = []
-      @config['plugins']['ruby'].each do |plugin|
-        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'ruby', force_download, verify_sha1, verify_jruby_jar)
-        verify_jruby_jar = false
+        infos << install_plugin(plugin['name'], raw_kb_version, plugin['group_id'], plugin['artifact_id'], plugin['packaging'], plugin['classifier'], plugin['version'], bundles_dir, 'java', force_download, verify_sha1)
       end
 
       infos

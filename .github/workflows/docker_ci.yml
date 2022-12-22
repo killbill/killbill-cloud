@@ -7,8 +7,8 @@ on:
 
 env:
   # Doesn't matter too much, we just want to verify the build passes
-  CURRENT_LTS: '0.22'
-  KB_VERSION: '0.22.26'
+  CURRENT_LTS: '0.24'
+  KB_VERSION: '0.24.0'
   KAUI_VERSION: '2.0.9'
 
 jobs:

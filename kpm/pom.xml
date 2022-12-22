@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kill-bill.billing.installer</groupId>
     <artifactId>kpm</artifactId>
-    <version>0.10.4</version>
+    <version>0.11.1</version>
     <packaging>pom</packaging>
     <name>KPM</name>
     <description>KPM: the Kill Bill Package Manager</description>
@@ -148,11 +148,6 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>kpm-${project.version}-linux-x86.tar.gz</file>
-                                    <type>tar.gz</type>
-                                    <classifier>linux-x86</classifier>
-                                </artifact>
-                                <artifact>
                                     <file>kpm-${project.version}-linux-x86_64.tar.gz</file>
                                     <type>tar.gz</type>
                                     <classifier>linux-x86_64</classifier>
@@ -161,6 +156,16 @@
                                     <file>kpm-${project.version}-osx.tar.gz</file>
                                     <type>tar.gz</type>
                                     <classifier>osx</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>kpm-${project.version}-osx-arm64.tar.gz</file>
+                                    <type>tar.gz</type>
+                                    <classifier>osx-arm64</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>kpm-${project.version}-noarch.tar.gz</file>
+                                    <type>tar.gz</type>
+                                    <classifier>noarch</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>

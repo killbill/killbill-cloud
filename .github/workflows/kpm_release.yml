@@ -5,12 +5,24 @@ on:
     inputs:
       target_version:
         description: 'Target version: given version number [x.x.x]'
-        required: true
+        required: false
         default: ''
+        type: string
       perform_version:
         description: 'tag to (re-)perform (in case of deploy failure)'
         required: false
         default: ''
+        type: string
+      release_kpm:
+        description: 'whether the release the kpm gem'
+        required: true
+        default: true
+        type: boolean
+      snapshot_only:
+        description: 'whether to push to Sonatype snapshots'
+        required: true
+        default: false
+        type: boolean
 
 env:
   MAVEN_FLAGS: "-B --no-transfer-progress"
@@ -22,10 +34,10 @@ jobs:
     steps:
       - name: Checkout code
         if: github.event.inputs.perform_version == ''
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.0.2
       - name: Checkout full repository
         if: github.event.inputs.perform_version != ''
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.0.2
         with:
           ref: ${{ github.event.inputs.perform_version }}
       - name: Setup git user
@@ -37,14 +49,25 @@ jobs:
           git config --global user.name "Kill Bill core team"
           git config --global url."https://${BUILD_USER}:${BUILD_TOKEN}@github.com/".insteadOf "git@github.com:"
       - name: Configure settings.xml for release
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3.3.0
+        if: github.event.inputs.snapshot_only == 'false'
         with:
-          java-version: 8
+          java-version: 11
+          distribution: temurin
           server-id: ossrh-releases
           server-username: OSSRH_USER
           server-password: OSSRH_PASS
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
+      - name: Configure settings.xml for snapshots
+        uses: actions/setup-java@v3.3.0
+        if: github.event.inputs.snapshot_only == 'true'
+        with:
+          java-version: 11
+          distribution: temurin
+          server-id: sonatype-nexus-snapshots
+          server-username: OSSRH_USER
+          server-password: OSSRH_PASS
       - name: Install packages
         run: |
           sudo apt-get -yq update
@@ -55,9 +78,10 @@ jobs:
       - name: Set up Ruby
         run: |
           source $HOME/.rvm/scripts/rvm
-          # See TRAVELING_RUBY_VERSION in tasks/package.rake
-          rvm install 2.2.2 --binary
-          rvm --default use 2.2.2
+          # See HOMEBREW_PORTABLE_RUBY_VERSION in tasks/package.rake
+          ruby_version=$(sed -n "s/HOMEBREW_PORTABLE_RUBY_VERSION\s*=\s*'\([0-9.]*\).*'/\1/p" kpm/tasks/package.rake)
+          rvm install $ruby_version --binary
+          rvm --default use $ruby_version
       - name: Set up Bundler
         run: |
           source $HOME/.rvm/scripts/rvm
@@ -68,7 +92,7 @@ jobs:
           cd kpm
           bundle install
       - name: Tag repository
-        if: github.event.inputs.perform_version == ''
+        if: github.event.inputs.perform_version == '' && github.event.inputs.release_kpm == 'true'
         run: |
           source $HOME/.rvm/scripts/rvm
           cd kpm
@@ -77,7 +101,7 @@ jobs:
           git commit -m "kpm: update pom.xml for release"
           bundle exec gem bump -c -p -t -v ${{ github.event.inputs.target_version }}
       - name: Release Gem
-        if: github.event.inputs.perform_version == ''
+        if: github.event.inputs.perform_version == '' && github.event.inputs.release_kpm == 'true'
         env:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: |
@@ -92,12 +116,24 @@ jobs:
           bundle install
           bundle exec gem release
           rm -f ~/.gem/credentials
+      # Needs to happen before building the .tar.gz to get the right directory name
+      - name: Set new SNAPSHOT version
+        if: github.event.inputs.snapshot_only == 'true'
+        run: |
+          cd kpm
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          # Need a -SNAPSHOT suffix for Sonatype
+          snapshot_version="${current_version}-$(git rev-parse --short "$GITHUB_SHA")-SNAPSHOT"
+          mvn versions:set -DnewVersion=${snapshot_version}
+          for i in $(ls *.tar.gz); do mv $i $(echo $i | sed s/$current_version/$snapshot_version/); done
+          echo "::notice ::Version is ${snapshot_version}"
       - name: Build self-contained packages
         run: |
           source $HOME/.rvm/scripts/rvm
           cd kpm
           ../bin/retry bundle exec rake package
       - name: Push to Maven Central
+        if: github.event.inputs.snapshot_only == 'false'
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASS: ${{ secrets.OSSRH_PASS }}
@@ -105,3 +141,11 @@ jobs:
         run: |
           cd kpm
           mvn ${MAVEN_FLAGS} -Psonatype-oss-release deploy
+      - name: Push to Sonatype snapshots
+        if: github.event.inputs.snapshot_only == 'true'
+        env:
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASS: ${{ secrets.OSSRH_PASS }}
+        run: |
+          cd kpm
+          mvn ${MAVEN_FLAGS} deploy

@@ -2,8 +2,8 @@
 - name: Install Java
   hosts: all
   vars:
-    java_package: openjdk-8-jdk
-    default_java_home: /usr/lib/jvm/java-8-openjdk-amd64
+    java_package: openjdk-11-jdk
+    default_java_home: /usr/lib/jvm/java-11-openjdk-amd64
     java_home: /usr/lib/jvm/default-java
   tasks:
     - name: install Java
