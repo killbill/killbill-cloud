@@ -28,7 +28,7 @@ image:https://img.shields.io/gem/v/kpm?color=blue&label=kpm[kpm]
 
 On Windows, you can install KPM via https://rubygems.org/gems/kpm[RubyGems.org]. For this, you need to first install Ruby 2.x.x. We recommend installing `Ruby 2.7.7`. 
 
-Ruby can be installed via https://rubyinstaller.org/downloads/[RubyInstaller]. Once installed, you can run the following command to install KPM:
+Ruby can be installed via https://rubyinstaller.org/[RubyInstaller]. Once installed, you can run the following command to install KPM:
 [source,bash]
 gem install kpm 
 
