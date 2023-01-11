@@ -261,4 +261,4 @@ kpm pull_kb_server_war 0.22.21-SNAPSHOT \
         --artifact-id killbill-profiles-killbill
 ....
 
-Replace `TOKEN` with a Cloudsmith entitlement token, and specify the right `ORG` and `REPO`.
+Replace `TOKEN` with a Cloudsmith entitlement token, and specify the right `ORG` and `REPO`. 
