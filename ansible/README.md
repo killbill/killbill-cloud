@@ -6,7 +6,7 @@ Alternatively, if you would prefer embedding the roles in your own playbooks, yo
 
 ## Ansible Galaxy
 
-1. Update your `ansible.cfg` with:
+1. Update your `ansible.cfg` (default location: `/etc/ansible/ansible.cfg`) with:
 
 ```
 [defaults]
@@ -17,7 +17,9 @@ library = ~/.ansible/roles/killbill-cloud/ansible/library
 2. Create a file `requirements.yml`:
 
 ```
-- src: https://github.com/killbill/killbill-cloud
+- name: killbill-cloud
+  src: https://github.com/killbill/killbill-cloud
+  version: origin/master
 ```
 
 then run `ansible-galaxy install -r requirements.yml`.
