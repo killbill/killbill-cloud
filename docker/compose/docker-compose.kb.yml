@@ -28,7 +28,7 @@ services:
       - KAUI_KILLBILL_API_KEY=bob
       - KAUI_KILLBILL_API_SECRET=lazar
   db:
-    image: killbill/mariadb:0.22
+    image: killbill/mariadb:0.24
     volumes:
       - type: volume
         source: db

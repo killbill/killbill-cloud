@@ -38,14 +38,14 @@
 # We don't use the xml module to avoid a dependency on lxml
 - name: set tomcat_version
   set_fact:
-    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(8.5.*)</version>', '\\1') | last }}"
+    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(10.1.5)</version>', '\\1') | last }}"
   when: tomcat_version is undefined
   tags: install
 
 - name: install Tomcat
   become: true
   unarchive:
-    src: "http://archive.apache.org/dist/tomcat/tomcat-8/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    src: "http://archive.apache.org/dist/tomcat/tomcat-10/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: True
     dest: "{{ tomcat_install_dir }}"
     owner: "{{ tomcat_owner }}"
