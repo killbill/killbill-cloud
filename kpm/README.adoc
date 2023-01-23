@@ -32,6 +32,7 @@ Ruby can be installed via https://rubyinstaller.org/[RubyInstaller]. Once instal
 [source,bash]
 gem install kpm 
 
+Note: KPM is not tested with Ruby 3.x.x or later versions.
 
 
 [[kpm-commands]]
