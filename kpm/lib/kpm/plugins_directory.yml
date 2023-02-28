@@ -8,18 +8,22 @@
   :versions:
     :0.18: 0.5.26
     :0.20: 0.7.0
+    :0.22: 0.9.0
+    :0.24: 0.10.0
 :analytics:
   :type: :java
   :versions:
     :0.18: 4.2.5
     :0.20: 6.0.1
     :0.22: 7.2.7
+    :0.24: 8.0.0
 :avatax:
   :type: :java
   :versions:
     :0.18: 0.4.1
     :0.20: 0.6.1
     :0.22: 0.8.4
+    :0.24: 0.9.0
 :cybersource:
   :type: :ruby
   :versions:
@@ -28,6 +32,7 @@
   :type: :java
   :versions:
     :0.22: 0.0.2
+    :0.24: 0.1.0
 :dwolla:
   :type: :java
   :versions:
@@ -39,6 +44,7 @@
     :0.18: 0.3.1
     :0.20: 0.5.1
     :0.22: 0.7.2
+    :0.24: 0.8.0
 :forte:
   :type: :java
   :versions:
@@ -73,6 +79,7 @@
   :artifact_id: payment-test-plugin
   :versions:
     :0.22: 7.0.4
+    :0.24: 8.0.0
 :securenet:
   :type: :ruby
   :versions:
@@ -81,3 +88,25 @@
   :type: :java
   :versions:
     :0.22: 7.3.3
+    :0.24: 8.0.0
+:braintree:
+  :type: :java
+  :versions:
+    :0.24: 1.0.0
+:catalog-test:
+  :type: :java
+  :versions:
+    :0.24: 0.5.0
+:gocardless:
+  :type: :java
+  :versions:
+    :0.24: 1.0.1
+:qualpay:
+  :type: :java
+  :versions:
+    :0.22: 0.0.1
+    :0.24: 1.0.0
+:invgrp-demo:
+  :type: :java
+  :versions:
+    :0.24: 1.0.7
