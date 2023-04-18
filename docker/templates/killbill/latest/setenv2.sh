@@ -1,7 +1,7 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS
                       -Dorg.killbill.queue.creator.name=${KILLBILL_QUEUE_CREATOR_NAME:-localhost}
-                      -Dorg.killbill.server.properties=file://$KILLBILL_INSTALL_DIR/killbill.properties
+                      -Dorg.killbill.server.properties=file://$KILLBILL_INSTALL_DIR/config/killbill.properties
                       "
 
 #
