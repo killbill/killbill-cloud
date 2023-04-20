@@ -3,7 +3,7 @@ version: '3.8'
 services:
   killbill:
     network_mode: host
-    image: killbill/killbill:0.24.0
+    image: killbill/killbill:0.24.1
     environment:
       - KILLBILL_CATALOG_URI=SpyCarAdvanced.xml
       - KILLBILL_DAO_URL=jdbc:mysql://0.0.0.0:3306/killbill
