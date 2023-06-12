@@ -96,7 +96,7 @@
 :catalog-test:
   :type: :java
   :versions:
-    :0.24: 0.5.0
+    :0.24: 0.5.1
 :gocardless:
   :type: :java
   :versions:
