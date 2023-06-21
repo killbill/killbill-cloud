@@ -22,7 +22,9 @@ init() {
     cat "$TAGGED_PATH/Dockerfile.template" | sed -e "s/__PARENT_VERSION__/$PARENT_VERSION/" | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/Dockerfile"
     echo "Built $TAGGED_PATH/Dockerfile with FROM:"
     grep FROM $TAGGED_PATH/Dockerfile
-    cat "$TAGGED_PATH/kpm.yml.template"  | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/kpm.yml"
+    if [[ -f "$TAGGED_PATH/kpm.yml.template" ]]; then
+        cat "$TAGGED_PATH/kpm.yml.template" | sed -e "s/__VERSION__/$VERSION/" > "$TAGGED_PATH/kpm.yml"
+    fi
   else
     cat "$LATEST_PATH/Dockerfile.template" | sed -e "s/__PARENT_VERSION__/$PARENT_VERSION/" > "$LATEST_PATH/Dockerfile"
     echo "Built $LATEST_PATH/Dockerfile with FROM:"
