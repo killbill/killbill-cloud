@@ -38,7 +38,7 @@
 # We don't use the xml module to avoid a dependency on lxml
 - name: set tomcat_version
   set_fact:
-    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(8.5.*)</version>', '\\1') | last }}"
+    tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(9.0.*)</version>', '\\1') | last }}"
   when: tomcat_version is undefined
   tags: install
 
