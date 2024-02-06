@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         # See HOMEBREW_PORTABLE_RUBY_VERSION in kpm/tasks/package.rake
-        ruby-version: ['2.6.8', 'jruby-9.3.4.0']
+        ruby-version: ['3.0.0', 'jruby-9.3.4.0']
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
