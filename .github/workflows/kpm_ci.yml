@@ -26,7 +26,7 @@ jobs:
       - name: Upgrade rubygems
         run: |
           # See https://github.com/rubygems/rubygems/pull/3146
-          gem update --system 2.6.8_1
+          gem update --system 2.6.8
       - name: Start stack
         run: |
           cd kpm/docker && docker-compose -p it -f docker-compose.ci.mysql.yml up -d
