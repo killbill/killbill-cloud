@@ -17,3 +17,6 @@ fi
 if [ ! -z ${KAUI_CONFIG_DAO_PASSWORD+x} ]; then
   export KAUI_DB_PASSWORD=$KAUI_CONFIG_DAO_PASSWORD
 fi
+if [ ! -z ${KAUI_SECRET_KEY_BASE+x} ]; then
+  export KAUI_SECRET_KEY_BASE=$(head -c 1024 /dev/urandom | base64 | tr -cd "[:upper:][:digit:]" | head -c 129)
+fi
