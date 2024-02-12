@@ -44,6 +44,10 @@ To configure Kill Bill, specify properties in the following format, e.g. `KB_org
 
 For PostgreSQL support specifically, you need to specify `KAUI_DB_ADAPTER=postgresql`.
 
+[[changes-since-0.24.7]]
+## Changes since 0.24.7
+* Tomcat has been updated from 8.5.* to 9.0.*
+
 [[changes-since-0.22.27]]
 ## Changes since 0.22.27
 
