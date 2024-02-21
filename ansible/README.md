@@ -17,7 +17,10 @@ library = ~/.ansible/roles/killbill-cloud/ansible/library
 2. Create a file `requirements.yml`:
 
 ```
-- src: https://github.com/killbill/killbill-cloud
+- name: killbill-cloud
+  src: git@github.com:killbill/killbill-cloud.git
+  version: origin/master
+  scm: git
 ```
 
 then run `ansible-galaxy install -r requirements.yml`.
