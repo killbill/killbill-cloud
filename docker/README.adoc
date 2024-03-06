@@ -10,12 +10,12 @@ toc::[]
 [[available-images]]
 ## Available images
 
-* `killbill/base:latest`: shared base image with Tomcat and KPM inside Ubuntu 20.04 LTS.
-* `killbill/killbill:latest`: empty base Kill Bill image. It runs `kpm install` on startup before running Kill Bill. If no custom `kpm.yml` file is specified, the latest version of Kill Bill and the KPM plugin are downloaded.
-* `killbill/killbill:0.X.Y`: image with a specific version of Kill Bill installed and the KPM plugin.
-* `killbill/kaui:latest`: empty base Kaui image. It runs `kpm install` on startup before running Kaui. If no custom `kpm.yml` file is specified, the latest version of Kaui is downloaded.
-* `killbill/kaui:0.X.Y`: image with a specific version of Kaui installed.
-* `killbill/killbill:build`: official build environment for all published Kill Bill artifacts (useful for developers).
+* `killbill/base:latest`: Shared base image with Tomcat and KPM inside Ubuntu 20.04 LTS. It also contains Ansible and our playbooks from https://github.com/killbill/killbill-cloud. It starts Tomcat on startup.
+* `killbill/killbill:latest`: Empty base Kill Bill image. Includes the `killbill-flyway` utility. It runs `kpm install` on startup. If no custom `kpm.yml` file is specified, the latest version of Kill Bill is downloaded.
+* `killbill/killbill:0.X.Y`: Image with a specific version of Kill Bill installed.
+* `killbill/kaui:latest`: Empty base Kaui image. It runs `kpm install` on startup. If no custom `kpm.yml` file is specified, the latest version of Kaui is downloaded.
+* `killbill/kaui:0.X.Y`: Image with a specific version of Kaui installed.
+* `killbill/killbill:build`: Official build environment for all published Kill Bill artifacts (useful for developers).
 
 [[tips-and-tricks]]
 ### Tips and tricks
@@ -46,7 +46,7 @@ For PostgreSQL support specifically, you need to specify `KAUI_DB_ADAPTER=postgr
 
 [[changes-since-0.24.7]]
 ## Changes since 0.24.7
-* Tomcat has been updated from 8.5.* to 9.0.*
+* Tomcat has been updated from *8.5.x* to *9.0.x*
 
 [[changes-since-0.22.27]]
 ## Changes since 0.22.27
