@@ -58,7 +58,7 @@ WORKDIR $TOMCAT_HOME
 # Install ansible roles dependencies
 ARG KILLBILL_CLOUD_VERSION
 RUN ansible-galaxy collection install community.general && \
-    ansible-galaxy install git+ssh://git@github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
+    ansible-galaxy install git+https://git@github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES=$TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
 ENV ENV_HOST_IP=localhost
 ENV ANSIBLE_OPTS="-i localhost, \
