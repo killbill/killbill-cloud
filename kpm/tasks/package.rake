@@ -10,9 +10,9 @@ require './lib/kpm/version'
 VERSION = KPM::VERSION
 
 # See https://www.jruby.org/download
-JRUBY_VERSION = '9.3.4.0'
+JRUBY_VERSION = '9.4.5.0'
 # See https://github.com/Homebrew/homebrew-portable-ruby/releases
-HOMEBREW_PORTABLE_RUBY_VERSION = '2.6.8_1'
+HOMEBREW_PORTABLE_RUBY_VERSION = '3.1.4'
 
 # Remove unused files to reduce package size
 GEMS_PATH = 'packaging/vendor/ruby/*/gems/*/'
