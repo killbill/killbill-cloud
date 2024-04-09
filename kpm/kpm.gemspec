@@ -45,7 +45,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'killbill-client', '~> 3.2'
   s.add_dependency 'rubyzip', '>= 1.3', '< 2.4'
   s.add_dependency 'thor', '>= 0.19.1', '< 1.3.0'
-  s.add_dependency 'sorted_set', '~> 1.0', '>= 1.0.3'
 
   s.add_development_dependency 'gem-release', '~> 2.2'
   s.add_development_dependency 'rake', '~> 13.0'
