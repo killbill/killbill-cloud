@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rexml/document'
-require 'set'
 
 module KPM
   class KauiArtifact < BaseArtifact
@@ -11,9 +10,9 @@ module KPM
 
         coordinates = KPM::Coordinates.build_coordinates(coordinate_map)
         response    = REXML::Document.new nexus_remote(overrides, ssl_verify).search_for_artifacts(coordinates)
-        versions    = SortedSet.new
+        versions    = []
         response.elements.each('searchNGResponse/data/artifact/version') { |element| versions << element.text }
-        versions
+        versions.sort!.uniq
       end
     end
   end
