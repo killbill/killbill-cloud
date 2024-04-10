@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rexml/document'
-require 'set'
 
 module KPM
   class KillbillPluginArtifact < BaseArtifact
@@ -20,8 +19,9 @@ module KPM
           response = REXML::Document.new nexus.search_for_artifacts(type_and_group_id[1])
           response.elements.each('searchNGResponse/data/artifact') do |element|
             artifact_id = element.elements['artifactId'].text
-            plugins[type_and_group_id[0]][artifact_id] ||= SortedSet.new
+            plugins[type_and_group_id[0]][artifact_id] ||= []
             plugins[type_and_group_id[0]][artifact_id] << element.elements['version'].text
+            plugins[type_and_group_id[0]][artifact_id].sort!.uniq!
           end
         end
 
