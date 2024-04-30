@@ -525,22 +525,6 @@ module KPM
                       type: :string,
                       default: nil,
                       desc: 'Killbill URL ex. http://127.0.0.1:8080'
-        method_option :database_name,
-                      type: :string,
-                      default: nil,
-                      desc: 'DB name to connect'
-        method_option :database_credentials,
-                      type: :array,
-                      default: nil,
-                      desc: 'DB credentials <user> <password>'
-        method_option :database_host,
-                      type: :string,
-                      default: nil,
-                      desc: 'Database Host name'
-        method_option :database_port,
-                      type: :string,
-                      default: nil,
-                      desc: 'Database port'
         method_option :kaui_web_path,
                       type: :string,
                       default: nil,
@@ -563,17 +547,12 @@ module KPM
 
           raise Interrupt, '--killbill_credentials, required format -> <user> <password>' if options[:killbill_credentials] && options[:killbill_credentials].size != 2
 
-          raise Interrupt, '--database_credentials, required format -> <user> <password>' if options[:database_credentials] && options[:database_credentials].size != 2
-
-          raise Interrupt, '--database_credentials, please provide a valid database name' if options[:database_name] && options[:database_name] == :database_name.to_s
-
           raise Interrupt, '--kaui_web_path, please provide a valid kaui web path ' if options[:kaui_web_path] && options[:kaui_web_path] == :kaui_web_path.to_s
 
           raise Interrupt, '--killbill_web_path, please provide a valid killbill web path' if options[:killbill_web_path] && options[:killbill_web_path] == :killbill_web_path.to_s
 
           diagnostic = KPM::DiagnosticFile.new(options[:config_file], options[:killbill_api_credentials], options[:killbill_credentials],
-                                               options[:killbill_url], options[:database_name], options[:database_credentials],
-                                               options[:database_host], options[:database_port], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir], logger)
+                                               options[:killbill_url], options[:kaui_web_path], options[:killbill_web_path], options[:bundles_dir], logger)
           diagnostic.export_data(options[:account_export], options[:log_dir])
         rescue StandardError => e
           logger.error "\e[91;1m#{e.message}\e[0m"

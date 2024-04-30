@@ -23,15 +23,11 @@ module KPM
     ZIP_LOG_FILE = 'logs.zip'
 
     def initialize(config_file = nil, killbill_api_credentials = nil, killbill_credentials = nil, killbill_url = nil,
-                   database_name = nil, database_credentials = nil, database_host = nil, database_port = nil, kaui_web_path = nil,
+                   kaui_web_path = nil,
                    killbill_web_path = nil, bundles_dir = nil, logger = nil)
       @killbill_api_credentials = killbill_api_credentials
       @killbill_credentials = killbill_credentials
       @killbill_url = killbill_url
-      @database_name = database_name
-      @database_credentials = database_credentials
-      @database_host = database_host
-      @database_port = database_port
       @config_file = config_file
       @kaui_web_path = kaui_web_path
       @killbill_web_path = killbill_web_path
@@ -109,8 +105,8 @@ module KPM
       @logger.level = Logger::WARN
 
       account = KPM::Account.new(@config_file, @killbill_api_credentials, @killbill_credentials,
-                                 @killbill_url, @database_name,
-                                 @database_credentials, @database_host, @database_port, nil, @logger)
+                                 @killbill_url, nil,
+                                 nil, nil, nil, nil, @logger)
       export_file = account.export_data(account_id)
 
       final = TMP_DIR + File::Separator + ACCOUNT_FILE
