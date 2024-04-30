@@ -95,13 +95,13 @@ module KPM
                       default: true,
                       desc: 'Validate sha1 sum'
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'pull_kb_server_war <version>', 'Pulls Kill Bill server war and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kb_server_war(version = 'LATEST')
           installer = BaseInstaller.new(logger,
@@ -120,13 +120,13 @@ module KPM
         end
 
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'search_for_kb_server', 'Searches for all versions of Kill Bill server and prints them to the screen.'
         def search_for_kb_server
           say "Available versions: #{KillbillServerArtifact.versions(KillbillServerArtifact::KILLBILL_ARTIFACT_ID,
@@ -214,13 +214,13 @@ module KPM
                       default: true,
                       desc: 'Validates sha1 sum'
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
         def pull_defaultbundles(kb_version = 'LATEST')
           response = BaseInstaller.new(logger,
@@ -234,13 +234,13 @@ module KPM
           say "Artifact has been retrieved and can be found at path: #{response[:file_path]}", :green
         end
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'search_for_plugins', 'Searches for all available plugins and prints them to the screen.'
         def search_for_plugins
           all_plugins = KillbillPluginArtifact.versions(options[:overrides], options[:ssl_verify])
@@ -273,13 +273,13 @@ module KPM
                       default: true,
                       desc: 'Validates sha1 sum'
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'pull_kaui_war <version>', 'Pulls Kaui war and places it on your machine. If version was not specified it uses the latest released version.'
         def pull_kaui_war(version = 'LATEST')
           response = KauiArtifact.pull(logger,
@@ -323,13 +323,13 @@ module KPM
                       default: false,
                       desc: 'Set the output format as JSON when true'
         method_option :overrides,
-                     type: :hash,
-                     default: nil,
-                     desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
         method_option :ssl_verify,
-                     type: :boolean,
-                     default: true,
-                     desc: 'Set to false to disable SSL Verification.'
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'info', 'Describe information about a Kill Bill version'
         def info
           versions_info = KillbillServerArtifact.info(options[:version],
