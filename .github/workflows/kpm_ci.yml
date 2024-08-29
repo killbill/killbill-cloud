@@ -31,7 +31,7 @@ jobs:
           gem update bundler --conservative
       - name: Start stack
         run: |
-          cd kpm/docker && docker-compose -p it -f docker-compose.ci.mysql.yml up -d
+          cd kpm/docker && docker compose -p it -f docker-compose.ci.mysql.yml up -d
       - name: Wait for stack
         run: |
           count=0
@@ -83,10 +83,10 @@ jobs:
           echo "[DEBUG] killbill env"
           docker exec it_killbill_1 env || true
           echo "[DEBUG] db env"
-          docker exec it_db_1 env || true
+          docker exec it-db-1 env || true
           echo "[DEBUG] killbill logs"
           docker logs --details it_killbill_1 || true
           echo "[DEBUG] killbill raw logs"
           sudo cat /tmp/it/logs/killbill.out || true
           echo "[DEBUG] db logs"
-          docker logs --details it_db_1 || true
+          docker logs --details it-db-1 || true
