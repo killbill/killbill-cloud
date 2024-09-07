@@ -1,10 +1,10 @@
-FROM ubuntu:20.04 as builder-base
+FROM ubuntu:24.04 AS builder-base
 LABEL maintainer="killbilling-users@googlegroups.com"
 
 USER root
 
 ENV LC_CTYPE=en_US.UTF-8
-ENV LC_ALL=C
+ENV LC_ALL=C.UTF-8
 ENV LANG=en_US.UTF-8
 ENV PYTHONIOENCODING=utf8
 
@@ -24,7 +24,7 @@ RUN apt-get update && \
       libapr1 \
       mysql-client \
       net-tools \
-      openjdk-11-jdk-headless \
+      openjdk-17-jdk-headless \
       python3-lxml \
       sudo \
       telnet \
@@ -34,7 +34,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
+RUN ln -s java-17-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
