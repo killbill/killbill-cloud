@@ -88,7 +88,7 @@
   :type: :java
   :versions:
     :0.22: 7.3.3
-    :0.24: 8.0.1
+    :0.24: 8.0.2
 :braintree:
   :type: :java
   :versions:
