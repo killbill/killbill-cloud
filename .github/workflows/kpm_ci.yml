@@ -3,7 +3,7 @@ name: kpm_ci
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  JRUBY_OPTS: --2.0 -J-Xmx1024M
+  JRUBY_OPTS: --2.0 -J-Xmx2048M
   KB_ADDRESS: 0.0.0.0
   KB_PORT: 8080
 
