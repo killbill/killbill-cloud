@@ -14,6 +14,8 @@ ENV KB_org_killbill_server_baseUrl=http://$ENV_HOST_IP:8080
 ENV KB_org_killbill_billing_plugin_kpm_kpmPath=$KPM_INSTALL_DIR/kpm-latest/kpm
 ENV KB_org_killbill_billing_plugin_kpm_bundlesPath=$KILLBILL_INSTALL_DIR/bundles
 ENV KB_org_killbill_security_shiroResourcePath=$KILLBILL_INSTALL_DIR/config/shiro.ini
+ENV KB_org_killbill_notificationq_main_queue_mode=POLLING
+ENV KB_org_killbill_notificationq_analytics_queue_mode=POLLING
 ENV KB_ADMIN_PASSWORD=password
 
 # Default kpm.yml, override as needed
