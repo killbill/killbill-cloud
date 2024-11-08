@@ -49,7 +49,7 @@ jobs:
           if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
             TAG="killbill/base:latest-$(git rev-parse --short "$GITHUB_SHA")"
           else
-            TAG="killbill/base:latest"
+            TAG="killbill/base:jdk17"
           fi
           cd docker/templates/base/latest
           docker buildx build --push --platform=linux/arm64,linux/amd64 --no-cache -t $TAG -f Dockerfile --build-arg KILLBILL_CLOUD_VERSION=${{ github.event.inputs.cloud_version }} --build-arg NEXUS_REPOSITORY=${{ github.event.inputs.nexus_repository }} .
@@ -60,10 +60,10 @@ jobs:
             make -e TARGET=kaui -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=latest -e IMAGE=killbill/kaui:latest-$(git rev-parse --short "$GITHUB_SHA") multi-arch
             make -e TARGET=killbill -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=latest -e IMAGE=killbill/killbill:latest-$(git rev-parse --short "$GITHUB_SHA") multi-arch
           else
-            make -e TARGET=kaui -e VERSION=latest multi-arch
-            make -e TARGET=killbill -e VERSION=latest multi-arch
-            make -e TARGET=mariadb VERSION=$CURRENT_LTS multi-arch
-            make -e TARGET=postgresql VERSION=$CURRENT_LTS multi-arch
+            make -e TARGET=kaui -e PARENT_VERSION=jdk17 -e VERSION=latest multi-arch
+            make -e TARGET=killbill -e PARENT_VERSION=jdk17 -e VERSION=latest multi-arch
+            #make -e TARGET=mariadb VERSION=$CURRENT_LTS multi-arch
+            #make -e TARGET=postgresql VERSION=$CURRENT_LTS multi-arch
           fi
       - name: Build and push killbill image
         if: github.event.inputs.killbill_version != ''
@@ -72,7 +72,7 @@ jobs:
           if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
             make -e TARGET=killbill -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=${{ github.event.inputs.killbill_version }} -e IMAGE=killbill/killbill:${{ github.event.inputs.killbill_version }}-$(git rev-parse --short "$GITHUB_SHA") multi-arch
           else
-            make -e TARGET=killbill -e VERSION=${{ github.event.inputs.killbill_version }} multi-arch
+            make -e TARGET=killbill -e PARENT_VERSION=jdk17 -e VERSION=${{ github.event.inputs.killbill_version }} multi-arch
           fi
       - name: Build and push kaui image
         if: github.event.inputs.kaui_version != ''
@@ -81,5 +81,5 @@ jobs:
           if [[ ${{ github.event.inputs.snapshot_only }} = "true" ]]; then
             make -e TARGET=kaui -e PARENT_VERSION=latest-$(git rev-parse --short "$GITHUB_SHA") -e VERSION=${{ github.event.inputs.kaui_version }} -e IMAGE=killbill/kaui:${{ github.event.inputs.kaui_version }}-$(git rev-parse --short "$GITHUB_SHA") multi-arch
           else
-            make -e TARGET=kaui -e VERSION=${{ github.event.inputs.kaui_version }} multi-arch
+            make -e TARGET=kaui -e PARENT_VERSION=jdk17 -e VERSION=${{ github.event.inputs.kaui_version }} multi-arch
           fi
