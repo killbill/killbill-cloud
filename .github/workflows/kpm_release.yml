@@ -71,7 +71,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get -yq update
-          sudo apt-get -y install libgdbm5 libgdbm-dev libncurses5-dev libyaml-dev libssl1.0-dev
+          sudo apt-get -y install libgdbm5 libgdbm-dev libncurses5-dev libyaml-dev libssl-dev
       - name: Set up RVM
         run: |
           curl -sSL https://get.rvm.io | bash
