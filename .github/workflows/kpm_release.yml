@@ -30,7 +30,7 @@ env:
 
 jobs:
   kpm_release:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         if: github.event.inputs.perform_version == ''
@@ -71,7 +71,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get -yq update
-          sudo apt-get -y install libgdbm5 libgdbm-dev libncurses5-dev libyaml-dev libssl1.0-dev
+          sudo apt-get -y install libgdbm6 libgdbm-dev libncurses5-dev libyaml-dev libssl-dev
       - name: Set up RVM
         run: |
           curl -sSL https://get.rvm.io | bash
