@@ -1,6 +1,6 @@
 ---
-nexus_url: https://central.sonatype.com
-nexus_repository: central
+nexus_url: https://repo1.maven.org
+nexus_repository: maven2
 
 kpm_install_dir: /opt
 kpm_path: "{{ kpm_install_dir }}/kpm-latest"
