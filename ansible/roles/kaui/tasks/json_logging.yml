@@ -2,7 +2,7 @@
 - name: download Logstash third-party dependencies
   become: true
   get_url:
-    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/{{ item.group_path }}/{{ item.artifact_id }}/{{ item.version }}/{{ item.artifact_id }}-{{ item.version }}.jar"
+    url: "{{ nexus_url }}/{{ nexus_repository }}/{{ item.group_path }}/{{ item.artifact_id }}/{{ item.version }}/{{ item.artifact_id }}-{{ item.version }}.jar"
     dest: "{{ item.dest }}"
   with_items:
     - group_path: com/fasterxml/jackson/core
