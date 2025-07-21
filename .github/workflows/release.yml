@@ -18,7 +18,7 @@ on:
       nexus_repository:
         description: 'Nexus repository for KPM'
         required: true
-        default: 'releases'
+        default: 'maven2'
       snapshot_only:
         description: 'whether to push snapshots'
         required: true

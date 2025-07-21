@@ -31,7 +31,7 @@
 
 - name: check if pre-built KPM exists for this arch
   uri:
-    url: "{{ nexus_url }}/service/local/artifact/maven/redirect?r={{ nexus_repository }}&g=org.kill-bill.billing.installer&a=kpm&c=linux-{{ ansible_architecture }}&e=tar.gz&v={{ kpm_version }}"
+    url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     method: HEAD
   register: kpm_arch_test
   failed_when: kpm_arch_test.status is undefined or kpm_arch_test.status <= 0
@@ -42,7 +42,7 @@
   become: true
   get_url:
     # Use the redirect API to support SNAPSHOT
-    url: "{{ nexus_url }}/service/local/artifact/maven/redirect?r={{ nexus_repository }}&g=org.kill-bill.billing.installer&a=kpm&c=noarch&e=tar.gz&v={{ kpm_version }}"
+    url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-noarch.tar.gz"
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
@@ -71,7 +71,7 @@
   become: true
   get_url:
     # Use the redirect API to support SNAPSHOT
-    url: "{{ nexus_url }}/service/local/artifact/maven/redirect?r={{ nexus_repository }}&g=org.kill-bill.billing.installer&a=kpm&c=linux-{{ ansible_architecture }}&e=tar.gz&v={{ kpm_version }}"
+    url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
