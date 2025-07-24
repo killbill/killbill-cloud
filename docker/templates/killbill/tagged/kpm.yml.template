@@ -4,3 +4,7 @@ killbill:
   plugins:
   plugins_dir: /var/lib/killbill/bundles
   webapp_path: /var/lib/tomcat/webapps/ROOT.war
+  nexus:
+    ssl_verify: false
+    url: https://repo1.maven.org
+    repository: maven2
