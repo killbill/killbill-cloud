@@ -25,7 +25,7 @@ module KPM
 
       def initialize(overrides, ssl_verify, logger)
         overrides ||= {}
-        overrides[:url] ||= 'https://oss.sonatype.org'
+        overrides[:url] ||= 'https://ossrh-staging-api.central.sonatype.com'
         overrides[:repository] ||= 'releases'
 
         @logger = logger
