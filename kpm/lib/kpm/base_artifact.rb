@@ -49,7 +49,7 @@ module KPM
 
       def nexus_defaults
         {
-          url: 'https://oss.sonatype.org',
+          url: 'https://ossrh-staging-api.central.sonatype.com',
           repository: 'releases'
         }
       end
