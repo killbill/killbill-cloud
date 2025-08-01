@@ -1,5 +1,5 @@
 ---
-nexus_url: https://oss.sonatype.org
+nexus_url: https://ossrh-staging-api.central.sonatype.com
 nexus_repository: releases
 
 kpm_install_dir: /opt

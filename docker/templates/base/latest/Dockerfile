@@ -68,7 +68,7 @@ ENV ANSIBLE_OPTS="-i localhost, \
                   -vv"
 
 # Install KPM
-ENV NEXUS_URL=https://oss.sonatype.org
+ENV NEXUS_URL=https://ossrh-staging-api.central.sonatype.com
 ARG NEXUS_REPOSITORY
 ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-releases}
 ENV KPM_INSTALL_DIR=/opt
