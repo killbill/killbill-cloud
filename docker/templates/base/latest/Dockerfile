@@ -68,9 +68,9 @@ ENV ANSIBLE_OPTS="-i localhost, \
                   -vv"
 
 # Install KPM
-ENV NEXUS_URL=https://repo1.maven.org
+ENV NEXUS_URL=https://ossrh-staging-api.central.sonatype.com
 ARG NEXUS_REPOSITORY
-ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-maven2}
+ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-releases}
 ENV KPM_INSTALL_DIR=/opt
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \

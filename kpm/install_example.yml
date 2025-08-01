@@ -9,7 +9,7 @@ killbill:
         version: 0.6.0
   nexus:
     ssl_verify: false
-    url: https://oss.sonatype.org
+    url: https://ossrh-staging-api.central.sonatype.com
     repository: releases
     # You can use https://github.com/reidmorrison/symmetric-encryption for encryption
     #username: bob
@@ -20,5 +20,5 @@ kaui:
   webapp_path: /var/tmp/tomcat/webapps/kaui
   nexus:
     ssl_verify: false
-    url: https://oss.sonatype.org
+    url: https://ossrh-staging-api.central.sonatype.com
     repository: releases
