@@ -9,7 +9,7 @@
 
 - name: download kpm release metadata
   uri:
-    url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/maven-metadata.xml"
+    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/maven-metadata.xml"
     return_content: yes
   register: kpm_metadata
   when: kpm_version is undefined
