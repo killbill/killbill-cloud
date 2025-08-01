@@ -79,10 +79,10 @@
     <properties>
         <repository.release.id>sonatype-nexus-staging</repository.release.id>
         <repository.release.name>Nexus Release Repository</repository.release.name>
-        <repository.release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repository.release.url>
+        <repository.release.url>https://central.sonatype.com/publisher/</repository.release.url>
         <repository.snapshot.id>sonatype-nexus-snapshots</repository.snapshot.id>
         <repository.snapshot.name>Sonatype Nexus Snapshots</repository.snapshot.name>
-        <repository.snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</repository.snapshot.url>
+        <repository.snapshot.url>https://central.sonatype.com/publisher/snapshots/</repository.snapshot.url>
     </properties>
     <build>
         <pluginManagement>
@@ -207,7 +207,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh-releases</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <nexusUrl>https://central.sonatype.com/</nexusUrl>
                             <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
                             <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>

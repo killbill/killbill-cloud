@@ -2,7 +2,7 @@
 - name: download Logstash dependency
   become: true
   get_url:
-    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/net/logstash/logback/logstash-logback-encoder/6.4/logstash-logback-encoder-6.4.jar"
+    url: "https://repo1.maven.org/maven2/net/logstash/logback/logstash-logback-encoder/6.4/logstash-logback-encoder-6.4.jar"
     dest: /opt/logstash-logback-encoder.jar
   tags:
     - killbill-logback

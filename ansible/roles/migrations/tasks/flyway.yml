@@ -14,7 +14,7 @@
 - block:
     - name: download killbill-flyway release metadata
       uri:
-        url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
+        url: "https://repo1.maven.org/maven2/org/kill-bill/billing/killbill-util/maven-metadata.xml"
         return_content: yes
       register: flyway_metadata
       when: flyway_version is undefined
@@ -23,7 +23,7 @@
     # We don't use the xml module to avoid a dependency on lxml
     - name: set flyway_version
       set_fact:
-        flyway_version: "{{ flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+        flyway_version: "0.24.13"
       when: flyway_version is undefined
       tags: migrations
 
@@ -31,7 +31,7 @@
       become: true
       # maven_artifact module requires xml on the host
       get_url:
-        url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
+        url: "https://repo1.maven.org/maven2/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
       tags: migrations
   when: not flyway_bin.stat.exists

@@ -1,6 +1,4 @@
 ---
-nexus_url: https://oss.sonatype.org
-nexus_repository: releases
 
 kpm_install_dir: /opt
 kpm_path: "{{ kpm_install_dir }}/kpm-latest"

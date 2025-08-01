@@ -68,16 +68,11 @@ ENV ANSIBLE_OPTS="-i localhost, \
                   -vv"
 
 # Install KPM
-ENV NEXUS_URL=https://oss.sonatype.org
-ARG NEXUS_REPOSITORY
-ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-releases}
 ENV KPM_INSTALL_DIR=/opt
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
                      -e kpm_owner=$TOMCAT_OWNER \
                      -e kpm_group=$TOMCAT_GROUP \
-                     -e nexus_url=$NEXUS_URL \
-                     -e nexus_repository=$NEXUS_REPOSITORY \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
 ENV PATH="/opt/kpm-latest:${PATH}"
 

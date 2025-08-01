@@ -29,7 +29,7 @@
 
 - name: download Tomcat release metadata
   uri:
-    url: "{{ nexus_url }}/content/repositories/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
+    url: "https://repo1.maven.org/maven2/org/apache/tomcat/tomcat/maven-metadata.xml"
     return_content: yes
   register: tomcat_metadata
   when: tomcat_version is undefined
