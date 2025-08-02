@@ -25,7 +25,7 @@ module KPM
 
       def initialize(overrides, ssl_verify, logger)
         overrides ||= {}
-        overrides[:url] ||= 'https://oss.sonatype.org'
+        overrides[:url] ||= 'https://repo1.maven.org'
         overrides[:repository] ||= 'releases'
 
         @logger = logger
@@ -35,7 +35,7 @@ module KPM
                           elsif overrides[:url].start_with?('https://dl.cloudsmith.io')
                             CloudsmithApiCalls.new(overrides, ssl_verify, logger)
                           else
-                            NexusApiCallsV2.new(overrides, ssl_verify, logger)
+                            MavenCentralApiCalls.new(overrides, logger)
                           end
       end
 

@@ -30,7 +30,7 @@
             <updatePolicy>never</updatePolicy>
             <checksumPolicy>fail</checksumPolicy>
           </snapshots>
-          <url>https://oss.sonatype.org/content/repositories/releases/</url>
+          <url>https://central.sonatype.com/publisher/releases/</url>
         </repository>
         <repository>
           <id>sonatype-snapshots</id>
@@ -45,7 +45,7 @@
             <updatePolicy>never</updatePolicy>
             <checksumPolicy>fail</checksumPolicy>
           </snapshots>
-          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+          <url>https://central.sonatype.com/publisher/snapshots/</url>
         </repository>
       </repositories>
     </profile>
