@@ -9,8 +9,9 @@ describe KPM::NexusFacade do
     logger.level = Logger::DEBUG
     logger
   end
+  let(:test_version) { '0.24.15' }
   let(:coordinates_map) do
-    { version: '0.24.15',
+    { version: test_version,
       group_id: 'org.kill-bill.billing',
       artifact_id: 'killbill',
       packaging: 'pom',
@@ -24,8 +25,8 @@ describe KPM::NexusFacade do
       response = nil
       expect { response = nexus_remote.get_artifact_info(coordinates) }.not_to raise_exception
       parsed_doc = REXML::Document.new(response)
-      expect(parsed_doc.elements['//version'].text).to eq('0.24.15')
-      expect(parsed_doc.elements['//repositoryPath'].text).to eq('/org/kill-bill/billing/0.24.15/killbill-0.24.15.pom')
+      expect(parsed_doc.elements['//version'].text).to eq(test_version)
+      expect(parsed_doc.elements['//repositoryPath'].text).to eq("/org/kill-bill/billing/#{test_version}/killbill-#{test_version}.pom")
       expect(parsed_doc.elements['//snapshot'].text).to eq('false')
     }
 
@@ -39,5 +40,30 @@ describe KPM::NexusFacade do
       expect(parsed_pom.elements['//artifactId'].text).to eq('killbill-oss-parent')
       expect(parsed_pom.elements['//version'].text).to eq('0.146.63')
     }
+  end
+
+  context 'when getting artifact info' do
+    it 'returns artifact info in XML format' do
+      response = nil
+      expect { response = nexus_remote.get_artifact_info(coordinates) }.not_to raise_exception
+      parsed_doc = REXML::Document.new(response)
+      expect(parsed_doc.elements['//groupId'].text).to eq('org.kill-bill.billing')
+      expect(parsed_doc.elements['//artifactId'].text).to eq('killbill')
+      expect(parsed_doc.elements['//version'].text).to eq(test_version)
+    end
+  end
+
+  context 'when searching for release artifact' do
+    it 'searches for artifacts and returns XML format' do
+      response = nil
+      expect {
+        response = nexus_remote.search_for_artifacts(coordinates)
+      }.not_to raise_exception
+
+      parsed_doc = REXML::Document.new(response)
+      expect(parsed_doc.elements['//groupId'].text).to eq('org.kill-bill.billing')
+      expect(parsed_doc.elements['//artifactId'].text).to eq('killbill')
+      expect(parsed_doc.elements['//version'].text).to eq(test_version)
+    end
   end
 end
