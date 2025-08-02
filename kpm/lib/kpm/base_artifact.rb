@@ -49,7 +49,7 @@ module KPM
 
       def nexus_defaults
         {
-          url: 'https://oss.sonatype.org',
+          url: 'https://repo1.maven.org/maven2',
           repository: 'releases'
         }
       end

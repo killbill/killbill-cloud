@@ -3,6 +3,7 @@
 require_relative 'nexus_api_calls_v2'
 require_relative 'github_api_calls'
 require_relative 'cloudsmith_api_calls'
+require_relative 'maven_central_api_calls'
 
 module KPM
   module NexusFacade
@@ -25,15 +26,18 @@ module KPM
 
       def initialize(overrides, ssl_verify, logger)
         overrides ||= {}
-        overrides[:url] ||= 'https://oss.sonatype.org'
+        overrides[:url] ||= 'https://repo1.maven.org/maven2'
         overrides[:repository] ||= 'releases'
 
         @logger = logger
+        logger.level = Logger::DEBUG
 
         @nexus_api_call = if overrides[:url].start_with?('https://maven.pkg.github.com')
                             GithubApiCalls.new(overrides, ssl_verify, logger)
                           elsif overrides[:url].start_with?('https://dl.cloudsmith.io')
                             CloudsmithApiCalls.new(overrides, ssl_verify, logger)
+                          elsif overrides[:url].start_with?('https://repo1.maven.org')
+                            MavenCentralApiCalls.new(overrides, ssl_verify, logger)
                           else
                             NexusApiCallsV2.new(overrides, ssl_verify, logger)
                           end
