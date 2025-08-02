@@ -15,7 +15,7 @@ describe KPM::KillbillPluginArtifact do
                                     KPM::BaseArtifact::KAUI_ARTIFACT_ID,
                                     KPM::BaseArtifact::KAUI_PACKAGING,
                                     KPM::BaseArtifact::KAUI_CLASSIFIER,
-                                    'LATEST',
+                                    '3.0.20',
                                     dir)
       expect(info[:file_name]).to eq "kaui-standalone-#{info[:version]}.war"
       expect(info[:size]).to eq File.size(info[:file_path])

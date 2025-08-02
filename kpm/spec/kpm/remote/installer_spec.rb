@@ -14,7 +14,8 @@ describe KPM::Installer do
       kb_webapp_path   = dir + '/KB_ROOT.war'
       installer        = KPM::Installer.new({
                                               'killbill' => {
-                                                'webapp_path' => kb_webapp_path
+                                                'webapp_path' => kb_webapp_path,
+                                                'version' => '0.24.15'
                                               }
                                             },
                                             @logger)
@@ -33,7 +34,8 @@ describe KPM::Installer do
       kaui_webapp_path = dir + '/KAUI_ROOT.war'
       installer        = KPM::Installer.new({
                                               'kaui' => {
-                                                'webapp_path' => kaui_webapp_path
+                                                'webapp_path' => kaui_webapp_path,
+                                                'version' => '3.0.20'
                                               }
                                             },
                                             @logger)
@@ -67,7 +69,8 @@ describe KPM::Installer do
                                                 }
                                               },
                                               'kaui' => {
-                                                'webapp_path' => kaui_webapp_path
+                                                'webapp_path' => kaui_webapp_path,
+                                                'version' => '3.0.20'
                                               }
                                             },
                                             @logger)

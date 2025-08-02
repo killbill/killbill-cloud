@@ -27,33 +27,44 @@ module KPM
         artifact = parse_coordinates(coordinates)
         query = URI.encode_www_form({
                                       q: "g:\"#{artifact[:group_id]}\" AND a:\"#{artifact[:artifact_id]}\"",
-                                      rows: 20,
-                                      wt: 'json'
+                                      rows: 200,
+                                      wt: 'json',
+                                      core: 'gav'
                                     })
         url = "#{SEARCH_API}?#{query}"
 
-        logger.debug { "Searching artifacts via Maven Central: #{url}" }
         response = Net::HTTP.get_response(URI(url))
         raise "Search failed: #{response.code}" unless response.code.to_i == 200
 
-        response.body
+        json = JSON.parse(response.body)
+        docs = json['response']['docs']
+        artifacts_xml = "<searchNGResponse><data>"
+        docs.each do |doc|
+          artifacts_xml += "<artifact>"
+          artifacts_xml += "<groupId>#{doc['g']}</groupId>"
+          artifacts_xml += "<artifactId>#{doc['a']}</artifactId>"
+          artifacts_xml += "<version>#{doc['v']}</version>"
+          artifacts_xml += "<repositoryId>central</repositoryId>"
+          artifacts_xml += "</artifact>"
+        end
+        artifacts_xml += "</data></searchNGResponse>"
+        artifacts_xml
       end
 
       def get_artifact_info(coordinates)
         _, versioned_artifact, coords = build_base_path_and_coords(coordinates)
         sha1 = get_sha1(coordinates)
-        "<artifact-resolution>
-  <data>
-    <presentLocally>true</presentLocally>
-    <groupId>#{coords[:group_id]}</groupId>
-    <artifactId>#{coords[:artifact_id]}</artifactId>
-    <version>#{coords[:version]}</version>
-    <extension>#{coords[:packaging]}</extension>
-    <snapshot>#{!(coords[:version] =~ /-SNAPSHOT$/).nil?}</snapshot>
-    <sha1>#{sha1}</sha1>
-    <repositoryPath>/#{coords[:group_id].gsub('.', '/')}/#{versioned_artifact}</repositoryPath>
-  </data>
-</artifact-resolution>"
+        artifact_xml = "<artifact-resolution><data>"
+        artifact_xml += "<presentLocally>true</presentLocally>"
+        artifact_xml += "<groupId>#{coords[:group_id]}</groupId>"
+        artifact_xml += "<artifactId>#{coords[:artifact_id]}</artifactId>"
+        artifact_xml += "<version>#{coords[:version]}</version>"
+        artifact_xml += "<extension>#{coords[:packaging]}</extension>"
+        artifact_xml += "<snapshot>#{!(coords[:version] =~ /-SNAPSHOT$/).nil?}</snapshot>"
+        artifact_xml += "<sha1>#{sha1}</sha1>"
+        artifact_xml += "<repositoryPath>/#{coords[:group_id].gsub('.', '/')}/#{versioned_artifact}</repositoryPath>"
+        artifact_xml += "</data></artifact-resolution>"
+        artifact_xml
       end
 
       def pull_artifact(coordinates, destination)
@@ -63,7 +74,6 @@ module KPM
         download_url = build_download_url(artifact, version, file_name)
 
         dest_path = File.join(File.expand_path(destination || '.'), file_name)
-        logger.debug { "Downloading artifact from #{download_url} to #{dest_path}" }
 
         File.open(dest_path, 'wb') do |io|
           io.write(Net::HTTP.get(URI(download_url)))
@@ -109,7 +119,56 @@ module KPM
       def get_sha1(coordinates)
         base_path, versioned_artifact, = build_base_path_and_coords(coordinates)
         endpoint = "#{base_path}/#{versioned_artifact}.sha1"
+        puts "Fetching SHA1 from: #{endpoint}"
         get_response_with_retries(nil, endpoint, nil)
+      end
+
+      def get_response_with_retries(coordinates, endpoint, what_parameters)
+        logger.debug { "Fetching coordinates=#{coordinates}, endpoint=#{endpoint}, params=#{what_parameters}" }
+        response = get_response(coordinates, endpoint, what_parameters)
+        logger.debug { "Response body: #{response.body}" }
+        process_response_with_retries(response)
+      end
+
+      def process_response_with_retries(response)
+        case response.code
+        when '200'
+          response.body
+        when '301', '302', '307'
+          location = response['Location']
+          logger.debug { "Following redirect to #{location}" }
+
+          new_path = location.gsub!(configuration[:url], '')
+          if new_path.nil?
+            # Redirect to another domain (e.g. CDN)
+            get_raw_response_with_retries(location)
+          else
+            get_response_with_retries(nil, location, nil)
+          end
+        when '404'
+          raise StandardError, ERROR_MESSAGE_404
+        else
+          raise UnexpectedStatusCodeException, response.code
+        end
+      end
+
+      def get_response(coordinates, endpoint, what_parameters)
+        http = build_http
+        query_params = build_query_params(coordinates, what_parameters) unless coordinates.nil?
+        endpoint = endpoint_with_params(endpoint, query_params) unless coordinates.nil?
+        request = Net::HTTP::Get.new(endpoint)
+        if configuration.key?(:username) && configuration.key?(:password)
+          request.basic_auth(configuration[:username], configuration[:password])
+        elsif configuration.key?(:token)
+          request['Authorization'] = "token #{configuration[:token]}"
+        end
+
+        logger.debug do
+          http.set_debug_output(logger)
+          "HTTP path: #{endpoint}"
+        end
+
+        http.request(request)
       end
 
       def build_metadata_url(artifact)
