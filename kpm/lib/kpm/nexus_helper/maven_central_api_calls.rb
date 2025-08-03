@@ -25,12 +25,13 @@ module KPM
 
       def search_for_artifacts(coordinates)
         artifact = parse_coordinates(coordinates)
-        query = URI.encode_www_form({
-                                      q: "g:\"#{artifact[:group_id]}\" AND a:\"#{artifact[:artifact_id]}\"",
-                                      rows: 200,
-                                      wt: 'json',
-                                      core: 'gav'
-                                    })
+        params = {
+          q: "g:\"#{artifact[:group_id]}\" AND a:\"#{artifact[:artifact_id]}\"",
+          rows: 200,
+          wt: 'json',
+          core: 'gav'
+        }
+        query = params.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
         url = "#{SEARCH_API}?#{query}"
 
         response = Net::HTTP.get_response(URI(url))
@@ -46,9 +47,18 @@ module KPM
           metadata_url = build_metadata_url(artifact)
           metadata_versions = []
           begin
-            metadata_xml = REXML::Document.new(Net::HTTP.get(URI(metadata_url)))
-            metadata_xml.elements.each('//versioning/versions/version') do |version_node|
-              metadata_versions << version_node.text
+            metadata_response = Net::HTTP.get(URI(metadata_url))
+            if metadata_response.nil? || metadata_response.strip.empty?
+              logger.debug { "Empty metadata response for #{artifact[:artifact_id]}" }
+            else
+              begin
+                metadata_xml = REXML::Document.new(metadata_response)
+                metadata_xml.elements.each('//versioning/versions/version') do |version_node|
+                  metadata_versions << version_node.text
+                end
+              rescue REXML::ParseException => e
+                logger.debug { "Malformed XML in metadata for #{artifact[:artifact_id]}: #{e.message}" }
+              end
             end
           rescue StandardError => e
             logger.debug { "Failed to fetch metadata for #{artifact[:artifact_id]}: #{e.message}" }
