@@ -151,7 +151,7 @@ module KPM
           location = response['Location']
           logger.debug { "Following redirect to #{location}" }
 
-          new_path = location.gsub!(configuration[:url].gsub('https://oss.sonatype.org', 'https://ossrh-staging-api.central.sonatype.com'), '')
+          new_path = location.gsub!(configuration[:url], '')
           if new_path.nil?
             # Redirect to another domain (e.g. CDN)
             get_raw_response_with_retries(location)
@@ -185,8 +185,7 @@ module KPM
       end
 
       def build_http
-        base_url = configuration[:url].gsub('https://oss.sonatype.org', 'https://ossrh-staging-api.central.sonatype.com')
-        uri = URI.parse(base_url)
+        uri = URI.parse(configuration[:url])
         http = Net::HTTP.new(uri.host, uri.port)
         http.open_timeout = configuration[:open_timeout] || OPEN_TIMEOUT_DEFAULT # seconds
         http.read_timeout = configuration[:read_timeout] || READ_TIMEOUT_DEFAULT # seconds

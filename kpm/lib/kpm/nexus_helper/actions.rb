@@ -30,7 +30,7 @@ module KPM
         overrides[:repository] ||= 'releases'
 
         @logger = logger
-        logger.level = Logger::DEBUG
+        logger.level = Logger::INFO
 
         @nexus_api_call = if overrides[:url].start_with?('https://maven.pkg.github.com')
                             GithubApiCalls.new(overrides, ssl_verify, logger)
