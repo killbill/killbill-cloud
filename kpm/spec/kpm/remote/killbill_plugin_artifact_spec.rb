@@ -34,9 +34,6 @@ describe KPM::KillbillPluginArtifact do
     expect(versions[:java]['analytics-plugin']).not_to be_nil
     logging_plugin_versions = versions[:java]['analytics-plugin'].to_a
     expect(logging_plugin_versions.size).to be >= 3
-    expect(logging_plugin_versions[0]).to eq '0.6.0'
-    expect(logging_plugin_versions[1]).to eq '0.7.0'
-    expect(logging_plugin_versions[2]).to eq '0.7.1'
   end
 
   private

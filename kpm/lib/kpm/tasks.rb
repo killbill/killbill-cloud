@@ -245,7 +245,7 @@ module KPM
         def search_for_plugins
           all_plugins = KillbillPluginArtifact.versions(options[:overrides], options[:ssl_verify])
 
-          result = ''
+          result = String.new
           all_plugins.each do |type, plugins|
             result << "Available #{type} plugins:\n"
             Hash[plugins.sort].each do |name, versions|
