@@ -52,14 +52,20 @@ module KPM
       end
 
       def get_artifact_info(coordinates)
-        _, versioned_artifact, coords = build_base_path_and_coords(coordinates)
-        sha1 = get_sha1(coordinates)
+        coords = parse_coordinates(coordinates)
+        version = coords[:version]
+        if version.casecmp('latest').zero?
+          version = fetch_latest_version(coords)
+          coords = coords.merge(version: version)
+        end
+        _, versioned_artifact, coords = build_base_path_and_coords([coords[:group_id], coords[:artifact_id], coords[:extension], coords[:classifier], version].compact.join(':'))
+        sha1 = get_sha1([coords[:group_id], coords[:artifact_id], coords[:extension], coords[:classifier], version].compact.join(':'))
         artifact_xml = "<artifact-resolution><data>"
         artifact_xml += "<presentLocally>true</presentLocally>"
         artifact_xml += "<groupId>#{coords[:group_id]}</groupId>"
         artifact_xml += "<artifactId>#{coords[:artifact_id]}</artifactId>"
         artifact_xml += "<version>#{coords[:version]}</version>"
-        artifact_xml += "<extension>#{coords[:packaging]}</extension>"
+        artifact_xml += "<extension>#{coords[:extension]}</extension>"
         artifact_xml += "<snapshot>#{!(coords[:version] =~ /-SNAPSHOT$/).nil?}</snapshot>"
         artifact_xml += "<sha1>#{sha1}</sha1>"
         artifact_xml += "<repositoryPath>/#{coords[:group_id].gsub('.', '/')}/#{versioned_artifact}</repositoryPath>"
@@ -69,7 +75,10 @@ module KPM
 
       def pull_artifact(coordinates, destination)
         artifact = parse_coordinates(coordinates)
-        version = artifact[:version] || fetch_latest_version(artifact)
+        version = artifact[:version]
+        if version.casecmp('latest').zero?
+          version = fetch_latest_version(artifact)
+        end
         file_name = build_file_name(artifact[:artifact_id], version, artifact[:classifier], artifact[:extension])
         download_url = build_download_url(artifact, version, file_name)
 
@@ -119,7 +128,6 @@ module KPM
       def get_sha1(coordinates)
         base_path, versioned_artifact, = build_base_path_and_coords(coordinates)
         endpoint = "#{base_path}/#{versioned_artifact}.sha1"
-        puts "Fetching SHA1 from: #{endpoint}"
         get_response_with_retries(nil, endpoint, nil)
       end
 
