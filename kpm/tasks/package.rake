@@ -156,7 +156,7 @@ def gem_exists?
   response = `gem specification 'kpm' -r -v #{VERSION} 2>&1`
   return false if response.nil?
 
-  specification = YAML.load(response)
+  specification = YAML.safe_load(response, permitted_classes: [Gem::Dependency, Gem::Requirement, Gem::Specification, Gem::Version, Symbol, Time])
   specification.instance_of?(Gem::Specification)
 end
 
