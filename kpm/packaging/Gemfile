@@ -4,3 +4,6 @@ source 'https://rubygems.org'
 
 gem 'kpm', '~> VERSION'
 gem 'rake'
+
+# Required explicitly since Ruby 3.0+: not bundled in stdlib
+gem 'rexml'
