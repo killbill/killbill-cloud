@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kill-bill.billing.installer</groupId>
     <artifactId>kpm</artifactId>
-    <version>0.12.0</version>
+    <version>0.12.3</version>
     <packaging>pom</packaging>
     <name>KPM</name>
     <description>KPM: the Kill Bill Package Manager</description>
@@ -77,12 +77,12 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <repository.release.id>sonatype-nexus-staging</repository.release.id>
-        <repository.release.name>Nexus Release Repository</repository.release.name>
-        <repository.release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repository.release.url>
-        <repository.snapshot.id>sonatype-nexus-snapshots</repository.snapshot.id>
-        <repository.snapshot.name>Sonatype Nexus Snapshots</repository.snapshot.name>
-        <repository.snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</repository.snapshot.url>
+        <repository.release.id>central</repository.release.id>
+        <repository.release.name>Central Release Repository</repository.release.name>
+        <repository.release.url>https://central.sonatype.com/service/local/staging/deploy/maven2/</repository.release.url>
+        <repository.snapshot.id>central</repository.snapshot.id>
+        <repository.snapshot.name>Central Snapshots Repository</repository.snapshot.name>
+        <repository.snapshot.url>https://central.sonatype.com/repository/maven-snapshots/</repository.snapshot.url>
     </properties>
     <build>
         <pluginManagement>
@@ -201,17 +201,14 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh-releases</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
-                            <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                            <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
+                            <autoPublish>true</autoPublish>
+                            <publishingServerId>central</publishingServerId>
+                            <waitUntil>published</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
