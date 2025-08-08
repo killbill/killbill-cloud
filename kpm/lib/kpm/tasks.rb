@@ -176,6 +176,14 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Validates sha1 sum'
+        method_option :overrides,
+                      type: :hash,
+                      default: nil,
+                      desc: "A hashed list of overrides. Available options are 'url', 'repository', 'username', and 'password'."
+        method_option :ssl_verify,
+                      type: :boolean,
+                      default: true,
+                      desc: 'Set to false to disable SSL Verification.'
         desc 'install_java_plugin plugin-key <kb-version>', 'Pulls a java plugin and installs it under the specified destination. If the kb-version has been specified, it is used to download the matching plugin artifact version; if not, it uses the specified plugin version or if null, the LATEST one.'
         def install_java_plugin(plugin_key, kb_version = 'LATEST')
           installer = BaseInstaller.new(logger,
