@@ -110,3 +110,7 @@
   :type: :java
   :versions:
     :0.24: 1.0.7
+:vertex:
+  :type: :java
+  :versions:
+    :0.24: 0.2.0
