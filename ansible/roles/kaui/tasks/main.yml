@@ -53,7 +53,7 @@
   become_user: "{{ tomcat_owner }}"
   killbill:
     kpm_path: "{{ kpm_path }}"
-    kpm_yml: "{{ kpm_yml }}"
+    kpm_yml: "{{ kaui_kpm_yml }}"
   when: not existing_webapp.stat.exists
   tags: kpm-install
 
