@@ -9,10 +9,9 @@ jobs:
   ansible_lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Lint Ansible Playbook
-        # TODO There's work to upgrade to 6.x
-        uses: ansible/ansible-lint-action@2878af4748adf988a42b3ad88a94051dba635fba
+        uses: ansible/ansible-lint@v25.9.2
         with:
           # FIXME
           # Globbing is broken at the moment:
@@ -32,7 +31,3 @@ jobs:
             ansible/tomcat_restart.yml
             ansible/tomcat_stop.yml
           args: "-x 204"
-          override-deps: |
-            ansible==2.10.7
-            ansible-base==2.10.5
-            ansible-lint==5.3.2
