@@ -2,10 +2,10 @@
 - name: Ensure Kill Bill dirs exist
   become: true
   ansible.builtin.file:
-    path: {{ item }}
+    path: "{{ item }}"
     state: directory
-    owner: {{ tomcat_owner }}
-    group: {{ tomcat_group }}
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
     mode: u=rwx,g=rx,o=rx
   with_items:
     - "{{ kb_config_dir }}"
@@ -80,9 +80,9 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path: {{ kb_install_dir }}
-    owner: {{ tomcat_owner }}
-    group: {{ tomcat_group }}
+    path: "{{ kb_install_dir }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
     recurse: yes
   tags: kpm-install
 

@@ -111,7 +111,7 @@
   become: true
   ansible.builtin.file:
     path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
-    owner: {{ kpm_owner }}
-    group: {{ kpm_group }}
+    owner: "{{ kpm_owner }}"
+    group: "{{ kpm_group }}"
     recurse: yes
   tags: kpm

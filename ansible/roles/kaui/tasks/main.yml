@@ -2,10 +2,10 @@
 - name: Ensure Kaui dirs exist
   become: true
   ansible.builtin.file:
-    path: {{ item }}
+    path: "{{ item }}"
     state: directory
-    owner: {{ tomcat_owner }}
-    group: {{ tomcat_group }}
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
     mode: u=rwx,g=rx,o=rx
   with_items:
     - "{{ kaui_install_dir }}"
@@ -65,9 +65,9 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path: {{ kaui_install_dir }}
-    owner: {{ tomcat_owner }}
-    group: {{ tomcat_group }}
+    path: "{{ kaui_install_dir }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
     recurse: yes
   tags: kpm-install
 

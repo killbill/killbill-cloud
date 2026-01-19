@@ -101,9 +101,9 @@
     - name: Set correct permissions
       become: true
       ansible.builtin.file:
-        path: {{ tomcat_native_libdir }}
-        owner: {{ tomcat_owner }}
-        group: {{ tomcat_group }}
+        path: "{{ tomcat_native_libdir }}"
+        owner: "{{ tomcat_owner }}"
+        group: "{{ tomcat_group }}"
         recurse: yes
       tags: install
 

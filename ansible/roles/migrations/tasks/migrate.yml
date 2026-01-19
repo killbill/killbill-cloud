@@ -44,12 +44,14 @@
           tags: migrations
 
         - name: Fail the play if the schema_version table is corrupted
-          fail: msg="schema_version corrupted. Try running {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
+          ansible.builtin.fail:
+            msg: "schema_version corrupted. Try running {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
           when: java_migrations.rc != 0 and 'contains a failed migration' in java_migrations.stderr
           tags: migrations
 
         - name: Fail the play if the migrations did not succeed
-          fail: msg="Migrations failed. You need to fix the tables, adjust the schema_version table manually (i.e. insert a line for that migration or update the status to success) and run {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
+          ansible.builtin.fail:
+            msg: "Migrations failed. You need to fix the tables, adjust the schema_version table manually (i.e. insert a line for that migration or update the status to success) and run {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
           when: java_migrations.rc != 0 and 'contains a failed migration' not in java_migrations.stderr
           tags: migrations
       when: should_continue.user_input | bool
