@@ -1,5 +1,5 @@
 ---
-- name: fetch all migrations
+- name: Fetch all migrations
   killbill_migrations:
     kpm_path: "{{ kpm_path }}"
     bundles_dir: "{{ kb_plugins_dir }}"
@@ -14,7 +14,7 @@
   vars:
     flyway_version: "{{ migrations['migrations']['from'] }}"
 
-- name: generate Flyway baseline tables
+- name: Generate Flyway baseline tables
   command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
   with_items:
     - "{{ migrations['migrations']['killbill'] }}"
@@ -26,7 +26,7 @@
   tags: migrations
 
 # We verify that all migrations can be generated before attempting to run them one by one
-- name: validate SQL migrations for Kill Bill and Java plugins
+- name: Validate SQL migrations for Kill Bill and Java plugins
   command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
   with_items:
     - "{{ migrations['migrations']['killbill'] }}"

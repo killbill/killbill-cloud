@@ -4,4 +4,4 @@
   become: yes
   tasks:
     - name: stop Tomcat
-      import_tasks: roles/tomcat/tasks/stop.yml
+      ansible.builtin.import_tasks: roles/tomcat/tasks/stop.yml

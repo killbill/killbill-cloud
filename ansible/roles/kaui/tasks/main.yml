@@ -1,13 +1,18 @@
 ---
-- name: ensure Kaui dirs exist
+- name: Ensure Kaui dirs exist
   become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
+  ansible.builtin.file:
+    path={{ item }} 
+    state=directory 
+    owner={{ tomcat_owner }} 
+    group={{ tomcat_group }} 
+    mode=u=rwx,g=rx,o=rx
   with_items:
     - "{{ kaui_install_dir }}"
     - "{{ kaui_plugins_dir }}"
   tags: kpm-install
 
-- name: generate kpm.yml file if needed
+- name: Generate kpm.yml file if needed
   become: true
   template:
     src: "kaui/kpm.yml.j2"
@@ -20,7 +25,7 @@
   tags: kpm-install
 
 # Generate Kaui-specific Tomcat configuration files based on environment variables
-- name: generate Tomcat files
+- name: Generate Tomcat files
   become: true
   template:
     src: "{{ item.src }}/{{ item.name }}.j2"
@@ -37,7 +42,7 @@
       dest: "{{ catalina_base }}/bin"
   tags: tomcat
 
-- name: check if a ROOT webapp is already installed
+- name: Check if a ROOT webapp is already installed
   stat:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
   register: existing_webapp
@@ -48,7 +53,7 @@
 # and always download the war.
 # In practice, this means one cannot just update the version in the kpm.yml file
 # to update Kaui and re-run the role: one needs to first delete the ROOT directory.
-- name: run KPM install
+- name: Run KPM install
   become: true
   become_user: "{{ tomcat_owner }}"
   killbill:
@@ -57,14 +62,18 @@
   when: not existing_webapp.stat.exists
   tags: kpm-install
 
-- name: set correct permissions
+- name: Set correct permissions
   become: true
-  file: path={{ kaui_install_dir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  ansible.builtin.file:
+    path={{ kaui_install_dir }} 
+    owner={{ tomcat_owner }} 
+    group={{ tomcat_group }} 
+    recurse=yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
     state: directory
     mode: '0755'
@@ -96,7 +105,7 @@
 
 - name: Recursively change ownership for the expanded ROOT
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
     state: directory
     recurse: yes
@@ -107,7 +116,7 @@
 
 - name: Remove root archive
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
     state: absent
   tags: kaui-logback

@@ -1,28 +1,28 @@
-- name: generate SQL migration
+- name: Generate SQL migration
   command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} dryRunMigrate"
   register: java_dry_run_migrations
   changed_when: java_dry_run_migrations.stdout_lines
   tags: migrations
 
-- name: check if there's nothing to do
+- name: Check if there's nothing to do
   debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
   when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
   tags: migrations
 
 - block:
-    - name: print migrations
+    - name: Print migrations
       debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
       when: java_dry_run_migrations.stdout_lines
       tags: migrations
 
-    - name: prompt for SQL migration
+    - name: Prompt for SQL migration
       pause: prompt='Should I run these migrations? Enter yes or no'
       register: should_continue
       when: java_dry_run_migrations.stdout_lines is defined
       tags: migrations
 
     - block:
-        - name: run SQL migration
+        - name: Run SQL migration
           command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
           register: java_migrations
           ignore_errors: True
@@ -36,12 +36,12 @@
           when: java_migrations.stderr_lines
           tags: migrations
 
-        - name: fail the play if the schema_version table is corrupted
+        - name: Fail the play if the schema_version table is corrupted
           fail: msg="schema_version corrupted. Try running {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
           when: java_migrations.rc != 0 and 'contains a failed migration' in java_migrations.stderr
           tags: migrations
 
-        - name: fail the play if the migrations did not succeed
+        - name: Fail the play if the migrations did not succeed
           fail: msg="Migrations failed. You need to fix the tables, adjust the schema_version table manually (i.e. insert a line for that migration or update the status to success) and run {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
           when: java_migrations.rc != 0 and 'contains a failed migration' not in java_migrations.stderr
           tags: migrations

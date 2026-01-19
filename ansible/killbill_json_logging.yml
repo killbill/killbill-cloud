@@ -3,4 +3,4 @@
   hosts: all
   tasks:
     - name: enable Tomcat JSON logging
-      import_tasks: roles/tomcat/tasks/json_logging.yml
+      ansible.builtin.import_tasks: roles/tomcat/tasks/json_logging.yml

@@ -1,7 +1,7 @@
 ---
 - name: Ensure Tomcat install dir exists
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ tomcat_install_dir }}"
     state: directory
     mode: u=rwx,g=rx,o=rx
@@ -37,14 +37,14 @@
 
 # We don't use the xml module to avoid a dependency on lxml
 - name: Set tomcat_version
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(9.0.*)</version>', '\\1') | last }}"
   when: tomcat_version is undefined
   tags: install
 
 - name: Install Tomcat
   become: true
-  unarchive:
+  ansible.builtin.unarchive:
     src: "http://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: True
     dest: "{{ tomcat_install_dir }}"
@@ -55,12 +55,19 @@
 # The individual files have the correct permissions already, but not the top directory
 - name: Set correct permissions
   become: true
-  file: path="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  ansible.builtin.file:
+    path="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" 
+    owner={{ tomcat_owner }} 
+    group={{ tomcat_group }} 
+    recurse=yes
   tags: install
 
 - name: Symlink install directory
   become: true
-  file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
+  ansible.builtin.file:
+    src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" 
+    path="{{ catalina_home }}" 
+    state=link
   tags: install
 
 - name: Set required Tomcat environment variables

@@ -1,7 +1,7 @@
 ---
 - include: stop.yml
 
-- name: start Tomcat
+- name: Start Tomcat
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
@@ -14,7 +14,7 @@
     - catalina_home is defined
     - not tomcat_foreground
 
-- name: run Tomcat
+- name: Run Tomcat
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
