@@ -12,9 +12,9 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path=/opt/logstash-logback-encoder.jar 
-    owner={{ tomcat_owner }} 
-    group={{ tomcat_group }}
+    path: /opt/logstash-logback-encoder.jar
+    owner: {{ tomcat_owner }}
+    group: {{ tomcat_group }}
   tags:
     - killbill-logback
     - logstash

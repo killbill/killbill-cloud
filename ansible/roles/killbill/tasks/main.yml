@@ -2,11 +2,11 @@
 - name: Ensure Kill Bill dirs exist
   become: true
   ansible.builtin.file:
-    path={{ item }} 
-    state=directory 
-    owner={{ tomcat_owner }} 
-    group={{ tomcat_group }} 
-    mode=u=rwx,g=rx,o=rx
+    path: {{ item }}
+    state: directory
+    owner: {{ tomcat_owner }}
+    group: {{ tomcat_group }}
+    mode: u=rwx,g=rx,o=rx
   with_items:
     - "{{ kb_config_dir }}"
     - "{{ kb_plugins_dir }}"
@@ -80,10 +80,10 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path={{ kb_install_dir }} 
-    owner={{ tomcat_owner }} 
-    group={{ tomcat_group }} 
-    recurse=yes
+    path: {{ kb_install_dir }}
+    owner: {{ tomcat_owner }}
+    group: {{ tomcat_group }}
+    recurse: yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR

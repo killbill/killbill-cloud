@@ -41,8 +41,8 @@
   become: true
   become_user: "{{ tomcat_owner }}"
   ansible.builtin.file:
-    path={{ catalina_base }}/{{ item }} 
-    state=absent
+    path: {{ catalina_base }}/{{ item }}
+    state: absent
   with_items:
     - "{{ kb_webapps }}/ROOT"
     - work/

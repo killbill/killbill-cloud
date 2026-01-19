@@ -2,19 +2,20 @@
 - name: Ensure Flyway install dir exists
   become: true
   ansible.builtin.file:
-    path={{ flyway_install_dir }} 
-    state=directory 
-    mode=u=rwx,g=rx,o=rx
+    path: {{ flyway_install_dir }}
+    state: directory
+    mode: u=rwx,g=rx,o=rx
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
 - name: Check if Flyway is already installed
-  stat:
+  ansible.builtin.stat:
     path: "{{ flyway_install_dir }}/killbill-flyway.jar"
   register: flyway_bin
   tags: migrations
 
-- block:
+- name: Download Kill Bill Flyway metadata
+  block:
     - name: Download killbill-flyway release metadata
       ansible.builtin.uri:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
@@ -43,7 +44,7 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path="{{ flyway_install_dir }}/killbill-flyway.jar" 
-    owner={{ flyway_owner }} 
-    group={{ flyway_group }}
+    path: "{{ flyway_install_dir }}/killbill-flyway.jar"
+    owner: {{ flyway_owner }}
+    group: {{ flyway_group }}
   tags: migrations

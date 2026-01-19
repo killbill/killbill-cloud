@@ -9,7 +9,7 @@
 
 - name: Add Tomcat group
   become: true
-  group:
+  ansible.builtin.group:
     name: "{{ tomcat_group }}"
     state: present
   tags: install
@@ -17,7 +17,7 @@
 # Expect bash to be present -- we haven't tested the scripts with other shells
 - name: Add Tomcat user
   become: true
-  user:
+  ansible.builtin.user:
     name: "{{ tomcat_owner }}"
     comment: Kill Bill Tomcat owner
     group: "{{ tomcat_group }}"
@@ -56,24 +56,24 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" 
-    owner={{ tomcat_owner }} 
-    group={{ tomcat_group }} 
-    recurse=yes
+    path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+    owner: {{ tomcat_owner }}
+    group: {{ tomcat_group }}
+    recurse: yes
   tags: install
 
 - name: Symlink install directory
   become: true
   ansible.builtin.file:
-    src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" 
-    path="{{ catalina_home }}" 
-    state=link
+    src: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+    path: "{{ catalina_home }}"
+    state: link
   tags: install
 
 - name: Set required Tomcat environment variables
   become: true
   become_user: "{{ tomcat_owner }}"
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: "export {{ item.key }}={{ item.value }}"
     regexp: "^export {{ item.key }}="
     path: "{{ tomcat_home }}/.profile"

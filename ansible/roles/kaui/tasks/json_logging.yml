@@ -25,9 +25,9 @@
 - name: Set correct permissions
   become: true
   ansible.builtin.file:
-    path=/opt/{{ item.name }} 
-    owner={{ tomcat_owner }} 
-    group={{ tomcat_group }}
+    path: /opt/{{ item.name }}
+    owner: {{ tomcat_owner }}
+    group: {{ tomcat_group }}
   with_items:
     - name: jackson-databind.jar
     - name: jackson-core.jar
