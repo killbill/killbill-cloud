@@ -70,7 +70,7 @@
     tags: native
 
   - name: Configure native libraries
-    command: >
+    ansible.builtin.command: >
       ./configure
         --build="{{ gnu_arch }}"
         --libdir="{{ tomcat_native_libdir }}"
@@ -82,14 +82,14 @@
     tags: native
 
   - name: Build native libraries
-    command: >
+    ansible.builtin.command: >
       make all
       chdir="{{ workspace.path }}/native"
     tags: native
 
   - name: Install native libraries
     become: true
-    command: >
+    ansible.builtin.command: >
       make install
       chdir="{{ workspace.path }}/native"
     tags: native

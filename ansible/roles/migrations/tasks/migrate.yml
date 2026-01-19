@@ -1,38 +1,38 @@
 - name: Generate SQL migration
-  command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} dryRunMigrate"
+  ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} dryRunMigrate"
   register: java_dry_run_migrations
   changed_when: java_dry_run_migrations.stdout_lines
   tags: migrations
 
 - name: Check if there's nothing to do
-  debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
+  ansible.builtin.debug: msg="No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
   when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
   tags: migrations
 
 - block:
     - name: Print migrations
-      debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
+      ansible.builtin.debug: msg="{{ java_dry_run_migrations.stdout_lines }}"
       when: java_dry_run_migrations.stdout_lines
       tags: migrations
 
     - name: Prompt for SQL migration
-      pause: prompt='Should I run these migrations? Enter yes or no'
+      ansible.builtin.pause: prompt='Should I run these migrations? Enter yes or no'
       register: should_continue
       when: java_dry_run_migrations.stdout_lines is defined
       tags: migrations
 
     - block:
         - name: Run SQL migration
-          command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
+          ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
           register: java_migrations
           ignore_errors: True
           tags: migrations
 
-        - debug: msg="{{ java_migrations.stdout_lines }}"
+        - ansible.builtin.debug: msg="{{ java_migrations.stdout_lines }}"
           when: java_migrations.stdout_lines
           tags: migrations
 
-        - debug: msg="{{ java_migrations.stderr_lines }}"
+        - ansible.builtin.debug: msg="{{ java_migrations.stderr_lines }}"
           when: java_migrations.stderr_lines
           tags: migrations
 

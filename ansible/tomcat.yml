@@ -2,10 +2,10 @@
 - name: Deploy Tomcat
   hosts: all
   tasks:
-    - name: install Tomcat
+    - name: Install Tomcat
       ansible.builtin.import_tasks: roles/tomcat/tasks/install.yml
-    - name: install Tomcat native libraries
+    - name: Install Tomcat native libraries
       ansible.builtin.import_tasks: roles/tomcat/tasks/native.yml
       when: java_home is defined
-    - name: setup Tomcat
+    - name: Setup Tomcat
       ansible.builtin.import_tasks: roles/tomcat/tasks/main.yml

@@ -28,7 +28,7 @@
   tags: install
 
 - name: Download Tomcat release metadata
-  uri:
+  ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
     return_content: yes
   register: tomcat_metadata

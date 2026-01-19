@@ -16,7 +16,7 @@
 
 - block:
     - name: Download killbill-flyway release metadata
-      uri:
+      ansible.builtin.uri:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
         return_content: yes
       register: flyway_metadata

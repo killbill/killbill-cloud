@@ -8,7 +8,7 @@
   tags: kpm
 
 - name: Download kpm release metadata
-  uri:
+  ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/maven-metadata.xml"
     return_content: yes
   register: kpm_metadata
@@ -30,7 +30,7 @@
   tags: kpm
 
 - name: Check if pre-built KPM exists for this arch
-  uri:
+  ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/{{ kpm_version }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     method: HEAD
   register: kpm_arch_test
@@ -63,7 +63,7 @@
 # To make things easier
 - name: Rename noarch KPM directory
   become: true
-  command: "mv {{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch {{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+  ansible.builtin.command: "mv {{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch {{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
   when: not kpm_bin.stat.exists and kpm_arch_test.status >= 400
   tags: kpm
 
@@ -100,7 +100,7 @@
 # The first time KPM is run, a Gemfile.lock needs to written out
 - name: Initialize KPM
   become: true
-  command: |
+  ansible.builtin.command: |
     "{{ kpm_path }}/kpm" version
   args:
     creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"

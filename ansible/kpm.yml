@@ -2,5 +2,5 @@
 - name: Deploy KPM
   hosts: all
   tasks:
-    - name: install KPM
+    - name: Install KPM
       ansible.builtin.import_tasks: roles/kpm/tasks/main.yml

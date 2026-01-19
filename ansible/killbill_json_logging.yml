@@ -2,5 +2,5 @@
 - name: Configure Tomcat JSON logging for Kill Bill
   hosts: all
   tasks:
-    - name: enable Tomcat JSON logging
+    - name: Enable Tomcat JSON logging
       ansible.builtin.import_tasks: roles/tomcat/tasks/json_logging.yml

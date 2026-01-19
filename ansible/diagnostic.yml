@@ -2,11 +2,11 @@
 - name: Gather diagnostics
   hosts: all
   tasks:
-    - name: setup Ruby
+    - name: Setup Ruby
       ansible.builtin.import_tasks: roles/common/tasks/main.yml
-    - name: setup KPM
+    - name: Setup KPM
       ansible.builtin.import_tasks: roles/kpm/tasks/main.yml
-    - name: gather diagnostics
+    - name: Gather diagnostics
       killbill_diagnostics:
         kpm_path: "{{ kpm_path }}"
         killbill_url: "{{ killbill_url | default('http://127.0.0.1:8080') }}"

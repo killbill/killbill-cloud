@@ -2,7 +2,7 @@
 - name: Configure Tomcat JSON logging for Kaui
   hosts: all
   tasks:
-    - name: download third-party dependencies
+    - name: Download third-party dependencies
       ansible.builtin.import_tasks: roles/kaui/tasks/json_logging.yml
-    - name: enable Tomcat JSON logging
+    - name: Enable Tomcat JSON logging
       ansible.builtin.import_tasks: roles/tomcat/tasks/json_logging.yml

@@ -15,7 +15,7 @@
     flyway_version: "{{ migrations['migrations']['from'] }}"
 
 - name: Generate Flyway baseline tables
-  command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
+  ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
   with_items:
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
@@ -27,7 +27,7 @@
 
 # We verify that all migrations can be generated before attempting to run them one by one
 - name: Validate SQL migrations for Kill Bill and Java plugins
-  command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
+  ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
   with_items:
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
