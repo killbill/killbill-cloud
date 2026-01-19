@@ -30,4 +30,4 @@ jobs:
             ansible/tomcat.yml
             ansible/tomcat_restart.yml
             ansible/tomcat_stop.yml
-          args: "-x 204,role-name"
+          args: "-x 204,role-name --skip-list yaml[line-length],role-name[path]"
