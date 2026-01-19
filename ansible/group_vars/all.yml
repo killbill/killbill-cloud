@@ -28,6 +28,8 @@ kb_config_dir: "{{ kb_install_dir }}/config"
 kb_plugins_dir: "{{ kb_install_dir }}/bundles"
 # kpm.yml file
 kpm_yml: "{{ kb_install_dir }}/kpm.yml"
+killbill_kpm_yml: "{{ kb_install_dir }}/kpm.yml"
+kaui_kpm_yml: "{{ kb_install_dir }}/kpm.yml"
 
 kaui_install_dir: /var/lib/kaui
 # For consistency as to where the sha1.yml is located
