@@ -11,5 +11,5 @@
 * [docker/compose](./docker/compose): Docker Compose recipes, including examples integrating Kill Bill with the [ELK](https://www.elastic.co/what-is/elk-stack) and TIG stacks
 
 ## About
-
+ 
 Kill Bill is the leading Open-Source Subscription Billing & Payments Platform. For more information about the project, go to https://killbill.io/.
