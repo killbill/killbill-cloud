@@ -21,38 +21,41 @@
     - name: Prompt for SQL migration
       ansible.builtin.pause:
         prompt: 'Should I run these migrations? Enter yes or no'
-      register: should_continue
+      register: migrations_should_continue
       when: migrations_java_dry_run_migrations.stdout_lines is defined
       tags: migrations
 
     - name: Run migration
+      when: migrations_should_continue.user_input | bool
       block:
         - name: Run SQL migration
           ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
-          register: java_migrations
+          register: migrations_flyway_result
           ignore_errors: True
+          changed_when: false
           tags: migrations
 
-        - ansible.builtin.debug:
-            msg: "{{ java_migrations.stdout_lines }}"
-          when: java_migrations.stdout_lines
+        - name: Show Flyway migration output (stdout)
+          ansible.builtin.debug:
+            msg: "{{ migrations_flyway_result.stdout_lines }}"
+          when: migrations_flyway_result.stdout_lines
           tags: migrations
 
-        - ansible.builtin.debug:
-            msg: "{{ java_migrations.stderr_lines }}"
-          when: java_migrations.stderr_lines
+        - name: Show Flyway migration output (stderr)
+          ansible.builtin.debug:
+            msg: "{{ migrations_flyway_result.stderr_lines }}"
+          when: migrations_flyway_result.stderr_lines
           tags: migrations
 
         - name: Fail the play if the schema_version table is corrupted
           ansible.builtin.fail:
             msg: "schema_version corrupted. Try running {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
-          when: java_migrations.rc != 0 and 'contains a failed migration' in java_migrations.stderr
+          when: migrations_flyway_result.rc != 0 and 'contains a failed migration' in migrations_flyway_result.stderr
           tags: migrations
 
         - name: Fail the play if the migrations did not succeed
           ansible.builtin.fail:
             msg: "Migrations failed. You need to fix the tables, adjust the schema_version table manually (i.e. insert a line for that migration or update the status to success) and run {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
-          when: java_migrations.rc != 0 and 'contains a failed migration' not in java_migrations.stderr
+          when: migrations_flyway_result.rc != 0 and 'contains a failed migration' not in migrations_flyway_result.stderr
           tags: migrations
-      when: should_continue.user_input | bool
   when: migrations_java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1
