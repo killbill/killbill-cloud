@@ -1,28 +1,28 @@
 - name: Generate SQL migration
   ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} dryRunMigrate"
-  register: java_dry_run_migrations
-  changed_when: java_dry_run_migrations.stdout_lines
+  register: migrations_java_dry_run_migrations
+  changed_when: migrations_java_dry_run_migrations.stdout_lines
   tags: migrations
 
 - name: Check if there's nothing to do
   ansible.builtin.debug:
     msg: "No migration to run for {{ migration['from_tag'] }} -> {{ migration['to_tag'] }}"
-  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
+  when: migrations_java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") != -1
   tags: migrations
 
 - name: SQL migration
   block:
     - name: Print migrations
       ansible.builtin.debug:
-        msg: "{{ java_dry_run_migrations.stdout_lines }}"
-      when: java_dry_run_migrations.stdout_lines
+        msg: "{{ migrations_java_dry_run_migrations.stdout_lines }}"
+      when: migrations_java_dry_run_migrations.stdout_lines
       tags: migrations
 
     - name: Prompt for SQL migration
       ansible.builtin.pause:
         prompt: 'Should I run these migrations? Enter yes or no'
       register: should_continue
-      when: java_dry_run_migrations.stdout_lines is defined
+      when: migrations_java_dry_run_migrations.stdout_lines is defined
       tags: migrations
 
     - name: Run migration
@@ -55,4 +55,4 @@
           when: java_migrations.rc != 0 and 'contains a failed migration' not in java_migrations.stderr
           tags: migrations
       when: should_continue.user_input | bool
-  when: java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1
+  when: migrations_java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1

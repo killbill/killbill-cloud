@@ -23,7 +23,7 @@
     group: "{{ tomcat_group }}"
     create_home: yes
     home: "{{ tomcat_home }}"
-    shell: /bin/bash
+    ansible.builtin.shell: /bin/bash
     state: present
   tags: install
 
@@ -57,8 +57,8 @@
   become: true
   ansible.builtin.file:
     path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
-    owner: {{ tomcat_owner }}
-    group: {{ tomcat_group }}
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
     recurse: yes
   tags: install
 

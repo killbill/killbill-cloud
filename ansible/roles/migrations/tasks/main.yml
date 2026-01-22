@@ -12,7 +12,7 @@
 
 - include_tasks: flyway.yml
   vars:
-    flyway_version: "{{ migrations['migrations']['from'] }}"
+    migrations_flyway_version: "{{ migrations['migrations']['from'] }}"
 
 - name: Generate Flyway baseline tables
   ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
@@ -33,7 +33,7 @@
     - "{{ migrations['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   changed_when: False
-  register: java_dry_run_migrations
+  register: migrations_java_dry_run_migrations
   tags: migrations
 
 # Run core migrations

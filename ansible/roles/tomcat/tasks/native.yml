@@ -45,20 +45,20 @@
 
     - name: Detect GNU architecture
       block:
-        - name: Find gnu_arch path
-          shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
-          register: gnu_arch_output
+        - name: Find tomcat_gnu_arch path
+          ansible.builtin.shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
+          register: tomcat_gnu_arch_output
           tags: native
 
-        - name: Set gnu_arch
+        - name: Set tomcat_gnu_arch
           ansible.builtin.set_fact:
-            gnu_arch: "{{ gnu_arch_output.stdout }}"
+            tomcat_gnu_arch: "{{ tomcat_gnu_arch_output.stdout }}"
           tags: native
-      when: gnu_arch is undefined
+      when: tomcat_gnu_arch is undefined
       tags: native
 
     - name: Create temporary build directory
-      tempfile:
+      ansible.builtin.tempfile:
         state: directory
         suffix: tomcat-native-build
       register: workspace
@@ -78,7 +78,7 @@
     - name: Configure native libraries
       ansible.builtin.command: >
         ./configure
-          --build="{{ gnu_arch }}"
+          --build="{{ tomcat_gnu_arch }}"
           --libdir="{{ tomcat_native_libdir }}"
           --prefix="{{ catalina_home }}"
           --with-apr="{{ tomcat_apr_config_path }}"
