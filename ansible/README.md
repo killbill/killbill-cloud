@@ -54,14 +54,14 @@ ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME tomcat.yml
 For performance reasons, we recommend installing the Apache Tomcat native libraries. To do so, you need to pass a few more options to the playbook:
 
 * `gnu_arch`: the target architecture (e.g. output of `dpkg-architecture --query DEB_BUILD_GNU_TYPE`).
-* `apr_config_path`: the path to `apr-1-config` (you must install the Apache Portable Runtime Library separately, i.e. `libapr1-dev`).
+* `tomcat_apr_config_path`: the path to `apr-1-config` (you must install the Apache Portable Runtime Library separately, i.e. `libapr1-dev`).
 * `tomcat_native_libdir`: output path where the libraries will be installed.
 
 
 You also need to install the OpenSSL library separately (e.g. `libssl-dev`).
 
 ```
-ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME -e apr_config_path=/usr/bin/apr-1-config -e gnu_arch=x86_64-linux-gnu -e tomcat_native_libdir=/usr/share/tomcat/native-jni-lib tomcat.yml
+ansible-playbook -i <INVENTORY> -e java_home=$TARGET_JAVA_HOME -e tomcat_apr_config_path=/usr/bin/apr-1-config -e gnu_arch=x86_64-linux-gnu -e tomcat_native_libdir=/usr/share/tomcat/native-jni-lib tomcat.yml
 ```
 
 ## killbill.yml playbook

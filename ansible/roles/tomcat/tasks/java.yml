@@ -1,7 +1,7 @@
 ---
 - name: Install java
   become: true
-  package: >
+  ansible.builtin.package: >
     name={{ item }}
     state=present
   with_items:

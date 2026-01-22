@@ -24,7 +24,7 @@
   tags: kpm
 
 - name: Check if KPM is already installed
-  stat:
+  ansible.builtin.stat:
     path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}/kpm"
   register: kpm_bin
   tags: kpm

@@ -6,21 +6,23 @@
   tags: native
 
 - name: Check if native libaries are already built
-  stat:
+  ansible.builtin.stat:
     path: "{{ tomcat_native_libdir }}/libtcnative-1.so"
-  register: libtcnative
+  register: tomcat_libtcnative
   tags: native
 
 - name: Build Tomcat native libraries
+  when: not tomcat_libtcnative.stat.exists
+  tags: native
   block:
 
     - name: Prepare build toolchain
       block:
         - name: Install toolchain
           become: true
-          package: >
-            name={{ item }}
-            state=latest
+          ansible.builtin.package:
+            name: "{{ item }}"
+            state: present
           with_items:
             - dpkg-dev
             - gcc
@@ -30,15 +32,15 @@
           tags: native
 
         - name: Find apr-1-config path
-          shell: which apr-1-config
-          register: apr_config_path_output
+          ansible.builtin.shell: which apr-1-config
+          register: tomcat_apr_config_path_output
           tags: native
 
-        - name: Set apr_config_path
+        - name: Set tomcat_apr_config_path
           ansible.builtin.set_fact:
-            apr_config_path: "{{ apr_config_path_output.stdout }}"
+            tomcat_apr_config_path: "{{ tomcat_apr_config_path_output.stdout }}"
           tags: native
-      when: apr_config_path is undefined
+      when: tomcat_apr_config_path is undefined
       tags: native
 
     - name: Detect GNU architecture
@@ -79,7 +81,7 @@
           --build="{{ gnu_arch }}"
           --libdir="{{ tomcat_native_libdir }}"
           --prefix="{{ catalina_home }}"
-          --with-apr="{{ apr_config_path }}"
+          --with-apr="{{ tomcat_apr_config_path }}"
           --with-java-home="{{ java_home }}"
           --with-ssl=yes
         chdir="{{ workspace.path }}/native"
@@ -112,5 +114,3 @@
         path: "{{ workspace.path }}"
         state: absent
       tags: native
-  when: not libtcnative.stat.exists
-  tags: native

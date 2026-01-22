@@ -21,7 +21,7 @@
 # Generate Tomcat configuration files based on environment variables
 - name: Generate Tomcat files
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
     mode: "{{ item.mode }}"
