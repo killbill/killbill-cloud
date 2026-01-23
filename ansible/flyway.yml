@@ -2,7 +2,7 @@
 - name: Install Flyway
   hosts: all
   tasks:
-    - name: setup Ruby
-      import_tasks: roles/common/tasks/main.yml
-    - name: install Flyway
-      import_tasks: roles/migrations/tasks/flyway.yml
+    - name: Setup Ruby
+      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+    - name: Install Flyway
+      ansible.builtin.import_tasks: roles/migrations/tasks/flyway.yml

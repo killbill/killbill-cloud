@@ -1,23 +1,23 @@
 ---
-- name: ensure Tomcat install dir exists
+- name: Ensure Tomcat install dir exists
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ tomcat_install_dir }}"
     state: directory
     mode: u=rwx,g=rx,o=rx
   tags: install
 
-- name: add Tomcat group
+- name: Add Tomcat group
   become: true
-  group:
+  ansible.builtin.group:
     name: "{{ tomcat_group }}"
     state: present
   tags: install
 
 # Expect bash to be present -- we haven't tested the scripts with other shells
-- name: add Tomcat user
+- name: Add Tomcat user
   become: true
-  user:
+  ansible.builtin.user:
     name: "{{ tomcat_owner }}"
     comment: Kill Bill Tomcat owner
     group: "{{ tomcat_group }}"
@@ -27,8 +27,8 @@
     state: present
   tags: install
 
-- name: download Tomcat release metadata
-  uri:
+- name: Download Tomcat release metadata
+  ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
     return_content: yes
   register: tomcat_metadata
@@ -36,15 +36,15 @@
   tags: install
 
 # We don't use the xml module to avoid a dependency on lxml
-- name: set tomcat_version
-  set_fact:
+- name: Set tomcat_version
+  ansible.builtin.set_fact:
     tomcat_version: "{{ tomcat_metadata.content | regex_findall('<version>(9.0.*)</version>', '\\1') | last }}"
   when: tomcat_version is undefined
   tags: install
 
-- name: install Tomcat
+- name: Install Tomcat
   become: true
-  unarchive:
+  ansible.builtin.unarchive:
     src: "http://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: True
     dest: "{{ tomcat_install_dir }}"
@@ -53,20 +53,27 @@
   tags: install
 
 # The individual files have the correct permissions already, but not the top directory
-- name: set correct permissions
+- name: Set correct permissions
   become: true
-  file: path="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  ansible.builtin.file:
+    path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    recurse: yes
   tags: install
 
-- name: symlink install directory
+- name: Symlink install directory
   become: true
-  file: src="{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}" path="{{ catalina_home }}" state=link
+  ansible.builtin.file:
+    src: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+    path: "{{ catalina_home }}"
+    state: link
   tags: install
 
-- name: set required Tomcat environment variables
+- name: Set required Tomcat environment variables
   become: true
   become_user: "{{ tomcat_owner }}"
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: "export {{ item.key }}={{ item.value }}"
     regexp: "^export {{ item.key }}="
     path: "{{ tomcat_home }}/.profile"

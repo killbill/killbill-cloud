@@ -3,5 +3,5 @@
   hosts: all
   become: yes
   tasks:
-    - name: stop Tomcat
-      import_tasks: roles/tomcat/tasks/stop.yml
+    - name: Stop Tomcat
+      ansible.builtin.import_tasks: roles/tomcat/tasks/stop.yml

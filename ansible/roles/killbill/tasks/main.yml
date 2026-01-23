@@ -1,16 +1,21 @@
 ---
-- name: ensure Kill Bill dirs exist
+- name: Ensure Kill Bill dirs exist
   become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rwx,g=rx,o=rx
   with_items:
     - "{{ kb_config_dir }}"
     - "{{ kb_plugins_dir }}"
   tags: kpm-install
 
 # Generate Kill Bill placeholder configuration files
-- name: generate Kill Bill files
+- name: Generate Kill Bill files
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/{{ item.name }}.j2"
     dest: "{{ kb_config_dir }}/{{ item.name }}"
     mode: u=rw,g=r,o=r
@@ -22,9 +27,9 @@
     - name: killbill.properties
   tags: kpm-install
 
-- name: generate kpm.yml file if needed
+- name: Generate kpm.yml file if needed
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/kpm.yml.j2"
     dest: "{{ kb_install_dir }}/kpm.yml"
     mode: u=rw,g=r,o=r
@@ -35,9 +40,9 @@
   tags: kpm-install
 
 # Generate Kill Bill-specific Tomcat configuration files based on environment variables
-- name: generate Tomcat files
+- name: Generate Tomcat files
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
     mode: "{{ item.mode }}"
@@ -52,10 +57,10 @@
       dest: "{{ catalina_base }}/bin"
   tags: tomcat
 
-- name: check if a ROOT webapp is already installed
-  stat:
+- name: Check if a ROOT webapp is already installed
+  ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
-  register: existing_webapp
+  register: killbill_existing_webapp
   tags: tomcat
 
 # Only run kpm install if there is no exploded webapp already. Otherwise,
@@ -63,23 +68,27 @@
 # and always download the war.
 # In practice, this means one cannot just update the version in the kpm.yml file
 # to update Kill Bill and re-run the role: one needs to first delete the ROOT directory.
-- name: run KPM install
+- name: Run KPM install
   become: true
   become_user: "{{ tomcat_owner }}"
   killbill:
     kpm_path: "{{ kpm_path }}"
     kpm_yml: "{{ killbill_kpm_yml }}"
-  when: not existing_webapp.stat.exists
+  when: not killbill_existing_webapp.stat.exists
   tags: kpm-install
 
-- name: set correct permissions
+- name: Set correct permissions
   become: true
-  file: path={{ kb_install_dir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  ansible.builtin.file:
+    path: "{{ kb_install_dir }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    recurse: yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
     state: directory
     mode: '0755'
@@ -87,7 +96,7 @@
 # Expand the WAR to speed up startup
 - name: Expand WAR file if not already done
   become: true
-  command: |
+  ansible.builtin.command: |
     "{{ java_home }}/bin/jar" -xf ../ROOT.war
   args:
     chdir: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
@@ -97,7 +106,7 @@
 # Generate logback configuration files based on environment variables
 - name: Copy logback.xml
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/{{ item.name }}.j2"
     # Placing the logback.xml on the classpath of the webapp is the only way to support per-webapp configuration
     dest: "{{ catalina_base }}/{{ kb_webapps }}/ROOT/WEB-INF/classes/logback.xml"
@@ -111,7 +120,7 @@
 
 - name: Recursively change ownership for the expanded ROOT
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
     state: directory
     recurse: yes
@@ -122,7 +131,7 @@
 
 - name: Remove root archive
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     state: absent
   tags: killbill-logback

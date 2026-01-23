@@ -1,43 +1,52 @@
 ---
-- name: ensure Flyway install dir exists
+- name: Ensure Flyway install dir exists
   become: true
-  file: path={{ flyway_install_dir }} state=directory mode=u=rwx,g=rx,o=rx
+  ansible.builtin.file:
+    path: "{{ flyway_install_dir }}"
+    state: directory
+    mode: u=rwx,g=rx,o=rx
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
-- name: check if Flyway is already installed
-  stat:
+- name: Check if Flyway is already installed
+  ansible.builtin.stat:
     path: "{{ flyway_install_dir }}/killbill-flyway.jar"
-  register: flyway_bin
+  register: migrations_flyway_bin
   tags: migrations
 
-- block:
-    - name: download killbill-flyway release metadata
-      uri:
+- name: Download Kill Bill Flyway metadata
+  when: not migrations_flyway_bin.stat.exists
+  tags: migrations
+  block:
+    - name: Download killbill-flyway release metadata
+      ansible.builtin.uri:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
         return_content: yes
-      register: flyway_metadata
-      when: flyway_version is undefined
+      register: migrations_flyway_metadata
+      when: migrations_flyway_version is undefined
       tags: migrations
 
     # We don't use the xml module to avoid a dependency on lxml
-    - name: set flyway_version
-      set_fact:
-        flyway_version: "{{ flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
-      when: flyway_version is undefined
+    - name: Set migrations_flyway_version
+      ansible.builtin.set_fact:
+        migrations_flyway_version: "{{ migrations_flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+      when: migrations_flyway_version is undefined
       tags: migrations
 
-    - name: install Flyway
+    - name: Install Flyway
       become: true
       # maven_artifact module requires xml on the host
-      get_url:
-        url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
+      ansible.builtin.get_url:
+        url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ migrations_flyway_version }}/killbill-util-{{ flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
+        mode: '0644'
       tags: migrations
-  when: not flyway_bin.stat.exists
-  tags: migrations
 
-- name: set correct permissions
+
+- name: Set correct permissions
   become: true
-  file: path="{{ flyway_install_dir }}/killbill-flyway.jar" owner={{ flyway_owner }} group={{ flyway_group }}
+  ansible.builtin.file:
+    path: "{{ flyway_install_dir }}/killbill-flyway.jar"
+    owner: "{{ flyway_owner }}"
+    group: "{{ flyway_group }}"
   tags: migrations
