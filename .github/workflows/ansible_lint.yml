@@ -16,4 +16,4 @@ jobs:
           working_directory: ansible/
           args: "-x 204,role-name --skip-list role-name[path],yaml[line-length]"
         env:
-          ANSIBLE_LIBRARY: ./ansible/library
+          ANSIBLE_LIBRARY: ${{ github.workspace }}/ansible/library
