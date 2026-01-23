@@ -10,7 +10,8 @@
   register: migrations
   tags: migrations
 
-- ansible.builtin.include_tasks: flyway.yml
+- name: Include flyway.yml
+  ansible.builtin.include_tasks: flyway.yml
   vars:
     migrations_flyway_version: "{{ migrations['migrations']['from'] }}"
 
@@ -20,9 +21,9 @@
     - "{{ migrations['migrations']['killbill'] }}"
     - "{{ migrations['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
-  register: baselineout
-  failed_when: baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
-  changed_when: "'already initialized with' not in baselineout.stdout and 'as it already contains migrations' not in baselineout.stderr"
+  register: migrations_baselineout
+  failed_when: migrations_baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
+  changed_when: "'already initialized with' not in migrations_baselineout.stdout and 'as it already contains migrations' not in baselineout.stderr"
   tags: migrations
 
 # We verify that all migrations can be generated before attempting to run them one by one
@@ -37,7 +38,8 @@
   tags: migrations
 
 # Run core migrations
-- ansible.builtin.include_tasks: migrate.yml
+- name: Run core migrations
+  ansible.builtin.include_tasks: migrate.yml
   loop:
     - "{{ migrations['migrations']['killbill'] }}"
   loop_control:
@@ -45,8 +47,9 @@
   when: migration['dir'] is defined
 
 # Run plugin migrations
-- ansible.builtin.include_tasks: migrate.yml
-  loop: "{{ migrations['migrations']['plugins']['java']|flatten(levels=1) }}"
+- name: Run plugin migrations
+  ansible.builtin.include_tasks: migrate.yml
+  loop: "{{ migrations['migrations']['plugins']['java'] | flatten(levels=1) }}"
   loop_control:
     loop_var: migration
   when: migration['dir'] is defined
