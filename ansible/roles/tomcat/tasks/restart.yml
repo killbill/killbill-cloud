@@ -1,5 +1,5 @@
 ---
-- include: stop.yml
+- include_tasks: stop.yml
 
 - name: Start Tomcat
   become: true

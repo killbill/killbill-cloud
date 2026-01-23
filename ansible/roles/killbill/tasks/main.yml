@@ -76,7 +76,6 @@
     kpm_yml: "{{ killbill_kpm_yml }}"
   when: not existing_webapp.stat.exists
   tags: kpm-install
-  # noqa: syntax-check[unknown-module]  # custom killbill module
 
 - name: Set correct permissions
   become: true

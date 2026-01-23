@@ -11,6 +11,7 @@
   tags: migrations
 
 - name: SQL migration
+  when: migrations_java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1
   block:
     - name: Print migrations
       ansible.builtin.debug:
@@ -58,4 +59,3 @@
             msg: "Migrations failed. You need to fix the tables, adjust the schema_version table manually (i.e. insert a line for that migration or update the status to success) and run {{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} repair"
           when: migrations_flyway_result.rc != 0 and 'contains a failed migration' not in migrations_flyway_result.stderr
           tags: migrations
-  when: migrations_java_dry_run_migrations.stdout.find("BEGIN;\nCOMMIT;") == -1

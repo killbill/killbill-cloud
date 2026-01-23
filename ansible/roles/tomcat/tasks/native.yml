@@ -17,6 +17,8 @@
   block:
 
     - name: Prepare build toolchain
+      when: tomcat_apr_config_path is undefined
+      tags: native
       block:
         - name: Install toolchain
           become: true
@@ -32,30 +34,30 @@
           tags: native
 
         - name: Find apr-1-config path
-          ansible.builtin.shell: which apr-1-config
+          ansible.builtin.command: which apr-1-config
           register: tomcat_apr_config_path_output
+          changed_when: false
           tags: native
 
         - name: Set tomcat_apr_config_path
           ansible.builtin.set_fact:
             tomcat_apr_config_path: "{{ tomcat_apr_config_path_output.stdout }}"
           tags: native
-      when: tomcat_apr_config_path is undefined
-      tags: native
 
     - name: Detect GNU architecture
+      when: tomcat_gnu_arch is undefined
+      tags: native
       block:
         - name: Find tomcat_gnu_arch path
-          ansible.builtin.shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
+          ansible.builtin.command: dpkg-architecture --query DEB_BUILD_GNU_TYPE
           register: tomcat_gnu_arch_output
+          changed_when: false
           tags: native
 
         - name: Set tomcat_gnu_arch
           ansible.builtin.set_fact:
             tomcat_gnu_arch: "{{ tomcat_gnu_arch_output.stdout }}"
           tags: native
-      when: tomcat_gnu_arch is undefined
-      tags: native
 
     - name: Create temporary build directory
       ansible.builtin.tempfile:
@@ -91,6 +93,7 @@
       ansible.builtin.command: >
         make all
         chdir="{{ workspace.path }}/native"
+      changed_when: false
       tags: native
 
     - name: Install native libraries
@@ -98,6 +101,7 @@
       ansible.builtin.command: >
         make install
         chdir="{{ workspace.path }}/native"
+      changed_when: false
       tags: native
 
     - name: Set correct permissions
