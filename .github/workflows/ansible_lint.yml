@@ -14,4 +14,6 @@ jobs:
         uses: ansible/ansible-lint@v25.9.2
         with:
           working_directory: ansible/
-          args: "-x 204,unknown-module,role-name --skip-list role-name[path],yaml[line-length]"
+          args: "-x 204,role-name --skip-list role-name[path],yaml[line-length]"
+        env:
+          ANSIBLE_LIBRARY: ./ansible/library
