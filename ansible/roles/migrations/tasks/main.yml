@@ -7,19 +7,19 @@
     killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     kpm_yml: "{{ kpm_yml }}"
     gh_token: "{{ gh_token | default('') }}"
-  register: migrations
+  register: migrations_result
   tags: migrations
 
 - name: Include flyway.yml
   ansible.builtin.include_tasks: flyway.yml
   vars:
-    migrations_flyway_version: "{{ migrations['migrations']['from'] }}"
+    migrations_flyway_version: "{{ migrations_result['migrations']['from'] }}"
 
 - name: Generate Flyway baseline tables
   ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
   with_items:
-    - "{{ migrations['migrations']['killbill'] }}"
-    - "{{ migrations['migrations']['plugins']['java'] }}"
+    - "{{ migrations_result['migrations']['killbill'] }}"
+    - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   register: migrations_baselineout
   failed_when: migrations_baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
@@ -30,8 +30,8 @@
 - name: Validate SQL migrations for Kill Bill and Java plugins
   ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
   with_items:
-    - "{{ migrations['migrations']['killbill'] }}"
-    - "{{ migrations['migrations']['plugins']['java'] }}"
+    - "{{ migrations_result['migrations']['killbill'] }}"
+    - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   changed_when: False
   register: migrations_java_dry_run_migrations
