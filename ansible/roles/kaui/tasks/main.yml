@@ -14,7 +14,7 @@
 
 - name: Generate kpm.yml file if needed
   become: true
-  template:
+  ansible.builtin.template:
     src: "kaui/kpm.yml.j2"
     dest: "{{ kaui_install_dir }}/kpm.yml"
     mode: u=rw,g=r,o=r
@@ -27,7 +27,7 @@
 # Generate Kaui-specific Tomcat configuration files based on environment variables
 - name: Generate Tomcat files
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
     mode: "{{ item.mode }}"
@@ -91,7 +91,7 @@
 # Generate logback configuration files based on environment variables
 - name: Copy logback.xml
   become: true
-  template:
+  ansible.builtin.template:
     src: "kaui/{{ item.name }}.j2"
     # Placing the logback.xml on the classpath of the webapp is the only way to support per-webapp configuration
     dest: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT/WEB-INF/classes/logback.xml"

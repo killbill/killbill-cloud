@@ -15,7 +15,7 @@
 # Generate Kill Bill placeholder configuration files
 - name: Generate Kill Bill files
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/{{ item.name }}.j2"
     dest: "{{ kb_config_dir }}/{{ item.name }}"
     mode: u=rw,g=r,o=r
@@ -29,7 +29,7 @@
 
 - name: Generate kpm.yml file if needed
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/kpm.yml.j2"
     dest: "{{ kb_install_dir }}/kpm.yml"
     mode: u=rw,g=r,o=r
@@ -42,7 +42,7 @@
 # Generate Kill Bill-specific Tomcat configuration files based on environment variables
 - name: Generate Tomcat files
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
     mode: "{{ item.mode }}"
@@ -106,7 +106,7 @@
 # Generate logback configuration files based on environment variables
 - name: Copy logback.xml
   become: true
-  template:
+  ansible.builtin.template:
     src: "killbill/{{ item.name }}.j2"
     # Placing the logback.xml on the classpath of the webapp is the only way to support per-webapp configuration
     dest: "{{ catalina_base }}/{{ kb_webapps }}/ROOT/WEB-INF/classes/logback.xml"

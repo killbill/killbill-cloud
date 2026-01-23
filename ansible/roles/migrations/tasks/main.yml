@@ -6,11 +6,11 @@
     kaui_web_path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
     killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     kpm_yml: "{{ kpm_yml }}"
-    gh_token: "{{ gh_token|default('') }}"
+    gh_token: "{{ gh_token | default('') }}"
   register: migrations
   tags: migrations
 
-- include_tasks: flyway.yml
+- ansible.builtin.include_tasks: flyway.yml
   vars:
     migrations_flyway_version: "{{ migrations['migrations']['from'] }}"
 
@@ -37,7 +37,7 @@
   tags: migrations
 
 # Run core migrations
-- include_tasks: migrate.yml
+- ansible.builtin.include_tasks: migrate.yml
   loop:
     - "{{ migrations['migrations']['killbill'] }}"
   loop_control:
@@ -45,7 +45,7 @@
   when: migration['dir'] is defined
 
 # Run plugin migrations
-- include_tasks: migrate.yml
+- ansible.builtin.include_tasks: migrate.yml
   loop: "{{ migrations['migrations']['plugins']['java']|flatten(levels=1) }}"
   loop_control:
     loop_var: migration
