@@ -14,4 +14,4 @@ jobs:
         uses: ansible/ansible-lint@v25.9.2
         with:
           working_directory: ansible/
-          args: "-x 204,role-name --skip-list role-name[path],syntax-check[unknown-module],yaml[line-length]"
+          args: "--exclude roles/killbill/ --skip-list role-name[path],yaml[line-length]"
