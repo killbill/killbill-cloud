@@ -63,7 +63,7 @@
       ansible.builtin.tempfile:
         state: directory
         suffix: tomcat-native-build
-      register: workspace
+      register: tomcat_workspace
       tags: native
 
     # become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
@@ -71,36 +71,38 @@
       become: true
       ansible.builtin.unarchive:
         src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
-        dest: "{{ workspace.path }}"
+        dest: "{{ tomcat_workspace.path }}"
         extra_opts: [--strip-components=1]
         owner: "{{ ansible_user_id }}"
         remote_src: yes
       tags: native
 
     - name: Configure native libraries
-      ansible.builtin.command: >
-        ./configure
-          --build="{{ tomcat_gnu_arch }}"
-          --libdir="{{ tomcat_native_libdir }}"
-          --prefix="{{ catalina_home }}"
-          --with-apr="{{ tomcat_apr_config_path }}"
-          --with-java-home="{{ java_home }}"
-          --with-ssl=yes
-        chdir="{{ workspace.path }}/native"
+      ansible.builtin.command:
+        cmd: >
+          ./configure
+            --build="{{ tomcat_gnu_arch }}"
+            --libdir="{{ tomcat_native_libdir }}"
+            --prefix="{{ catalina_home }}"
+            --with-apr="{{ tomcat_apr_config_path }}"
+            --with-java-home="{{ java_home }}"
+            --with-ssl=yes
+        chdir: "{{ tomcat_workspace.path }}/native"
+      changed_when: false
       tags: native
 
     - name: Build native libraries
-      ansible.builtin.command: >
-        make all
-        chdir="{{ workspace.path }}/native"
+      ansible.builtin.command:
+        cmd: make all
+        chdir: "{{ tomcat_workspace.path }}/native"
       changed_when: false
       tags: native
 
     - name: Install native libraries
       become: true
-      ansible.builtin.command: >
-        make install
-        chdir="{{ workspace.path }}/native"
+      ansible.builtin.command:
+        cmd: make install
+        chdir: "{{ tomcat_workspace.path }}/native"
       changed_when: false
       tags: native
 
@@ -115,6 +117,6 @@
 
     - name: Remove temporary directory
       ansible.builtin.file:
-        path: "{{ workspace.path }}"
+        path: "{{ tomcat_workspace.path }}"
         state: absent
       tags: native

@@ -58,7 +58,7 @@
   tags: tomcat
 
 - name: Check if a ROOT webapp is already installed
-  stat:
+  ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
   register: existing_webapp
   tags: tomcat
