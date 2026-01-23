@@ -1,6 +1,7 @@
 ---
 - name: Check Tomcat PID file
-  ansible.builtin.stat: path="{{ catalina_base }}/tomcat.pid"
+  ansible.builtin.stat:
+    path: "{{ catalina_base }}/tomcat.pid"
   register: tomcat_pid
   when:
     - catalina_home is defined
