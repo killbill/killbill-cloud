@@ -1,5 +1,5 @@
 ---
-- name: Ansible_ruby_interpreter setup
+- name: Setup Ansible ruby interpreter
   ansible.builtin.set_fact:
     ansible_ruby_interpreter: "{{ kpm_path }}/lib/ruby/bin/ruby"
   tags: common
