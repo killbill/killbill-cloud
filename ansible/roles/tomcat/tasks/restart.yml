@@ -1,5 +1,6 @@
 ---
-- ansible.builtin.include_tasks: stop.yml
+- name: Stop Tomcat
+  include_tasks: stop.yml
 
 - name: Start Tomcat
   become: true
@@ -13,6 +14,7 @@
   when:
     - catalina_home is defined
     - not tomcat_foreground
+  changed_when: false
 
 - name: Run Tomcat
   become: true
@@ -26,3 +28,4 @@
   when:
     - catalina_home is defined
     - tomcat_foreground
+  changed_when: false

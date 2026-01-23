@@ -29,12 +29,13 @@
   when:
     - catalina_home is defined
     - tomcat_pid is not defined or not tomcat_pid.stat.exists
+  changed_when: false
   tags: stop
 
 - name: Check if war file exists
   ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
-  register: war
+  register: tomcat_war
   tags:
     - tomcat_cleanup
     - stop
@@ -50,7 +51,7 @@
     - work/
   when:
     - catalina_home is defined
-    - war.stat.exists
+    - tomcat_war.stat.exists
   tags:
     - tomcat_cleanup
     - stop

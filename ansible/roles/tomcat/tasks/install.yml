@@ -23,7 +23,7 @@
     group: "{{ tomcat_group }}"
     create_home: yes
     home: "{{ tomcat_home }}"
-    ansible.builtin.shell: /bin/bash
+    shell: /bin/bash
     state: present
   tags: install
 
