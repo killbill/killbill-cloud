@@ -2,20 +2,20 @@
 - name: Gather diagnostics
   hosts: all
   tasks:
-    - name: setup Ruby
-      import_tasks: roles/common/tasks/main.yml
-    - name: setup KPM
-      import_tasks: roles/kpm/tasks/main.yml
-    - name: gather diagnostics
+    - name: Setup Ruby
+      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+    - name: Setup KPM
+      ansible.builtin.import_tasks: roles/kpm/tasks/main.yml
+    - name: Gather diagnostics
       killbill_diagnostics:
         kpm_path: "{{ kpm_path }}"
-        killbill_url: "{{ killbill_url|default('http://127.0.0.1:8080') }}"
+        killbill_url: "{{ killbill_url | default('http://127.0.0.1:8080') }}"
         killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
-        killbill_user: "{{ killbill_user|default('admin') }}"
-        killbill_password: "{{ killbill_password|default('password') }}"
-        killbill_api_key: "{{ killbill_api_key|default('bob') }}"
-        killbill_api_secret: "{{ killbill_api_secret|default('lazar') }}"
-        killbill_account: "{{ killbill_account|default('') }}"
+        killbill_user: "{{ killbill_user | default('admin') }}"
+        killbill_password: "{{ killbill_password | default('password') }}"
+        killbill_api_key: "{{ killbill_api_key | default('bob') }}"
+        killbill_api_secret: "{{ killbill_api_secret | default('lazar') }}"
+        killbill_account: "{{ killbill_account | default('') }}"
         bundles_dir: "{{ kb_plugins_dir }}"
         log_dir: "{{ catalina_base }}/logs"
       tags: diagnostics

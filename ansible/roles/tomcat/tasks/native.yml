@@ -1,108 +1,122 @@
 ---
-- name: set tomcat_native_libdir
-  set_fact:
+- name: Set tomcat_native_libdir
+  ansible.builtin.set_fact:
     tomcat_native_libdir: "{{ catalina_home }}/native-jni-lib"
   when: tomcat_native_libdir is undefined
   tags: native
 
-- name: check if native libaries are already built
-  stat:
+- name: Check if native libaries are already built
+  ansible.builtin.stat:
     path: "{{ tomcat_native_libdir }}/libtcnative-1.so"
-  register: libtcnative
+  register: tomcat_libtcnative
   tags: native
 
-- block:
-  - block:
-    - name: install toolchain
+- name: Build Tomcat native libraries
+  when: not tomcat_libtcnative.stat.exists
+  tags: native
+  block:
+
+    - name: Prepare build toolchain
+      when: tomcat_apr_config_path is undefined
+      tags: native
+      block:
+        - name: Install toolchain
+          become: true
+          ansible.builtin.package:
+            name: "{{ item }}"
+            state: present
+          with_items:
+            - dpkg-dev
+            - gcc
+            - libapr1-dev
+            - libssl-dev
+            - make
+          tags: native
+
+        - name: Find apr-1-config path
+          ansible.builtin.command: which apr-1-config
+          register: tomcat_apr_config_path_output
+          changed_when: false
+          tags: native
+
+        - name: Set tomcat_apr_config_path
+          ansible.builtin.set_fact:
+            tomcat_apr_config_path: "{{ tomcat_apr_config_path_output.stdout }}"
+          tags: native
+
+    - name: Detect GNU architecture
+      when: tomcat_gnu_arch is undefined
+      tags: native
+      block:
+        - name: Find tomcat_gnu_arch path
+          ansible.builtin.command: dpkg-architecture --query DEB_BUILD_GNU_TYPE
+          register: tomcat_gnu_arch_output
+          changed_when: false
+          tags: native
+
+        - name: Set tomcat_gnu_arch
+          ansible.builtin.set_fact:
+            tomcat_gnu_arch: "{{ tomcat_gnu_arch_output.stdout }}"
+          tags: native
+
+    - name: Create temporary build directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: tomcat-native-build
+      register: tomcat_workspace
+      tags: native
+
+    # become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
+    - name: Expand native libraries archive
       become: true
-      package: >
-        name={{ item }}
-        state=latest
-      with_items:
-        - dpkg-dev
-        - gcc
-        - libapr1-dev
-        - libssl-dev
-        - make
+      ansible.builtin.unarchive:
+        src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
+        dest: "{{ tomcat_workspace.path }}"
+        extra_opts: [--strip-components=1]
+        owner: "{{ ansible_user_id }}"
+        remote_src: yes
       tags: native
 
-    - name: find apr-1-config path
-      shell: which apr-1-config
-      register: apr_config_path_output
+    - name: Configure native libraries
+      ansible.builtin.command:
+        cmd: >
+          ./configure
+            --build="{{ tomcat_gnu_arch }}"
+            --libdir="{{ tomcat_native_libdir }}"
+            --prefix="{{ catalina_home }}"
+            --with-apr="{{ tomcat_apr_config_path }}"
+            --with-java-home="{{ java_home }}"
+            --with-ssl=yes
+        chdir: "{{ tomcat_workspace.path }}/native"
+      changed_when: false
       tags: native
 
-    - name: set apr_config_path
-      set_fact:
-        apr_config_path: "{{ apr_config_path_output.stdout }}"
-      tags: native
-    when: apr_config_path is undefined
-    tags: native
-
-  - block:
-    - name: find gnu_arch path
-      shell: dpkg-architecture --query DEB_BUILD_GNU_TYPE
-      register: gnu_arch_output
+    - name: Build native libraries
+      ansible.builtin.command:
+        cmd: make all
+        chdir: "{{ tomcat_workspace.path }}/native"
+      changed_when: false
       tags: native
 
-    - name: set gnu_arch
-      set_fact:
-        gnu_arch: "{{ gnu_arch_output.stdout }}"
+    - name: Install native libraries
+      become: true
+      ansible.builtin.command:
+        cmd: make install
+        chdir: "{{ tomcat_workspace.path }}/native"
+      changed_when: false
       tags: native
-    when: gnu_arch is undefined
-    tags: native
 
-  - name: create temporary build directory
-    tempfile:
-      state: directory
-      suffix: tomcat-native-build
-    register: workspace
-    tags: native
+    - name: Set correct permissions
+      become: true
+      ansible.builtin.file:
+        path: "{{ tomcat_native_libdir }}"
+        owner: "{{ tomcat_owner }}"
+        group: "{{ tomcat_group }}"
+        recurse: yes
+      tags: install
 
-  # become: true needed here as the user SSH'ing in might not be able to open /usr/share/tomcat/bin
-  - name: expand native libraries archive
-    become: true
-    unarchive:
-      src: "{{ catalina_home }}/bin/tomcat-native.tar.gz"
-      dest: "{{ workspace.path }}"
-      extra_opts: [--strip-components=1]
-      owner: "{{ ansible_user_id }}"
-      remote_src: yes
-    tags: native
-
-  - name: configure native libraries
-    command: >
-      ./configure
-        --build="{{ gnu_arch }}"
-        --libdir="{{ tomcat_native_libdir }}"
-        --prefix="{{ catalina_home }}"
-        --with-apr="{{ apr_config_path }}"
-        --with-java-home="{{ java_home }}"
-        --with-ssl=yes
-      chdir="{{ workspace.path }}/native"
-    tags: native
-
-  - name: build native libraries
-    command: >
-      make all
-      chdir="{{ workspace.path }}/native"
-    tags: native
-
-  - name: install native libraries
-    become: true
-    command: >
-      make install
-      chdir="{{ workspace.path }}/native"
-    tags: native
-
-  - name: set correct permissions
-    become: true
-    file: path={{ tomcat_native_libdir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
-    tags: install
-
-  - name: remove temporary directory
-    file:
-      path="{{ workspace.path }}"
-      state=absent
-    tags: native
-  when: not libtcnative.stat.exists
-  tags: native
+    - name: Remove temporary directory
+      ansible.builtin.file:
+        path: "{{ tomcat_workspace.path }}"
+        state: absent
+      tags: native

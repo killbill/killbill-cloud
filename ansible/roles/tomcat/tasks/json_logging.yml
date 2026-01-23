@@ -1,23 +1,27 @@
 ---
-- name: download Logstash dependency
+- name: Download Logstash dependency
   become: true
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ nexus_url }}/{{ nexus_repository }}/net/logstash/logback/logstash-logback-encoder/6.4/logstash-logback-encoder-6.4.jar"
     dest: /opt/logstash-logback-encoder.jar
+    mode: '0644'
   tags:
     - killbill-logback
     - logstash
     - download
 
-- name: set correct permissions
+- name: Set correct permissions
   become: true
-  file: path=/opt/logstash-logback-encoder.jar owner={{ tomcat_owner }} group={{ tomcat_group }}
+  ansible.builtin.file:
+    path: /opt/logstash-logback-encoder.jar
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
   tags:
     - killbill-logback
     - logstash
 
-- name: ensure Logstash dependency exists in the webapp
-  copy:
+- name: Ensure Logstash dependency exists in the webapp
+  ansible.builtin.copy:
     src: /opt/logstash-logback-encoder.jar
     dest: "{{ catalina_base }}/webapps/ROOT/WEB-INF/lib/logstash-logback-encoder.jar"
     owner: "{{ tomcat_owner }}"

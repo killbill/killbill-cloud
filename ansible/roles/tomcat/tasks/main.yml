@@ -1,7 +1,12 @@
 ---
-- name: ensure Tomcat dirs exist
+- name: Ensure Tomcat dirs exist
   become: true
-  file: path={{ catalina_base }}/{{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
+  ansible.builtin.file:
+    path: "{{ catalina_base }}/{{ item }}"
+    state: directory
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rwx,g=rx,o=rx
   with_items:
     - bin
     - conf
@@ -14,9 +19,9 @@
   tags: tomcat
 
 # Generate Tomcat configuration files based on environment variables
-- name: generate Tomcat files
+- name: Generate Tomcat files
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}/{{ item.name }}.j2"
     dest: "{{ item.dest }}/{{ item.name }}"
     mode: "{{ item.mode }}"

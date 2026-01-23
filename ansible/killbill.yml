@@ -2,9 +2,9 @@
 - name: Deploy Kill Bill
   hosts: all
   tasks:
-    - name: setup Ruby
-      import_tasks: roles/common/tasks/main.yml
-    - name: setup Tomcat
-      import_tasks: roles/tomcat/tasks/main.yml
-    - name: install Kill Bill
-      import_tasks: roles/killbill/tasks/main.yml
+    - name: Setup Ruby
+      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+    - name: Setup Tomcat
+      ansible.builtin.import_tasks: roles/tomcat/tasks/main.yml
+    - name: Install Kill Bill
+      ansible.builtin.import_tasks: roles/killbill/tasks/main.yml

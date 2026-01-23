@@ -1,43 +1,45 @@
 ---
-- name: fetch all migrations
+- name: Fetch all migrations
   killbill_migrations:
     kpm_path: "{{ kpm_path }}"
     bundles_dir: "{{ kb_plugins_dir }}"
     kaui_web_path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT.war"
     killbill_web_path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
     kpm_yml: "{{ kpm_yml }}"
-    gh_token: "{{ gh_token|default('') }}"
-  register: migrations
+    gh_token: "{{ gh_token | default('') }}"
+  register: migrations_result
   tags: migrations
 
-- include_tasks: flyway.yml
+- name: Include flyway.yml
+  ansible.builtin.include_tasks: flyway.yml
   vars:
-    flyway_version: "{{ migrations['migrations']['from'] }}"
+    migrations_flyway_version: "{{ migrations_result['migrations']['from'] }}"
 
-- name: generate Flyway baseline tables
-  command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
+- name: Generate Flyway baseline tables
+  ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} baseline"
   with_items:
-    - "{{ migrations['migrations']['killbill'] }}"
-    - "{{ migrations['migrations']['plugins']['java'] }}"
+    - "{{ migrations_result['migrations']['killbill'] }}"
+    - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
-  register: baselineout
-  failed_when: baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
-  changed_when: "'already initialized with' not in baselineout.stdout and 'as it already contains migrations' not in baselineout.stderr"
+  register: migrations_baselineout
+  failed_when: migrations_baselineout.rc != 0 and 'as it already contains migrations' not in migrations_baselineout.stderr
+  changed_when: "'already initialized with' not in migrations_baselineout.stdout and 'as it already contains migrations' not in migrations_baselineout.stderr"
   tags: migrations
 
 # We verify that all migrations can be generated before attempting to run them one by one
-- name: validate SQL migrations for Kill Bill and Java plugins
-  command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
+- name: Validate SQL migrations for Kill Bill and Java plugins
+  ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ item['dir'] }} -table={{ item['table'] }} dryRunMigrate"
   with_items:
-    - "{{ migrations['migrations']['killbill'] }}"
-    - "{{ migrations['migrations']['plugins']['java'] }}"
+    - "{{ migrations_result['migrations']['killbill'] }}"
+    - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   changed_when: False
-  register: java_dry_run_migrations
+  register: migrations_java_dry_run_migrations
   tags: migrations
 
 # Run core migrations
-- include_tasks: migrate.yml
+- name: Run core migrations
+  ansible.builtin.include_tasks: migrate.yml
   loop:
     - "{{ migrations['migrations']['killbill'] }}"
   loop_control:
@@ -45,8 +47,9 @@
   when: migration['dir'] is defined
 
 # Run plugin migrations
-- include_tasks: migrate.yml
-  loop: "{{ migrations['migrations']['plugins']['java']|flatten(levels=1) }}"
+- name: Run plugin migrations
+  ansible.builtin.include_tasks: migrate.yml
+  loop: "{{ migrations['migrations']['plugins']['java'] | flatten(levels=1) }}"
   loop_control:
     loop_var: migration
   when: migration['dir'] is defined

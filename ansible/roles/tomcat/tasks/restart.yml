@@ -1,28 +1,31 @@
 ---
-- include: stop.yml
+- name: Stop Tomcat
+  ansible.builtin.include_tasks: stop.yml
 
-- name: start Tomcat
+- name: Start Tomcat
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
-  command: "nohup {{ catalina_home }}/bin/catalina.sh start"
+  ansible.builtin.command: "nohup {{ catalina_home }}/bin/catalina.sh start"
   args:
       chdir: "{{ catalina_base }}"
   when:
     - catalina_home is defined
     - not tomcat_foreground
+  changed_when: false
 
-- name: run Tomcat
+- name: Run Tomcat
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
-  command: "{{ catalina_home }}/bin/catalina.sh run"
+  ansible.builtin.command: "{{ catalina_home }}/bin/catalina.sh run"
   args:
       chdir: "{{ catalina_base }}"
   when:
     - catalina_home is defined
     - tomcat_foreground
+  changed_when: false

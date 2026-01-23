@@ -2,11 +2,11 @@
 - name: Deploy Kaui
   hosts: all
   vars:
-    kpm_yml: /var/lib/kaui/kpm.yml
+    kaui_kpm_yml: /var/lib/kaui/kpm.yml
   tasks:
-    - name: setup Ruby
-      import_tasks: roles/common/tasks/main.yml
-    - name: setup Tomcat
-      import_tasks: roles/tomcat/tasks/main.yml
-    - name: install Kaui
-      import_tasks: roles/kaui/tasks/main.yml
+    - name: Setup Ruby
+      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+    - name: Setup Tomcat
+      ansible.builtin.import_tasks: roles/tomcat/tasks/main.yml
+    - name: Install Kaui
+      ansible.builtin.import_tasks: roles/kaui/tasks/main.yml

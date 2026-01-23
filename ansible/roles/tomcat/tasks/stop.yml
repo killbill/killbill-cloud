@@ -1,52 +1,58 @@
 ---
-- name: check Tomcat PID file
-  stat: path="{{ catalina_base }}/tomcat.pid"
+- name: Check Tomcat PID file
+  ansible.builtin.stat:
+    path: "{{ catalina_base }}/tomcat.pid"
   register: tomcat_pid
   when:
     - catalina_home is defined
+  changed_when: false
   tags: stop
 
-- name: stop Tomcat (with PID file)
+- name: Stop Tomcat (with PID file)
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
     CATALINA_PID: "{{ catalina_base }}/tomcat.pid"
-  command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
+  ansible.builtin.command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
   when:
     - catalina_home is defined
     - tomcat_pid is not defined or tomcat_pid.stat.exists
+  changed_when: false
   tags: stop
 
-- name: stop Tomcat (without PID file)
+- name: Stop Tomcat (without PID file)
   become: true
   become_user: "{{ tomcat_owner }}"
   environment:
     CATALINA_BASE: "{{ catalina_base }}"
-  command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
+  ansible.builtin.command: "{{ catalina_home }}/bin/catalina.sh stop 30 -force"
   when:
     - catalina_home is defined
     - tomcat_pid is not defined or not tomcat_pid.stat.exists
+  changed_when: false
   tags: stop
 
-- name: check if war file exists
-  stat:
+- name: Check if war file exists
+  ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kb_webapps }}/ROOT.war"
-  register: war
+  register: tomcat_war
   tags:
     - tomcat_cleanup
     - stop
 
-- name: clean up Tomcat deployment files
+- name: Clean up Tomcat deployment files
   become: true
   become_user: "{{ tomcat_owner }}"
-  file: path={{ catalina_base }}/{{ item }} state=absent
+  ansible.builtin.file:
+    path: "{{ catalina_base }}/{{ item }}"
+    state: absent
   with_items:
     - "{{ kb_webapps }}/ROOT"
     - work/
   when:
     - catalina_home is defined
-    - war.stat.exists
+    - tomcat_war.stat.exists
   tags:
     - tomcat_cleanup
     - stop

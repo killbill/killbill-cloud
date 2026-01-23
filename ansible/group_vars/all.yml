@@ -28,13 +28,16 @@ kb_config_dir: "{{ kb_install_dir }}/config"
 kb_plugins_dir: "{{ kb_install_dir }}/bundles"
 # kpm.yml file
 kpm_yml: "{{ kb_install_dir }}/kpm.yml"
+killbill_kpm_yml: "{{ kb_install_dir }}/kpm.yml"
+kaui_kpm_yml: "{{ kb_install_dir }}/kpm.yml"
 
 kaui_install_dir: /var/lib/kaui
 # For consistency as to where the sha1.yml is located
 kaui_plugins_dir: "{{ kaui_install_dir }}/bundles"
 
 flyway_install_dir: /opt
-flyway: java -jar {{ flyway_install_dir }}/killbill-flyway.jar -url='{{ lookup('env','KILLBILL_DAO_URL') }}' -user={{ lookup('env','KILLBILL_DAO_USER') }} -password={{ lookup('env','KILLBILL_DAO_PASSWORD') }}
+flyway: java -jar {{ flyway_install_dir }}/killbill-flyway.jar -url='{{ lookup('env', 'KILLBILL_DAO_URL') }}' -user={{ lookup('env', 'KILLBILL_DAO_USER') }} -password={{ lookup('env', 'KILLBILL_DAO_PASSWORD') }}
+
 flyway_owner: root
 flyway_group: root
 

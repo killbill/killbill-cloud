@@ -3,5 +3,5 @@
   hosts: all
   become: yes
   tasks:
-    - name: restart Tomcat
-      import_tasks: roles/tomcat/tasks/restart.yml
+    - name: Restart Tomcat
+      ansible.builtin.import_tasks: roles/tomcat/tasks/restart.yml
