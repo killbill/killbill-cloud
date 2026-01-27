@@ -1,6 +1,6 @@
 # killbill/base image
 
-Shared base image with Tomcat, JDK and KPM inside Ubuntu 20.04 LTS. It also contains Ansible and our playbooks from https://github.com/killbill/killbill-cloud.
+Shared base image with Tomcat, JDK and KPM inside Ubuntu 24.04 LTS. It also contains Ansible and our playbooks from https://github.com/killbill/killbill-cloud.
 
 To build this docker image:
 
