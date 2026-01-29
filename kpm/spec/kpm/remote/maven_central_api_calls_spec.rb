@@ -9,7 +9,7 @@ describe KPM::NexusFacade do
     logger.level = Logger::DEBUG
     logger
   end
-  let(:test_version) { '0.24.15' }
+  let(:test_version) { '0.24.16' }
   let(:coordinates_map) do
     { version: test_version,
       group_id: 'org.kill-bill.billing',
