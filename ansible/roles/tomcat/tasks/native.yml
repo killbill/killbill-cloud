@@ -100,10 +100,13 @@
 
     - name: Build native libraries
       ansible.builtin.command:
-        cmd: make all
+        argv:
+          - make
+          - all
         chdir: "{{ tomcat_workspace.path }}/native"
       changed_when: false
       tags: native
+
 
     - name: Install native libraries
       become: true
