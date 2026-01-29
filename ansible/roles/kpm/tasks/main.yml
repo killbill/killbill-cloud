@@ -106,7 +106,10 @@
 # The first time KPM is run, a Gemfile.lock needs to written out
 - name: Initialize KPM
   become: true
-  ansible.builtin.command: "{{ kpm_path }}/kpm version"
+  ansible.builtin.command:
+    argv:
+      - "{{ kpm_path }}/kpm"
+      - version
   args:
     creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"
   tags: kpm
