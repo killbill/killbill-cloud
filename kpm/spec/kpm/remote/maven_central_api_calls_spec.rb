@@ -38,7 +38,7 @@ describe KPM::NexusFacade do
       parsed_pom = REXML::Document.new(File.read(destination))
       expect(parsed_pom.elements['//groupId'].text).to eq('org.kill-bill.billing')
       expect(parsed_pom.elements['//artifactId'].text).to eq('killbill-oss-parent')
-      expect(parsed_pom.elements['//version'].text).to eq('0.146.63')
+      expect(parsed_pom.elements['//version'].text).to eq('0.146.67')
     }
   end
 
