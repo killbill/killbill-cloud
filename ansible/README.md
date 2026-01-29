@@ -153,7 +153,7 @@ To build upon these roles, you can create your own play, e.g.:
       include_role:
         name: killbill-cloud/ansible/roles/killbill
     - name: customize Kill Bill
-      ansible.builtin.import_tasks: roles/acme/tasks/main.yml
+      import_tasks: roles/acme/tasks/main.yml
 ```
 
 Note that you need to have your own templates directory, containing your own templates.
