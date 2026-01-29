@@ -14,6 +14,6 @@ jobs:
         uses: ansible/ansible-lint@v25.9.2
         with:
           working_directory: ansible/
-          args: "-x role-name,fqcn-builtins,role-name[path],yaml[line-length]"
+          args: "-x 204,role-name --skip-list role-name[path],yaml[line-length]"
         env:
           ANSIBLE_LIBRARY: ${{ github.workspace }}/ansible/library
