@@ -22,8 +22,8 @@
     - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
   register: migrations_baselineout
-  failed_when: migrations_baselineout.rc != 0 and 'as it already contains migrations' not in baselineout.stderr
-  changed_when: "'already initialized with' not in migrations_baselineout.stdout and 'as it already contains migrations' not in baselineout.stderr"
+  failed_when: migrations_baselineout.rc != 0 and 'as it already contains migrations' not in migrations_baselineout.stderr
+  changed_when: "'already initialized with' not in migrations_baselineout.stdout and 'as it already contains migrations' not in migrations_baselineout.stderr"
   tags: migrations
 
 # We verify that all migrations can be generated before attempting to run them one by one
