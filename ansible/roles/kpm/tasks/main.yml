@@ -95,16 +95,18 @@
   when: not kpm_bin.stat.exists and kpm_arch_test.status < 400
   tags: kpm
 
-- name: symlink install directory
+- name: Symlink install directory
   become: true
-  file: src="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" path="{{ kpm_path }}" state=link
+  ansible.builtin.file:
+    src: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+    path: "{{ kpm_path }}"
+    state: link
   tags: kpm
 
 # The first time KPM is run, a Gemfile.lock needs to written out
-- name: initialize KPM
+- name: Initialize KPM
   become: true
-  command: |
-    "{{ kpm_path }}/kpm" version
+  ansible.builtin.command: "{{ kpm_path }}/kpm version"
   args:
     creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"
   tags: kpm
