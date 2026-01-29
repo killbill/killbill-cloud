@@ -15,6 +15,7 @@ COPY ./kaui.sh $KAUI_INSTALL_DIR
 ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
                                       -e kpm_install_dir=$KPM_INSTALL_DIR \
                                       -e kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
+                                      -e kaui_kpm_yml=$KAUI_INSTALL_DIR/kpm.yml \
                                       -e tomcat_owner=$TOMCAT_OWNER \
                                       -e tomcat_group=$TOMCAT_GROUP \
                                       -e catalina_base=$CATALINA_BASE \
