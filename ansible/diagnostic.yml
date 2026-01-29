@@ -3,9 +3,9 @@
   hosts: all
   tasks:
     - name: Setup Ruby
-      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+      import_tasks: roles/common/tasks/main.yml
     - name: Setup KPM
-      ansible.builtin.import_tasks: roles/kpm/tasks/main.yml
+      import_tasks: roles/kpm/tasks/main.yml
     - name: Gather diagnostics
       killbill_diagnostics:
         kpm_path: "{{ kpm_path }}"
