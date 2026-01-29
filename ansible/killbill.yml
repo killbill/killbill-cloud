@@ -3,8 +3,8 @@
   hosts: all
   tasks:
     - name: Setup Ruby
-      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+      import_tasks: roles/common/tasks/main.yml
     - name: Setup Tomcat
-      ansible.builtin.import_tasks: roles/tomcat/tasks/main.yml
+      import_tasks: roles/tomcat/tasks/main.yml
     - name: Install Kill Bill
-      ansible.builtin.import_tasks: roles/killbill/tasks/main.yml
+      import_tasks: roles/killbill/tasks/main.yml
