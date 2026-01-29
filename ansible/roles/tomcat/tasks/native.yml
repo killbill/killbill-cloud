@@ -34,7 +34,7 @@
           tags: native
 
         - name: Find apr-1-config path
-          ansible.builtin.command: which apr-1-config
+          ansible.builtin.command: "which apr-1-config"
           register: tomcat_apr_config_path_output
           changed_when: false
           tags: native
@@ -49,7 +49,7 @@
       tags: native
       block:
         - name: Find tomcat_gnu_arch path
-          ansible.builtin.command: dpkg-architecture --query DEB_BUILD_GNU_TYPE
+          ansible.builtin.command: "dpkg-architecture --query DEB_BUILD_GNU_TYPE"
           register: tomcat_gnu_arch_output
           changed_when: false
           tags: native
