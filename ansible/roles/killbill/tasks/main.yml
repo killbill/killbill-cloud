@@ -96,8 +96,7 @@
 # Expand the WAR to speed up startup
 - name: Expand WAR file if not already done
   become: true
-  ansible.builtin.command: |
-    "{{ java_home }}/bin/jar" -xf ../ROOT.war
+  ansible.builtin.command: "{{ java_home }}/bin/jar -xf ../ROOT.war"
   args:
     chdir: "{{ catalina_base }}/{{ kb_webapps }}/ROOT"
     creates: "{{ catalina_base }}/{{ kb_webapps }}/ROOT/WEB-INF"
