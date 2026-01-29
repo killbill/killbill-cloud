@@ -107,11 +107,12 @@
       changed_when: false
       tags: native
 
-
     - name: Install native libraries
       become: true
       ansible.builtin.command:
-        cmd: make install
+        argv:
+          - make
+          - install
         chdir: "{{ tomcat_workspace.path }}/native"
       changed_when: false
       tags: native
