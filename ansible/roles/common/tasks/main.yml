@@ -1,7 +1,4 @@
 ---
-- name: Setup Ansible ruby interpreter
-  ansible.builtin.set_fact:
-    ansible_ruby_interpreter: "{{ kpm_path }}/lib/ruby/bin/ruby"
+- name: ansible_ruby_interpreter setup
+  set_fact: ansible_ruby_interpreter="{{ kpm_path }}/lib/ruby/bin/ruby"
   tags: common
-# noqa: var-naming[no-role-prefix]
-# Required for ansible-lint: variable must stay named 'ansible_ruby_interpreter' for Ansible to pick it up
