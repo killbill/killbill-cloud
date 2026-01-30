@@ -1,10 +1,7 @@
 ---
 - name: Ensure Flyway install dir exists
   become: true
-  ansible.builtin.file:
-    path: "{{ flyway_install_dir }}"
-    state: directory
-    mode: u=rwx,g=rx,o=rx
+  file: path={{ flyway_install_dir }} state=directory mode=u=rwx,g=rx,o=rx
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
@@ -40,8 +37,5 @@
 
 - name: Set correct permissions
   become: true
-  ansible.builtin.file:
-    path: "{{ flyway_install_dir }}/killbill-flyway.jar"
-    owner: "{{ flyway_owner }}"
-    group: "{{ flyway_group }}"
+  file: path="{{ flyway_install_dir }}/killbill-flyway.jar" owner={{ flyway_owner }} group={{ flyway_group }}
   tags: migrations
