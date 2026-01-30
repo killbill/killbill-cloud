@@ -1,12 +1,7 @@
 ---
 - name: Ensure Kaui dirs exist
   become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ tomcat_owner }}"
-    group: "{{ tomcat_group }}"
-    mode: u=rwx,g=rx,o=rx
+  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
   with_items:
     - "{{ kaui_install_dir }}"
     - "{{ kaui_plugins_dir }}"
@@ -45,7 +40,7 @@
 - name: Check if a ROOT webapp is already installed
   ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
-  register: kaui_existing_webapp
+  register: existing_webapp
   tags: tomcat
 
 # Only run kpm install if there is no exploded webapp already. Otherwise,
@@ -58,17 +53,13 @@
   become_user: "{{ tomcat_owner }}"
   killbill:
     kpm_path: "{{ kpm_path }}"
-    kpm_yml: "{{ kaui_kpm_yml }}"
-  when: not kaui_existing_webapp.stat.exists
+    kpm_yml: "{{ kpm_yml }}"
+  when: not existing_webapp.stat.exists
   tags: kpm-install
 
 - name: Set correct permissions
   become: true
-  ansible.builtin.file:
-    path: "{{ kaui_install_dir }}"
-    owner: "{{ tomcat_owner }}"
-    group: "{{ tomcat_group }}"
-    recurse: yes
+  file: path={{ kaui_install_dir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR

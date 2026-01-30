@@ -24,10 +24,7 @@
 
 - name: Set correct permissions
   become: true
-  ansible.builtin.file:
-    path: "/opt/{{ item.name }}"
-    owner: "{{ tomcat_owner }}"
-    group: "{{ tomcat_group }}"
+  file: path=/opt/{{ item.name }} owner={{ tomcat_owner }} group={{ tomcat_group }}
   with_items:
     - name: jackson-databind.jar
     - name: jackson-core.jar
@@ -36,8 +33,8 @@
     - kaui-logback
     - logstash
 
-- name: Ensure Logstash third-party dependencies exist in the webapp
-  ansible.builtin.copy:
+- name: ensure Logstash third-party dependencies exist in the webapp
+  copy:
     src: "/opt/{{ item.name }}"
     dest: "{{ catalina_base }}/webapps/ROOT/WEB-INF/lib/{{ item.name }}"
     owner: "{{ tomcat_owner }}"

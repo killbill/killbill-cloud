@@ -1,36 +1,29 @@
 ---
 - name: Ensure Flyway install dir exists
   become: true
-  ansible.builtin.file:
-    path: "{{ flyway_install_dir }}"
-    state: directory
-    mode: u=rwx,g=rx,o=rx
+  file: path={{ flyway_install_dir }} state=directory mode=u=rwx,g=rx,o=rx
   tags: migrations
 
 # Note: we don't check the version but the binary is rarely updated
 - name: Check if Flyway is already installed
   ansible.builtin.stat:
     path: "{{ flyway_install_dir }}/killbill-flyway.jar"
-  register: migrations_flyway_bin
-  tags: migrations
-
-- name: Download Kill Bill Flyway metadata
-  when: not migrations_flyway_bin.stat.exists
+  register: flyway_bin
   tags: migrations
   block:
     - name: Download killbill-flyway release metadata
       ansible.builtin.uri:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
         return_content: yes
-      register: migrations_flyway_metadata
-      when: migrations_flyway_version is undefined
+      register: flyway_metadata
+      when: flyway_version is undefined
       tags: migrations
 
     # We don't use the xml module to avoid a dependency on lxml
-    - name: Set migrations_flyway_version
-      ansible.builtin.set_fact:
-        migrations_flyway_version: "{{ migrations_flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
-      when: migrations_flyway_version is undefined
+    - name: set flyway_version
+      set_fact:
+        flyway_version: "{{ flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+      when: flyway_version is undefined
       tags: migrations
 
     - name: Install Flyway
@@ -39,14 +32,10 @@
       ansible.builtin.get_url:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ migrations_flyway_version }}/killbill-util-{{ migrations_flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
-        mode: '0644'
       tags: migrations
 
 
 - name: Set correct permissions
   become: true
-  ansible.builtin.file:
-    path: "{{ flyway_install_dir }}/killbill-flyway.jar"
-    owner: "{{ flyway_owner }}"
-    group: "{{ flyway_group }}"
+  file: path="{{ flyway_install_dir }}/killbill-flyway.jar" owner={{ flyway_owner }} group={{ flyway_group }}
   tags: migrations
