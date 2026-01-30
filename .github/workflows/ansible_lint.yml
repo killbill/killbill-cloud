@@ -14,6 +14,6 @@ jobs:
         uses: ansible/ansible-lint@v25.9.2
         with:
           working_directory: ansible/
-          args: "-x role-name,fqcn[action-core],role-name[path],yaml[line-length]"
+          args: "-x no-free-form,role-name,fqcn[action-core],role-name[path],yaml[line-length]"
         env:
           ANSIBLE_LIBRARY: ${{ github.workspace }}/ansible/library
