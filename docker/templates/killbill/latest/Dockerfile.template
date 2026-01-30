@@ -26,6 +26,7 @@ COPY ./shiro.ini.template $KILLBILL_INSTALL_DIR/config
 
 ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
                                       -e kpm_install_dir=$KPM_INSTALL_DIR \
+                                      -e kpm_path=$KPM_INSTALL_DIR/kpm-latest \
                                       -e kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
                                       -e killbill_kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
                                       -e kb_config_dir=$KILLBILL_INSTALL_DIR \
