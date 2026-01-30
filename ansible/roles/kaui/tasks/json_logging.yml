@@ -4,7 +4,6 @@
   ansible.builtin.get_url:
     url: "{{ nexus_url }}/{{ nexus_repository }}/{{ item.group_path }}/{{ item.artifact_id }}/{{ item.version }}/{{ item.artifact_id }}-{{ item.version }}.jar"
     dest: "{{ item.dest }}"
-    mode: '0644'
   with_items:
     - group_path: com/fasterxml/jackson/core
       artifact_id: jackson-databind

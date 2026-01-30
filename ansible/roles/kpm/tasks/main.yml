@@ -46,7 +46,6 @@
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
-    mode: '0644'
   when: not kpm_bin.stat.exists and kpm_arch_test.status >= 400
   tags: kpm
 
@@ -64,12 +63,7 @@
 # To make things easier
 - name: Rename noarch KPM directory
   become: true
-  ansible.builtin.command:
-    argv:
-      - mv
-      - "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch"
-      - "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
-    creates: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+  command: "mv {{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch {{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
   when: not kpm_bin.stat.exists and kpm_arch_test.status >= 400
   tags: kpm
 
@@ -81,7 +75,6 @@
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
-    mode: '0644'
   when: not kpm_bin.stat.exists and kpm_arch_test.status < 400
   tags: kpm
 
@@ -107,10 +100,8 @@
 # The first time KPM is run, a Gemfile.lock needs to written out
 - name: Initialize KPM
   become: true
-  ansible.builtin.command:
-    argv:
-      - "{{ kpm_path }}/kpm"
-      - version
+  command: |
+    "{{ kpm_path }}/kpm" version
   args:
     creates: "{{ kpm_path }}/lib/vendor/Gemfile.lock"
   tags: kpm
