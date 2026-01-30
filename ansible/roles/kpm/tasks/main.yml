@@ -46,6 +46,7 @@
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
+    mode: '0644'
   when: not kpm_bin.stat.exists and kpm_arch_test.status >= 400
   tags: kpm
 
@@ -75,6 +76,7 @@
     dest: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
+    mode: '0644'
   when: not kpm_bin.stat.exists and kpm_arch_test.status < 400
   tags: kpm
 

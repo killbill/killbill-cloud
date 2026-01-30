@@ -23,8 +23,8 @@
       tags: migrations
 
     # We don't use the xml module to avoid a dependency on lxml
-    - name: set migrations_flyway_version
-      set_fact:
+    - name: Set migrations_flyway_version
+      ansible.builtin.set_fact:
         migrations_flyway_version: "{{ migrations_flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
       when: migrations_flyway_version is undefined
       tags: migrations
@@ -35,6 +35,7 @@
       ansible.builtin.get_url:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/{{ migrations_flyway_version }}/killbill-util-{{ migrations_flyway_version }}-flyway.jar"
         dest: "{{ flyway_install_dir }}/killbill-flyway.jar"
+        mode: '0644'
       tags: migrations
 
 
