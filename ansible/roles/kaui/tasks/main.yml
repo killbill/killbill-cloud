@@ -1,7 +1,12 @@
 ---
 - name: Ensure Kaui dirs exist
   become: true
-  file: path={{ item }} state=directory owner={{ tomcat_owner }} group={{ tomcat_group }} mode=u=rwx,g=rx,o=rx
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rwx,g=rx,o=rx
   with_items:
     - "{{ kaui_install_dir }}"
     - "{{ kaui_plugins_dir }}"
@@ -59,7 +64,11 @@
 
 - name: Set correct permissions
   become: true
-  file: path={{ kaui_install_dir }} owner={{ tomcat_owner }} group={{ tomcat_group }} recurse=yes
+  ansible.builtin.file:
+    path: "{{ kaui_install_dir }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    recurse: yes
   tags: kpm-install
 
 - name: Create ROOT directory to unarchive the WAR

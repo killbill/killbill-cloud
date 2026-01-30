@@ -91,7 +91,10 @@
 
 - name: Symlink install directory
   become: true
-  file: src="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" path="{{ kpm_path }}" state=link
+  ansible.builtin.file:
+    src: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+    path: "{{ kpm_path }}"
+    state: link
   tags: kpm
 
 # The first time KPM is run, a Gemfile.lock needs to written out
@@ -106,5 +109,9 @@
 # The individual files have the correct permissions already, but not the top directory
 - name: Set correct permissions
   become: true
-  file: path="{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}" owner={{ kpm_owner }} group={{ kpm_group }} recurse=yes
+  ansible.builtin.file:
+    path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
+    owner: "{{ kpm_owner }}"
+    group: "{{ kpm_group }}"
+    recurse: yes
   tags: kpm
