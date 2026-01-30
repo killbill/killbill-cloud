@@ -13,6 +13,10 @@
     path: "{{ flyway_install_dir }}/killbill-flyway.jar"
   register: flyway_bin
   tags: migrations
+
+- name: Install Flyway if not present
+  when: not flyway_bin.stat.exists
+  tags: migrations
   block:
     - name: Download killbill-flyway release metadata
       ansible.builtin.uri:
