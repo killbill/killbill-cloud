@@ -58,7 +58,7 @@ WORKDIR $TOMCAT_HOME
 # Install ansible roles dependencies
 ARG KILLBILL_CLOUD_VERSION
 RUN ansible-galaxy collection install community.general && \
-    ansible-galaxy install git+https://git@github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
+    ansible-galaxy install git+https://git@github.com/vnandwana/killbill-cloud.git,$KILLBILL_CLOUD_VERSION
 ENV KILLBILL_CLOUD_ANSIBLE_ROLES=$TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
 ENV ENV_HOST_IP=localhost
 ENV ANSIBLE_OPTS="-i localhost, \
@@ -74,6 +74,7 @@ ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-maven2}
 ENV KPM_INSTALL_DIR=/opt
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
+                     -e kpm_path=$KPM_INSTALL_DIR/kpm-latest \
                      -e kpm_owner=$TOMCAT_OWNER \
                      -e kpm_group=$TOMCAT_GROUP \
                      -e nexus_url=$NEXUS_URL \

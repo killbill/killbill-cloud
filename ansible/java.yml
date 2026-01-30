@@ -7,4 +7,4 @@
     java_home: /usr/lib/jvm/default-java
   tasks:
     - name: Install Java
-      ansible.builtin.import_tasks: roles/tomcat/tasks/java.yml
+      import_tasks: roles/tomcat/tasks/java.yml

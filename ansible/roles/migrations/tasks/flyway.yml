@@ -14,7 +14,7 @@
   register: migrations_flyway_bin
   tags: migrations
 
-- name: Download Kill Bill Flyway metadata
+- name: Install Flyway if not present
   when: not migrations_flyway_bin.stat.exists
   tags: migrations
   block:
