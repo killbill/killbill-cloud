@@ -11,11 +11,11 @@
 - name: Check if Flyway is already installed
   ansible.builtin.stat:
     path: "{{ flyway_install_dir }}/killbill-flyway.jar"
-  register: flyway_bin
+  register: migrations_flyway_bin
   tags: migrations
 
 - name: Install Flyway if not present
-  when: not flyway_bin.stat.exists
+  when: not migrations_flyway_bin.stat.exists
   tags: migrations
   block:
     - name: Download killbill-flyway release metadata
