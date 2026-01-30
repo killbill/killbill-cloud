@@ -45,7 +45,7 @@
 - name: Check if a ROOT webapp is already installed
   ansible.builtin.stat:
     path: "{{ catalina_base }}/{{ kaui_webapps }}/ROOT"
-  register: existing_webapp
+  register: kaui_existing_webapp
   tags: tomcat
 
 # Only run kpm install if there is no exploded webapp already. Otherwise,
@@ -58,8 +58,8 @@
   become_user: "{{ tomcat_owner }}"
   killbill:
     kpm_path: "{{ kpm_path }}"
-    kpm_yml: "{{ kpm_yml }}"
-  when: not existing_webapp.stat.exists
+    kpm_yml: "{{ kaui_kpm_yml }}"
+  when: not kaui_existing_webapp.stat.exists
   tags: kpm-install
 
 - name: Set correct permissions

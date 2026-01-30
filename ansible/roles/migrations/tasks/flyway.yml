@@ -18,15 +18,15 @@
       ansible.builtin.uri:
         url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/killbill-util/maven-metadata.xml"
         return_content: yes
-      register: flyway_metadata
-      when: flyway_version is undefined
+      register: migrations_flyway_metadata
+      when: migrations_flyway_version is undefined
       tags: migrations
 
     # We don't use the xml module to avoid a dependency on lxml
-    - name: set flyway_version
+    - name: set migrations_flyway_version
       set_fact:
-        flyway_version: "{{ flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
-      when: flyway_version is undefined
+        migrations_flyway_version: "{{ migrations_flyway_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+      when: migrations_flyway_version is undefined
       tags: migrations
 
     - name: Install Flyway
