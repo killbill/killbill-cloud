@@ -8,8 +8,8 @@ on:
 env:
   # Doesn't matter too much, we just want to verify the build passes
   CURRENT_LTS: '0.24'
-  KB_VERSION: '0.24.15'
-  KAUI_VERSION: '3.0.20'
+  KB_VERSION: '0.24.16'
+  KAUI_VERSION: '4.0.6'
 
 jobs:
   docker_ci:

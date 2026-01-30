@@ -4,6 +4,7 @@
   ansible.builtin.get_url:
     url: "{{ nexus_url }}/{{ nexus_repository }}/{{ item.group_path }}/{{ item.artifact_id }}/{{ item.version }}/{{ item.artifact_id }}-{{ item.version }}.jar"
     dest: "{{ item.dest }}"
+    mode: '0644'
   with_items:
     - group_path: com/fasterxml/jackson/core
       artifact_id: jackson-databind
@@ -24,7 +25,10 @@
 
 - name: Set correct permissions
   become: true
-  file: path=/opt/{{ item.name }} owner={{ tomcat_owner }} group={{ tomcat_group }}
+  ansible.builtin.file:
+    path: "/opt/{{ item.name }}"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
   with_items:
     - name: jackson-databind.jar
     - name: jackson-core.jar
