@@ -74,6 +74,7 @@ ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-maven2}
 ENV KPM_INSTALL_DIR=/opt
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e kpm_install_dir=$KPM_INSTALL_DIR \
+                     -e kpm_path=$KPM_INSTALL_DIR/kpm-latest \
                      -e kpm_owner=$TOMCAT_OWNER \
                      -e kpm_group=$TOMCAT_GROUP \
                      -e nexus_url=$NEXUS_URL \

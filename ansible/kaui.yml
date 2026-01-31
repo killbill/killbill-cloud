@@ -5,8 +5,8 @@
     kaui_kpm_yml: /var/lib/kaui/kpm.yml
   tasks:
     - name: Setup Ruby
-      ansible.builtin.import_tasks: roles/common/tasks/main.yml
+      import_tasks: roles/common/tasks/main.yml
     - name: Setup Tomcat
-      ansible.builtin.import_tasks: roles/tomcat/tasks/main.yml
+      import_tasks: roles/tomcat/tasks/main.yml
     - name: Install Kaui
-      ansible.builtin.import_tasks: roles/kaui/tasks/main.yml
+      import_tasks: roles/kaui/tasks/main.yml
