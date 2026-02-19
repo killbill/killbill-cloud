@@ -11,10 +11,10 @@ PARENT_VERSION?=latest
 
 VERSION?=latest
 ifeq ($(VERSION),latest)
-IMAGE=killbill/$(TARGET)
+IMAGE=killbill/$(TARGET):jdk17
 TEMPLATE=templates/$(TARGET)/latest
 else
-IMAGE=killbill/$(TARGET):$(VERSION)
+IMAGE=killbill/$(TARGET):$(VERSION)-jdk17
 TEMPLATE=templates/$(TARGET)/tagged
 endif
 
