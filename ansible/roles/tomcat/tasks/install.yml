@@ -59,7 +59,7 @@
     path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
-    recurse: yes
+    recurse: true
   tags: install
 
 - name: Symlink install directory

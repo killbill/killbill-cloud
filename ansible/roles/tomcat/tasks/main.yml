@@ -28,7 +28,7 @@
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
     # If the files already exist, don't clobber them
-    force: no
+    force: false
   with_items:
     - src: tomcat/conf
       name: context.xml
