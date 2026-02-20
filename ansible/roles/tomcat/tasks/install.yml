@@ -21,7 +21,7 @@
     name: "{{ tomcat_owner }}"
     comment: Kill Bill Tomcat owner
     group: "{{ tomcat_group }}"
-    create_home: yes
+    create_home: true
     home: "{{ tomcat_home }}"
     shell: /bin/bash
     state: present
@@ -30,7 +30,7 @@
 - name: Download Tomcat release metadata
   ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/apache/tomcat/tomcat/maven-metadata.xml"
-    return_content: yes
+    return_content: true
   register: tomcat_metadata
   when: tomcat_version is undefined
   tags: install
@@ -46,7 +46,7 @@
   become: true
   ansible.builtin.unarchive:
     src: "http://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
-    remote_src: True
+    remote_src: true
     dest: "{{ tomcat_install_dir }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
@@ -59,7 +59,7 @@
     path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
-    recurse: yes
+    recurse: true
   tags: install
 
 - name: Symlink install directory

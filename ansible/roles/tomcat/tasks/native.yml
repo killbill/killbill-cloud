@@ -81,7 +81,7 @@
         dest: "{{ tomcat_workspace.path }}"
         extra_opts: [--strip-components=1]
         owner: "{{ ansible_user_id }}"
-        remote_src: yes
+        remote_src: true
       tags: native
 
     - name: Configure native libraries
@@ -123,7 +123,7 @@
         path: "{{ tomcat_native_libdir }}"
         owner: "{{ tomcat_owner }}"
         group: "{{ tomcat_group }}"
-        recurse: yes
+        recurse: true
       tags: install
 
     - name: Remove temporary directory

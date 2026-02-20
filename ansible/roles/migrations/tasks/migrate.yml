@@ -32,7 +32,7 @@
         - name: Run SQL migration
           ansible.builtin.command: "{{ flyway }} -locations=filesystem:{{ migration['dir'] }} -table={{ migration['table'] }} -validateOnMigrate=false migrate"
           register: migrations_flyway_result
-          ignore_errors: True
+          ignore_errors: true
           changed_when: false
           tags: migrations
 

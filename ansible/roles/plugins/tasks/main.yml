@@ -17,5 +17,3 @@
     plugin_key: "{{ plugin_key }}"
     local_node_only: "{{ local_node_only | default(false) }}"
   tags: plugin-restart
-
-

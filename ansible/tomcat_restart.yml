@@ -1,7 +1,7 @@
 ---
 - name: Restart Tomcat
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Restart Tomcat
       import_tasks: roles/tomcat/tasks/restart.yml
