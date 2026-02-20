@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as builder-base
+FROM ubuntu:24.04 AS builder-base
 LABEL maintainer="killbilling-users@googlegroups.com"
 
 USER root
