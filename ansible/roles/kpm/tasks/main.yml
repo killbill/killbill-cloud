@@ -10,7 +10,7 @@
 - name: Download kpm release metadata
   ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ nexus_repository }}/org/kill-bill/billing/installer/kpm/maven-metadata.xml"
-    return_content: yes
+    return_content: true
   register: kpm_metadata
   when: kpm_version is undefined
   tags: kpm
@@ -54,7 +54,7 @@
   become: true
   ansible.builtin.unarchive:
     src: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-noarch.tar.gz"
-    remote_src: True
+    remote_src: true
     dest: "{{ kpm_install_dir }}"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
@@ -85,7 +85,7 @@
   become: true
   ansible.builtin.unarchive:
     src: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}.tar.gz"
-    remote_src: True
+    remote_src: true
     dest: "{{ kpm_install_dir }}"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
@@ -116,5 +116,5 @@
     path: "{{ kpm_install_dir }}/kpm-{{ kpm_version }}-linux-{{ ansible_architecture }}"
     owner: "{{ kpm_owner }}"
     group: "{{ kpm_group }}"
-    recurse: yes
+    recurse: true
   tags: kpm

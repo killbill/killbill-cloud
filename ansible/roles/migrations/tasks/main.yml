@@ -33,7 +33,7 @@
     - "{{ migrations_result['migrations']['killbill'] }}"
     - "{{ migrations_result['migrations']['plugins']['java'] }}"
   when: item['dir'] is defined
-  changed_when: False
+  changed_when: false
   register: migrations_java_dry_run_migrations
   tags: migrations
 
@@ -53,4 +53,3 @@
   loop_control:
     loop_var: migration
   when: migration['dir'] is defined
-
