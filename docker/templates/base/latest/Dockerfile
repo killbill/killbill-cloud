@@ -3,9 +3,8 @@ LABEL maintainer="killbilling-users@googlegroups.com"
 
 USER root
 
-ENV LC_CTYPE=en_US.UTF-8
-ENV LC_ALL=C
-ENV LANG=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 ENV PYTHONIOENCODING=utf8
 
 # Install convenient utilities
@@ -102,7 +101,7 @@ RUN ansible-playbook $ANSIBLE_OPTS \
                      $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
 
 # Build Tomcat native libraries
-FROM builder-base as builder-tomcat
+FROM builder-base AS builder-tomcat
 USER $TOMCAT_OWNER
 RUN ansible-playbook $ANSIBLE_OPTS \
                      -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
