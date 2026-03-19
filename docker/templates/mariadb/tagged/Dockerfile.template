@@ -1,4 +1,4 @@
-FROM mariadb:10.11
+FROM mariadb:11.8
 MAINTAINER Kill Bill core team <killbilling-users@googlegroups.com>
 
 # VERSION will be expanded in Makefile
