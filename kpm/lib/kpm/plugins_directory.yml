@@ -16,7 +16,7 @@
     :0.18: 4.2.5
     :0.20: 6.0.1
     :0.22: 7.2.7
-    :0.24: 8.1.3
+    :0.24: 8.1.4
 :avatax:
   :type: :java
   :versions:
@@ -92,7 +92,7 @@
 :braintree:
   :type: :java
   :versions:
-    :0.24: 1.0.1
+    :0.24: 1.0.2
 :catalog-test:
   :type: :java
   :versions:
@@ -113,4 +113,4 @@
 :vertex:
   :type: :java
   :versions:
-    :0.24: 0.2.0
+    :0.24: 0.2.1
