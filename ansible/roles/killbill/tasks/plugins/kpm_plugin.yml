@@ -1,0 +1,39 @@
+---
+- name: Install plugin (kpm) - {{ plugin }}
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  ansible.builtin.command: >
+    "{{ kpm_path }}/kpm" install_java_plugin {{ plugin }}
+    --destination={{ kb_plugins_dir }}
+  args:
+    creates: "{{ kb_plugins_dir }}/plugins/java/{{ plugin }}-plugin"
+
+- name: Ensure temp directory exists
+  ansible.builtin.file:
+    path: "{{ kb_plugins_dir }}/temp/{{ plugin }}"
+    state: directory
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: "0755"
+
+- name: Copy DDL
+  ansible.builtin.copy:
+    src: "killbill/{{ plugin }}_ddl.sql"
+    dest: "{{ kb_plugins_dir }}/temp/{{ plugin }}/{{ plugin }}_ddl.sql"
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Run DDL
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  ansible.builtin.command: >
+    {{ tomcat_home }}/bin/setup_plugin_ddl.sh
+    {{ plugin }}
+    {{ db_config_address | default('') }}
+    {{ db_config_username | default('') }}
+    {{ db_config_password | default('') }}
+    {{ db_config_killbill_db_name | default('') }}
+  changed_when: false
+  when:
+    - db_config_address is defined

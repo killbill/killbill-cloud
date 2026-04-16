@@ -1,0 +1,77 @@
+---
+- name: Get latest Hyperswitch plugin version
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/{{ nexus_repository }}/io/github/juspay/hyperswitchplugin/hyperswitch-killbill-plugin/maven-metadata.xml"
+    return_content: true
+  register: killbill_hyperswitch_metadata
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Set hyperswitch version
+  ansible.builtin.set_fact:
+    killbill_hyperswitch_version: "{{ killbill_hyperswitch_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Download Hyperswitch plugin jar
+  ansible.builtin.get_url:
+    url: "{{ nexus_url }}/{{ nexus_repository }}/io/github/juspay/hyperswitchplugin/hyperswitch-killbill-plugin/{{ killbill_hyperswitch_version }}/hyperswitch-killbill-plugin-{{ killbill_hyperswitch_version }}.jar"
+    dest: "{{ kb_plugins_dir }}/hyperswitch-killbill-plugin-{{ killbill_hyperswitch_version }}.jar"
+    mode: "0644"
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Install Hyperswitch plugin
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  ansible.builtin.command: |
+    "{{ kpm_path }}/kpm" install_java_plugin hyperswitch --from-source-file={{ kb_plugins_dir }}/hyperswitch-killbill-plugin-{{ killbill_hyperswitch_version }}.jar --destination={{ kb_plugins_dir }}
+  args:
+    creates: "{{ kb_plugins_dir }}/plugins/java/hyperswitch-plugin"
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Ensure temp directory exists
+  ansible.builtin.file:
+    path: "{{ kb_plugins_dir }}/temp/hyperswitch"
+    state: directory
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+    mode: "0755"
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Copy Hyperswitch DDL
+  ansible.builtin.copy:
+    force: true
+    src: killbill/hyperswitch_ddl.sql
+    dest: "{{ kb_plugins_dir }}/temp/hyperswitch/hyperswitch_ddl.sql"
+    mode: u=rw,g=r,o=r
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+  tags:
+    - hyperswitch
+    - plugins
+
+- name: Setup Hyperswitch DDL # noqa no-changed-when
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  ansible.builtin.command: >
+    "{{ tomcat_home }}/bin/setup_plugin_ddl.sh
+    hyperswitch
+    {{ db_config_address | default('') }}
+    {{ db_config_username | default('') }}
+    {{ db_config_password | default('') }}
+    {{ db_config_killbill_db_name | default('') }}"
+  changed_when: false
+  when:
+    - db_config_address is defined
+  no_log: true
+  tags:
+    - hyperswitch
+    - plugins

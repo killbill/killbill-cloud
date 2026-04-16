@@ -1,0 +1,36 @@
+---
+- name: Get latest Aviate plugin version
+  ansible.builtin.uri:
+    url: "{{ cloudsmith_url_aviate }}/killbill/aviate/maven/com/kill-bill/billing/plugin/java/aviate-plugin-prod/maven-metadata.xml"
+    return_content: true
+  register: killbill_aviate_metadata
+  tags:
+    - aviate
+    - plugins
+
+- name: Set aviate version
+  ansible.builtin.set_fact:
+    killbill_aviate_version: "{{ killbill_aviate_metadata.content | regex_search('<release>(.*)</release>', '\\1') | first }}"
+  tags:
+    - aviate
+    - plugins
+
+- name: Download Aviate plugin jar
+  ansible.builtin.get_url:
+    url: "{{ cloudsmith_url_aviate }}/killbill/aviate/maven/com/kill-bill/billing/plugin/java/aviate-plugin/{{ killbill_aviate_version }}/aviate-plugin-{{ killbill_aviate_version }}.jar"
+    dest: "{{ kb_plugins_dir }}/aviate-plugin-{{ killbill_aviate_version }}.jar"
+    mode: "0644"
+  tags:
+    - aviate
+    - plugins
+
+- name: Install Aviate plugin
+  become: true
+  become_user: "{{ tomcat_owner }}"
+  ansible.builtin.command: |
+    "{{ kpm_path }}/kpm" install_java_plugin aviate --from-source-file={{ kb_plugins_dir }}/aviate-plugin-{{ killbill_aviate_version }}.jar --destination={{ kb_plugins_dir }}
+  args:
+    creates: "{{ kb_plugins_dir }}/plugins/java/aviate-plugin"
+  tags:
+    - aviate
+    - plugins

@@ -1,0 +1,25 @@
+---
+- name: Load KPM plugins to install
+  ansible.builtin.include_vars:
+    file: kpm_plugins.yml
+
+- name: Generate plugin ddl setup script
+  become: true
+  ansible.builtin.template:
+    src: "killbill/setup_plugin_ddl.sh.j2"
+    dest: "{{ tomcat_home }}/bin/setup_plugin_ddl.sh"
+    mode: u=rwx,g=r,o=r
+    owner: "{{ tomcat_owner }}"
+    group: "{{ tomcat_group }}"
+
+- name: Install KPM plugins
+  ansible.builtin.include_tasks: plugins/kpm_plugin.yml
+  loop: "{{ killbill_kpm_plugins }}"
+  loop_control:
+    loop_var: plugin
+
+- name: Load Hyperswitch plugin tasks
+  ansible.builtin.include_tasks: plugins/hyperswitch.yml
+
+- name: Load Aviate plugin tasks
+  ansible.builtin.include_tasks: plugins/aviate.yml

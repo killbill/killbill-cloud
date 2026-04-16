@@ -45,6 +45,9 @@ flyway_group: root
 kaui_system_properties: ''
 kb_system_properties: ''
 
+cloudsmith_token_aviate: kd355k1mdx5IL8TU
+cloudsmith_url_aviate: "https://dl.cloudsmith.io/{{ cloudsmith_token_aviate }}"
+
 # Tomcat and JVM properties -- recommended defaults
 jvm_initial_memory: 512m
 jvm_max_memory: 2G
