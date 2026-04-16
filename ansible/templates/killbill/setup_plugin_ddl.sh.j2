@@ -1,0 +1,28 @@
+#!/bin/bash
+
+[ $# -ne 5 ] && { echo "Usage: $0 <plugin> <DB endpoint> <DB user> <DB pwd> <DB name>"; exit 1; }
+
+PLUGIN=$1
+ENDPOINT=$2
+USER=$3
+PWD=$4
+DB_NAME=$5
+
+MYSQL_CMD="mysql --ssl-mode=disabled --get-server-public-key -h ${ENDPOINT} -u${USER} -p${PWD}"
+
+$MYSQL_CMD -e "USE ${DB_NAME};" 2>/dev/null;
+
+DDL_FILE="{{ kb_plugins_dir }}/temp/${PLUGIN}/${PLUGIN}_ddl.sql"
+
+if [ ! -f "$DDL_FILE" ]; then
+  echo "DDL file not found: $DDL_FILE"
+  exit 1
+fi
+
+echo "Installing ${PLUGIN} plugin schema..."
+
+cat "$DDL_FILE" | $MYSQL_CMD ${DB_NAME}
+
+rm -rf {{ kb_plugins_dir }}/temp
+
+echo "${PLUGIN} schema installation completed"

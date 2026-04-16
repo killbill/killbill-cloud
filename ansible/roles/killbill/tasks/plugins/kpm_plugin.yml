@@ -18,7 +18,7 @@
 
 - name: Copy DDL
   ansible.builtin.copy:
-    src: "killbill/{{ plugin }}_ddl.sql"
+    src: "{{ plugin }}_ddl.sql"
     dest: "{{ kb_plugins_dir }}/temp/{{ plugin }}/{{ plugin }}_ddl.sql"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"

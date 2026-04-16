@@ -1,0 +1,6 @@
+---
+- name: Install Plugins
+  hosts: all
+  tasks:
+    - name: Install plugins
+      import_tasks: roles/common/tasks/install_plugins.yml
