@@ -92,7 +92,7 @@
 :braintree:
   :type: :java
   :versions:
-    :0.24: 1.0.2
+    :0.24: 1.0.3
 :catalog-test:
   :type: :java
   :versions:
