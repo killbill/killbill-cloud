@@ -23,7 +23,7 @@ RUN apt-get update && \
       libapr1 \
       mysql-client \
       net-tools \
-      openjdk-11-jdk-headless \
+      openjdk-21-jdk-headless \
       python3-lxml \
       sudo \
       unzip \
@@ -32,7 +32,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
+RUN ln -s java-21-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
