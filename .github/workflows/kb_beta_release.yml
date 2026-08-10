@@ -1,0 +1,70 @@
+name: kb_beta_release
+
+# Publishes a single, explicitly-pinned killbill/killbill:<version> docker image for beta / release-candidate versions
+# (e.g. 0.25.1), without touching KAUI and `latest` tag (hence named "beta" release: it only ever publishes an
+# explicit, pinned version tag and never promotes/updates `latest`).
+#
+# Unlike release.yml, this workflow does not reuse the already-published killbill/base:latest or
+# killbill/killbill:latest images as parents, and it does not publish any intermediate killbill/base:beta-* image to
+# Docker Hub either. Instead, it uses a single dedicated, self-contained multi-stage Dockerfile
+# (docker/templates/killbill/beta/Dockerfile.template, stages: base -> shell -> final) so that:
+#  - branch-local changes (e.g. a Tomcat/JDK bump on a branch such as java2x) are actually baked into the resulting
+#    image, instead of silently falling back to whatever is currently published under :latest on Docker Hub, and
+#  - no intermediate image is ever published publicly - only the final killbill/killbill:<version> tag is pushed.
+#
+# Ansible/ansible-galaxy note: the base stage still installs Tomcat/Java/KPM via this repo's own ansible roles
+# (same as release.yml), to keep user/group/permissions/ACL setup identical to a normal release image rather than
+# hand-rolling it differently here.
+#
+# IMPORTANT - killbill-cloud git ref used for the ansible roles: the base stage fetches the ansible roles fresh from
+# GitHub via `ansible-galaxy install git+...,<ref>` - it does NOT use this workflow run's own checkout for that. Rather
+# than a separate input, this workflow uses ${{ github.ref_name }}, i.e. whatever branch you pick in the
+# "Use workflow from" selector above.
+#
+# Concretely: if you pick "java2x" there, make sure your ansible/Dockerfile changes on java2x are already committed
+# AND pushed to origin/java2x before running this. Uncommitted or unpushed local changes will NOT be picked up, since
+# the clone happens fresh from GitHub.
+on:
+  workflow_dispatch:
+    inputs:
+      killbill_version:
+        description: 'Kill Bill version to release (must already be published to Maven Central, e.g. 0.25.1)'
+        required: true
+      nexus_repository:
+        description: 'Nexus repository for KPM'
+        required: true
+        default: 'maven2'
+
+jobs:
+  docker:
+    name: Publish killbill/killbill beta/RC image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Bake the pinned Kill Bill version into the Dockerfile (same __VERSION__ substitution dockerTemplate.sh does for
+      # docker/templates/killbill/tagged/Dockerfile.template), then build+push the final stage only.
+      # The `base` and `shell` (See "stage" in the template) intermediate stages are never pushed. They exist purely
+      # inside this one buildx invocation's build graph.
+      - name: Build and push killbill beta/RC image
+        run: |
+          cd docker/templates/killbill
+          sed -e "s/__VERSION__/${{ github.event.inputs.killbill_version }}/" beta/Dockerfile.template > beta/Dockerfile
+          sed -e "s/__VERSION__/${{ github.event.inputs.killbill_version }}/" tagged/kpm.yml.template > tagged/kpm.yml
+          docker buildx build --push --platform=linux/arm64,linux/amd64 --no-cache \
+            --target final \
+            -t killbill/killbill:${{ github.event.inputs.killbill_version }} \
+            -f beta/Dockerfile \
+            --build-arg KILLBILL_CLOUD_REF=${{ github.ref_name }} \
+            --build-arg NEXUS_REPOSITORY=${{ github.event.inputs.nexus_repository }} \
+            .
