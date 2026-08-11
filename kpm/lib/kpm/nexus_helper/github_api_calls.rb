@@ -9,15 +9,21 @@ module KPM
   module NexusFacade
     class GithubApiCalls < NexusApiCallsV2
       def pull_artifact_endpoint(coordinates)
-        base_path, versioned_artifact, = build_base_path_and_coords(coordinates)
-        "#{base_path}/#{versioned_artifact}"
+        coords = parse_coordinates(coordinates)
+        resolved = resolve_snapshot_version(coordinates)
+        filename_version = resolved || coords[:version]
+        "#{artifact_base_path(coords)}/#{coords[:version]}/#{coords[:artifact_id]}-#{filename_version}.#{coords[:extension]}"
       end
 
+      alias parent_get_artifact_info get_artifact_info
       def get_artifact_info(coordinates)
-        super
+        coords = parse_coordinates(coordinates)
+        resolved = resolve_snapshot_version(coordinates)
+        filename_version = resolved || coords[:version]
 
-        _, versioned_artifact, coords = build_base_path_and_coords(coordinates)
-        sha1 = get_sha1(coordinates)
+        versioned_artifact = "#{coords[:version]}/#{coords[:artifact_id]}-#{filename_version}.#{coords[:extension]}"
+        sha1 = fetch_sha1(coordinates, versioned_artifact)
+
         "<artifact-resolution>
   <data>
     <presentLocally>true</presentLocally>
@@ -33,8 +39,13 @@ module KPM
       end
 
       def get_artifact_info_endpoint(coordinates)
-        base_path, = build_base_path_and_coords(coordinates)
-        "#{base_path}/maven-metadata.xml"
+        coords = parse_coordinates(coordinates)
+        base_path = artifact_base_path(coords)
+        if coords[:version] =~ /-SNAPSHOT$/
+          "#{base_path}/#{coords[:version]}/maven-metadata.xml"
+        else
+          "#{base_path}/maven-metadata.xml"
+        end
       end
 
       def search_for_artifact_endpoint(_coordinates)
@@ -47,23 +58,44 @@ module KPM
 
       private
 
-      def get_sha1(coordinates)
-        base_path, versioned_artifact, = build_base_path_and_coords(coordinates)
-        endpoint = "#{base_path}/#{versioned_artifact}.sha1"
+      # Resolves a SNAPSHOT version to its timestamped form using maven-metadata.xml.
+      # Returns nil for non-SNAPSHOT versions or when metadata is unavailable.
+      def resolve_snapshot_version(coordinates)
+        coords = parse_coordinates(coordinates)
+        return nil unless coords[:version] =~ /-SNAPSHOT$/
+
+        version_metadata = begin
+                             parent_get_artifact_info(coordinates)
+                           rescue StandardError
+                             return nil
+                           end
+
+        doc = REXML::Document.new(version_metadata)
+        timestamp = begin
+                      doc.elements['//versioning/snapshot/timestamp'].text
+                    rescue StandardError
+                      nil
+                    end
+        build_number = begin
+                         doc.elements['//versioning/snapshot/buildNumber'].text
+                       rescue StandardError
+                         nil
+                       end
+        return nil if timestamp.nil? || build_number.nil?
+
+        base_version = coords[:version].sub(/-SNAPSHOT$/, '')
+        "#{base_version}-#{timestamp}-#{build_number}"
+      end
+
+      def fetch_sha1(coordinates, versioned_artifact)
+        coords = parse_coordinates(coordinates)
+        endpoint = "#{artifact_base_path(coords)}/#{versioned_artifact}.sha1"
         get_response_with_retries(coordinates, endpoint, nil)
       end
 
-      def build_base_path_and_coords(coordinates)
-        coords = parse_coordinates(coordinates)
-
-        # The url may contain the org and repo, e.g. 'https://maven.pkg.github.com/killbill/qualpay-java-client'
+      def artifact_base_path(coords)
         org_and_repo = URI.parse(configuration[:url]).path
-
-        [
-          "#{org_and_repo}/#{coords[:group_id].gsub('.', '/')}/#{coords[:artifact_id]}",
-          "#{coords[:version]}/#{coords[:artifact_id]}-#{coords[:version]}.#{coords[:extension]}",
-          coords
-        ]
+        "#{org_and_repo}/#{coords[:group_id].gsub('.', '/')}/#{coords[:artifact_id]}"
       end
     end
   end
