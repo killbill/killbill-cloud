@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: killbill
+spec:
+  replicas: {{ .Values.killbill.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: killbill
+
+  template:
+    metadata:
+      labels:
+        app: killbill
+
+    spec:
+      containers:
+        - name: killbill
+          image: "{{ .Values.killbill.image.repository }}:{{ .Values.killbill.image.tag }}"
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          env:
+            - name: DB_HOST
+              value: mariadb
+
+            - name: KILLBILL_ADMIN_PASSWORD
+              value: password
+
+            - name: KILLBILL_DAO_USER
+              value: root
+
+            - name: KILLBILL_DAO_PASSWORD
+              value: killbill
+
+            - name: KILLBILL_DAO_URL
+              value: jdbc:mysql://mariadb:3306/killbill
+
+          readinessProbe:
+            httpGet:
+              path: /1.0/healthcheck
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /1.0/healthcheck
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
