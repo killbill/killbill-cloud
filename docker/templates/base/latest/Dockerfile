@@ -11,7 +11,6 @@ ENV PYTHONIOENCODING=utf8
 # https://github.com/moby/moby/issues/4032
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install --no-install-recommends -y \
       ansible \
       # https://github.com/tianon/docker-brew-ubuntu-core/issues/59
