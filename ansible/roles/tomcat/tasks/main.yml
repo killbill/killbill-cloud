@@ -27,9 +27,8 @@
     mode: "{{ item.mode }}"
     owner: "{{ tomcat_owner }}"
     group: "{{ tomcat_group }}"
-    # Preserve existing user-managed files, except setenv.sh: its JVM
-    # hostname must be refreshed when the inventory/configuration changes.
-    force: "{{ item.force | default(false) }}"
+    # If the files already exist, don't clobber them
+    force: false
   with_items:
     - src: tomcat/conf
       name: context.xml
@@ -43,7 +42,6 @@
       name: setenv.sh
       mode: u=rwx,g=rx,o=rx
       dest: "{{ catalina_base }}/bin"
-      force: true
     - src: tomcat/conf
       name: web.xml
       mode: u=rw,g=r,o=r

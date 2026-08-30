@@ -10,7 +10,7 @@ toc::[]
 [[available-images]]
 ## Available images
 
-* `killbill/base:latest`: Shared base image with Tomcat and KPM inside Ubuntu 24.04 LTS. It also contains Ansible and our playbooks from https://github.com/killbill/killbill-cloud. It starts Tomcat on startup.
+* `killbill/base:latest`: Shared base image with Tomcat and KPM inside Ubuntu 20.04 LTS. It also contains Ansible and our playbooks from https://github.com/killbill/killbill-cloud. It starts Tomcat on startup.
 * `killbill/killbill:latest`: Empty base Kill Bill image. Includes the `killbill-flyway` utility. It runs `kpm install` on startup. If no custom `kpm.yml` file is specified, the latest version of Kill Bill is downloaded.
 * `killbill/killbill:0.X.Y`: Image with a specific version of Kill Bill installed.
 * `killbill/kaui:latest`: Empty base Kaui image. It runs `kpm install` on startup. If no custom `kpm.yml` file is specified, the latest version of Kaui is downloaded.
