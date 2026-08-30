@@ -80,3 +80,4 @@ RUN git config --global user.name "Kill Bill core team" && \
     git config --global credential.helper store
 
 CMD ["bash"]
+
