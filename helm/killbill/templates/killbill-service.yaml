@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: killbill
+spec:
+  type: ClusterIP
+
+  ports:
+    - port: {{ .Values.killbill.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+  selector:
+    app: killbill

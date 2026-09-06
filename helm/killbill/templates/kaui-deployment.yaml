@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaui
+spec:
+  replicas: {{ .Values.kaui.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: kaui
+
+  template:
+    metadata:
+      labels:
+        app: kaui
+
+    spec:
+      containers:
+        - name: kaui
+          image: "{{ .Values.kaui.image.repository }}:{{ .Values.kaui.image.tag }}"
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+          env:
+            - name: KAUI_CONFIG_DAO_USER
+              value: root
+
+            - name: KAUI_CONFIG_DAO_PASSWORD
+              value: killbill
+
+            - name: KAUI_CONFIG_DAO_URL
+              value: jdbc:mysql://mariadb:3306/kaui
+
+            - name: KAUI_KILLBILL_URL
+              value: http://killbill:8080
