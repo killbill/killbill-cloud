@@ -31,7 +31,7 @@ The roles can now be referenced in your playbooks via `killbill-cloud/ansible/ro
 
 Requirements:
 
-* Java must be pre-installed on the target hosts (e.g. install the openjdk-11-jdk-headless package on Ubuntu). In the rest of this documentation, we will assume `$TARGET_JAVA_HOME` points to the Java home installation on the *target* hosts (e.g. `/usr/lib/jvm/java-11-openjdk-amd64`).
+* Java must be pre-installed on the target hosts (e.g. install the openjdk-21-jdk-headless package on Ubuntu). In the rest of this documentation, we will assume `$TARGET_JAVA_HOME` points to the Java home installation on the *target* hosts (e.g. `/usr/lib/jvm/java-21-openjdk-amd64`).
 * Before installing Kill Bill and/or Kaui, KPM must be installed via the kpm.yml playbook.
 
 
@@ -189,6 +189,6 @@ In order to test, one can an inventory:
 ```
 
 ```
-> ansible-playbook -v -i localhost/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk1.8.0_171.jdk/Contents/Home  -u <user> the _playbook.yml
+> ansible-playbook -v -i localhost/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home  -u <user> the _playbook.yml
 ```
 
