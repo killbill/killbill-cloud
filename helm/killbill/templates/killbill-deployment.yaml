@@ -40,6 +40,13 @@ spec:
             - name: KILLBILL_DAO_URL
               value: jdbc:mysql://mariadb:3306/killbill
 
+          startupProbe:
+            httpGet:
+              path: /1.0/healthcheck
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 60
+
           readinessProbe:
             httpGet:
               path: /1.0/healthcheck

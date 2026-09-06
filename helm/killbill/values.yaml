@@ -28,6 +28,10 @@ mariadb:
   service:
     port: 3306
 
+  persistence:
+    size: 10Gi
+    accessMode: ReadWriteOnce
+
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.

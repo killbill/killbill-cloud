@@ -35,3 +35,12 @@ spec:
                 - "-pkillbill"
             initialDelaySeconds: 30
             periodSeconds: 10
+
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data

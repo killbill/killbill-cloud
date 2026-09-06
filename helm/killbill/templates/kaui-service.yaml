@@ -7,7 +7,7 @@ spec:
 
   ports:
     - port: {{ .Values.kaui.service.port }}
-      targetPort: 9090
+      targetPort: 8080
       protocol: TCP
       name: http
 
