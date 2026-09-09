@@ -93,7 +93,6 @@
           - --prefix={{ catalina_home }}
           - --with-apr={{ tomcat_apr_config_path }}
           - --with-java-home={{ java_home }}
-          - --with-ssl=yes
         chdir: "{{ tomcat_workspace.path }}/native"
       changed_when: false
       tags: native
