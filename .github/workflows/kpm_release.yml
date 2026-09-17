@@ -52,7 +52,7 @@ jobs:
         uses: actions/setup-java@v3.3.0
         if: github.event.inputs.snapshot_only == 'false'
         with:
-          java-version: 11
+          java-version: 21
           distribution: temurin
           server-id: central
           server-username: MAVEN_USERNAME
@@ -63,7 +63,7 @@ jobs:
         uses: actions/setup-java@v3.3.0
         if: github.event.inputs.snapshot_only == 'true'
         with:
-          java-version: 11
+          java-version: 21
           distribution: temurin
           server-id: sonatype-nexus-snapshots
           server-username: MAVEN_USERNAME

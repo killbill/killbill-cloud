@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 LABEL maintainer="killbilling-users@googlegroups.com"
 
 USER root
@@ -29,7 +29,7 @@ RUN apt-get update && \
       maven \
       mysql-client \
       net-tools \
-      openjdk-11-jdk-headless \
+      openjdk-21-jdk-headless \
       postgresql-client \
       python3-lxml \
       software-properties-common \
@@ -41,8 +41,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure default JAVA_HOME path
-RUN update-java-alternatives -s java-1.11.0-openjdk-$(dpkg --print-architecture)
-RUN rm -f /usr/lib/jvm/default-java && ln -s java-11-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
+RUN update-java-alternatives -s java-1.21.0-openjdk-$(dpkg --print-architecture)
+RUN rm -f /usr/lib/jvm/default-java && ln -s java-21-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV JSSE_HOME=$JAVA_HOME/jre/
 
