@@ -4,6 +4,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'rexml/document'
+require 'cgi'
 
 module KPM
   module NexusFacade
