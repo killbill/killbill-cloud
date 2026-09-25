@@ -114,3 +114,7 @@
   :type: :java
   :versions:
     :0.24: 0.2.1
+:kintsugi:
+  :type: :java
+  :versions:
+    :0.24: 0.1.5
