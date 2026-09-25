@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data
+spec:
+  accessModes:
+    - {{ .Values.mariadb.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.mariadb.persistence.size }}

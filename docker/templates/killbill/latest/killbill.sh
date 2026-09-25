@@ -7,13 +7,15 @@ echo "Installing plugins..."
 # Run both the main playbook and the one enabling structured logging
 $KPM_INSTALL_CMD $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml
 
-until mysql --protocol=TCP -h127.0.0.1 -P3306 -uroot -pkillbill -e "SELECT 1"; do
+DB_HOST="${DB_HOST:-127.0.0.1}"
+
+until mysql --protocol=TCP -h"$DB_HOST" -P3306 -uroot -pkillbill -e "SELECT 1"; do
   echo "Waiting for DB..."
   sleep 5
 done
 
 INSTALL_PLUGINS_CMD="$INSTALL_PLUGINS_CMD \
-  -e db_config_address=127.0.0.1 \
+  -e db_config_address=$DB_HOST \
   -e db_config_port=3306 \
   -e db_config_username=$KILLBILL_DAO_USER \
   -e db_config_password=$KILLBILL_DAO_PASSWORD \
