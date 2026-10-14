@@ -1,6 +1,14 @@
 # Java Properties
 export CATALINA_OPTS="$CATALINA_OPTS"
 
+# JRuby methods excluded from the JIT (comma-separated; set KAUI_JRUBY_JIT_EXCLUDE='' to disable).
+# Rails::Engine#call: once JIT-compiled on JRuby 10, Kaui stops setting the session cookie and
+# every new login fails with a 500 (killbill/killbill-admin-ui-standalone#131).
+KAUI_JRUBY_JIT_EXCLUDE="${KAUI_JRUBY_JIT_EXCLUDE-Rails::Engine#call}"
+if [ -n "$KAUI_JRUBY_JIT_EXCLUDE" ]; then
+  export CATALINA_OPTS="$CATALINA_OPTS -Djruby.jit.exclude=$KAUI_JRUBY_JIT_EXCLUDE"
+fi
+
 if [  -z ${KAUI_SECRET_KEY_BASE+x} ]; then
   export KAUI_SECRET_KEY_BASE=$(head -c 1024 /dev/urandom | base64 | tr -cd "[:upper:][:digit:]" | head -c 129)
 fi

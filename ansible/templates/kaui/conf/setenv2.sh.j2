@@ -1,6 +1,9 @@
 # Java Properties
 
 export CATALINA_OPTS="$CATALINA_OPTS
+{% if kaui_jruby_jit_exclude %}
+                      -Djruby.jit.exclude={{ kaui_jruby_jit_exclude }}
+{% endif %}
                       {{ kaui_system_properties }}"
 
 if [  -z ${KAUI_SECRET_KEY_BASE+x} ]; then
