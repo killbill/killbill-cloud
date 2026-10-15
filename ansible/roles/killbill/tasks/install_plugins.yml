@@ -19,8 +19,8 @@
     loop_var: plugin
 
 # TODO: Uncomment this when Hyperswitch supports Java 21
-#- name: Load Hyperswitch plugin tasks
-#  ansible.builtin.include_tasks: plugins/hyperswitch.yml
+# - name: Load Hyperswitch plugin tasks
+#   ansible.builtin.include_tasks: plugins/hyperswitch.yml
 
 - name: Load Aviate plugin tasks
   ansible.builtin.include_tasks: plugins/aviate.yml
