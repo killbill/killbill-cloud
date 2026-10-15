@@ -14,7 +14,7 @@ module KPM
       attr_reader :configuration
       attr_accessor :logger
 
-      BASE_REPO_URL = 'https://dl.cloudsmith.io/HTY4nZmVwkAx2SmH'
+      BASE_REPO_URL = 'https://dl.cloudsmith.io/<token>'
       SEARCH_API = 'https://search.maven.org/solrsearch/select'
 
       def initialize(configuration, _ssl_verify, logger)
