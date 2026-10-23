@@ -42,10 +42,16 @@
   when: tomcat_version is undefined
   tags: install
 
+- name: Verify Tomcat version
+  ansible.builtin.assert:
+    that: tomcat_version | string is version('11', '>=')
+    fail_msg: "tomcat_version={{ tomcat_version }} is not supported: Kill Bill and Kaui (Jakarta EE) require Tomcat 11 or later"
+  tags: install
+
 - name: Install Tomcat
   become: true
   ansible.builtin.unarchive:
-    src: "http://archive.apache.org/dist/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    src: "http://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_version.split('.')[0] }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     remote_src: true
     dest: "{{ tomcat_install_dir }}"
     owner: "{{ tomcat_owner }}"
