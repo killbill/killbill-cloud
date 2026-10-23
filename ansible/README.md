@@ -189,6 +189,6 @@ In order to test, one can an inventory:
 ```
 
 ```
-> ansible-playbook -v -i localhost/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk1.8.0_171.jdk/Contents/Home  -u <user> the _playbook.yml
+> ansible-playbook -v -i localhost/inventory -e java_home=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home  -u <user> the _playbook.yml
 ```
 
