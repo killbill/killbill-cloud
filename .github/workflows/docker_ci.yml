@@ -6,10 +6,11 @@ on:
   workflow_dispatch:
 
 env:
-  # Doesn't matter too much, we just want to verify the build passes
-  CURRENT_LTS: '0.24'
-  KB_VERSION: '0.24.16'
-  KAUI_VERSION: '4.0.6'
+  # Doesn't matter too much, we just want to verify the build passes. Also, we use 0.25(.04) since this is the last
+  # version that support JDK21+Tomcat11 and available in Maven Central.
+  CURRENT_LTS: '0.25'
+  KB_VERSION: '0.25.4'
+  KAUI_VERSION: '5.0.2'
 
 jobs:
   docker_ci:
