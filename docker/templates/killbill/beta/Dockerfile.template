@@ -1,0 +1,191 @@
+# Dedicated, self-contained multi-stage Dockerfile for beta/RC killbill releases.
+#
+# Why this exists?
+# - Beta/RC versions may need base-image-level changes (e.g. a newer Tomcat/JDK) that are not yet part of the publicly
+#   published killbill/base:latest or killbill/killbill:latest images. Building FROM those would silently ignore any
+#   such branch-local change.
+# - Avoid to use separate, intermediate `killbill/base:beta-*` tag to Docker Hub just to have another "base" image.
+# - Using docker buildx's multi-stage build (FROM ... AS <stage>) to keeps all of that intermediate state private.
+#   And then do single `docker buildx build` invocation. This way, nothing but the final image is ever pushed.
+#
+# This intentionally duplicates the *Dockerfile instructions* normally split across:
+#   docker/templates/base/latest/Dockerfile      (stage: base)
+#   docker/templates/killbill/latest/Dockerfile  (stage: shell)
+#   docker/templates/killbill/tagged/Dockerfile.template (stage: final)
+
+# ---------------------------------------------------------------------------
+# Stage: base (mirrors docker/templates/base/latest/Dockerfile)
+# ---------------------------------------------------------------------------
+FROM ubuntu:24.04 AS builder-base
+LABEL maintainer="killbilling-users@googlegroups.com"
+
+USER root
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV PYTHONIOENCODING=utf8
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+      ansible \
+      apt-utils \
+      curl \
+      gettext-base \
+      git \
+      less \
+      libapr1 \
+      mysql-client \
+      net-tools \
+      openjdk-21-jdk-headless \
+      python3-lxml \
+      sudo \
+      unzip \
+      vim && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure default JAVA_HOME path
+RUN ln -s java-21-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/default-java
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV JSSE_HOME=$JAVA_HOME/jre/
+
+ENV TOMCAT_OWNER=tomcat
+ENV TOMCAT_GROUP=tomcat
+ENV TOMCAT_HOME=/var/lib/tomcat
+RUN adduser $TOMCAT_OWNER \
+            --home $TOMCAT_HOME \
+            --disabled-password \
+            --gecos '' && \
+    usermod -aG sudo $TOMCAT_GROUP && \
+    echo "$TOMCAT_OWNER:$TOMCAT_OWNER" | chpasswd && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER $TOMCAT_OWNER
+WORKDIR $TOMCAT_HOME
+
+# Install ansible roles dependencies.
+# KILLBILL_CLOUD_REF is a git ref (branch/tag/SHA) of the killbill-cloud repository, used by
+# ansible-galaxy below to fetch the ansible roles that install Tomcat/Java/KPM. This Dockerfile
+# has no opinion on which ref that should be - the caller (see kb_beta_release.yml) decides that.
+ARG KILLBILL_CLOUD_REF
+RUN ansible-galaxy collection install community.general && \
+    ansible-galaxy install git+https://git@github.com/killbill/killbill-cloud.git,$KILLBILL_CLOUD_REF
+ENV KILLBILL_CLOUD_ANSIBLE_ROLES=$TOMCAT_HOME/.ansible/roles/killbill-cloud/ansible
+ENV ENV_HOST_IP=localhost
+ENV ANSIBLE_OPTS="-i localhost, \
+                  -e ansible_connection=local \
+                  -e ansible_python_interpreter=/usr/bin/python3 \
+                  -e java_home=$JAVA_HOME \
+                  -vv"
+
+# Install KPM
+ENV NEXUS_URL=https://repo1.maven.org
+ARG NEXUS_REPOSITORY
+ENV NEXUS_REPOSITORY=${NEXUS_REPOSITORY:-maven2}
+ENV KPM_INSTALL_DIR=/opt
+RUN ansible-playbook $ANSIBLE_OPTS \
+                     -e kpm_install_dir=$KPM_INSTALL_DIR \
+                     -e kpm_path=$KPM_INSTALL_DIR/kpm-latest \
+                     -e kpm_owner=$TOMCAT_OWNER \
+                     -e kpm_group=$TOMCAT_GROUP \
+                     -e nexus_url=$NEXUS_URL \
+                     -e nexus_repository=$NEXUS_REPOSITORY \
+                     $KILLBILL_CLOUD_ANSIBLE_ROLES/kpm.yml
+ENV PATH="/opt/kpm-latest:${PATH}"
+
+# Install Tomcat (without native libraries)
+ENV CATALINA_BASE=$TOMCAT_HOME
+ENV CATALINA_HOME=/usr/share/tomcat
+ENV CATALINA_PID=$CATALINA_BASE/tomcat.pid
+ENV CATALINA_TMPDIR=/var/tmp
+ENV TOMCAT_INSTALL_DIR=/opt
+ENV TOMCAT_NATIVE_LIBDIR=$CATALINA_HOME/native-jni-lib
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$TOMCAT_NATIVE_LIBDIR
+RUN ansible-playbook $ANSIBLE_OPTS \
+                     -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
+                     -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
+                     -e tomcat_owner=$TOMCAT_OWNER \
+                     -e tomcat_group=$TOMCAT_GROUP \
+                     -e tomcat_home=$TOMCAT_HOME \
+                     -e catalina_home=$CATALINA_HOME \
+                     -e catalina_base=$CATALINA_BASE \
+                     --skip-tags native \
+                     $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
+
+# Build Tomcat native libraries
+FROM builder-base AS builder-tomcat
+USER $TOMCAT_OWNER
+RUN ansible-playbook $ANSIBLE_OPTS \
+                     -e tomcat_install_dir=$TOMCAT_INSTALL_DIR \
+                     -e tomcat_native_libdir=$TOMCAT_NATIVE_LIBDIR \
+                     -e tomcat_owner=$TOMCAT_OWNER \
+                     -e tomcat_group=$TOMCAT_GROUP \
+                     -e tomcat_home=$TOMCAT_HOME \
+                     -e catalina_home=$CATALINA_HOME \
+                     -e catalina_base=$CATALINA_BASE \
+                     -t native \
+                     $KILLBILL_CLOUD_ANSIBLE_ROLES/tomcat.yml
+
+FROM builder-base AS base
+COPY --from=builder-tomcat /usr/share/tomcat/native-jni-lib /usr/share/tomcat/native-jni-lib
+
+# ---------------------------------------------------------------------------
+# Stage: shell (mirrors docker/templates/killbill/latest/Dockerfile)
+# ---------------------------------------------------------------------------
+FROM base AS shell
+LABEL maintainer="killbilling-users@googlegroups.com"
+
+ENV KILLBILL_INSTALL_DIR=/var/lib/killbill
+
+RUN sudo mkdir -p $KILLBILL_INSTALL_DIR $KILLBILL_INSTALL_DIR/bundles $KILLBILL_INSTALL_DIR/config
+RUN sudo chown -R $TOMCAT_OWNER:$TOMCAT_GROUP $KILLBILL_INSTALL_DIR
+
+ENV KB_org_killbill_osgi_bundle_install_dir=$KILLBILL_INSTALL_DIR/bundles
+ENV KB_org_killbill_billing_osgi_bundles_jruby_conf_dir=$KILLBILL_INSTALL_DIR/config
+ENV KB_org_killbill_server_baseUrl=http://$ENV_HOST_IP:8080
+ENV KB_org_killbill_billing_plugin_kpm_kpmPath=$KPM_INSTALL_DIR/kpm-latest/kpm
+ENV KB_org_killbill_billing_plugin_kpm_bundlesPath=$KILLBILL_INSTALL_DIR/bundles
+ENV KB_org_killbill_security_shiroResourcePath=$KILLBILL_INSTALL_DIR/config/shiro.ini
+ENV KB_org_killbill_notificationq_main_queue_mode=POLLING
+ENV KB_org_killbill_notificationq_analytics_queue_mode=POLLING
+ENV KB_ADMIN_PASSWORD=password
+
+COPY ./latest/setenv2.sh $CATALINA_BASE/bin
+COPY ./latest/shiro.ini.template $KILLBILL_INSTALL_DIR/config
+
+ENV KPM_INSTALL_CMD="ansible-playbook $ANSIBLE_OPTS  \
+                                      -e kpm_install_dir=$KPM_INSTALL_DIR \
+                                      -e kpm_path=$KPM_INSTALL_DIR/kpm-latest \
+                                      -e kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
+                                      -e killbill_kpm_yml=$KILLBILL_INSTALL_DIR/kpm.yml \
+                                      -e kb_config_dir=$KILLBILL_INSTALL_DIR \
+                                      -e kb_plugins_dir=$KILLBILL_INSTALL_DIR/bundles \
+                                      -e tomcat_owner=$TOMCAT_OWNER \
+                                      -e tomcat_group=$TOMCAT_GROUP \
+                                      -e catalina_base=$CATALINA_BASE \
+                                      $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill.yml"
+
+# Install Logstash dependencies
+ENV LOGSTASH_ENABLED=true
+RUN ansible-playbook $ANSIBLE_OPTS $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml --tags download
+
+# ---------------------------------------------------------------------------
+# Stage: final (mirrors docker/templates/killbill/tagged/Dockerfile.template)
+# ---------------------------------------------------------------------------
+FROM shell AS final
+LABEL maintainer="killbilling-users@googlegroups.com"
+
+ENV KILLBILL_VERSION=__VERSION__
+
+# Pinned kpm.yml (version baked in, not resolved at runtime like the "latest" shell image). Reuses
+# templates/killbill/tagged/kpm.yml as-is (build context is templates/killbill/, and __VERSION__ substitution is done
+# by the workflow before build, same as docker/dockerTemplate.sh does for the tagged/ template).
+COPY ./tagged/kpm.yml $KILLBILL_INSTALL_DIR
+
+# Install Kill Bill + the default OSGi bundles (kpm, logger, metrics) at build time
+RUN $KPM_INSTALL_CMD $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml
+
+COPY ./tagged/killbill.sh $KILLBILL_INSTALL_DIR
+
+EXPOSE 8080
+CMD ["/var/lib/killbill/killbill.sh"]
