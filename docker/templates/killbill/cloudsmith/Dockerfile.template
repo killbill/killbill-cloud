@@ -206,6 +206,20 @@ RUN --mount=type=secret,id=nexus_url,required=false,mode=0444 \
       $KPM_INSTALL_CMD $KILLBILL_CLOUD_ANSIBLE_ROLES/killbill_json_logging.yml; \
     fi
 
+# Optional extension point (marker for callers: "artifacts_hook"). If the BuildKit secret "artifacts_hook" is provided, it is run
+# with bash after the install above, so a caller can add things this template knows nothing about (e.g. download extra
+# plugin jars, then register them offline with: kpm install_java_plugin <key> --from_source_file=<jar> --version=<v>
+# --destination=$KILLBILL_BUNDLES_DIR). It is mounted as a secret so neither the script nor anything it embeds is stored
+# in a layer; "nexus_url" is mounted too (same mode as above) in case the hook needs it. A non-zero exit fails the build.
+# Without the secret, this step does nothing.
+ENV KILLBILL_BUNDLES_DIR=$KILLBILL_INSTALL_DIR/bundles
+RUN --mount=type=secret,id=artifacts_hook,required=false,mode=0444 \
+    --mount=type=secret,id=nexus_url,required=false,mode=0444 \
+    set -e; \
+    if [ -s /run/secrets/artifacts_hook ]; then \
+      bash -euo pipefail /run/secrets/artifacts_hook; \
+    fi
+
 COPY ./tagged/killbill.sh $KILLBILL_INSTALL_DIR
 
 EXPOSE 8080
