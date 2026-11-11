@@ -27,7 +27,8 @@ init() {
             echo "NEXUS_URL is not set: $TAGGED_PATH/kpm.yml.template needs the artifact repository URL (e.g. NEXUS_URL=https://repo1.maven.org/maven2)" >&2
             exit 1
         fi
-        cat "$TAGGED_PATH/kpm.yml.template" | sed -e "s/__VERSION__/$VERSION/" | sed -e "s|__NEXUSURL__|$NEXUS_URL|" > "$TAGGED_PATH/kpm.yml"
+        nexus_url_escaped="$(printf '%s' "$NEXUS_URL" | sed -e 's/[\\&|]/\\&/g')"
+        cat "$TAGGED_PATH/kpm.yml.template" | sed -e "s/__VERSION__/$VERSION/" | sed -e "s|__NEXUSURL__|$nexus_url_escaped|" > "$TAGGED_PATH/kpm.yml"
     fi
   else
     cat "$LATEST_PATH/Dockerfile.template" | sed -e "s/__PARENT_VERSION__/$PARENT_VERSION/" > "$LATEST_PATH/Dockerfile"
