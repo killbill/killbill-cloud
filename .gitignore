@@ -19,3 +19,4 @@ docker/templates/killbill/latest/Dockerfile
 docker/templates/killbill/tagged/Dockerfile
 docker/templates/killbill/tagged/kpm.yml
 docker/templates/killbill/beta/Dockerfile
+docker/templates/killbill/cloudsmith/Dockerfile
