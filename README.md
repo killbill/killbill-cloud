@@ -9,6 +9,7 @@
 * [ansible](./ansible): Ansible Galaxy collection of roles for Kill Bill deployments
 * [docker](./docker): official Kill Bill Docker images
 * [docker/compose](./docker/compose): Docker Compose recipes, including examples integrating Kill Bill with the [ELK](https://www.elastic.co/what-is/elk-stack) and TIG stacks
+* [Kill Bill 0.25](https://github.com/killbill/killbill-ee/wiki/Kill-Bill-Cloud-for-0.25-): Internal notes about 0.25
 
 ## About
 
