@@ -93,7 +93,7 @@ You can download specific artifacts with the following commands:
 * `kpm pull_kb_server_war <version>`: downloads the Kill Bill war
 * `kpm install_java_plugin plugin-key <kb-version>`: downloads a Java plugin identified by `plugin-key`
 * `kpm install_ruby_plugin plugin-key <kb-version>`: downloads a Ruby plugin identified by `plugin-key`
-* `kpm pull_defaultbundles <kb-version>`: downloads the default Kill Bill OSGI bundles
+* `kpm pull_defaultbundles <kb-version>`: downloads the default Kill Bill OSGI bundles (use `--version` to pin the bundles version directly, without looking it up from the Kill Bill pom)
 
 This is especially useful when scripting deployments.
 
