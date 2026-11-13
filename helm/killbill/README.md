@@ -23,7 +23,7 @@ helm install killbill ./helm/killbill \
   --set database.password=<database password>
 ```
 
-To use a Secret you manage yourself instead, create it with the keys `db-password`, `admin-password` and `kaui-secret-key-base` (a long random string that signs Kaui sessions), then set `existingSecret`:
+To use a Secret you manage yourself instead, create it with the keys `db-password`, `admin-password` and `kaui-secret-key-base` (a long random string that every Kaui pod uses to sign sessions), then set `existingSecret`. All three keys are required:
 
 ```bash
 kubectl create secret generic killbill-passwords \
@@ -72,7 +72,7 @@ helm install killbill ./helm/killbill \
 | `database.external.enabled` | `false` | Use an existing database server instead of a bundled one |
 | `database.external.host` / `port` / `user` | `""` | Connection to the existing server; the port defaults to 3306 or 5432 |
 | `database.external.killbillDatabase` / `kauiDatabase` | `killbill` / `kaui` | Database names on the existing server |
-| `database.external.jdbcParameters` | `""` | Extra JDBC URL parameters, for example `sslmode=require` |
+| `database.external.jdbcParameters` | `""` | Extra JDBC URL parameters without the leading `?`, for example `sslmode=require` |
 | `mariadb.image.repository` / `tag` | `killbill/mariadb` / `0.24` | Bundled MariaDB image |
 | `postgresql.image.repository` / `tag` | `killbill/postgresql` / `0.24` | Bundled PostgreSQL image |
 | `mariadb.persistence.*` / `postgresql.persistence.*` | `10Gi`, `ReadWriteOnce` | Volume of the bundled database; `storageClass` empty means the cluster default |

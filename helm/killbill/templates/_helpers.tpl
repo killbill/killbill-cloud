@@ -25,12 +25,18 @@ The Kill Bill server resources use this name.
 {{- end }}
 
 {{/*
-Prefix for the Kaui and database resource names: the full name cut to 52 characters,
-so that the longest suffix ("-postgresql", 11 characters) still fits in 63 characters
-and every component keeps its own name.
+Prefix for the Kaui and database resource names. It is at most 52 characters, so that
+the longest suffix ("-postgresql", 11 characters) still fits in 63 characters. A longer
+full name is cut to 45 characters and followed by 6 characters of its hash, so that
+different full names keep different prefixes.
 */}}
 {{- define "killbill.componentPrefix" -}}
-{{- include "killbill.fullname" . | trunc 52 | trimSuffix "-" }}
+{{- $fullname := include "killbill.fullname" . }}
+{{- if gt (len $fullname) 52 }}
+{{- printf "%s-%s" ($fullname | trunc 45 | trimSuffix "-") ($fullname | sha256sum | trunc 6) }}
+{{- else }}
+{{- $fullname }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -140,7 +146,7 @@ change triggers a rollout. It is computed from the values rather than from the
 rendered Secret, whose generated Kaui key would differ between renders.
 */}}
 {{- define "killbill.credentialsChecksum" -}}
-{{- printf "%v|%v|%v" .Values.database.password .Values.killbill.adminPassword .Values.kaui.secretKeyBase | sha256sum }}
+{{- list .Values.database.password .Values.killbill.adminPassword .Values.kaui.secretKeyBase | toJson | sha256sum }}
 {{- end }}
 
 {{/*

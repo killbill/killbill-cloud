@@ -47,17 +47,25 @@ jobs:
             --set 'killbill.extraEnv[0].name=JAVA_OPTS' \
             --set 'killbill.extraEnv[0].value=-Xmx2g' \
             --set mariadb.persistence.storageClass=standard > /dev/null
-      - name: Check resource names with a 53-character release name
+      - name: Check resource names with long release names
         run: |
-          release=$(printf 'r%.0s' $(seq 53))
           # One "<kind> <name>" line per resource: each manifest's first two-space "name:" is metadata.name
-          names=$(helm template "$release" helm/killbill --set database.type=postgresql \
-            | awk '/^kind:/ {kind=$2; next} /^  name:/ && kind {print kind, $2; kind=""}')
-          echo "$names"
-          dups=$(echo "$names" | sort | uniq -d)
-          if [ -n "$dups" ]; then echo "Duplicate resource names: $dups"; exit 1; fi
-          long=$(echo "$names" | awk 'length($2) > 63')
-          if [ -n "$long" ]; then echo "Names longer than 63 characters: $long"; exit 1; fi
+          names() {
+            helm template "$@" | awk '/^kind:/ {kind=$2; next} /^  name:/ && kind {print kind, $2; kind=""}'
+          }
+          prefix=$(printf 'r%.0s' $(seq 52))
+          # Two releases in one namespace whose names share their first 52 characters,
+          # plus a fullnameOverride that ends like a component name
+          all=$( (names "${prefix}a" helm/killbill --set database.type=postgresql
+                  names "${prefix}b" helm/killbill --set database.type=postgresql) )
+          own=$(names test helm/killbill --set fullnameOverride="${prefix}-kaui")
+          echo "$all"; echo "$own"
+          for list in "$all" "$own"; do
+            dups=$(echo "$list" | sort | uniq -d)
+            if [ -n "$dups" ]; then echo "Duplicate resource names: $dups"; exit 1; fi
+            long=$(echo "$list" | awk 'length($2) > 63')
+            if [ -n "$long" ]; then echo "Names longer than 63 characters: $long"; exit 1; fi
+          done
       - name: Reject an unknown database type
         run: |
           if helm template test helm/killbill --set database.type=oracle > /dev/null 2>&1; then

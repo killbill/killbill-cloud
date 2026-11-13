@@ -17,8 +17,8 @@ fullnameOverride: ""
 # database.password and killbill.adminPassword, together with a generated key
 # that signs Kaui sessions.
 # To use your own Secret instead, set its name here. It must contain the keys
-# "db-password" and "admin-password", and should contain "kaui-secret-key-base"
-# (a long random string); without it, Kaui sessions end on every Kaui restart.
+# "db-password", "admin-password" and "kaui-secret-key-base" (a long random
+# string that every Kaui pod uses to sign sessions).
 existingSecret: ""
 
 killbill:
@@ -95,8 +95,8 @@ database:
     user: ""
     killbillDatabase: killbill
     kauiDatabase: kaui
-    # Extra JDBC URL parameters, for example "sslmode=require" (PostgreSQL)
-    # or "useSSL=true" (MySQL). Leave empty for none.
+    # Extra JDBC URL parameters, without the leading "?", for example
+    # "sslmode=require" (PostgreSQL) or "useSSL=true" (MySQL). Leave empty for none.
     jdbcParameters: ""
 
 # Bundled MariaDB, used when database.type is "mariadb" and database.external.enabled is false.

@@ -54,22 +54,27 @@ spec:
                 secretKeyRef:
                   name: {{ include "killbill.secretName" . }}
                   key: kaui-secret-key-base
-                  optional: true
             - name: KAUI_KILLBILL_URL
               value: "http://{{ include "killbill.fullname" . }}:{{ .Values.killbill.service.port }}"
             {{- with .Values.kaui.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          # Allows up to 5 minutes for the first start
+          # Kaui answers "/" (with a redirect to its login page) only once it has
+          # fully started; until then Tomcat returns 404. Startup allows up to
+          # 5 minutes for the first start.
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
             periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 30
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
             periodSeconds: 10
+            timeoutSeconds: 5
           {{- with .Values.kaui.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
