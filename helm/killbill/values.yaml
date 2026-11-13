@@ -14,14 +14,18 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Passwords are stored in a Secret created by the chart from
-# database.password and killbill.adminPassword.
+# database.password and killbill.adminPassword, together with a generated key
+# that signs Kaui sessions.
 # To use your own Secret instead, set its name here. It must contain the keys
-# "db-password" and "admin-password".
+# "db-password" and "admin-password", and should contain "kaui-secret-key-base"
+# (a long random string); without it, Kaui sessions end on every Kaui restart.
 existingSecret: ""
 
 killbill:
   replicaCount: 1
 
+  # Use a versioned Kill Bill image. The "latest" development image installs
+  # plugins on start against a local MySQL and is not supported by this chart.
   image:
     repository: killbill/killbill
     tag: "0.24.22"
@@ -50,6 +54,12 @@ killbill:
 
 kaui:
   replicaCount: 1
+
+  # Key that signs Kaui sessions. Leave empty to let the chart generate one
+  # and keep it across upgrades. Set it explicitly when the chart is rendered
+  # without access to the cluster (for example by Argo CD), where a generated
+  # key would change on every render. Ignored when existingSecret is set.
+  secretKeyBase: ""
 
   image:
     repository: killbill/kaui
@@ -85,6 +95,9 @@ database:
     user: ""
     killbillDatabase: killbill
     kauiDatabase: kaui
+    # Extra JDBC URL parameters, for example "sslmode=require" (PostgreSQL)
+    # or "useSSL=true" (MySQL). Leave empty for none.
+    jdbcParameters: ""
 
 # Bundled MariaDB, used when database.type is "mariadb" and database.external.enabled is false.
 # Kill Bill and Kaui connect as root.

@@ -45,7 +45,7 @@ spec:
               command:
                 - sh
                 - -c
-                - mariadb-admin ping -uroot -p"$MYSQL_ROOT_PASSWORD"
+                - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mariadb-admin ping -uroot
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5

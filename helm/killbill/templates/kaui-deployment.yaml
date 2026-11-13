@@ -13,6 +13,11 @@ spec:
       app.kubernetes.io/component: kaui
   template:
     metadata:
+      {{- if not .Values.existingSecret }}
+      annotations:
+        # Restart the pods when the chart-managed credentials change
+        checksum/credentials: {{ include "killbill.credentialsChecksum" . | quote }}
+      {{- end }}
       labels:
         {{- include "killbill.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: kaui
@@ -43,6 +48,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "killbill.secretName" . }}
                   key: db-password
+            # Shared key that signs Kaui sessions, so they stay valid across replicas and restarts
+            - name: KAUI_SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: kaui-secret-key-base
+                  optional: true
             - name: KAUI_KILLBILL_URL
               value: "http://{{ include "killbill.fullname" . }}:{{ .Values.killbill.service.port }}"
             {{- with .Values.kaui.extraEnv }}

@@ -25,10 +25,19 @@ The Kill Bill server resources use this name.
 {{- end }}
 
 {{/*
+Prefix for the Kaui and database resource names: the full name cut to 52 characters,
+so that the longest suffix ("-postgresql", 11 characters) still fits in 63 characters
+and every component keeps its own name.
+*/}}
+{{- define "killbill.componentPrefix" -}}
+{{- include "killbill.fullname" . | trunc 52 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Name of the Kaui resources.
 */}}
 {{- define "killbill.kauiName" -}}
-{{- printf "%s-kaui" (include "killbill.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-kaui" (include "killbill.componentPrefix" .) }}
 {{- end }}
 
 {{/*
@@ -55,7 +64,7 @@ Engine of the bundled database, or empty when an external database is used.
 Name of the bundled database resources. It is also the database host name.
 */}}
 {{- define "killbill.dbName" -}}
-{{- printf "%s-%s" (include "killbill.fullname" .) (include "killbill.dbType" .) | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "killbill.componentPrefix" .) (include "killbill.dbType" .) }}
 {{- end }}
 
 {{/*
@@ -93,16 +102,45 @@ Database user: the external user, or the bundled database's admin user.
 {{- end }}
 
 {{/*
+JDBC URL of a database. Takes a dict with "ctx" (the root context) and "database"
+(the database name). Appends database.external.jdbcParameters for an external database.
+*/}}
+{{- define "killbill.jdbcUrl" -}}
+{{- $ctx := .ctx }}
+{{- $scheme := ternary "postgresql" "mysql" (eq (include "killbill.dbType" $ctx) "postgresql") }}
+{{- $url := printf "jdbc:%s://%s:%s/%s" $scheme (include "killbill.dbHost" $ctx) (include "killbill.dbPort" $ctx) .database }}
+{{- if and $ctx.Values.database.external.enabled $ctx.Values.database.external.jdbcParameters }}
+{{- $url = printf "%s?%s" $url $ctx.Values.database.external.jdbcParameters }}
+{{- end }}
+{{- $url }}
+{{- end }}
+
+{{/*
 JDBC URLs of the Kill Bill and Kaui databases.
 */}}
 {{- define "killbill.killbillJdbcUrl" -}}
-{{- $database := ternary .Values.database.external.killbillDatabase "killbill" .Values.database.external.enabled }}
-{{- printf "jdbc:%s://%s:%s/%s" (ternary "postgresql" "mysql" (eq (include "killbill.dbType" .) "postgresql")) (include "killbill.dbHost" .) (include "killbill.dbPort" .) $database }}
+{{- $database := "killbill" }}
+{{- if .Values.database.external.enabled }}
+{{- $database = default "killbill" .Values.database.external.killbillDatabase }}
+{{- end }}
+{{- include "killbill.jdbcUrl" (dict "ctx" . "database" $database) }}
 {{- end }}
 
 {{- define "killbill.kauiJdbcUrl" -}}
-{{- $database := ternary .Values.database.external.kauiDatabase "kaui" .Values.database.external.enabled }}
-{{- printf "jdbc:%s://%s:%s/%s" (ternary "postgresql" "mysql" (eq (include "killbill.dbType" .) "postgresql")) (include "killbill.dbHost" .) (include "killbill.dbPort" .) $database }}
+{{- $database := "kaui" }}
+{{- if .Values.database.external.enabled }}
+{{- $database = default "kaui" .Values.database.external.kauiDatabase }}
+{{- end }}
+{{- include "killbill.jdbcUrl" (dict "ctx" . "database" $database) }}
+{{- end }}
+
+{{/*
+Checksum of the chart-managed credentials, used as a pod annotation so that a
+change triggers a rollout. It is computed from the values rather than from the
+rendered Secret, whose generated Kaui key would differ between renders.
+*/}}
+{{- define "killbill.credentialsChecksum" -}}
+{{- printf "%v|%v|%v" .Values.database.password .Values.killbill.adminPassword .Values.kaui.secretKeyBase | sha256sum }}
 {{- end }}
 
 {{/*
