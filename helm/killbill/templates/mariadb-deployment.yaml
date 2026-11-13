@@ -1,46 +1,63 @@
+{{- if eq (include "killbill.bundledDb" .) "mariadb" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mariadb
+  name: {{ include "killbill.dbName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mariadb
 spec:
   replicas: 1
-
+  # The data volume can only be attached to one pod at a time,
+  # so the old pod must stop before the new one starts.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      app: mariadb
-
+      {{- include "killbill.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mariadb
   template:
     metadata:
       labels:
-        app: mariadb
-
+        {{- include "killbill.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mariadb
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: mariadb
           image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
-
+          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
           ports:
             - name: mysql
               containerPort: 3306
-
+              protocol: TCP
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: killbill
-
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: db-password
           readinessProbe:
             exec:
               command:
-                - mariadb-admin
-                - ping
-                - "-pkillbill"
+                - sh
+                - -c
+                - mariadb-admin ping -uroot -p"$MYSQL_ROOT_PASSWORD"
             initialDelaySeconds: 30
             periodSeconds: 10
-
+            timeoutSeconds: 5
+          {{- with .Values.mariadb.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
-            - name: mariadb-data
+            - name: data
               mountPath: /var/lib/mysql
-
       volumes:
-        - name: mariadb-data
+        - name: data
           persistentVolumeClaim:
-            claimName: mariadb-data
+            claimName: {{ include "killbill.dbName" . }}
+{{- end }}

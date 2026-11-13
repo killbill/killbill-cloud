@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kaui
+  name: {{ include "killbill.kauiName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kaui
 spec:
-  type: ClusterIP
-
+  type: {{ .Values.kaui.service.type }}
   ports:
     - port: {{ .Values.kaui.service.port }}
-      targetPort: 8080
+      targetPort: http
       protocol: TCP
       name: http
-
   selector:
-    app: kaui
+    {{- include "killbill.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: kaui

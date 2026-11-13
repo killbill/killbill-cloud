@@ -1,0 +1,49 @@
+name: helm_ci
+
+on:
+  push:
+    paths:
+      - 'helm/**'
+      - '.github/workflows/helm_ci.yml'
+  pull_request:
+    paths:
+      - 'helm/**'
+      - '.github/workflows/helm_ci.yml'
+  workflow_dispatch:
+
+jobs:
+  helm_ci:
+    name: Lint and render the Helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+      - name: Lint
+        run: helm lint --strict helm/killbill
+      - name: Render with default values (bundled MariaDB)
+        run: helm template test helm/killbill > /dev/null
+      - name: Render with bundled PostgreSQL
+        run: helm template test helm/killbill --set database.type=postgresql > /dev/null
+      - name: Render with an external database
+        run: |
+          helm template test helm/killbill \
+            --set database.type=postgresql \
+            --set database.external.enabled=true \
+            --set database.external.host=db.example.com \
+            --set database.external.user=killbill > /dev/null
+      - name: Render with an existing Secret, a pull secret and extra settings
+        run: |
+          helm template test helm/killbill \
+            --set existingSecret=my-secret \
+            --set 'imagePullSecrets[0].name=my-registry' \
+            --set 'killbill.extraEnv[0].name=JAVA_OPTS' \
+            --set 'killbill.extraEnv[0].value=-Xmx2g' \
+            --set mariadb.persistence.storageClass=standard > /dev/null
+      - name: Reject an unknown database type
+        run: |
+          if helm template test helm/killbill --set database.type=oracle > /dev/null 2>&1; then
+            echo "Expected the render to fail for database.type=oracle"
+            exit 1
+          fi

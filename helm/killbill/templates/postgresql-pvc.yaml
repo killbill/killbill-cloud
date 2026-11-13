@@ -1,0 +1,21 @@
+{{- if eq (include "killbill.bundledDb" .) "postgresql" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "killbill.dbName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+  annotations:
+    # Keep the database volume when the release is uninstalled, so billing data is not lost by accident
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - {{ .Values.postgresql.persistence.accessMode }}
+  {{- with .Values.postgresql.persistence.storageClass }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+{{- end }}

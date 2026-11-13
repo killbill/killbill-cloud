@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: killbill
+  name: {{ include "killbill.fullname" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: killbill
 spec:
-  type: ClusterIP
-
+  type: {{ .Values.killbill.service.type }}
   ports:
     - port: {{ .Values.killbill.service.port }}
-      targetPort: 8080
+      targetPort: http
       protocol: TCP
       name: http
-
   selector:
-    app: killbill
+    {{- include "killbill.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: killbill

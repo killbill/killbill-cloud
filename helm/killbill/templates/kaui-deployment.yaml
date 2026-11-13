@@ -1,39 +1,64 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kaui
+  name: {{ include "killbill.kauiName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kaui
 spec:
   replicas: {{ .Values.kaui.replicaCount }}
-
   selector:
     matchLabels:
-      app: kaui
-
+      {{- include "killbill.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: kaui
   template:
     metadata:
       labels:
-        app: kaui
-
+        {{- include "killbill.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: kaui
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: kaui
           image: "{{ .Values.kaui.image.repository }}:{{ .Values.kaui.image.tag }}"
-          imagePullPolicy: IfNotPresent
-
+          imagePullPolicy: {{ .Values.kaui.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-
           env:
-            - name: KAUI_CONFIG_DAO_USER
-              value: root
-
-            - name: KAUI_CONFIG_DAO_PASSWORD
-              value: killbill
-
             - name: KAUI_CONFIG_DAO_URL
-              value: jdbc:mysql://mariadb:3306/kaui
-
+              value: {{ include "killbill.kauiJdbcUrl" . | quote }}
+            - name: KAUI_CONFIG_DAO_USER
+              value: {{ include "killbill.dbUser" . | quote }}
+            {{- if eq (include "killbill.dbType" .) "postgresql" }}
+            - name: KAUI_DB_ADAPTER
+              value: postgresql
+            {{- end }}
+            - name: KAUI_CONFIG_DAO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: db-password
             - name: KAUI_KILLBILL_URL
-              value: http://killbill:8080
+              value: "http://{{ include "killbill.fullname" . }}:{{ .Values.killbill.service.port }}"
+            {{- with .Values.kaui.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          # Allows up to 5 minutes for the first start
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          {{- with .Values.kaui.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
