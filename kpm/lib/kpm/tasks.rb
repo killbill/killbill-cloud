@@ -229,13 +229,17 @@ module KPM
                       type: :boolean,
                       default: true,
                       desc: 'Set to false to disable SSL Verification.'
+        method_option :version,
+                      type: :string,
+                      default: nil,
+                      desc: 'Version of the default bundles (killbill-platform) to install. If specified, the lookup of the version from the Kill Bill pom is skipped.'
         desc 'pull_defaultbundles <kb-version>', 'Pulls the default OSGI bundles and places it on your machine. If the kb-version has been specified, it is used to download the matching platform artifact; if not, it uses the latest released version.'
         def pull_defaultbundles(kb_version = 'LATEST')
           response = BaseInstaller.new(logger,
                                        options[:overrides],
                                        options[:ssl_verify])
                                   .install_default_bundles(options[:destination],
-                                                           nil,
+                                                           options[:version],
                                                            kb_version,
                                                            options[:force_download],
                                                            options[:verify_sha1])
