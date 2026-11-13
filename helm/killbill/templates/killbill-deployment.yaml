@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "killbill.fullname" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: killbill
+spec:
+  replicas: {{ .Values.killbill.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "killbill.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: killbill
+  template:
+    metadata:
+      {{- if not .Values.existingSecret }}
+      annotations:
+        # Restart the pods when the chart-managed credentials change
+        checksum/credentials: {{ include "killbill.credentialsChecksum" . | quote }}
+      {{- end }}
+      labels:
+        {{- include "killbill.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: killbill
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: killbill
+          image: "{{ .Values.killbill.image.repository }}:{{ .Values.killbill.image.tag }}"
+          imagePullPolicy: {{ .Values.killbill.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: KILLBILL_DAO_URL
+              value: {{ include "killbill.killbillJdbcUrl" . | quote }}
+            - name: KILLBILL_DAO_USER
+              value: {{ include "killbill.dbUser" . | quote }}
+            - name: KILLBILL_DAO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: db-password
+            - name: KB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: admin-password
+            {{- with .Values.killbill.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          # Startup and readiness use the healthcheck, which also checks the database.
+          # Startup allows up to 10 minutes for the first start; each healthcheck
+          # call gets 5 seconds, since it can be slow while Kill Bill is busy.
+          startupProbe:
+            httpGet:
+              path: /1.0/healthcheck
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /1.0/healthcheck
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          # Liveness only checks that Kill Bill accepts connections, so that a
+          # database outage does not restart a working Kill Bill.
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 5
+          {{- with .Values.killbill.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.killbill.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.killbill.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

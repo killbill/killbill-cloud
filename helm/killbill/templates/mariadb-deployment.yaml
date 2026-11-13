@@ -1,0 +1,63 @@
+{{- if eq (include "killbill.bundledDb" .) "mariadb" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "killbill.dbName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mariadb
+spec:
+  replicas: 1
+  # The data volume can only be attached to one pod at a time,
+  # so the old pod must stop before the new one starts.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "killbill.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mariadb
+  template:
+    metadata:
+      labels:
+        {{- include "killbill.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mariadb
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: mariadb
+          image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: db-password
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mariadb-admin ping -uroot
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          {{- with .Values.mariadb.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "killbill.dbName" . }}
+{{- end }}

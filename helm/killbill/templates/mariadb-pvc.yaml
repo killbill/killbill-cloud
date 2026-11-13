@@ -1,0 +1,21 @@
+{{- if eq (include "killbill.bundledDb" .) "mariadb" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "killbill.dbName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mariadb
+  annotations:
+    # Keep the database volume when the release is uninstalled, so billing data is not lost by accident
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - {{ .Values.mariadb.persistence.accessMode }}
+  {{- with .Values.mariadb.persistence.storageClass }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.mariadb.persistence.size }}
+{{- end }}

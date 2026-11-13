@@ -1,0 +1,138 @@
+# Default values for the Kill Bill chart.
+# It deploys Kill Bill, Kaui (the admin UI) and a database. The database is
+# either a bundled MariaDB or PostgreSQL that comes with the Kill Bill and Kaui
+# schemas already created, or an existing database server (database.external).
+
+# Secrets for pulling images from a private registry, for example:
+# imagePullSecrets:
+#   - name: my-registry-secret
+imagePullSecrets: []
+
+# Override the chart name used in resource names.
+nameOverride: ""
+# Override the full resource name prefix.
+fullnameOverride: ""
+
+# Passwords are stored in a Secret created by the chart from
+# database.password and killbill.adminPassword, together with a generated key
+# that signs Kaui sessions.
+# To use your own Secret instead, set its name here. It must contain the keys
+# "db-password", "admin-password" and "kaui-secret-key-base" (a long random
+# string that every Kaui pod uses to sign sessions).
+existingSecret: ""
+
+killbill:
+  replicaCount: 1
+
+  # Use a versioned Kill Bill image. The "latest" development image installs
+  # plugins on start against a local MySQL and is not supported by this chart.
+  image:
+    repository: killbill/killbill
+    tag: "0.24.22"
+    pullPolicy: IfNotPresent
+
+  # Password of the Kill Bill "admin" user, also used to log in to Kaui.
+  # Ignored when existingSecret is set.
+  adminPassword: password
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  # Extra environment variables for the Kill Bill container, for example:
+  # extraEnv:
+  #   - name: JAVA_OPTS
+  #     value: "-Xmx2g"
+  extraEnv: []
+
+  # Extra volumes and mounts for the Kill Bill container, for example to mount
+  # a file from a Secret.
+  extraVolumes: []
+  extraVolumeMounts: []
+
+  resources: {}
+
+kaui:
+  replicaCount: 1
+
+  # Key that signs Kaui sessions. Leave empty to let the chart generate one
+  # and keep it across upgrades. Set it explicitly when the chart is rendered
+  # without access to the cluster (for example by Argo CD), where a generated
+  # key would change on every render. Ignored when existingSecret is set.
+  secretKeyBase: ""
+
+  image:
+    repository: killbill/kaui
+    tag: "4.0.31"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 9090
+
+  # Extra environment variables for the Kaui container.
+  extraEnv: []
+
+  resources: {}
+
+database:
+  # Database engine: "mariadb" (also for an external MySQL server) or "postgresql".
+  type: mariadb
+
+  # Password of the database user, stored in the Secret as "db-password".
+  # Ignored when existingSecret is set. For a bundled database it only applies
+  # when its data volume is empty (first install); changing it later does not
+  # change the password stored in an existing database.
+  password: killbill
+
+  # Use an existing database server instead of a bundled one.
+  # The Kill Bill and Kaui schemas must already exist in it.
+  external:
+    enabled: false
+    host: ""
+    # Leave empty for the engine's default port (3306 or 5432).
+    port: ""
+    user: ""
+    killbillDatabase: killbill
+    kauiDatabase: kaui
+    # Extra JDBC URL parameters, without the leading "?", for example
+    # "sslmode=require" (PostgreSQL) or "useSSL=true" (MySQL). Leave empty for none.
+    jdbcParameters: ""
+
+# Bundled MariaDB, used when database.type is "mariadb" and database.external.enabled is false.
+# Kill Bill and Kaui connect as root.
+mariadb:
+  image:
+    repository: killbill/mariadb
+    tag: "0.24"
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 3306
+
+  persistence:
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    # Leave empty to use the cluster's default StorageClass.
+    storageClass: ""
+
+  resources: {}
+
+# Bundled PostgreSQL, used when database.type is "postgresql" and database.external.enabled is false.
+# Kill Bill and Kaui connect as postgres.
+postgresql:
+  image:
+    repository: killbill/postgresql
+    tag: "0.24"
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 5432
+
+  persistence:
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    # Leave empty to use the cluster's default StorageClass.
+    storageClass: ""
+
+  resources: {}

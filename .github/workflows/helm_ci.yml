@@ -1,0 +1,74 @@
+name: helm_ci
+
+on:
+  push:
+    paths:
+      - 'helm/**'
+      - '.github/workflows/helm_ci.yml'
+  pull_request:
+    paths:
+      - 'helm/**'
+      - '.github/workflows/helm_ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  helm_ci:
+    name: Lint and render the Helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.2
+      - name: Lint
+        run: helm lint --strict helm/killbill
+      - name: Render with default values (bundled MariaDB)
+        run: helm template test helm/killbill > /dev/null
+      - name: Render with bundled PostgreSQL
+        run: helm template test helm/killbill --set database.type=postgresql > /dev/null
+      - name: Render with an external database
+        run: |
+          helm template test helm/killbill \
+            --set database.type=postgresql \
+            --set database.external.enabled=true \
+            --set database.external.host=db.example.com \
+            --set database.external.user=killbill \
+            --set database.external.jdbcParameters=sslmode=require > /dev/null
+      - name: Render with an existing Secret, a pull secret and extra settings
+        run: |
+          helm template test helm/killbill \
+            --set existingSecret=my-secret \
+            --set 'imagePullSecrets[0].name=my-registry' \
+            --set 'killbill.extraEnv[0].name=JAVA_OPTS' \
+            --set 'killbill.extraEnv[0].value=-Xmx2g' \
+            --set mariadb.persistence.storageClass=standard > /dev/null
+      - name: Check resource names with long release names
+        run: |
+          # One "<kind> <name>" line per resource: each manifest's first two-space "name:" is metadata.name
+          names() {
+            helm template "$@" | awk '/^kind:/ {kind=$2; next} /^  name:/ && kind {print kind, $2; kind=""}'
+          }
+          prefix=$(printf 'r%.0s' $(seq 52))
+          # Two releases in one namespace whose names share their first 52 characters,
+          # plus a fullnameOverride that ends like a component name
+          all=$( (names "${prefix}a" helm/killbill --set database.type=postgresql
+                  names "${prefix}b" helm/killbill --set database.type=postgresql) )
+          own=$(names test helm/killbill --set fullnameOverride="${prefix}-kaui")
+          echo "$all"; echo "$own"
+          for list in "$all" "$own"; do
+            dups=$(echo "$list" | sort | uniq -d)
+            if [ -n "$dups" ]; then echo "Duplicate resource names: $dups"; exit 1; fi
+            long=$(echo "$list" | awk 'length($2) > 63')
+            if [ -n "$long" ]; then echo "Names longer than 63 characters: $long"; exit 1; fi
+          done
+      - name: Reject an unknown database type
+        run: |
+          if helm template test helm/killbill --set database.type=oracle > /dev/null 2>&1; then
+            echo "Expected the render to fail for database.type=oracle"
+            exit 1
+          fi
