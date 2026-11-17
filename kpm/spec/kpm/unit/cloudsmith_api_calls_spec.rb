@@ -36,7 +36,7 @@ describe KPM::NexusFacade::CloudsmithApiCalls do
     it 'fails when the metadata has no version' do
       allow(nexus_remote).to receive(:get_response_with_retries).and_return('<metadata><versioning/></metadata>')
 
-      expect { nexus_remote.get_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:LATEST') }.to raise_error(StandardError, /Unable to find the latest version/)
+      expect { nexus_remote.get_artifact_info('org.kill-bill.billing:killbill-oss-parent:pom:LATEST') }.to raise_error(KPM::NexusFacade::ArtifactNotFoundException, /Unable to find the latest version/)
     end
   end
 end

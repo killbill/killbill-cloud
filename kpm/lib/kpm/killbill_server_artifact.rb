@@ -30,7 +30,7 @@ module KPM
           kb_pom = nil
           begin
             kb_pom = pull_killbill_pom(logger, dir, version, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
-          rescue StandardError
+          rescue KPM::NexusFacade::ArtifactNotFoundException
             raise unless version == 'LATEST'
           end
           if kb_pom

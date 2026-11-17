@@ -36,7 +36,7 @@ describe KPM::KillbillServerArtifact do
       pulled = []
       allow(described_class).to receive(:pull) do |_logger, _group_id, artifact_id, _packaging, _classifier, version, dir, *_|
         pulled << [artifact_id, version]
-        raise StandardError, 'not found' if artifact_id == 'killbill'
+        raise KPM::NexusFacade::ArtifactNotFoundException, 'not found' if artifact_id == 'killbill'
 
         file_path = File.join(dir, "#{artifact_id}.pom")
         File.write(file_path, oss_parent_pom)
@@ -51,10 +51,16 @@ describe KPM::KillbillServerArtifact do
       expect(info['killbill-platform']).to eq '0.42.4'
     end
 
-    it 'does not hide the error when the specified Kill Bill pom is not hosted' do
-      allow(described_class).to receive(:pull).and_raise(StandardError, 'not found')
+    it 'does not hide other errors when resolving the latest Kill Bill pom' do
+      allow(described_class).to receive(:pull).and_raise(KPM::ArtifactCorruptedException, 'bad checksum')
 
-      expect { described_class.info('2026.11.13') }.to raise_error(StandardError, 'not found')
+      expect { described_class.info('LATEST') }.to raise_error(KPM::ArtifactCorruptedException)
+    end
+
+    it 'does not hide the error when the specified Kill Bill pom is not hosted' do
+      allow(described_class).to receive(:pull).and_raise(KPM::NexusFacade::ArtifactNotFoundException, 'not found')
+
+      expect { described_class.info('2026.11.13') }.to raise_error(KPM::NexusFacade::ArtifactNotFoundException, 'not found')
     end
 
     it 'uses the killbill-oss-parent of the specified Kill Bill version' do

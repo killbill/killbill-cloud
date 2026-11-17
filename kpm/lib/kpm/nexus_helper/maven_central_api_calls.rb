@@ -205,7 +205,7 @@ module KPM
             get_response_with_retries(nil, location, nil)
           end
         when '404'
-          raise StandardError, ERROR_MESSAGE_404
+          raise ArtifactNotFoundException, ERROR_MESSAGE_404
         else
           raise UnexpectedStatusCodeException, response.code
         end

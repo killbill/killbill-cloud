@@ -25,6 +25,9 @@ module KPM
       end
     end
 
+    class ArtifactNotFoundException < StandardError
+    end
+
     # This is an extract and slim down of functions needed from nexus_cli to maintain the response expected by the base_artifact.
     class NexusApiCallsV2
       READ_TIMEOUT_DEFAULT = 60
@@ -51,7 +54,7 @@ module KPM
           logger.debug "response body: #{response.body}"
           response.body
         when '404'
-          raise StandardError, ERROR_MESSAGE_404
+          raise ArtifactNotFoundException, ERROR_MESSAGE_404
         else
           raise UnexpectedStatusCodeException, response.code
         end
@@ -104,6 +107,18 @@ module KPM
       end
 
       private
+
+      # Repositories without a resolve API (Cloudsmith, GitHub Packages): use the artifact level maven-metadata.xml to find the latest version
+      def resolve_latest(coordinates)
+        base_path, _, coords = build_base_path_and_coords(coordinates)
+        return coordinates unless coords[:version].casecmp('latest').zero?
+
+        metadata = REXML::Document.new(get_response_with_retries(nil, "#{base_path}/maven-metadata.xml", nil))
+        latest_version = metadata.elements['//versioning/release']&.text || metadata.elements['//versioning/latest']&.text
+        raise ArtifactNotFoundException, "Unable to find the latest version of #{coords[:group_id]}:#{coords[:artifact_id]}" if latest_version.nil? || latest_version.empty?
+
+        coordinates.sub(/[^:]+\z/, latest_version)
+      end
 
       def parse_coordinates(coordinates)
         raise ArtifactMalformedException if coordinates.nil?
@@ -159,7 +174,7 @@ module KPM
             get_response_with_retries(nil, location, nil)
           end
         when '404'
-          raise StandardError, ERROR_MESSAGE_404
+          raise ArtifactNotFoundException, ERROR_MESSAGE_404
         else
           raise UnexpectedStatusCodeException, response.code
         end

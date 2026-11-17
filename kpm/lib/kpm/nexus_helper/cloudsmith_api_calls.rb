@@ -64,18 +64,6 @@ module KPM
 
       private
 
-      # Cloudsmith has no search nor resolve API: use the artifact level maven-metadata.xml to find the latest version
-      def resolve_latest(coordinates)
-        base_path, _, coords = build_base_path_and_coords(coordinates)
-        return coordinates unless coords[:version].casecmp('latest').zero?
-
-        metadata = REXML::Document.new(get_response_with_retries(nil, "#{base_path}/maven-metadata.xml", nil))
-        latest_version = metadata.elements['//versioning/release']&.text || metadata.elements['//versioning/latest']&.text
-        raise StandardError, "Unable to find the latest version of #{coords[:group_id]}:#{coords[:artifact_id]}" if latest_version.nil? || latest_version.empty?
-
-        coordinates.sub(/[^:]+\z/, latest_version)
-      end
-
       def get_sha1(coordinates)
         base_path, versioned_artifact, = build_base_path_and_coords(coordinates)
         endpoint = "#{base_path}/#{versioned_artifact}.sha1"

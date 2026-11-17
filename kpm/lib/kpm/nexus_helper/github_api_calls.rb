@@ -14,7 +14,8 @@ module KPM
       end
 
       def get_artifact_info(coordinates)
-        super
+        coordinates = resolve_latest(coordinates)
+        super(coordinates)
 
         _, versioned_artifact, coords = build_base_path_and_coords(coordinates)
         sha1 = get_sha1(coordinates)
