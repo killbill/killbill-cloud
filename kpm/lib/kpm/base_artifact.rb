@@ -22,6 +22,8 @@ module KPM
     KILLPAY_CLASSIFIER  = nil
 
     KILLBILL_JAVA_PLUGIN_GROUP_ID   = 'org.kill-bill.billing.plugin.java'
+    # Group ids for which the plugin key does not need a user namespace (e.g. namespace:key)
+    KILLBILL_JAVA_PLUGIN_GROUP_IDS  = [KILLBILL_JAVA_PLUGIN_GROUP_ID, 'com.kill-bill.billing.plugin.java'].freeze
     KILLBILL_JAVA_PLUGIN_PACKAGING  = 'jar'
     KILLBILL_JAVA_PLUGIN_CLASSIFIER = nil
 

@@ -31,6 +31,7 @@ module KPM
 
       alias parent_get_artifact_info get_artifact_info
       def get_artifact_info(coordinates)
+        coordinates = resolve_latest(coordinates)
         _, versioned_artifact, coords = build_base_path_and_coords(coordinates)
         sha1 = get_sha1(coordinates)
         "<artifact-resolution>

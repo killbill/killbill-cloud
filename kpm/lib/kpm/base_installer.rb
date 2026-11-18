@@ -91,9 +91,9 @@ module KPM
       validate_installation_arg!(plugin_key, 'type', specified_type, looked_up_type)
       validate_installation_arg!(plugin_key, 'classifier', specified_classifier, looked_up_classifier)
 
-      # If there is no entry in plugins_directory.yml and the group_id is not the killbill default group_id, the key provided must be a user key and must have a namespace
+      # If there is no entry in plugins_directory.yml and the group_id is not one of the killbill default group_ids, the key provided must be a user key and must have a namespace
       if looked_up_artifact_id.nil? &&
-         specified_group_id != KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_ID &&
+         !KPM::BaseArtifact::KILLBILL_JAVA_PLUGIN_GROUP_IDS.include?(specified_group_id) &&
          plugin_key.split(':').size == 1
         raise ArgumentError, "Aborting installation: pluginKey = #{plugin_key} does not exist in plugin_directory.yml so format of the key must have a user namespace (e.g namespace:key)"
       end

@@ -21,36 +21,22 @@ module KPM
         # Initialize as early as possible (used in rescue block below)
         sha1_checker = sha1_file ? Sha1Checker.from_file(sha1_file) : nil
 
-        version = KPM::Installer.get_kb_latest_stable_version if version == 'LATEST'
-
         versions = {}
         Dir.mktmpdir do |dir|
-          # Retrieve the main Kill Bill pom
-          kb_pom_info = pull(logger,
-                             KPM::BaseArtifact::KILLBILL_GROUP_ID,
-                             'killbill',
-                             'pom',
-                             nil,
-                             version,
-                             dir,
-                             sha1_file,
-                             force_download,
-                             verify_sha1,
-                             overrides,
-                             ssl_verify)
+          oss_parent_version = 'LATEST'
 
-          # Extract the killbill-oss-parent version
-          file = File.new(kb_pom_info[:file_path])
+          # killbill-oss-parent is the source of truth for the versions: use the one declared by the Kill Bill release.
+          # For LATEST, the repository may not host the Kill Bill pom (e.g. different groupId): use the latest killbill-oss-parent instead.
+          kb_pom = nil
           begin
-            pom = REXML::Document.new(file)
-            oss_parent_version = pom.root.elements['parent/version'].text
-            kb_version = pom.root.elements['version'].text
-          ensure
-            file.close
-            FileUtils.rm_f(kb_pom_info[:file_path])
+            kb_pom = pull_killbill_pom(logger, dir, version, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+          rescue KPM::NexusFacade::ArtifactNotFoundException
+            raise unless version == 'LATEST'
           end
-          versions['killbill'] = kb_version
-          versions['killbill-oss-parent'] = oss_parent_version
+          if kb_pom
+            oss_parent_version = kb_pom[:parent_version]
+            versions['killbill'] = kb_pom[:version]
+          end
 
           # Retrieve the killbill-oss-parent pom
           oss_pom_info = pull(logger,
@@ -68,6 +54,7 @@ module KPM
           file = File.new(oss_pom_info[:file_path])
           begin
             pom = REXML::Document.new(file)
+            versions['killbill-oss-parent'] = pom.root.elements['version']&.text || oss_parent_version
             properties_element = pom.root.elements['properties']
             %w[killbill-api killbill-plugin-api killbill-commons killbill-platform].each do |property|
               versions[property] = properties_element.elements["#{property}.version"].text
@@ -86,6 +73,21 @@ module KPM
 
         # Use the cache
         cached_version
+      end
+
+      private
+
+      # Retrieve the main Kill Bill pom and extract its version and the killbill-oss-parent version it declares
+      def pull_killbill_pom(logger, dir, version, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+        pom_info = pull(logger, KPM::BaseArtifact::KILLBILL_GROUP_ID, 'killbill', 'pom', nil, version, dir, sha1_file, force_download, verify_sha1, overrides, ssl_verify)
+        file = File.new(pom_info[:file_path])
+        begin
+          pom = REXML::Document.new(file)
+          { version: pom.root.elements['version'].text, parent_version: pom.root.elements['parent/version'].text }
+        ensure
+          file.close
+          FileUtils.rm_f(pom_info[:file_path])
+        end
       end
     end
   end

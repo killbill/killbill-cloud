@@ -93,9 +93,11 @@ You can download specific artifacts with the following commands:
 * `kpm pull_kb_server_war <version>`: downloads the Kill Bill war
 * `kpm install_java_plugin plugin-key <kb-version>`: downloads a Java plugin identified by `plugin-key`
 * `kpm install_ruby_plugin plugin-key <kb-version>`: downloads a Ruby plugin identified by `plugin-key`
-* `kpm pull_defaultbundles <kb-version>`: downloads the default Kill Bill OSGI bundles
+* `kpm pull_defaultbundles <kb-version>`: downloads the default Kill Bill OSGI bundles. If `kb-version` isn't specified, the latest `killbill` version of the repository is used to find the matching `killbill-platform` version
 
 This is especially useful when scripting deployments.
+
+About `pull_defaultbundles`: the bundles version comes from the `killbill-platform` property of `killbill-oss-parent`, which is the source of truth for the versions used by a Kill Bill release. When no `kb-version` is given, KPM reads the `killbill` pom of the latest `killbill` version of the repository (resolved through its `maven-metadata.xml`) and uses the `killbill-oss-parent` it declares. If the repository doesn't host that pom (e.g. `com.kill-bill` vs `org.kill-bill` groupId mismatch), the latest `killbill-oss-parent` of the repository is used instead.
 
 Note: previous plugin versions aren't cleaned up by default to facilitate rollbacks. If your deployment is stateful, unused, old plugin versions will slow the Kill Bill startup time. To cleanup these entries, use `kpm cleanup` which will delete all non-default plugin versions, or `kpm uninstall`.
 
@@ -265,3 +267,10 @@ kpm pull_kb_server_war 0.22.21-SNAPSHOT \
 ....
 
 Replace `TOKEN` with a Cloudsmith entitlement token, and specify the right `ORG` and `REPO`.
+
+When no version is specified, `LATEST` is resolved from the artifact's `maven-metadata.xml`. For example, to download the default OSGI bundles matching the latest `killbill` version:
+
+....
+kpm pull_defaultbundles \
+        --overrides url:https://dl.cloudsmith.io/<TOKEN>/<ORG>/<REPO>/maven
+....

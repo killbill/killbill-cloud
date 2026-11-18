@@ -347,9 +347,9 @@ module KPM
                                                       options[:overrides],
                                                       options[:ssl_verify])
           resolved_kb_version = versions_info['killbill']
-          kb_version = resolved_kb_version.split('.').slice(0, 2).join('.')
+          kb_version = resolved_kb_version ? resolved_kb_version.split('.').slice(0, 2).join('.') : nil
 
-          plugins_info = KPM::PluginsDirectory.list_plugins(true, kb_version)
+          plugins_info = kb_version ? KPM::PluginsDirectory.list_plugins(true, kb_version) : {}
 
           if options[:as_json]
             puts({ 'killbill' => versions_info, 'plugins' => plugins_info }.to_json)
