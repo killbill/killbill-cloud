@@ -1,25 +1,33 @@
 name: kpm_release
 
+# Releases KPM:
+#   1. bumps the version, tags the repository and pushes the kpm gem to RubyGems
+#   2. builds the self-contained packages (the build downloads the released gem from RubyGems, so it must come first)
+#   3. deploys the packages to Cloudsmith (https://maven.cloudsmith.io/killbill/kpm/)
+#
+# To only redo step 2 and 3 (the version is already tagged and the gem is already on RubyGems), set
+# perform_version to a ref (tag, branch or SHA) whose kpm/pom.xml has the Cloudsmith deploy configuration.
+
 on:
   workflow_dispatch:
     inputs:
       target_version:
-        description: 'Target version: given version number [x.x.x]'
+        description: 'Target version: given version number [x.x.x] (ignored when perform_version is set)'
         required: false
         default: ''
         type: string
       perform_version:
-        description: 'tag to (re-)perform (in case of deploy failure)'
+        description: 'Ref (tag, branch or SHA) to (re-)perform: skips the version bump, the tag and the gem release'
         required: false
         default: ''
         type: string
       release_kpm:
-        description: 'whether the release the kpm gem'
+        description: 'whether to tag and release the kpm gem (ignored when perform_version is set)'
         required: true
         default: true
         type: boolean
       snapshot_only:
-        description: 'whether to push to Sonatype snapshots'
+        description: 'whether to deploy a SNAPSHOT (unsigned) instead of a release'
         required: true
         default: false
         type: boolean
@@ -27,17 +35,16 @@ on:
 env:
   MAVEN_FLAGS: "-B --no-transfer-progress"
   MAVEN_OPTS: "-Xmx2G -XX:+ExitOnOutOfMemoryError -Dmaven.wagon.rto=60000 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3"
+  # s4u/maven-settings-action cannot emit Maven's native <repositoryOrigins> server field, so
+  # fall back to the legacy id-only credential matching (otherwise Maven 3.10+ drops the credentials)
+  MAVEN_ARGS: -ntp -Dmaven.repository.credentialScope=id
 
 jobs:
   kpm_release:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        if: github.event.inputs.perform_version == ''
-        uses: actions/checkout@v3.0.2
-      - name: Checkout full repository
-        if: github.event.inputs.perform_version != ''
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.perform_version }}
       - name: Setup git user
@@ -48,26 +55,35 @@ jobs:
           git config --global user.email "contact@killbill.io"
           git config --global user.name "Kill Bill core team"
           git config --global url."https://${BUILD_USER}:${BUILD_TOKEN}@github.com/".insteadOf "git@github.com:"
-      - name: Configure settings.xml for release
-        uses: actions/setup-java@v3.3.0
+      - name: Configure Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: temurin
+      - name: Configure Maven settings.xml
+        uses: s4u/maven-settings-action@v4.0.0
+        with:
+          githubServer: false
+          # "cloudsmith" is referenced by <distributionManagement/> in kpm/pom.xml.
+          # id=gpg.passphrase lets maven-gpg-plugin sign non-interactively; ${env.GPG_PASSPHRASE} is Maven's own
+          # settings.xml syntax (resolved by mvn from the env var at build time), not GitHub Actions interpolation,
+          # so the real passphrase is never written to disk here.
+          # `configuration: {}` is a hack for maven-settings-action validation (it requires id + (username or configuration)).
+          servers: |
+            [
+              {"id": "cloudsmith", "username": "${{ secrets.CLOUDSMITH_DISTRIBUTION_MAN_USERNAME }}", "password": "${{ secrets.CLOUDSMITH_DISTRIBUTION_MAN_PASSWORD }}"},
+              {"id": "gpg.passphrase", "passphrase": "${env.GPG_PASSPHRASE}", "configuration": {}}
+            ]
+      - name: Import GPG signing key
         if: github.event.inputs.snapshot_only == 'false'
+        uses: actions/setup-java@v5
         with:
           java-version: 21
           distribution: temurin
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          # setup-java always (re)writes ~/.m2/settings.xml unless told otherwise, which would overwrite
+          # the settings.xml generated above
+          overwrite-settings: false
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
-      - name: Configure settings.xml for snapshots
-        uses: actions/setup-java@v3.3.0
-        if: github.event.inputs.snapshot_only == 'true'
-        with:
-          java-version: 21
-          distribution: temurin
-          server-id: sonatype-nexus-snapshots
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
       - name: Install packages
         run: |
           sudo apt-get -yq update
@@ -122,30 +138,24 @@ jobs:
         run: |
           cd kpm
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          # Need a -SNAPSHOT suffix for Sonatype
+          # Need a -SNAPSHOT suffix
           snapshot_version="${current_version}-$(git rev-parse --short "$GITHUB_SHA")-SNAPSHOT"
           mvn versions:set -DnewVersion=${snapshot_version}
-          for i in $(ls *.tar.gz); do mv $i $(echo $i | sed s/$current_version/$snapshot_version/); done
           echo "::notice ::Version is ${snapshot_version}"
       - name: Build self-contained packages
         run: |
           source $HOME/.rvm/scripts/rvm
           cd kpm
           ../bin/retry bundle exec rake package
-      - name: Push to Maven Central
+      - name: Deploy release to Cloudsmith
         if: github.event.inputs.snapshot_only == 'false'
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           cd kpm
-          mvn ${MAVEN_FLAGS} -Psonatype-oss-release deploy
-      - name: Push to Sonatype snapshots
+          mvn ${MAVEN_FLAGS} -Poss-release deploy
+      - name: Deploy snapshot to Cloudsmith
         if: github.event.inputs.snapshot_only == 'true'
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
         run: |
           cd kpm
           mvn ${MAVEN_FLAGS} deploy
