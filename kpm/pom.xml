@@ -77,12 +77,14 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <repository.release.id>central</repository.release.id>
-        <repository.release.name>Central Release Repository</repository.release.name>
-        <repository.release.url>https://central.sonatype.com/service/local/staging/deploy/maven2/</repository.release.url>
-        <repository.snapshot.id>central</repository.snapshot.id>
-        <repository.snapshot.name>Central Snapshots Repository</repository.snapshot.name>
-        <repository.snapshot.url>https://central.sonatype.com/repository/maven-snapshots/</repository.snapshot.url>
+        <!-- Cloudsmith repository slug (the "XXX" in https://maven.cloudsmith.io/killbill/XXX/) -->
+        <repository.cloudsmith.repo>kpm</repository.cloudsmith.repo>
+        <repository.release.id>cloudsmith</repository.release.id>
+        <repository.release.name>Cloudsmith Release Repository</repository.release.name>
+        <repository.release.url>https://maven.cloudsmith.io/killbill/${repository.cloudsmith.repo}/</repository.release.url>
+        <repository.snapshot.id>cloudsmith</repository.snapshot.id>
+        <repository.snapshot.name>Cloudsmith Snapshots Repository</repository.snapshot.name>
+        <repository.snapshot.url>https://maven.cloudsmith.io/killbill/${repository.cloudsmith.repo}/</repository.snapshot.url>
     </properties>
     <build>
         <pluginManagement>
@@ -176,7 +178,7 @@
     </build>
     <profiles>
         <profile>
-            <id>sonatype-oss-release</id>
+            <id>oss-release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -199,17 +201,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.7.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <autoPublish>true</autoPublish>
-                            <publishingServerId>central</publishingServerId>
-                            <waitUntil>published</waitUntil>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
