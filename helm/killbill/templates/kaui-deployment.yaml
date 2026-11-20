@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "killbill.kauiName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kaui
+spec:
+  replicas: {{ .Values.kaui.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "killbill.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: kaui
+  template:
+    metadata:
+      {{- if not .Values.existingSecret }}
+      annotations:
+        # Restart the pods when the chart-managed credentials change
+        checksum/credentials: {{ include "killbill.credentialsChecksum" . | quote }}
+      {{- end }}
+      labels:
+        {{- include "killbill.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: kaui
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: kaui
+          image: "{{ .Values.kaui.image.repository }}:{{ .Values.kaui.image.tag }}"
+          imagePullPolicy: {{ .Values.kaui.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: KAUI_CONFIG_DAO_URL
+              value: {{ include "killbill.kauiJdbcUrl" . | quote }}
+            - name: KAUI_CONFIG_DAO_USER
+              value: {{ include "killbill.dbUser" . | quote }}
+            {{- if eq (include "killbill.dbType" .) "postgresql" }}
+            - name: KAUI_DB_ADAPTER
+              value: postgresql
+            {{- end }}
+            - name: KAUI_CONFIG_DAO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: db-password
+            # Shared key that signs Kaui sessions, so they stay valid across replicas and restarts
+            - name: KAUI_SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "killbill.secretName" . }}
+                  key: kaui-secret-key-base
+            - name: KAUI_KILLBILL_URL
+              value: "http://{{ include "killbill.fullname" . }}:{{ .Values.killbill.service.port }}"
+            {{- with .Values.kaui.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          # Kaui answers "/" (with a redirect to its login page) only once it has
+          # fully started; until then Tomcat returns 404. Startup allows up to
+          # 5 minutes for the first start.
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          {{- with .Values.kaui.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

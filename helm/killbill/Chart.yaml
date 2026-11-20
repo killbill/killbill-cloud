@@ -1,0 +1,19 @@
+apiVersion: v2
+name: killbill
+description: Kill Bill billing platform with Kaui (admin UI) and a MariaDB or PostgreSQL database
+type: application
+
+# Chart version. Increment it each time the chart or its templates change (Semantic Versioning).
+version: 0.1.0
+
+# Kill Bill version deployed by default (killbill.image.tag in values.yaml).
+appVersion: "0.24.22"
+
+home: https://killbill.io
+sources:
+  - https://github.com/killbill/killbill-cloud
+keywords:
+  - billing
+  - payments
+  - subscriptions
+  - killbill

@@ -1,0 +1,24 @@
+Kill Bill and Kaui are starting. The first start can take a few minutes.
+
+Kaui (admin UI):
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "killbill.kauiName" . }} {{ .Values.kaui.service.port }}:{{ .Values.kaui.service.port }}
+  Then open http://127.0.0.1:{{ .Values.kaui.service.port }}
+
+Kill Bill API:
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "killbill.fullname" . }} {{ .Values.killbill.service.port }}:{{ .Values.killbill.service.port }}
+  API documentation: http://127.0.0.1:{{ .Values.killbill.service.port }}/api.html
+  Health check:      http://127.0.0.1:{{ .Values.killbill.service.port }}/1.0/healthcheck
+
+Log in to Kaui and the API as "admin". To print the admin password:
+  kubectl --namespace {{ .Release.Namespace }} get secret {{ include "killbill.secretName" . }} -o jsonpath="{.data.admin-password}" | base64 --decode; echo
+{{- if and (not .Values.existingSecret) (or (eq (toString .Values.killbill.adminPassword) "password") (eq (toString .Values.database.password) "killbill")) }}
+
+WARNING: the default passwords are in use. Set killbill.adminPassword and
+database.password (or existingSecret) for anything beyond a local test.
+{{- end }}
+
+{{ if .Values.database.external.enabled -}}
+Database: the external {{ include "killbill.dbType" . }} server at {{ include "killbill.dbHost" . }}:{{ include "killbill.dbPort" . }}.
+{{- else -}}
+Database: the bundled {{ include "killbill.dbType" . }}, reachable inside the cluster at {{ include "killbill.dbName" . }}:{{ include "killbill.dbPort" . }}.
+{{- end }}

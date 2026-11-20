@@ -1,0 +1,19 @@
+{{- if eq (include "killbill.bundledDb" .) "postgresql" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "killbill.dbName" . }}
+  labels:
+    {{- include "killbill.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgresql.service.port }}
+      targetPort: postgresql
+      protocol: TCP
+      name: postgresql
+  selector:
+    {{- include "killbill.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+{{- end }}
